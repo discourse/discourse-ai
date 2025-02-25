@@ -134,6 +134,10 @@ ro:
           previous_log: "Precedent"
         share_modal:
           copy: "Copiază"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Toate"
       summarization:
         chat:
           title: "Rezumați mesajele"

@@ -262,7 +262,8 @@ pl_PL:
         dashboard:
           title: "Sentiment"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Wszystkie"
             positive: "Pozytywne"
             neutral: "Neutralne"
             negative: "Negatywne"

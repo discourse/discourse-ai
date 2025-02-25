@@ -372,7 +372,7 @@ nl:
           other: "Dit model wordt momenteel gebruikt door de volgende: %{settings}. Als het onjuist is geconfigureerd, werken functies niet zoals verwacht. "
         model_description:
           none: "Algemene instellingen die werken voor de meeste taalmodellen"
-          anthropic-claude-3-5-sonnet: "Het intelligentste model van Antropic"
+          anthropic-claude-3-7-sonnet: "Het intelligentste model van Antropic"
           anthropic-claude-3-5-haiku: "Snel en kosteneffectief"
           anthropic-claude-3-opus: "Blinkt uit in schrijven en complexe taken"
           google-gemini-1-5-pro: "Middelgroot multimodaal model dat een groot aantal taken kan uitvoeren"
@@ -609,7 +609,8 @@ nl:
         dashboard:
           title: "Sentiment"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Alle"
             positive: "Positief"
             neutral: "Neutraal"
             negative: "Negatief"

@@ -137,7 +137,8 @@ ur:
           copy: "کاپی"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "تمام"
             neutral: "نیوٹرل"
       summarization:
         chat:

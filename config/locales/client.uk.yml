@@ -247,7 +247,7 @@ uk:
           other: "Ця модель зараз використовується: %{settings}. У разі неправильного налаштування функція не працюватиме належним чином. "
         model_description:
           none: "Загальні налаштування, що працюють для більшості мовних моделей"
-          anthropic-claude-3-5-sonnet: "Найрозумніша модель Anthropic"
+          anthropic-claude-3-7-sonnet: "Найрозумніша модель Anthropic"
           anthropic-claude-3-5-haiku: "Швидко та економічно ефективно"
           anthropic-claude-3-opus: "Відмінно справляється з письмовими роботами та складними завданнями"
           google-gemini-1-5-pro: "Мультимодальна модель середнього розміру, здатна виконувати широкий спектр завдань"
@@ -408,7 +408,8 @@ uk:
         dashboard:
           title: "Почуття"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Все"
             positive: "Позитивний"
             neutral: "Нейтральна"
             negative: "Негативний"

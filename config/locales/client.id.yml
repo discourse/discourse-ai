@@ -231,6 +231,10 @@ id:
           claude-3-sonnet: "Claude 3 Soneta"
           claude-3-haiku: "Claude 3 Haiku"
           claude-2: "Claude 2"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Semua"
       summarization:
         chat:
           title: "Meringkas pesan"

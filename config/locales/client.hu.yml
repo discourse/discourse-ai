@@ -144,7 +144,8 @@ hu:
           copy: "Másolás"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Összes"
             neutral: "Semleges"
       summarization:
         chat:

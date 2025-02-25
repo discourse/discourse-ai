@@ -372,7 +372,7 @@ es:
           other: "Este modelo lo utilizan actualmente las siguientes %{settings}. Si está mal configurado, las características no funcionarán como se espera."
         model_description:
           none: "Ajustes generales que funcionan para la mayoría de los modelos lingüísticos"
-          anthropic-claude-3-5-sonnet: "El modelo antrópico más inteligente"
+          anthropic-claude-3-7-sonnet: "El modelo antrópico más inteligente"
           anthropic-claude-3-5-haiku: "Rápido y rentable"
           anthropic-claude-3-opus: "Sobresale en la escritura y en tareas complejas"
           google-gemini-1-5-pro: "Modelo multimodal de tamaño medio capaz de realizar una amplia gama de tareas"
@@ -609,7 +609,8 @@ es:
         dashboard:
           title: "Sentiment"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Todo"
             positive: "Positivo"
             neutral: "Neutro"
             negative: "Negativo"

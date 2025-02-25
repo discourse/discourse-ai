@@ -144,7 +144,8 @@ ug:
           copy: "كۆچۈر"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "ھەممىسى"
             neutral: "بىتەرەپ"
       summarization:
         chat:

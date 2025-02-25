@@ -129,7 +129,8 @@ te:
           copy: "నకలు"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "అన్ని"
             neutral: "తటస్థ"
       discobot_discoveries:
         regular_results: "విషయాలు"

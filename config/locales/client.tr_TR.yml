@@ -372,7 +372,7 @@ tr_TR:
           other: "Bu model şu anda şunlar tarafından kullanılıyor: %{settings}. Yanlış yapılandırılırsa özellikler beklendiği gibi çalışmaz. "
         model_description:
           none: "Çoğu dil modeli için çalışan genel ayarlar"
-          anthropic-claude-3-5-sonnet: "Antropic'in en akıllı modeli"
+          anthropic-claude-3-7-sonnet: "Antropic'in en akıllı modeli"
           anthropic-claude-3-5-haiku: "Hızlı ve uygun maliyetli"
           anthropic-claude-3-opus: "Yazma ve karmaşık görevlerde mükemmeldir"
           google-gemini-1-5-pro: "Çok çeşitli görevleri yerine getirebilen orta ölçekli çok modlu model"
@@ -610,7 +610,8 @@ tr_TR:
         dashboard:
           title: "Duyarlılık"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Hepsi"
             positive: "Pozitif"
             neutral: "Nötr"
             negative: "Negatif"

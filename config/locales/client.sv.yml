@@ -142,7 +142,8 @@ sv:
           copy: "Kopiera"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Alla"
             neutral: "Neutralt"
       summarization:
         chat:

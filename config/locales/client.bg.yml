@@ -126,6 +126,10 @@ bg:
           previous_log: "Предишни"
         share_modal:
           copy: "Копирай"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Всички"
       summarization:
         chat:
           summarize: "Обобщаване"

@@ -117,6 +117,10 @@ sw:
           previous_log: "Uliopita"
         share_modal:
           copy: "Nakili"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Vyote"
       discobot_discoveries:
         regular_results: "Mada"
         collapse: "Kunja"

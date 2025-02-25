@@ -122,6 +122,10 @@ lv:
           previous_log: "Iepriekšējais"
         share_modal:
           copy: "Kopēt"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Viss"
       discobot_discoveries:
         regular_results: "Tēmas"
         collapse: "Sakļaut"

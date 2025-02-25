@@ -141,7 +141,8 @@ da:
           copy: "Kopier"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "Alle"
             neutral: "Neutral"
       discobot_discoveries:
         regular_results: "Emner"

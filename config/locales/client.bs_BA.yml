@@ -120,6 +120,10 @@ bs_BA:
           previous_log: "Previous"
         share_modal:
           copy: "Copy"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "All"
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Spusti"

@@ -136,7 +136,8 @@ zh_TW:
           copy: "複製"
       sentiments:
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "全部"
             neutral: "中性"
       summarization:
         chat:

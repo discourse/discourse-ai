@@ -380,7 +380,7 @@ ar:
           other: "هذا النموذج مُستخدَم حاليًا من قِبل %{settings}. إذا تم تكوينه بشكلٍ خاطئ، فلن تعمل الميزات كما هو متوقَّع. "
         model_description:
           none: "الإعدادات العامة التي تعمل مع معظم نماذج اللغة"
-          anthropic-claude-3-5-sonnet: "النموذج الأكثر ذكاءً لدى Anthropic"
+          anthropic-claude-3-7-sonnet: "النموذج الأكثر ذكاءً لدى Anthropic"
           anthropic-claude-3-5-haiku: "سريع وفعَّال من حيث التكلفة"
           anthropic-claude-3-opus: "يبرع في الكتابة والمهام المعقدة"
           google-gemini-1-5-pro: "نموذج متعدد متوسط الحجم قادر على تنفيذ مجموعة واسعة من المهام"
@@ -621,7 +621,8 @@ ar:
         dashboard:
           title: "المشاعر"
         sentiment_analysis:
-          score_types:
+          filter_types:
+            all: "الكل"
             positive: "إيجابية"
             neutral: "محايدة"
             negative: "سلبية"

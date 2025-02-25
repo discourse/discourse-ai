@@ -131,6 +131,10 @@ sl:
           previous_log: "Prejšnja"
         share_modal:
           copy: "Kopiraj"
+      sentiments:
+        sentiment_analysis:
+          filter_types:
+            all: "Vse"
       discobot_discoveries:
         regular_results: "Tem"
         collapse: "Skrči"
