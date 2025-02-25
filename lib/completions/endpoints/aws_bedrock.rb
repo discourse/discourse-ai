@@ -28,12 +28,8 @@ module DiscourseAi
 
               result = { anthropic_version: "bedrock-2023-05-31" }
               if llm_model.lookup_custom_param("enable_reasoning")
-                reasoning_tokens = llm_model.lookup_custom_param("reasoning_tokens").to_i
-                if reasoning_tokens < 100
-                  reasoning_tokens = 100
-                elsif reasoning_tokens > 65_536
-                  reasoning_tokens = 65_536
-                end
+                reasoning_tokens =
+                  llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(100, 65_536)
 
                 # this allows for ample tokens beyond reasoning
                 max_tokens = reasoning_tokens + 30_000
