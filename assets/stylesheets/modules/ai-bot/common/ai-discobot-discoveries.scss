@@ -7,19 +7,22 @@
     margin: 0;
   }
 
-  &__discovery-preview {
-    height: 3.5em; // roughly the loading skeleton height
-    overflow: hidden;
-    position: relative;
+  &__discovery {
+    &.preview {
+      // height: 3.5em; // roughly the loading skeleton height
+      height: 8em; // ! todo remove: keegan simply testing larger size
+      overflow: hidden;
+      position: relative;
 
-    &::after {
-      content: "";
-      position: absolute;
-      display: block;
-      background: linear-gradient(rgba(255, 255, 255, 0), var(--secondary));
-      height: 50%;
-      width: 100%;
-      bottom: 0;
+      &::after {
+        content: "";
+        position: absolute;
+        display: block;
+        background: linear-gradient(rgba(255, 255, 255, 0), var(--secondary));
+        height: 50%;
+        width: 100%;
+        bottom: 0;
+      }
     }
   }
 

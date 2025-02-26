@@ -5,8 +5,10 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
+import { not } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
@@ -43,7 +45,7 @@ export default class AiSearchDiscoveries extends Component {
 
   @tracked loadingDiscoveries = false;
   @tracked hideDiscoveries = false;
-  @tracked fulldiscoveryToggled = false;
+  @tracked fullDiscoveryToggled = false;
 
   discoveryTimeout = null;
 
@@ -54,26 +56,11 @@ export default class AiSearchDiscoveries extends Component {
         cancel(this.discoveryTimeout);
       }
 
-      if (!this.discobotDiscoveries.discoveryPreview) {
-        const buffered = setUpBuffer(
-          update.ai_discover_reply,
-          BUFFER_WORDS_COUNT
-        );
-        if (buffered) {
-          this.discobotDiscoveries.discoveryPreview = buffered;
-          this.loadingDiscoveries = false;
-        }
-      }
-
       this.discobotDiscoveries.modelUsed = update.model_used;
       this.discobotDiscoveries.discovery = update.ai_discover_reply;
 
       // Handling short replies.
       if (update.done) {
-        if (!this.discobotDiscoveries.discoveryPreview) {
-          this.discobotDiscoveries.discoveryPreview = update.ai_discover_reply;
-        }
-
         this.discobotDiscoveries.discovery = update.ai_discover_reply;
         this.loadingDiscoveries = false;
       }
@@ -101,7 +88,7 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get toggleLabel() {
-    if (this.fulldiscoveryToggled) {
+    if (this.fullDiscoveryToggled) {
       return "discourse_ai.discobot_discoveries.collapse";
     } else {
       return "discourse_ai.discobot_discoveries.tell_me_more";
@@ -109,19 +96,16 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get toggleIcon() {
-    if (this.fulldiscoveryToggled) {
+    if (this.fullDiscoveryToggled) {
       return "chevron-up";
     } else {
       return "";
     }
   }
 
-  get toggleMakesSense() {
-    return (
-      this.discobotDiscoveries.discoveryPreview &&
-      this.discobotDiscoveries.discoveryPreview !==
-        this.discobotDiscoveries.discovery
-    );
+  get canShowExpandtoggle() {
+    // TODO: add check for height/char length if text is long enough...
+    return !this.loadingDiscoveries;
   }
 
   @action
@@ -153,12 +137,11 @@ export default class AiSearchDiscoveries extends Component {
 
   @action
   toggleDiscovery() {
-    this.fulldiscoveryToggled = !this.fulldiscoveryToggled;
+    this.fullDiscoveryToggled = !this.fullDiscoveryToggled;
   }
 
   timeoutDiscovery() {
     this.loadingDiscoveries = false;
-    this.discobotDiscoveries.discoveryPreview = "";
     this.discobotDiscoveries.discovery = "";
 
     this.discobotDiscoveries.discoveryTimedOut = true;
@@ -177,19 +160,14 @@ export default class AiSearchDiscoveries extends Component {
         {{else if this.discobotDiscoveries.discoveryTimedOut}}
           {{i18n "discourse_ai.discobot_discoveries.timed_out"}}
         {{else}}
-          {{#if this.fulldiscoveryToggled}}
-            <div class="ai-search-discoveries__discovery-full cooked">
-              <CookText @rawText={{this.discobotDiscoveries.discovery}} />
-            </div>
-          {{else}}
-            <div class="ai-search-discoveries__discovery-preview cooked">
-              <CookText
-                @rawText={{this.discobotDiscoveries.discoveryPreview}}
-              />
-            </div>
-          {{/if}}
+          <div
+            class="ai-search-discoveries__discovery cooked
+              {{concatClass (if (not this.fullDiscoveryToggled) 'preview')}}"
+          >
+            <CookText @rawText={{this.discobotDiscoveries.discovery}} />
+          </div>
 
-          {{#if this.toggleMakesSense}}
+          {{#if this.canShowExpandtoggle}}
             <DButton
               class="btn-flat btn-text ai-search-discoveries__toggle"
               @label={{this.toggleLabel}}
