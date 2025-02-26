@@ -198,7 +198,7 @@ en:
         no_users: "No user usage data found"
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
-        subheader_description: "Tokens are the basic units that LLMs use to understand and generate text, usage data may affect costs."
+        subheader_description: "Tokens are the basic units that LLMs use to understand and generate text, usage data may affect costs"
         stat_tooltips:
           total_requests: "All requests made to LLMs through Discourse"
           total_tokens: "All the tokens used when prompting an LLM"
@@ -415,7 +415,7 @@ en:
         preconfigured:
           title_no_llms: "Select a template to get started"
           title: "Unconfigured LLM templates"
-          description: "LLMs (Large Language Models) are AI tools optimized for tasks like summarizing content, generating reports, automating customer interactions, and facilitating forum moderation and insights."
+          description: "LLMs (Large Language Models) are AI tools optimized for tasks like summarizing content, generating reports, automating customer interactions, and facilitating forum moderation and insights"
           fake: "Manual configuration"
           button: "Set up"
         next:
