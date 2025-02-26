@@ -9,8 +9,7 @@
 
   &__discovery {
     &.preview {
-      // height: 3.5em; // roughly the loading skeleton height
-      height: 8em; // ! todo remove: keegan simply testing larger size
+      height: 3.5em; // roughly the loading skeleton height
       overflow: hidden;
       position: relative;
 
