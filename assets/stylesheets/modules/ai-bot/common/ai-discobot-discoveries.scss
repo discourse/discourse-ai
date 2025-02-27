@@ -1,3 +1,12 @@
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .ai-search-discoveries {
   &__regular-results-title {
     margin-bottom: 0;
@@ -7,19 +16,23 @@
     margin: 0;
   }
 
-  &__discovery-preview {
-    height: 3.5em; // roughly the loading skeleton height
-    overflow: hidden;
-    position: relative;
+  &__discovery {
+    &.preview {
+      height: 3.5em; // roughly the loading skeleton height
+      overflow: hidden;
+      position: relative;
 
-    &::after {
-      content: "";
-      position: absolute;
-      display: block;
-      background: linear-gradient(rgba(255, 255, 255, 0), var(--secondary));
-      height: 50%;
-      width: 100%;
-      bottom: 0;
+      &::after {
+        content: "";
+        position: absolute;
+        display: block;
+        background: linear-gradient(rgba(255, 255, 255, 0), var(--secondary));
+        height: 50%;
+        width: 100%;
+        bottom: 0;
+        opacity: 0;
+        animation: fade-in 0.5s ease-in forwards;
+      }
     }
   }
 

@@ -2,39 +2,20 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
 import AiBlinkingAnimation from "./ai-blinking-animation";
 
 const DISCOVERY_TIMEOUT_MS = 10000;
-const BUFFER_WORDS_COUNT = 50;
-
-function setUpBuffer(discovery, bufferTarget) {
-  const paragraphs = discovery.split(/\n+/);
-  let wordCount = 0;
-  const paragraphBuffer = [];
-
-  for (const paragraph of paragraphs) {
-    const wordsInParagraph = paragraph.split(/\s+/);
-    wordCount += wordsInParagraph.length;
-
-    if (wordCount >= bufferTarget) {
-      paragraphBuffer.push(paragraph.concat("..."));
-      return paragraphBuffer.join("\n");
-    } else {
-      paragraphBuffer.push(paragraph);
-      paragraphBuffer.push("\n");
-    }
-  }
-
-  return null;
-}
+const STREAMED_TEXT_SPEED = 23;
 
 export default class AiSearchDiscoveries extends Component {
   @service search;
@@ -43,9 +24,36 @@ export default class AiSearchDiscoveries extends Component {
 
   @tracked loadingDiscoveries = false;
   @tracked hideDiscoveries = false;
-  @tracked fulldiscoveryToggled = false;
+  @tracked fullDiscoveryToggled = false;
+  @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
+
+  @tracked isStreaming = false;
+  @tracked streamedText = "";
 
   discoveryTimeout = null;
+  typingTimer = null;
+  streamedTextLength = 0;
+
+  typeCharacter() {
+    if (this.streamedTextLength < this.discobotDiscoveries.discovery.length) {
+      this.streamedText += this.discobotDiscoveries.discovery.charAt(
+        this.streamedTextLength
+      );
+      this.streamedTextLength++;
+
+      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
+    } else {
+      this.typingTimer = null;
+    }
+  }
+
+  onTextUpdate() {
+    if (this.typingTimer) {
+      cancel(this.typingTimer);
+    }
+
+    this.typeCharacter();
+  }
 
   @bind
   async _updateDiscovery(update) {
@@ -54,28 +62,29 @@ export default class AiSearchDiscoveries extends Component {
         cancel(this.discoveryTimeout);
       }
 
-      if (!this.discobotDiscoveries.discoveryPreview) {
-        const buffered = setUpBuffer(
-          update.ai_discover_reply,
-          BUFFER_WORDS_COUNT
-        );
-        if (buffered) {
-          this.discobotDiscoveries.discoveryPreview = buffered;
-          this.loadingDiscoveries = false;
-        }
+      if (!this.discobotDiscoveries.discovery) {
+        this.discobotDiscoveries.discovery = "";
       }
 
+      const newText = update.ai_discover_reply;
       this.discobotDiscoveries.modelUsed = update.model_used;
-      this.discobotDiscoveries.discovery = update.ai_discover_reply;
+      this.loadingDiscoveries = false;
 
       // Handling short replies.
       if (update.done) {
-        if (!this.discobotDiscoveries.discoveryPreview) {
-          this.discobotDiscoveries.discoveryPreview = update.ai_discover_reply;
-        }
+        this.discobotDiscoveries.discovery = newText;
+        this.streamedText = newText;
+        this.isStreaming = false;
 
-        this.discobotDiscoveries.discovery = update.ai_discover_reply;
-        this.loadingDiscoveries = false;
+        // Clear pending animations
+        if (this.typingTimer) {
+          cancel(this.typingTimer);
+          this.typingTimer = null;
+        }
+      } else if (newText.length > this.discobotDiscoveries.discovery.length) {
+        this.discobotDiscoveries.discovery = newText;
+        this.isStreaming = true;
+        await this.onTextUpdate();
       }
     }
   }
@@ -101,7 +110,7 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get toggleLabel() {
-    if (this.fulldiscoveryToggled) {
+    if (this.fullDiscoveryToggled) {
       return "discourse_ai.discobot_discoveries.collapse";
     } else {
       return "discourse_ai.discobot_discoveries.tell_me_more";
@@ -109,19 +118,28 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get toggleIcon() {
-    if (this.fulldiscoveryToggled) {
+    if (this.fullDiscoveryToggled) {
       return "chevron-up";
     } else {
       return "";
     }
   }
 
-  get toggleMakesSense() {
+  get canShowExpandtoggle() {
     return (
-      this.discobotDiscoveries.discoveryPreview &&
-      this.discobotDiscoveries.discoveryPreview !==
-        this.discobotDiscoveries.discovery
+      !this.loadingDiscoveries &&
+      this.renderedDiscovery.length > this.discoveryPreviewLength
     );
+  }
+
+  get renderedDiscovery() {
+    return this.isStreaming
+      ? this.streamedText
+      : this.discobotDiscoveries.discovery;
+  }
+
+  get renderPreviewOnly() {
+    return !this.fullDiscoveryToggled && this.canShowExpandtoggle;
   }
 
   @action
@@ -153,12 +171,11 @@ export default class AiSearchDiscoveries extends Component {
 
   @action
   toggleDiscovery() {
-    this.fulldiscoveryToggled = !this.fulldiscoveryToggled;
+    this.fullDiscoveryToggled = !this.fullDiscoveryToggled;
   }
 
   timeoutDiscovery() {
     this.loadingDiscoveries = false;
-    this.discobotDiscoveries.discoveryPreview = "";
     this.discobotDiscoveries.discovery = "";
 
     this.discobotDiscoveries.discoveryTimedOut = true;
@@ -167,7 +184,8 @@ export default class AiSearchDiscoveries extends Component {
   <template>
     <div
       class="ai-search-discoveries"
-      {{didInsert this.subscribe}}
+      {{didInsert this.subscribe @searchTerm}}
+      {{didUpdate this.subscribe @searchTerm}}
       {{didInsert this.triggerDiscovery this.query}}
       {{willDestroy this.unsubscribe}}
     >
@@ -177,19 +195,20 @@ export default class AiSearchDiscoveries extends Component {
         {{else if this.discobotDiscoveries.discoveryTimedOut}}
           {{i18n "discourse_ai.discobot_discoveries.timed_out"}}
         {{else}}
-          {{#if this.fulldiscoveryToggled}}
-            <div class="ai-search-discoveries__discovery-full cooked">
-              <CookText @rawText={{this.discobotDiscoveries.discovery}} />
+          <article
+            class={{concatClass
+              "ai-search-discoveries__discovery"
+              (if this.renderPreviewOnly "preview")
+              (if this.isStreaming "streaming")
+              "streamable-content"
+            }}
+          >
+            <div class="cooked">
+              <CookText @rawText={{this.renderedDiscovery}} />
             </div>
-          {{else}}
-            <div class="ai-search-discoveries__discovery-preview cooked">
-              <CookText
-                @rawText={{this.discobotDiscoveries.discoveryPreview}}
-              />
-            </div>
-          {{/if}}
+          </article>
 
-          {{#if this.toggleMakesSense}}
+          {{#if this.canShowExpandtoggle}}
             <DButton
               class="btn-flat btn-text ai-search-discoveries__toggle"
               @label={{this.toggleLabel}}
