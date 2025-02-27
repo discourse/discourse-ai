@@ -49,7 +49,7 @@ export default class AiDiscobotDiscoveries extends Component {
         </span>
       </h3>
 
-      <AiSearchDiscoveries />
+      <AiSearchDiscoveries @discoveryPreviewLength={{50}} />
 
       <h3 class="ai-search-discoveries__regular-results-title">
         {{icon "bars-staggered"}}

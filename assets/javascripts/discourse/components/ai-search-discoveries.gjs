@@ -15,7 +15,7 @@ import { i18n } from "discourse-i18n";
 import AiBlinkingAnimation from "./ai-blinking-animation";
 
 const DISCOVERY_TIMEOUT_MS = 10000;
-const STREAMED_TEXT_SPEED = 15;
+const STREAMED_TEXT_SPEED = 23;
 
 export default class AiSearchDiscoveries extends Component {
   @service search;
@@ -25,6 +25,7 @@ export default class AiSearchDiscoveries extends Component {
   @tracked loadingDiscoveries = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
+  @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
 
   @tracked isStreaming = false;
   @tracked streamedText = "";
@@ -33,7 +34,6 @@ export default class AiSearchDiscoveries extends Component {
   typingTimer = null;
   streamedTextLength = 0;
 
-  // TODO(@keegan): extract to separate lib function and use with summary too.
   typeCharacter() {
     if (this.streamedTextLength < this.discobotDiscoveries.discovery.length) {
       this.streamedText += this.discobotDiscoveries.discovery.charAt(
@@ -84,7 +84,7 @@ export default class AiSearchDiscoveries extends Component {
       } else if (newText.length > this.discobotDiscoveries.discovery.length) {
         this.discobotDiscoveries.discovery = newText;
         this.isStreaming = true;
-        this.onTextUpdate();
+        await this.onTextUpdate();
       }
     }
   }
@@ -126,8 +126,20 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get canShowExpandtoggle() {
-    // TODO: add check for height/char length if text is long enough...
-    return !this.loadingDiscoveries;
+    return (
+      !this.loadingDiscoveries &&
+      this.renderedDiscovery.length > this.discoveryPreviewLength
+    );
+  }
+
+  get renderedDiscovery() {
+    return this.isStreaming
+      ? this.streamedText
+      : this.discobotDiscoveries.discovery;
+  }
+
+  get renderPreviewOnly() {
+    return !this.fullDiscoveryToggled && this.canShowExpandtoggle;
   }
 
   @action
@@ -186,13 +198,13 @@ export default class AiSearchDiscoveries extends Component {
           <article
             class={{concatClass
               "ai-search-discoveries__discovery"
-              (unless this.fullDiscoveryToggled "preview")
+              (if this.renderPreviewOnly "preview")
               (if this.isStreaming "streaming")
               "streamable-content"
             }}
           >
             <div class="cooked">
-              <CookText @rawText={{this.streamedText}} />
+              <CookText @rawText={{this.renderedDiscovery}} />
             </div>
           </article>
 
