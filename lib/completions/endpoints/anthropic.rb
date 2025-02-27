@@ -40,7 +40,7 @@ module DiscourseAi
 
           if llm_model.lookup_custom_param("enable_reasoning")
             reasoning_tokens =
-              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(100, 65_536)
+              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 65_536)
 
             # this allows for lots of tokens beyond reasoning
             options[:max_tokens] = reasoning_tokens + 30_000
