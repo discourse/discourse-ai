@@ -234,6 +234,7 @@ module DiscourseAi
       # @param feature_name { String - Optional } - The feature name to use for the completion.
       # @param feature_context { Hash - Optional } - The feature context to use for the completion.
       # @param partial_tool_calls { Boolean - Optional } - If true, the completion will return partial tool calls.
+      # @param output_thinking { Boolean - Optional } - If true, the completion will return the thinking output for thinking models.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
@@ -250,6 +251,7 @@ module DiscourseAi
         feature_name: nil,
         feature_context: nil,
         partial_tool_calls: false,
+        output_thinking: false,
         &partial_read_blk
       )
         self.class.record_prompt(prompt)
@@ -285,6 +287,7 @@ module DiscourseAi
           feature_name: feature_name,
           feature_context: feature_context,
           partial_tool_calls: partial_tool_calls,
+          output_thinking: output_thinking,
           &partial_read_blk
         )
       end

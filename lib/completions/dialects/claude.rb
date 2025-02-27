@@ -87,7 +87,30 @@ module DiscourseAi
         end
 
         def model_msg(msg)
-          { role: "assistant", content: msg[:content] }
+          if msg[:thinking] || msg[:redacted_thinking_signature]
+            content_array = []
+
+            if msg[:thinking]
+              content_array << {
+                type: "thinking",
+                thinking: msg[:thinking],
+                signature: msg[:thinking_signature],
+              }
+            end
+
+            if msg[:redacted_thinking_signature]
+              content_array << {
+                type: "redacted_thinking",
+                data: msg[:redacted_thinking_signature],
+              }
+            end
+
+            content_array << { type: "text", text: msg[:content] }
+
+            { role: "assistant", content: content_array }
+          else
+            { role: "assistant", content: msg[:content] }
+          end
         end
 
         def system_msg(msg)

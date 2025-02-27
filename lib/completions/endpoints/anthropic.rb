@@ -123,6 +123,7 @@ module DiscourseAi
             DiscourseAi::Completions::AnthropicMessageProcessor.new(
               streaming_mode: @streaming_mode,
               partial_tool_calls: partial_tool_calls,
+              output_thinking: output_thinking,
             )
         end
 
