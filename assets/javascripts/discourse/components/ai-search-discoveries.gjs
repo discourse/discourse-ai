@@ -21,6 +21,7 @@ export default class AiSearchDiscoveries extends Component {
   @service search;
   @service messageBus;
   @service discobotDiscoveries;
+  @service appEvents;
 
   @tracked loadingDiscoveries = false;
   @tracked hideDiscoveries = false;
@@ -33,6 +34,24 @@ export default class AiSearchDiscoveries extends Component {
   discoveryTimeout = null;
   typingTimer = null;
   streamedTextLength = 0;
+
+  constructor() {
+    super(...arguments);
+    this.appEvents.on(
+      "full-page-search:trigger-search",
+      this,
+      this.triggerDiscovery
+    );
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off(
+      "full-page-search:trigger-search",
+      this,
+      this.triggerDiscovery
+    );
+  }
 
   typeCharacter() {
     if (this.streamedTextLength < this.discobotDiscoveries.discovery.length) {
@@ -48,11 +67,20 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   onTextUpdate() {
+    this.cancelTypingTimer();
+    this.typeCharacter();
+  }
+
+  cancelTypingTimer() {
     if (this.typingTimer) {
       cancel(this.typingTimer);
     }
+  }
 
-    this.typeCharacter();
+  resetStreaming() {
+    this.cancelTypingTimer();
+    this.streamedText = "";
+    this.streamedTextLength = 0;
   }
 
   @bind
@@ -77,10 +105,7 @@ export default class AiSearchDiscoveries extends Component {
         this.isStreaming = false;
 
         // Clear pending animations
-        if (this.typingTimer) {
-          cancel(this.typingTimer);
-          this.typingTimer = null;
-        }
+        this.cancelTypingTimer();
       } else if (newText.length > this.discobotDiscoveries.discovery.length) {
         this.discobotDiscoveries.discovery = newText;
         this.isStreaming = true;
@@ -148,6 +173,7 @@ export default class AiSearchDiscoveries extends Component {
       this.hideDiscoveries = false;
       return;
     } else {
+      this.resetStreaming();
       this.discobotDiscoveries.resetDiscovery();
     }
 
