@@ -123,6 +123,7 @@ after_initialize do
   end
 
   plugin_icons = %w[
+    chart-column
     spell-check
     language
     images
