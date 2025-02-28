@@ -24,12 +24,14 @@ module DiscourseAi
           options =
             if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
               max_tokens = 4096
-              max_tokens = 8192 if bedrock_model_id.match?(/3.5/)
+              max_tokens = 8192 if bedrock_model_id.match?(/3.[57]/)
 
               result = { anthropic_version: "bedrock-2023-05-31" }
               if llm_model.lookup_custom_param("enable_reasoning")
+                # we require special headers to go over 64k output tokens, lets
+                # wait for feature requests before enabling this
                 reasoning_tokens =
-                  llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 65_536)
+                  llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 32_768)
 
                 # this allows for ample tokens beyond reasoning
                 max_tokens = reasoning_tokens + 30_000
