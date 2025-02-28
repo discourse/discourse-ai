@@ -7,7 +7,8 @@ module DiscourseAi
 
       BOT_NOT_FOUND = Class.new(StandardError)
       MAX_COMPLETIONS = 5
-      MAX_TOOLS = 5
+      # limit is arbitrary, but 5 which was used in the past was too low
+      MAX_TOOLS = 20
 
       def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new, model: nil)
         new(bot_user, persona, model)
@@ -117,6 +118,7 @@ module DiscourseAi
               prompt,
               feature_name: "bot",
               partial_tool_calls: allow_partial_tool_calls,
+              output_thinking: true,
               **llm_kwargs,
             ) do |partial, cancel|
               tool =
@@ -158,25 +160,67 @@ module DiscourseAi
                 if partial.is_a?(DiscourseAi::Completions::ToolCall)
                   Rails.logger.warn("DiscourseAi: Tool not found: #{partial.name}")
                 else
-                  update_blk.call(partial, cancel)
+                  if partial.is_a?(DiscourseAi::Completions::Thinking)
+                    if partial.partial? && partial.message.present?
+                      update_blk.call(partial.message, cancel, nil, :thinking)
+                    end
+                    if !partial.partial?
+                      # this will be dealt with later
+                      raw_context << partial
+                    end
+                  else
+                    update_blk.call(partial, cancel)
+                  end
                 end
               end
             end
 
           if !tool_found
             ongoing_chain = false
-            raw_context << [result, bot_user.username]
+            text = result
+
+            # we must strip out thinking
+            if result.is_a?(Array)
+              text = +""
+              result.each { |item| text << item if item.is_a?(String) }
+            end
+            raw_context << [text, bot_user.username]
           end
+
           total_completions += 1
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
           prompt.tools = [] if total_completions == MAX_COMPLETIONS
         end
 
-        raw_context
+        embed_thinking(raw_context)
       end
 
       private
+
+      def embed_thinking(raw_context)
+        embedded_thinking = []
+        thinking_info = nil
+        raw_context.each do |context|
+          if context.is_a?(DiscourseAi::Completions::Thinking)
+            thinking_info ||= {}
+            if context.redacted
+              thinking_info[:redacted_thinking_signature] = context.signature
+            else
+              thinking_info[:thinking] = context.message
+              thinking_info[:thinking_signature] = context.signature
+            end
+          else
+            if thinking_info
+              context = context.dup
+              context[4] = thinking_info
+            end
+            embedded_thinking << context
+          end
+        end
+
+        embedded_thinking
+      end
 
       def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
         tool_call_id = tool.tool_call_id
