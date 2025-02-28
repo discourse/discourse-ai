@@ -112,6 +112,7 @@ module DiscourseAi
 
           allow_partial_tool_calls = persona.allow_partial_tool_calls?
           existing_tools = Set.new
+          current_thinking = []
 
           result =
             llm.generate(
@@ -149,7 +150,17 @@ module DiscourseAi
                   needs_newlines = false
                 end
 
-                process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+                process_tool(
+                  tool: tool,
+                  raw_context: raw_context,
+                  llm: llm,
+                  cancel: cancel,
+                  update_blk: update_blk,
+                  prompt: prompt,
+                  context: context,
+                  current_thinking: current_thinking,
+                )
+
                 tools_ran += 1
                 ongoing_chain &&= tool.chain_next_response?
 
@@ -167,6 +178,7 @@ module DiscourseAi
                     if !partial.partial?
                       # this will be dealt with later
                       raw_context << partial
+                      current_thinking << partial
                     end
                   else
                     update_blk.call(partial, cancel)
@@ -222,7 +234,16 @@ module DiscourseAi
         embedded_thinking
       end
 
-      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+      def process_tool(
+        tool:,
+        raw_context:,
+        llm:,
+        cancel:,
+        update_blk:,
+        prompt:,
+        context:,
+        current_thinking:
+      )
         tool_call_id = tool.tool_call_id
         invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
 
@@ -232,6 +253,17 @@ module DiscourseAi
           content: { arguments: tool.parameters }.to_json,
           name: tool.name,
         }
+
+        if current_thinking.present?
+          current_thinking.each do |thinking|
+            if thinking.redacted
+              tool_call_message[:redacted_thinking_signature] = thinking.signature
+            else
+              tool_call_message[:thinking] = thinking.message
+              tool_call_message[:thinking_signature] = thinking.signature
+            end
+          end
+        end
 
         tool_message = {
           type: :tool,
