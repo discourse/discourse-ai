@@ -17,6 +17,7 @@ import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
+import AiToolEditorForm from "./ai-tool-editor-form";
 
 const ACE_EDITOR_MODE = "javascript";
 const ACE_EDITOR_THEME = "chrome";
@@ -133,6 +134,12 @@ export default class AiToolEditor extends Component {
       @route="adminPlugins.show.discourse-ai-tools"
       @label="discourse_ai.tools.back"
     />
+
+    <AiToolEditorForm />
+
+    <hr />
+    <hr />
+    <hr />
 
     <form
       {{didInsert this.updateModel @model.id}}
