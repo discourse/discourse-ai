@@ -16,12 +16,27 @@ import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
 
 export default class AiToolEditorForm extends Component {
+  @service siteSettings;
+  @service dialog;
+  @service router;
+
+  @tracked uploadedFiles = [];
+
   PARAMETER_TYPES = [
     { name: "string", id: "string" },
     { name: "number", id: "number" },
     { name: "boolean", id: "boolean" },
     { name: "array", id: "array" },
   ];
+
+  constructor() {
+    super(...arguments);
+    console.log(
+      "editingModel",
+      this.args.editingModel,
+      this.args.selectedPreset
+    );
+  }
 
   @cached
   get formData() {
@@ -33,12 +48,43 @@ export default class AiToolEditorForm extends Component {
       summary: "",
       parameters: [],
       script: "",
+      rag_uploads: [],
     };
   }
 
   @action
   async save(data) {
     console.log(data, "is saved!");
+  }
+
+  @action
+  delete() {
+    return this.dialog.confirm({
+      message: i18n("discourse_ai.tools.confirm_delete"),
+      didConfirm: async () => {
+        // ! TODO: handle deletion properly.
+        // await this.args.model.destroyRecord();
+        // this.args.tools.removeObject(this.args.model);
+        this.router.transitionTo("adminPlugins.show.discourse-ai-tools.index");
+      },
+    });
+  }
+
+  @action
+  updateUploads(addItemToCollection, uploads) {
+    const uniqueUploads = uploads.filter(
+      (upload) => !this.uploadedFiles.some((file) => file.id === upload.id)
+    );
+    addItemToCollection("rag_uploads", uniqueUploads);
+    this.uploadedFiles = [...this.uploadedFiles, ...uniqueUploads];
+  }
+
+  @action
+  removeUpload(form, upload) {
+    this.uploadedFiles = this.uploadedFiles.filter(
+      (file) => file.id !== upload.id
+    );
+    form.set("rag_uploads", this.uploadedFiles);
   }
 
   currentParameterSelection(data, index) {
@@ -199,29 +245,43 @@ export default class AiToolEditorForm extends Component {
       </form.Field>
 
       {{! Uploads }}
-      <form.Field
-        @name="uploads"
-        @title={{i18n "discourse_ai.rag.uploads.title"}}
-        as |field|
-      >
-        <field.Custom>
-          {{! TODO: props for RagUploader and RagOptions }}
-          <RagUploader
-            @target={{this.editingModel}}
-            @updateUploads={{this.updateUploads}}
-            @onRemove={{this.removeUpload}}
-            @allowImages={{@settings.rag_images_enabled}}
-          />
-          <RagOptions
-            @model={{this.editingModel}}
-            @llms={{@llms}}
-            @allowImages={{@settings.rag_images_enabled}}
-          />
-        </field.Custom>
-      </form.Field>
+      {{#if this.siteSettings.ai_embeddings_enabled}}
+        <form.Field
+          @name="rag_uploads"
+          @title={{i18n "discourse_ai.rag.uploads.title"}}
+          as |field|
+        >
+          <field.Custom>
+            {{! TODO: remove this.editingModel (target not needed?) }}
+            <RagUploader
+              @target={{this.editingModel}}
+              @updateUploads={{fn this.updateUploads form.addItemToCollection}}
+              @onRemove={{fn this.removeUpload form}}
+              @allowImages={{@settings.rag_images_enabled}}
+            />
+            <RagOptions
+              @model={{this.editingModel}}
+              @llms={{@llms}}
+              @allowImages={{@settings.rag_images_enabled}}
+            />
+          </field.Custom>
+        </form.Field>
+      {{/if}}
 
       <form.Actions>
         {{! TODO add delete and test actions when /edit }}
+
+        {{#unless @isNew}}
+          Run Test
+
+          <form.Button
+            @label="discourse_ai.tools.delete"
+            @icon="trash-can"
+            @action={{this.delete}}
+            class="btn-danger ai-tool-editor__delete"
+          />
+        {{/unless}}
+
         <form.Submit @label="discourse_ai.tools.save" />
       </form.Actions>
     </Form>

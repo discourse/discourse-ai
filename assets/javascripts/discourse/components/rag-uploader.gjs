@@ -74,6 +74,7 @@ export default class RagUploader extends Component {
   }
 
   _updateTargetWithUploads() {
+    console.log(this.updateUploads);
     this.updateUploads(this.ragUploads);
   }
 
