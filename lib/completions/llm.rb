@@ -78,14 +78,14 @@ module DiscourseAi
                   id: "samba_nova",
                   models: [
                     {
+                      name: "Meta-Llama-3.3-70B-Instruct",
+                      tokens: 131_072,
+                      display_name: "Llama 3.3 70B",
+                    },
+                    {
                       name: "Meta-Llama-3.1-8B-Instruct",
                       tokens: 16_384,
                       display_name: "Llama 3.1 8B",
-                    },
-                    {
-                      name: "Meta-Llama-3.1-70B-Instruct",
-                      tokens: 65_536,
-                      display_name: "Llama 3.1 70B",
                     },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::Llama3Tokenizer,
