@@ -12,6 +12,10 @@ module DiscourseAi
         @partial = partial
       end
 
+      def partial?
+        !!@partial
+      end
+
       def ==(other)
         message == other.message && signature == other.signature && redacted == other.redacted &&
           partial == other.partial
