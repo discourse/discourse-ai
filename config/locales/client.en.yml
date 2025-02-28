@@ -403,7 +403,7 @@ en:
           open_ai-o1: "Open AI's most capable reasoning model"
           open_ai-o3-mini: "Advanced Cost-efficient reasoning model"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Powerful multipurpose model"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Powerful multipurpose model"
           mistral-mistral-large-latest: "Mistral's most powerful model"
           mistral-pixtral-large-latest: "Mistral's most powerful vision capable model"
 

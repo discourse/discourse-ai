@@ -449,4 +449,219 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.request_tokens).to eq(10)
     expect(log.response_tokens).to eq(25)
   end
+
+  it "can send through thinking tokens via a completion prompt" do
+    body = {
+      id: "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY",
+      type: "message",
+      role: "assistant",
+      content: [{ type: "text", text: "world" }],
+      model: "claude-3-7-sonnet-20250219",
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 25,
+        output_tokens: 40,
+      },
+    }.to_json
+
+    parsed_body = nil
+    stub_request(:post, url).with(
+      body: ->(req_body) { parsed_body = JSON.parse(req_body) },
+      headers: {
+        "Content-Type" => "application/json",
+        "X-Api-Key" => "123",
+        "Anthropic-Version" => "2023-06-01",
+      },
+    ).to_return(status: 200, body: body)
+
+    prompt = DiscourseAi::Completions::Prompt.new("system prompt")
+    prompt.push(type: :user, content: "hello")
+    prompt.push(
+      type: :model,
+      id: "user1",
+      content: "hello",
+      thinking: "I am thinking",
+      thinking_signature: "signature",
+      redacted_thinking_signature: "redacted_signature",
+    )
+
+    result = llm.generate(prompt, user: Discourse.system_user)
+    expect(result).to eq("world")
+
+    expected_body = {
+      "model" => "claude-3-opus-20240229",
+      "max_tokens" => 4096,
+      "messages" => [
+        { "role" => "user", "content" => "hello" },
+        {
+          "role" => "assistant",
+          "content" => [
+            { "type" => "thinking", "thinking" => "I am thinking", "signature" => "signature" },
+            { "type" => "redacted_thinking", "data" => "redacted_signature" },
+            { "type" => "text", "text" => "hello" },
+          ],
+        },
+      ],
+      "system" => "system prompt",
+    }
+
+    expect(parsed_body).to eq(expected_body)
+  end
+
+  it "can handle a response with thinking blocks in non-streaming mode" do
+    body = {
+      id: "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY",
+      type: "message",
+      role: "assistant",
+      content: [
+        {
+          type: "thinking",
+          thinking: "This is my thinking process about prime numbers...",
+          signature: "abc123signature",
+        },
+        { type: "redacted_thinking", data: "abd456signature" },
+        { type: "text", text: "Yes, there are infinitely many prime numbers where n mod 4 = 3." },
+      ],
+      model: "claude-3-7-sonnet-20250219",
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 25,
+        output_tokens: 40,
+      },
+    }.to_json
+
+    stub_request(:post, url).with(
+      headers: {
+        "Content-Type" => "application/json",
+        "X-Api-Key" => "123",
+        "Anthropic-Version" => "2023-06-01",
+      },
+    ).to_return(status: 200, body: body)
+
+    result =
+      llm.generate(
+        "hello",
+        user: Discourse.system_user,
+        feature_name: "testing",
+        output_thinking: true,
+      )
+
+    # Result should be an array with both thinking and text content
+    expect(result).to be_an(Array)
+    expect(result.length).to eq(3)
+
+    # First item should be a Thinking object
+    expect(result[0]).to be_a(DiscourseAi::Completions::Thinking)
+    expect(result[0].message).to eq("This is my thinking process about prime numbers...")
+    expect(result[0].signature).to eq("abc123signature")
+
+    expect(result[1]).to be_a(DiscourseAi::Completions::Thinking)
+    expect(result[1].signature).to eq("abd456signature")
+    expect(result[1].redacted).to eq(true)
+
+    # Second item should be the text response
+    expect(result[2]).to eq("Yes, there are infinitely many prime numbers where n mod 4 = 3.")
+
+    # Verify audit log
+    log = AiApiAuditLog.order(:id).last
+    expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
+    expect(log.feature_name).to eq("testing")
+    expect(log.response_tokens).to eq(40)
+  end
+
+  it "can stream a response with thinking blocks" do
+    body = (<<~STRING).strip
+      event: message_start
+      data: {"type": "message_start", "message": {"id": "msg_01...", "type": "message", "role": "assistant", "content": [], "model": "claude-3-opus-20240229", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 25}}}
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index": 0, "content_block": {"type": "thinking", "thinking": ""}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "thinking_delta", "thinking": "Let me solve this step by step:\\n\\n1. First break down 27 * 453"}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "thinking_delta", "thinking": "\\n2. 453 = 400 + 50 + 3"}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "signature_delta", "signature": "EqQBCgIYAhIM1gbcDa9GJwZA2b3hGgxBdjrkzLoky3dl1pkiMOYds..."}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 0}
+
+      event: content_block_start
+data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_thinking","data":"AAA=="} }
+
+      event: ping
+      data: {"type": "ping"}
+
+      event: content_block_stop
+      data: {"type":"content_block_stop","index":0 }
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index": 1, "content_block": {"type": "text", "text": ""}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 1, "delta": {"type": "text_delta", "text": "27 * 453 = 12,231"}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 1}
+
+      event: message_delta
+      data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence": null, "usage": {"output_tokens": 30}}}
+
+      event: message_stop
+      data: {"type": "message_stop"}
+    STRING
+
+    parsed_body = nil
+
+    stub_request(:post, url).with(
+      headers: {
+        "Content-Type" => "application/json",
+        "X-Api-Key" => "123",
+        "Anthropic-Version" => "2023-06-01",
+      },
+    ).to_return(status: 200, body: body)
+
+    thinking_chunks = []
+    text_chunks = []
+
+    llm.generate(
+      "hello there",
+      user: Discourse.system_user,
+      feature_name: "testing",
+      output_thinking: true,
+    ) do |partial, cancel|
+      if partial.is_a?(DiscourseAi::Completions::Thinking)
+        thinking_chunks << partial
+      else
+        text_chunks << partial
+      end
+    end
+
+    expected_thinking = [
+      DiscourseAi::Completions::Thinking.new(message: "", signature: "", partial: true),
+      DiscourseAi::Completions::Thinking.new(
+        message: "Let me solve this step by step:\n\n1. First break down 27 * 453",
+        partial: true,
+      ),
+      DiscourseAi::Completions::Thinking.new(message: "\n2. 453 = 400 + 50 + 3", partial: true),
+      DiscourseAi::Completions::Thinking.new(
+        message:
+          "Let me solve this step by step:\n\n1. First break down 27 * 453\n2. 453 = 400 + 50 + 3",
+        signature: "EqQBCgIYAhIM1gbcDa9GJwZA2b3hGgxBdjrkzLoky3dl1pkiMOYds...",
+        partial: false,
+      ),
+      DiscourseAi::Completions::Thinking.new(message: nil, signature: "AAA==", redacted: true),
+    ]
+
+    expect(thinking_chunks).to eq(expected_thinking)
+    expect(text_chunks).to eq(["27 * 453 = 12,231"])
+
+    log = AiApiAuditLog.order(:id).last
+    expect(log.provider_id).to eq(AiApiAuditLog::Provider::Anthropic)
+    expect(log.feature_name).to eq("testing")
+    expect(log.response_tokens).to eq(30)
+  end
 end
