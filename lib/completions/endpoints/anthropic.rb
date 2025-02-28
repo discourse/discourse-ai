@@ -34,13 +34,15 @@ module DiscourseAi
 
           # Note: Anthropic requires this param
           max_tokens = 4096
-          max_tokens = 8192 if mapped_model.match?(/3.5/)
+          # 3.5 and 3.7 models have a higher token limit
+          max_tokens = 8192 if mapped_model.match?(/3.[57]/)
 
           options = { model: mapped_model, max_tokens: max_tokens }
 
+          # reasoning has even higher token limits
           if llm_model.lookup_custom_param("enable_reasoning")
             reasoning_tokens =
-              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 65_536)
+              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 32_768)
 
             # this allows for lots of tokens beyond reasoning
             options[:max_tokens] = reasoning_tokens + 30_000
