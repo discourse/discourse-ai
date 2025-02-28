@@ -13,11 +13,11 @@ import DTooltip from "discourse/components/d-tooltip";
 import withEventValue from "discourse/helpers/with-event-value";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
+import AiToolEditorForm from "./ai-tool-editor-form";
 import AiToolParameterEditor from "./ai-tool-parameter-editor";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
-import AiToolEditorForm from "./ai-tool-editor-form";
 
 const ACE_EDITOR_MODE = "javascript";
 const ACE_EDITOR_THEME = "chrome";

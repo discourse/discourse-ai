@@ -1,17 +1,19 @@
 import Component from "@glimmer/component";
 import { cached, tracked } from "@glimmer/tracking";
 import { concat, fn, get } from "@ember/helper";
+import { hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
 import { eq, gt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
-import { hash } from "@ember/helper";
 import Form from "discourse/components/form";
 import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
+import RagOptions from "./rag-options";
+import RagUploader from "./rag-uploader";
 
 export default class AiToolEditorForm extends Component {
   PARAMETER_TYPES = [
@@ -25,14 +27,22 @@ export default class AiToolEditorForm extends Component {
   get formData() {
     // todo
     return {
-      name: "initial data",
-      parameters: {},
+      name: "",
+      tool_name: "",
+      description: "",
+      summary: "",
+      parameters: [],
+      script: "",
     };
   }
 
   @action
   async save(data) {
     console.log(data, "is saved!");
+  }
+
+  currentParameterSelection(data, index) {
+    return data.parameters[index].type;
   }
 
   <template>
@@ -43,6 +53,8 @@ export default class AiToolEditorForm extends Component {
       as |form data|
     >
       {{log data}}
+
+      {{! NAME }}
       <form.Field
         @name="name"
         @title={{i18n "discourse_ai.tools.name"}}
@@ -54,6 +66,7 @@ export default class AiToolEditorForm extends Component {
         <field.Input class="ai-tool-editor__name" />
       </form.Field>
 
+      {{! TOOL NAME }}
       <form.Field
         @name="tool_name"
         @title={{i18n "discourse_ai.tools.tool_name"}}
@@ -65,6 +78,7 @@ export default class AiToolEditorForm extends Component {
         <field.Input class="ai-tool-editor__tool_name" />
       </form.Field>
 
+      {{! DESCRIPTION }}
       <form.Field
         @name="description"
         @title={{i18n "discourse_ai.tools.description"}}
@@ -80,6 +94,7 @@ export default class AiToolEditorForm extends Component {
         />
       </form.Field>
 
+      {{! SUMMARY }}
       <form.Field
         @name="summary"
         @title={{i18n "discourse_ai.tools.summary"}}
@@ -91,53 +106,119 @@ export default class AiToolEditorForm extends Component {
         <field.Input class="ai-tool-editor__summary" />
       </form.Field>
 
-      <form.Button
-        @icon="plus"
-        @label="discourse_ai.tools.add_parameter"
-        @action={{fn form.addItemToCollection "foo" (hash bar=3)}}
-      />
-
-      <form.Collection @name="foo" as |collection index|>
+      {{! PARAMETERS }}
+      <form.Collection @name="parameters" as |collection index|>
         <div class="ai-tool-parameter">
-          <collection.Field
-            @name="parameter_name"
-            @title={{i18n "discourse_ai.tools.parameter_name"}}
-            as |field|
-          >
-            <form.InputGroup as |inputGroup|>
-              <inputGroup.Field
+          <form.Row as |row|>
+            <row.Col @size={{6}}>
+              <collection.Field
+                @name="name"
                 @title={{i18n "discourse_ai.tools.parameter_name"}}
-                @name="parameter_name"
-                as |f|
+                @validation="required|length:1,100"
+                as |field|
               >
-                <f.Input />
-              </inputGroup.Field>
-              <inputGroup.Field
-                @name="parameter_type"
-                @title="Parameter Type"
+                <field.Input />
+              </collection.Field>
+            </row.Col>
+
+            <row.Col @size={{6}}>
+              <collection.Field
+                @name="type"
+                @title={{i18n "discourse_ai.tools.parameter_type"}}
                 @validation="required"
-                as |f|
+                as |field|
               >
-                <f.Menu @selection="todo" as |menu|>
+                <field.Menu
+                  @selection={{this.currentParameterSelection data index}}
+                  as |menu|
+                >
                   {{#each this.PARAMETER_TYPES as |type|}}
                     <menu.Item
-                      @value="string"
+                      @value={{type.id}}
                       data-type={{type.id}}
                     >{{type.name}}</menu.Item>
                   {{/each}}
-                </f.Menu>
-              </inputGroup.Field>
-            </form.InputGroup>
-            <field.Input
-              @title={{i18n "discourse_ai.tools.parameter_description"}}
-              @name="parameter_description"
-            />
-            <form.Button @action={{fn collection.remove index}}>
-              Remove
-            </form.Button>
+                </field.Menu>
+              </collection.Field>
+            </row.Col>
+          </form.Row>
+
+          <collection.Field
+            @name="description"
+            @title={{i18n "discourse_ai.tools.parameter_description"}}
+            @validation="required|length:1,1000"
+            as |field|
+          >
+            <field.Input class="ai-tool-editor__parameter-description" />
           </collection.Field>
+
+          <form.Row as |row|>
+            <row.Col @size={{4}}>
+              <collection.Field @name="required" @title="Required" as |field|>
+                <field.Checkbox />
+              </collection.Field>
+            </row.Col>
+
+            <row.Col @size={{4}}>
+              <collection.Field @name="enum" @title="Enum" as |field|>
+                <field.Checkbox />
+              </collection.Field>
+            </row.Col>
+
+            <row.Col @size={{4}} class="ai-tool-parameter-actions">
+              <form.Button
+                @label="discourse_ai.tools.remove_parameter"
+                @icon="trash-can"
+                @action={{fn collection.remove index}}
+                class="btn-danger"
+              />
+            </row.Col>
+          </form.Row>
         </div>
       </form.Collection>
+
+      <form.Button
+        @icon="plus"
+        @label="discourse_ai.tools.add_parameter"
+        @action={{fn
+          form.addItemToCollection
+          "parameters"
+          (hash name="" type="string" description="" required=false enum=false)
+        }}
+      />
+
+      {{! SCRIPT }}
+      <form.Field
+        @name="script"
+        @title={{i18n "discourse_ai.tools.script"}}
+        @validation="required|length:1,100000"
+        @format="full"
+        as |field|
+      >
+        <field.Code @lang="javascript" @height={{400}} />
+      </form.Field>
+
+      {{! Uploads }}
+      <form.Field
+        @name="uploads"
+        @title={{i18n "discourse_ai.rag.uploads.title"}}
+        as |field|
+      >
+        <field.Custom>
+          {{! TODO: props for RagUploader and RagOptions }}
+          <RagUploader
+            @target={{this.editingModel}}
+            @updateUploads={{this.updateUploads}}
+            @onRemove={{this.removeUpload}}
+            @allowImages={{@settings.rag_images_enabled}}
+          />
+          <RagOptions
+            @model={{this.editingModel}}
+            @llms={{@llms}}
+            @allowImages={{@settings.rag_images_enabled}}
+          />
+        </field.Custom>
+      </form.Field>
 
       <form.Actions>
         {{! TODO add delete and test actions when /edit }}
