@@ -652,6 +652,9 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sidebar:
+          overview: "Sentiment overview"
+          analysis: "Sentiment analysis"
         sentiment_analysis:
           filter_types:
             all: "All"
