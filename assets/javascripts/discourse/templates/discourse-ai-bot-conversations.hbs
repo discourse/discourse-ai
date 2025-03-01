@@ -1,25 +1,25 @@
 {{body-class "discourse-ai-bot-conversations-page"}}
 
 <div class="custom-homepage__content-wrapper">
-  <h1>Ask a question</h1>
+  <h1>{{i18n "discourse_ai.ai_bot.conversations.header"}}</h1>
   <div class="custom-homepage__input-wrapper">
     <textarea
       {{didInsert this.initializeTextarea}}
       {{on "input" this.updateInputValue}}
       {{on "keydown" this.handleKeyDown}}
       id="custom-homepage-input"
-      placeholder="placeholder (todo)"
+      placeholder={{i18n "discourse_ai.ai_bot.conversations.placeholder"}}
       minlength="10"
       rows="1"
     />
     <DButton
       @action={{this.aiBotConversationsHiddenSubmit.submitToBot}}
       @icon="paper-plane"
-      @translatedTitle="Submit (todo)"
+      @title="discourse_ai.ai_bot.conversations.header"
       class="ai-bot-button btn-primary"
     />
   </div>
   <p class="ai-disclaimer">
-    TODO DISCLAIMER
+    {{i18n "discourse_ai.ai_bot.conversations.disclaimer"}}
   </p>
 </div>
