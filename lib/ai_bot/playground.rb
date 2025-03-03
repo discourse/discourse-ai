@@ -119,8 +119,10 @@ module DiscourseAi
           bot_user ||= User.find_by(id: mentioned[:user_id]) if mentioned
         end
 
-        # in the past we would have an edge case where we would not reply on a mention if it was
-        # also a reply this just causes confusion
+        if !mentioned && bot_user && post.reply_to_post_number && !post.reply_to_post.user&.bot?
+          # replying to a non-bot user
+          return
+        end
 
         if bot_user
           topic_persona_id = post.topic.custom_fields["ai_persona_id"]
