@@ -876,7 +876,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             thinking_signature: "thinking-signature-123",
             redacted_thinking_signature: "thinking-redacted-signature-123",
           },
-          { type: :user, content: "Say Cat", id: "bruce1" },
+          { type: :user, content: "Say Cat", id: user.username },
         ],
       )
     end
