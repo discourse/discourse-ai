@@ -6,7 +6,7 @@ export default apiInitializer("1.15.0", (api) => {
   if (settings.ai_sentiment_enabled) {
     api.addAdminSidebarSectionLink("reports", {
       name: "sentiment_overview",
-      href: "/admin/dashboard/sentiment#sentiment-heading",
+      route: "admin.dashboardSentiment",
       label: "discourse_ai.sentiments.sidebar.overview",
       icon: "chart-column",
     });
