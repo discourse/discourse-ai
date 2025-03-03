@@ -42,6 +42,7 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil,
           partial_tool_calls: false,
+          output_thinkings: false,
           &blk
         )
           @disable_native_tools = dialect.disable_native_tools?

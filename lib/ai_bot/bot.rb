@@ -191,7 +191,7 @@ module DiscourseAi
             ongoing_chain = false
             text = result
 
-            # we must strip out thinking
+            # we must strip out thinking and other types of blocks
             if result.is_a?(Array)
               text = +""
               result.each { |item| text << item if item.is_a?(String) }
