@@ -84,8 +84,8 @@ module DiscourseAi
         @top_p = top_p
         @temperature = temperature
 
-        @top_p = nil if top_p <= 0
-        @temperature = nil if temperature <= 0
+        @top_p = nil if top_p.to_f < 0
+        @temperature = nil if temperature.to_f < 0
         @suppress_notifications = suppress_notifications
 
         if !@topic_id && !@receivers.present? && !@email_receivers.present?
