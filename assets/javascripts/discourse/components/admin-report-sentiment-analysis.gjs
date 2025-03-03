@@ -18,7 +18,7 @@ import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/d
 
 export default class AdminReportSentimentAnalysis extends Component {
   @tracked selectedChart = null;
-  @tracked posts = null;
+  @tracked posts = [];
   @tracked hasMorePosts = false;
   @tracked nextOffset = 0;
   @tracked showingSelectedChart = false;
@@ -69,20 +69,6 @@ export default class AdminReportSentimentAnalysis extends Component {
           icon: "face-angry",
         };
     }
-  }
-
-  doughnutTitle(data) {
-    const MAX_TITLE_LENGTH = 18;
-    const title = data?.title || "";
-    const score = data?.total_score ? ` (${data.total_score})` : "";
-
-    if (title.length + score.length > MAX_TITLE_LENGTH) {
-      return (
-        title.substring(0, MAX_TITLE_LENGTH - score.length) + "..." + score
-      );
-    }
-
-    return title + score;
   }
 
   async postRequest() {
@@ -217,7 +203,10 @@ export default class AdminReportSentimentAnalysis extends Component {
 
       this.hasMorePosts = response.has_more;
       this.nextOffset = response.next_offset;
-      return response.posts.map((post) => Post.create(post));
+
+      const mappedPosts = response.posts.map((post) => Post.create(post));
+      this.posts.pushObjects(mappedPosts);
+      return mappedPosts;
     } catch (e) {
       popupAjaxError(e);
     }
@@ -228,6 +217,7 @@ export default class AdminReportSentimentAnalysis extends Component {
     this.showingSelectedChart = false;
     this.selectedChart = null;
     this.activeFilter = "all";
+    this.posts = [];
   }
 
   <template>
