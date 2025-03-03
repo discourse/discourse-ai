@@ -828,7 +828,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#reply_to" do
-    it "preserves thinking context between replies" do
+    it "preserves thinking context between replies and correctly renders" do
       thinking_progress =
         DiscourseAi::Completions::Thinking.new(message: "I should say hello", partial: true)
       thinking =
@@ -853,7 +853,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       new_post = third_post.topic.reload.posts.order(:post_number).last
+      # confirm message is there
       expect(new_post.raw).to include("Hello Sam")
+      # confirm thinking is there
       expect(new_post.raw).to include("I should say hello")
 
       post = Fabricate(:post, topic: third_post.topic, user: user, raw: "Say Cat")
