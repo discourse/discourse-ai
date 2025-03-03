@@ -95,9 +95,9 @@ module DiscourseAi
           blocks = []
           remaining = content
 
-          pattern = /<<+\s*SEARCH\s*\n(.*?)\n=+\s*\n(.*?)\n>>+\s*REPLACE/m
+          pattern = /<<+\s*SEARCH\s*\n(.*?)\n==+\s*(\n(.*?))?\n>>+\s*REPLACE/m
           while remaining =~ pattern
-            blocks << { search: $1.strip, replace: $2.strip }
+            blocks << { search: $1.strip, replace: $3.to_s.strip }
             remaining = $'
           end
 
