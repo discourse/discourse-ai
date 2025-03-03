@@ -6,7 +6,8 @@ module DiscourseAi
       attr_reader :model
 
       BOT_NOT_FOUND = Class.new(StandardError)
-      MAX_COMPLETIONS = 5
+      # the future is agentic, allow for more turns
+      MAX_COMPLETIONS = 8
       # limit is arbitrary, but 5 which was used in the past was too low
       MAX_TOOLS = 20
 
