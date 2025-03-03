@@ -47,27 +47,65 @@ module DiscourseAi
           api_url = "https://api.github.com/repos/#{repo}/pulls/#{pull_id}"
           @url = "https://github.com/#{repo}/pull/#{pull_id}"
 
-          body = nil
+          pr_info = nil
+          diff_body = nil
           response_code = "unknown error"
 
           send_http_request(
             api_url,
             headers: {
-              "Accept" => "application/vnd.github.v3.diff",
+              "Accept" => "application/json",
             },
             authenticate_github: true,
           ) do |response|
             response_code = response.code
-            body = read_response_body(response)
+            pr_info = JSON.parse(read_response_body(response)) if response_code == "200"
           end
 
           if response_code == "200"
-            diff = body
+            send_http_request(
+              api_url,
+              headers: {
+                "Accept" => "application/vnd.github.v3.diff",
+              },
+              authenticate_github: true,
+            ) do |response|
+              response_code = response.code
+              diff_body = read_response_body(response)
+            end
+          end
+
+          if response_code == "200" && pr_info && diff_body
+            diff = diff_body
             diff = self.class.sort_and_shorten_diff(diff)
             diff = truncate(diff, max_length: 20_000, percent_length: 0.3, llm: llm)
-            { diff: diff }
+
+            source_repo = pr_info.dig("head", "repo", "full_name")
+            source_branch = pr_info.dig("head", "ref")
+            source_sha = pr_info.dig("head", "sha")
+
+            {
+              diff: diff,
+              pr_info: {
+                title: pr_info["title"],
+                state: pr_info["state"],
+                source: {
+                  repo: source_repo,
+                  branch: source_branch,
+                  sha: source_sha,
+                  url: "https://github.com/#{source_repo}/tree/#{source_branch}",
+                },
+                target: {
+                  repo: pr_info["base"]["repo"]["full_name"],
+                  branch: pr_info["base"]["ref"],
+                },
+                author: pr_info["user"]["login"],
+                created_at: pr_info["created_at"],
+                updated_at: pr_info["updated_at"],
+              },
+            }
           else
-            { error: "Failed to retrieve the diff. Status code: #{response_code}" }
+            { error: "Failed to retrieve the PR information. Status code: #{response_code}" }
           end
         end
 
