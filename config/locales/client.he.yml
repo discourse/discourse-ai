@@ -22,6 +22,8 @@ he:
           description: "הטבלה מפרטת את כמות הפוסטים שסווגו עם רגש שנקבע. הסיווג נעשה בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
         reports:
           filters:
+            group_by:
+              label: "קיבוץ לפי"
             sort_by:
               label: "מיון על פי"
             tag:
@@ -87,10 +89,8 @@ he:
               description: "תיעדוף תוכן מהקבוצה הזאת בדוח"
             temperature:
               label: "טמפרטורה"
-              description: "טמפרטורה לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (0 לשימוש בברירת המחדל של הדגם)"
             top_p:
               label: "ה־P המובילים"
-              description: "ה־P המובילים לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (0 לשימוש בברירת המחדל של הדגם)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +132,8 @@ he:
             model:
               label: "מודל"
               description: "מודל שפה שמשמש למיון ראשוני"
+            temperature:
+              label: "טמפרטורה"
     discourse_ai:
       title: "בינה מלאכותית"
       modals:
@@ -188,7 +190,7 @@ he:
         no_users: "לא נמצאו נתוני שימוש של משתמשים"
         no_models: "לא נמצאו נתוני שימוש במודל"
         no_features: "לא נמצאו נתוני שימוש ביכולת"
-        subheader_description: "אסימונים הם היחידות הבסיסיות שבהם משתמשים LLMים כדי להבין וליצור טקסט, נתוני שימוש עשויים להשפיע על העלויות."
+        subheader_description: "אסימונים הם היחידות הבסיסיות שבהם משתמשים LLMים כדי להבין וליצור טקסט, נתוני שימוש עשויים להשפיע על העלויות"
         stat_tooltips:
           total_requests: "כל הבקשות שהוגשו ל־LLMים דרך Discourse"
           total_tokens: "כל האסימונים שבהם נעשה שימוש בעת שליחת בקשות ל־LLM"
@@ -386,7 +388,7 @@ he:
           open_ai-o1: "מודל ההיגיון החזק ביותר מבית OpenAI"
           open_ai-o3-mini: "מודל הגיון מתקדם וחסכוני"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "דגם רב־לשוני, קליל ויעיל"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "מודל רב־תכליתי חזק"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "מודל רב־תכליתי חזק"
           mistral-mistral-large-latest: "המודל החזק ביותר של Mistral"
           mistral-pixtral-large-latest: "המודל החזק ביותר של Mistral שבנוי לעיבוד חזותי"
         preseeded_model_description: "מודל קוד פתוח שהוגדר מראש ומשתמש ב־%{model}"
@@ -396,7 +398,7 @@ he:
         preconfigured:
           title_no_llms: "נא לבחור תבנית כדי להתחיל"
           title: "תבניות LLM (מודלי שפה גדולים) לא מוגדרות"
-          description: "מש״ג/LLM (מודלי שפה גדולים/Large Language Models) הם כלי בינה מלאכותית למשימות כגון סיכום תוכן, יצירת דוחות, אוטומציה של תקשורת מול לקוחות ופיקוח על הפורום והפקת תובנות ממנו."
+          description: "מש״ג/LLM (מודלי שפה גדולים/Large Language Models) הם כלי בינה מלאכותית למשימות כגון סיכום תוכן, יצירת דוחות, אוטומציה של תקשורת מול לקוחות ופיקוח על הפורום והפקת תובנות ממנו"
           fake: "הגדרות ידניות"
           button: "הגדרה"
         next:
@@ -435,6 +437,8 @@ he:
           disable_native_tools: "השבתת תמיכה בבלי מובנה (להשתמש בכלים מבוססי XML)"
           provider_order: "סדר ספקים (רשימה מופרדת בפסיקים)"
           provider_quantizations: "סדר כימות הספקים (רשימה מופרדת בפסיקים, למשל: fp16,fp8)"
+          enable_reasoning: "הפעלת נימוק (תקף רק על Sonnet 3.7)"
+          reasoning_tokens: "כמות אסימונים המשמשים לנימוק"
       related_topics:
         title: "נושאים קשורים"
         pill: "קשורים"
