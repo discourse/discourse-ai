@@ -85,10 +85,10 @@ en:
               description: "Prioritize content from this group in the report"
             temperature:
               label: "Temperature"
-              description: "Temperature to use for the LLM. Increase to increase randomness (0 to use model default)"
+              description: "Temperature to use for the LLM. Increase to increase randomness (leave empty to use model default)"
             top_p:
               label: "Top P"
-              description: "Top P to use for the LLM, increase to increase randomness (0 to use model default)"
+              description: "Top P to use for the LLM, increase to increase randomness (leave empty to use model default)"
 
         llm_triage:
           fields:
@@ -131,6 +131,9 @@ en:
             model:
               label: "Model"
               description: "Language model used for triage"
+            temperature:
+              label: "Temperature"
+              description: "Temperature to use for the LLM. Increase to increase randomness (leave empty to use model default)"
 
     discourse_ai:
       title: "AI"
@@ -403,7 +406,7 @@ en:
           open_ai-o1: "Open AI's most capable reasoning model"
           open_ai-o3-mini: "Advanced Cost-efficient reasoning model"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Powerful multipurpose model"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Powerful multipurpose model"
           mistral-mistral-large-latest: "Mistral's most powerful model"
           mistral-pixtral-large-latest: "Mistral's most powerful vision capable model"
 

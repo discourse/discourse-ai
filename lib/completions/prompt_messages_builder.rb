@@ -102,7 +102,7 @@ module DiscourseAi
         end
       end
 
-      def push(type:, content:, name: nil, upload_ids: nil, id: nil)
+      def push(type:, content:, name: nil, upload_ids: nil, id: nil, thinking: nil)
         if !%i[user model tool tool_call system].include?(type)
           raise ArgumentError, "type must be either :user, :model, :tool, :tool_call or :system"
         end
@@ -112,6 +112,15 @@ module DiscourseAi
         message[:name] = name.to_s if name
         message[:upload_ids] = upload_ids if upload_ids
         message[:id] = id.to_s if id
+        if thinking
+          message[:thinking] = thinking["thinking"] if thinking["thinking"]
+          message[:thinking_signature] = thinking["thinking_signature"] if thinking[
+            "thinking_signature"
+          ]
+          message[:redacted_thinking_signature] = thinking[
+            "redacted_thinking_signature"
+          ] if thinking["redacted_thinking_signature"]
+        end
 
         @raw_messages << message
       end

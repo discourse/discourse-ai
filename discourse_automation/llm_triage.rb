@@ -24,6 +24,7 @@ if defined?(DiscourseAutomation)
     field :hide_topic, component: :boolean
     field :flag_post, component: :boolean
     field :include_personal_messages, component: :boolean
+    field :temperature, component: :text
     field :flag_type,
           component: :choices,
           required: false,
@@ -53,6 +54,12 @@ if defined?(DiscourseAutomation)
       flag_post = fields.dig("flag_post", "value")
       flag_type = fields.dig("flag_type", "value")
       max_post_tokens = fields.dig("max_post_tokens", "value").to_i
+      temperature = fields.dig("temperature", "value")
+      if temperature == "" || temperature.nil?
+        temperature = nil
+      else
+        temperature = temperature.to_f
+      end
 
       max_post_tokens = nil if max_post_tokens <= 0
 
@@ -93,6 +100,7 @@ if defined?(DiscourseAutomation)
           max_post_tokens: max_post_tokens,
           stop_sequences: stop_sequences,
           automation: self.automation,
+          temperature: temperature,
         )
       rescue => e
         Discourse.warn_exception(e, message: "llm_triage: skipped triage on post #{post.id}")

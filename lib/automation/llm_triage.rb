@@ -17,7 +17,8 @@ module DiscourseAi
         flag_type: nil,
         automation: nil,
         max_post_tokens: nil,
-        stop_sequences: nil
+        stop_sequences: nil,
+        temperature: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
@@ -40,7 +41,7 @@ module DiscourseAi
         result =
           llm.generate(
             prompt,
-            temperature: 0,
+            temperature: temperature,
             max_tokens: 700, # ~500 words
             user: Discourse.system_user,
             stop_sequences: stop_sequences,

@@ -37,8 +37,8 @@ if defined?(DiscourseAutomation)
 
     field :allow_secure_categories, component: :boolean
 
-    field :top_p, component: :text, required: true, default_value: 0.1
-    field :temperature, component: :text, required: true, default_value: 0.2
+    field :top_p, component: :text
+    field :temperature, component: :text
 
     field :suppress_notifications, component: :boolean
     field :debug_mode, component: :boolean
@@ -64,12 +64,19 @@ if defined?(DiscourseAutomation)
         exclude_category_ids = fields.dig("exclude_categories", "value")
         exclude_tags = fields.dig("exclude_tags", "value")
 
-        # set defaults in code to support easy migration for old rules
-        top_p = 0.1
-        top_p = fields.dig("top_p", "value").to_f if fields.dig("top_p", "value")
+        top_p = fields.dig("top_p", "value")
+        if top_p == "" || top_p.nil?
+          top_p = nil
+        else
+          top_p = top_p.to_f
+        end
 
-        temperature = 0.2
-        temperature = fields.dig("temperature", "value").to_f if fields.dig("temperature", "value")
+        temperature = fields.dig("temperature", "value")
+        if temperature == "" || temperature.nil?
+          temperature = nil
+        else
+          temperature = temperature.to_f
+        end
 
         suppress_notifications = !!fields.dig("suppress_notifications", "value")
         DiscourseAi::Automation::ReportRunner.run!(

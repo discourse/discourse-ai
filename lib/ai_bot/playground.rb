@@ -119,7 +119,7 @@ module DiscourseAi
           bot_user ||= User.find_by(id: mentioned[:user_id]) if mentioned
         end
 
-        if bot_user && post.reply_to_post_number && !post.reply_to_post.user&.bot?
+        if !mentioned && bot_user && post.reply_to_post_number && !post.reply_to_post.user&.bot?
           # replying to a non-bot user
           return
         end
@@ -219,6 +219,9 @@ module DiscourseAi
 
                 custom_context[:id] = message[1] if custom_context[:type] != :model
                 custom_context[:name] = message[3] if message[3]
+
+                thinking = message[4]
+                custom_context[:thinking] = thinking if thinking
 
                 builder.push(**custom_context)
               end
@@ -473,8 +476,20 @@ module DiscourseAi
 
         post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
 
+        started_thinking = false
+
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
+            if type == :thinking && !started_thinking
+              reply << "<details><summary>#{I18n.t("discourse_ai.ai_bot.thinking")}</summary>"
+              started_thinking = true
+            end
+
+            if type != :thinking && started_thinking
+              reply << "</details>\n\n"
+              started_thinking = false
+            end
+
             reply << partial
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present?
@@ -527,8 +542,10 @@ module DiscourseAi
             )
         end
 
-        # we do not need to add a custom prompt for a single reply
-        if new_custom_prompts.length > 1
+        # a bit messy internally, but this is how we tell
+        is_thinking = new_custom_prompts.any? { |prompt| prompt[4].present? }
+
+        if is_thinking || new_custom_prompts.length > 1
           reply_post.post_custom_prompt ||= reply_post.build_post_custom_prompt(custom_prompt: [])
           prompt = reply_post.post_custom_prompt.custom_prompt || []
           prompt.concat(new_custom_prompts)

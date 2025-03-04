@@ -4,7 +4,7 @@ module DiscourseAi
   module Completions
     module Endpoints
       class Base
-        attr_reader :partial_tool_calls
+        attr_reader :partial_tool_calls, :output_thinking
 
         CompletionFailed = Class.new(StandardError)
         # 6 minutes
@@ -67,12 +67,15 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil,
           partial_tool_calls: false,
+          output_thinking: false,
           &blk
         )
           LlmQuota.check_quotas!(@llm_model, user)
           start_time = Time.now
 
           @partial_tool_calls = partial_tool_calls
+          @output_thinking = output_thinking
+
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
@@ -85,6 +88,7 @@ module DiscourseAi
                 feature_name: feature_name,
                 feature_context: feature_context,
                 partial_tool_calls: partial_tool_calls,
+                output_thinking: output_thinking,
               )
 
             wrapped = result

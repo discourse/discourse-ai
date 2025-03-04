@@ -94,12 +94,19 @@ describe DiscourseAi::Automation::LlmTriage do
     # PM
     reply_user.update!(admin: true)
     add_automation_field("include_personal_messages", true, type: :boolean)
+    add_automation_field("temperature", "0.2")
     post = Fabricate(:post, topic: personal_message)
 
-    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+    prompt_options = nil
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      ["bad"],
+    ) do |_resp, _llm, _prompts, _prompt_options|
       automation.running_in_background!
       automation.trigger!({ "post" => post })
+      prompt_options = _prompt_options.first
     end
+
+    expect(prompt_options[:temperature]).to eq(0.2)
 
     last_post = post.topic.reload.posts.order(:post_number).last
     expect(last_post.raw).to eq(canned_reply_text)

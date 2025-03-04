@@ -168,12 +168,14 @@ export default class BotSelector extends Component {
       .filter((bot) => !bot.is_persona)
       .filter(Boolean);
 
-    return availableBots.map((bot) => {
-      return {
-        id: bot.id,
-        name: bot.display_name,
-      };
-    });
+    return availableBots
+      .map((bot) => {
+        return {
+          id: bot.id,
+          name: bot.display_name,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   <template>

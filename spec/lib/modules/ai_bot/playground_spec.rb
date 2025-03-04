@@ -828,6 +828,61 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#reply_to" do
+    it "preserves thinking context between replies and correctly renders" do
+      thinking_progress =
+        DiscourseAi::Completions::Thinking.new(message: "I should say hello", partial: true)
+      thinking =
+        DiscourseAi::Completions::Thinking.new(
+          message: "I should say hello",
+          signature: "thinking-signature-123",
+          partial: false,
+        )
+
+      thinking_redacted =
+        DiscourseAi::Completions::Thinking.new(
+          message: nil,
+          signature: "thinking-redacted-signature-123",
+          partial: false,
+          redacted: true,
+        )
+
+      first_responses = [[thinking_progress, thinking, thinking_redacted, "Hello Sam"]]
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(first_responses) do
+        playground.reply_to(third_post)
+      end
+
+      new_post = third_post.topic.reload.posts.order(:post_number).last
+      # confirm message is there
+      expect(new_post.raw).to include("Hello Sam")
+      # confirm thinking is there
+      expect(new_post.raw).to include("I should say hello")
+
+      post = Fabricate(:post, topic: third_post.topic, user: user, raw: "Say Cat")
+
+      prompt_detail = nil
+      # Capture the prompt to verify thinking context was included
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Cat"]) do |_, _, prompts|
+        playground.reply_to(post)
+        prompt_detail = prompts.first
+      end
+
+      last_messages = prompt_detail.messages.last(2)
+
+      expect(last_messages).to eq(
+        [
+          {
+            type: :model,
+            content: "Hello Sam",
+            thinking: "I should say hello",
+            thinking_signature: "thinking-signature-123",
+            redacted_thinking_signature: "thinking-redacted-signature-123",
+          },
+          { type: :user, content: "Say Cat", id: user.username },
+        ],
+      )
+    end
+
     it "streams the bot reply through MB and create a new post in the PM with a cooked responses" do
       expected_bot_response =
         "Hello this is a bot and what you just said is an interesting question"

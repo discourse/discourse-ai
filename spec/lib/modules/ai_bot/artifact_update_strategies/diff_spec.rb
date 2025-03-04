@@ -108,6 +108,34 @@ RSpec.describe DiscourseAi::AiBot::ArtifactUpdateStrategies::Diff do
       expect(artifact.versions.last.css).to eq("body {\n  color: red;\n}")
     end
 
+    it "can handle removal with blank blocks" do
+      original_css = <<~CSS
+        body {
+          color: red;
+        }
+        .button {
+          color: blue;
+        }
+      CSS
+
+      artifact.update!(css: original_css)
+
+      response = <<~RESPONSE
+        [CSS]
+        <<<<<<< SEARCH
+        body {
+          color: red;
+        }
+        =======
+        >>>>>>> REPLACE
+        [/CSS]
+      RESPONSE
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response]) { strategy.apply }
+
+      expect(artifact.versions.last.css.strip).to eq(".button {\n  color: blue;\n}")
+    end
+
     it "tracks failed searches" do
       original_css = ".button { color: blue; }"
       artifact.update!(css: original_css)
