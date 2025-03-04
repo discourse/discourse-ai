@@ -1,9 +1,3 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
 ar:
   admin_js:
     admin:
@@ -87,10 +81,8 @@ ar:
               description: "رتِّب أولوية المحتوى من هذه المجموعة في التقرير"
             temperature:
               label: "درجة الحرارة"
-              description: "درجة الحرارة التي سيتم استخدامها في نموذج اللغة الكبير (LLM). تزيد العشوائية بزيادة القيمة (اضبط القيمة على 0 لاستخدام النموذج الافتراضي)"
             top_p:
               label: "Top P"
-              description: "top-p للاستخدام في نموذج اللغة الكبير (LLM)، تزيد العشوائية بزيادة القيمة (اضبط القيمة على 0 لاستخدام النموذج الافتراضي)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +124,8 @@ ar:
             model:
               label: "النموذج"
               description: "نموذج اللغة المُستخدَم في الفرز"
+            temperature:
+              label: "درجة الحرارة"
     discourse_ai:
       title: "الذكاء الاصطناعي"
       modals:
@@ -195,7 +189,7 @@ ar:
         no_users: "لم يتم العثور على بيانات استخدام المستخدم"
         no_models: "لم يتم العثور على بيانات استخدام نموذجية"
         no_features: "لم يتم العثور على بيانات استخدام الميزات"
-        subheader_description: "الرموز هي الوحدات الأساسية التي تستخدمها نماذج اللغة الكبيرة لفهم النصوص وتوليدها، وقد تؤثر بيانات الاستخدام على التكاليف."
+        subheader_description: "الرموز هي الوحدات الأساسية التي تستخدمها نماذج اللغة الكبيرة لفهم النصوص وتوليدها، وقد تؤثر بيانات الاستخدام على التكاليف"
         stat_tooltips:
           total_requests: "جميع الطلبات المُقدَّمة إلى نماذج اللغة الكبيرة من خلال Discourse"
           total_tokens: "جميع الرموز المُستخدَمة عند إدخال رسالة مطالبة في نموذج لغة كبير"
@@ -390,7 +384,7 @@ ar:
           open_ai-gpt-4o-mini: "نموذج صغير سريع وبأسعارٍ معقولة للمهام الخفيفة"
           open_ai-o1-mini: "نموذج استدلال فعَّال من حيث التكلفة"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "نموذج متعدد اللغات خفيف وفعَّال"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "نموذج قوي متعدد الأغراض"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "نموذج قوي متعدد الأغراض"
           mistral-mistral-large-latest: "النموذج الأقوى لدى Mistral"
           mistral-pixtral-large-latest: "النموذج القادر على الرؤية الأقوى لدى Mistral"
         preseeded_model_description: "نموذج مفتوح المصدر تم تكوينه مسبقًا باستخدام %{model}"
@@ -400,7 +394,7 @@ ar:
         preconfigured:
           title_no_llms: "حدِّد قالبًا للبدء"
           title: "لم يتم تكوين قوالب نماذج اللغة الكبيرة (LLM)"
-          description: "نماذج اللغة الكبيرة (LLM) عبارة عن أدوات ذكاء اصطناعي تم تحسينها لتنفيذ مهام مثل تلخيص المحتوى وإنشاء التقارير وأتمتة تفاعلات العملاء وتسهيل إدارة المنتديات وتقديم الرؤى."
+          description: "نماذج اللغة الكبيرة (LLM) عبارة عن أدوات ذكاء اصطناعي تم تحسينها لتنفيذ مهام مثل تلخيص المحتوى وإنشاء التقارير وأتمتة تفاعلات العملاء وتسهيل إدارة المنتديات وتقديم الرؤى"
           fake: "التكوين اليدوي"
           button: "إعداد"
         next:

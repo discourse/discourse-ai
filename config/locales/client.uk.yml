@@ -1,9 +1,3 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
 uk:
   admin_js:
     admin:
@@ -78,7 +72,6 @@ uk:
               label: "Температура"
             top_p:
               label: "Top P"
-              description: "Top P, параметр LLM, підвищити для збільшення випадковості (0 для використання моделі стандартно)"
         llm_triage:
           fields:
             system_prompt:
@@ -111,6 +104,8 @@ uk:
             model:
               label: "Модель"
               description: "Мовна модель, що використовується для тренування"
+            temperature:
+              label: "Температура"
     discourse_ai:
       title: "ШІ"
       modals:

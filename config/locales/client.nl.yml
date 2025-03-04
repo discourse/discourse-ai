@@ -1,9 +1,3 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
 nl:
   admin_js:
     admin:
@@ -87,10 +81,8 @@ nl:
               description: "Geef prioriteit aan content van deze groep in het rapport"
             temperature:
               label: "Temperatuur"
-              description: "Te gebruiken temperatuur voor de LLM. Verhoog deze om de willekeur te vergroten (0 om de standaardinstelling van het model te gebruiken)"
             top_p:
               label: "Top P"
-              description: "Te gebruiken Top P voor de LLM. Verhoog deze om de willekeur te vergroten (0 om de standaardinstelling van het model te gebruiken)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +124,8 @@ nl:
             model:
               label: "Model"
               description: "Taalmodel gebruikt voor triage"
+            temperature:
+              label: "Temperatuur"
     discourse_ai:
       title: "AI"
       modals:
@@ -195,7 +189,7 @@ nl:
         no_users: "Geen gebruikergebruiksgegevens gevonden"
         no_models: "Geen modelgebruiksgegevens gevonden"
         no_features: "Geen functiegebruiksgegevens gevonden"
-        subheader_description: "Tokens zijn de basiseenheden die LLM's gebruiken om tekst te begrijpen en te genereren. Gebruiksgegevens kunnen de kosten beïnvloeden."
+        subheader_description: "Tokens zijn de basiseenheden die LLM's gebruiken om tekst te begrijpen en te genereren. Gebruiksgegevens kunnen de kosten beïnvloeden"
         stat_tooltips:
           total_requests: "Alle verzoeken aan LLM's via Discourse"
           total_tokens: "Alle tokens die zijn gebruikt bij het prompten van een LLM"
@@ -382,7 +376,7 @@ nl:
           open_ai-gpt-4o-mini: "Betaalbaar, snel en klein model voor lichte taken"
           open_ai-o1-mini: "Kostenefficiënt redeneringsmodel"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficiënt lichtgewicht meertalig model"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Krachtig multifunctioneel model"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Krachtig multifunctioneel model"
           mistral-mistral-large-latest: "Het krachtigste model van Mistral"
           mistral-pixtral-large-latest: "Het krachtigste model met zichtcapaciteit van Mistral"
         preseeded_model_description: "Voorgeconfigureerd open-source model met %{model}"
@@ -392,7 +386,7 @@ nl:
         preconfigured:
           title_no_llms: "Selecteer een sjabloon om te beginnen"
           title: "Niet-geconfigureerde LLM-sjablonen"
-          description: "LLM's (Large Language Models) zijn AI-tools die zijn geoptimaliseerd voor taken als het samenvatten van inhoud, het genereren van rapporten, het automatiseren van klantinteracties en het faciliteren van forummoderatie en inzichten."
+          description: "LLM's (Large Language Models) zijn AI-tools die zijn geoptimaliseerd voor taken als het samenvatten van inhoud, het genereren van rapporten, het automatiseren van klantinteracties en het faciliteren van forummoderatie en inzichten"
           fake: "Handmatige configuratie"
           button: "Instellen"
         next:

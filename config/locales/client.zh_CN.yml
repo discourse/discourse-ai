@@ -1,10 +1,4 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
-zh_CN:
+zh-CN:
   admin_js:
     admin:
       api:
@@ -87,10 +81,8 @@ zh_CN:
               description: "在报告中优先考虑来自此群组的内容"
             temperature:
               label: "温度"
-              description: "用于 LLM 的温度。增大该值可以提升随机性（0 表示使用模型默认值）"
             top_p:
               label: "Top P"
-              description: "用于 LLM 的 Top P，增大可以提升随机性（0 表示使用模型默认值）"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +124,8 @@ zh_CN:
             model:
               label: "模型"
               description: "用于分类的语言模型"
+            temperature:
+              label: "温度"
     discourse_ai:
       title: "AI"
       modals:
@@ -195,7 +189,6 @@ zh_CN:
         no_users: "找不到用户使用数据"
         no_models: "找不到模型使用数据"
         no_features: "找不到功能使用数据"
-        subheader_description: "词元是 LLM 用来理解和生成文本的基本单位，使用数据可能会影响成本。"
         stat_tooltips:
           total_requests: "通过 Discourse 向 LLM 提出的所有请求"
           total_tokens: "提示 LLM 时使用的所有词元"
@@ -380,7 +373,7 @@ zh_CN:
           open_ai-gpt-4o-mini: "经济、快速的小型模型，适用于轻量级任务"
           open_ai-o1-mini: "经济高效的推理模型"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "高效的轻量级多语言模型"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "强大的多用途模型"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "强大的多用途模型"
           mistral-mistral-large-latest: "Mistral 最强大的模型"
           mistral-pixtral-large-latest: "Mistral 最强大的视觉能力模型"
         preseeded_model_description: "利用 %{model} 的预配置开源模型"
@@ -390,7 +383,6 @@ zh_CN:
         preconfigured:
           title_no_llms: "选择一个模板以开始"
           title: "未配置的 LLM 模板"
-          description: "LLM（大语言模型）是经过优化的 AI 工具，可用于执行总结内容、生成报告、自动执行客户互动以及促进论坛审核和见解等任务。"
           fake: "手动配置"
           button: "设置"
         next:

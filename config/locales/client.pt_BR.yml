@@ -1,10 +1,4 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
-pt_BR:
+pt:
   admin_js:
     admin:
       api:
@@ -87,10 +81,8 @@ pt_BR:
               description: "Priorizar o conteúdo deste grupo no relatório"
             temperature:
               label: "Temperatura"
-              description: "Temperatura para usar para o LLM. Aumente para incrementar o fator aleatório (0 para usar o padrão do modelo)"
             top_p:
               label: "Maior P"
-              description: "P Máximo para usar no LLM, aumente para incrementar o fator aleatório (0 para usar o padrão do modelo)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +124,8 @@ pt_BR:
             model:
               label: "Modelo"
               description: "Modelo de linguagem usado para triagem"
+            temperature:
+              label: "Temperatura"
     discourse_ai:
       title: "IA"
       modals:
@@ -195,7 +189,7 @@ pt_BR:
         no_users: "Sem dados de uso do(a) usuário(a) encontrados"
         no_models: "Sem dados de uso de modelo encontrados"
         no_features: "Sem dados de uso de recurso encontrados"
-        subheader_description: "Tokens são unidades básicas usadas por LLMs para compreender e gerar texto. Os dados de uso podem afetar o custo."
+        subheader_description: "Tokens são unidades básicas usadas por LLMs para compreender e gerar texto. Os dados de uso podem afetar o custo"
         stat_tooltips:
           total_requests: "Todos os pedidos feitos para LLMs através do Discourse"
           total_tokens: "Todos os tokens usados ao enviar comandos para um LLM"
@@ -382,7 +376,7 @@ pt_BR:
           open_ai-gpt-4o-mini: "Modelo pequeno e acessível para tarefas leves"
           open_ai-o1-mini: "Modelo de raciocínio econômico"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modelo multi-idioma leve e eficiente"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Modelo multifinalidade poderoso"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Modelo multifinalidade poderoso"
           mistral-mistral-large-latest: "Modelo mais poderoso da Mistral"
           mistral-pixtral-large-latest: "Modelo mais poderoso com capacidade de visão da Mistral"
         preseeded_model_description: "Modelo de código aberto pré-configurado que utiliza %{model}"
@@ -392,7 +386,7 @@ pt_BR:
         preconfigured:
           title_no_llms: "Selecione um modelo para começar"
           title: "Modelos LLM não configurados"
-          description: "LLMs (Large Language Models) são ferramentas de AI otimizadas para tarefas como resumo de conteúdo, geração de relatórios, automatização de interações com cliente, além de ideias e moderação facilitada de fóruns."
+          description: "LLMs (Large Language Models) são ferramentas de AI otimizadas para tarefas como resumo de conteúdo, geração de relatórios, automatização de interações com cliente, além de ideias e moderação facilitada de fóruns"
           fake: "Configuração manual"
           button: "Configurar"
         next:

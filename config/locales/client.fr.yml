@@ -1,9 +1,3 @@
-# WARNING: Never edit this file.
-# It will be overwritten when translations are pulled from Crowdin.
-#
-# To work with us on translations, join this project:
-# https://translate.discourse.org/
-
 fr:
   admin_js:
     admin:
@@ -87,10 +81,8 @@ fr:
               description: "Priorisez le contenu de ce groupe dans le rapport"
             temperature:
               label: "Température"
-              description: "Température à utiliser pour le LLM. Augmentez la valeur pour augmenter le caractère aléatoire (0 pour utiliser la valeur par défaut du modèle)"
             top_p:
               label: "Top P"
-              description: "Top P à utiliser pour le LLM, augmentez pour augmenter le caractère aléatoire (0 pour utiliser la valeur par défaut du modèle)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +124,8 @@ fr:
             model:
               label: "Modèle"
               description: "Modèle linguistique utilisé pour le tri"
+            temperature:
+              label: "Température"
     discourse_ai:
       title: "IA"
       modals:
@@ -195,7 +189,7 @@ fr:
         no_users: "Aucune donnée d'utilisation de l'utilisateur n'a été trouvée"
         no_models: "Aucune donnée d'utilisation du modèle n'a été trouvée"
         no_features: "Aucune donnée d'utilisation de la fonctionnalité n'a été trouvée"
-        subheader_description: "Les jetons sont les unités de base que les LLM utilisent pour comprendre et générer du texte. Les données d'utilisation peuvent affecter les coûts."
+        subheader_description: "Les jetons sont les unités de base que les LLM utilisent pour comprendre et générer du texte. Les données d'utilisation peuvent affecter les coûts"
         stat_tooltips:
           total_requests: "Toutes les requêtes adressées aux LLM via Discourse"
           total_tokens: "Tous les jetons utilisés lors de la consultation d'un LLM"
@@ -382,7 +376,7 @@ fr:
           open_ai-gpt-4o-mini: "Petit modèle abordable et rapide pour les tâches légères"
           open_ai-o1-mini: "Modèle de raisonnement rentable"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modèle multilingue léger et efficace"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Modèle polyvalent et puissant"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Modèle polyvalent et puissant"
           mistral-mistral-large-latest: "Le modèle le plus puissant de Mistral"
           mistral-pixtral-large-latest: "Le modèle de Mistral le plus performant en matière de vision"
         preseeded_model_description: "Modèle open source préconfiguré utilisant %{model}"
@@ -392,7 +386,7 @@ fr:
         preconfigured:
           title_no_llms: "Sélectionnez un modèle pour commencer"
           title: "Modèles LLM non configurés"
-          description: "Les LLM (Large Language Models) sont des outils d'IA optimisés pour des tâches telles que la synthèse de contenu, la génération de rapports, l'automatisation des interactions avec les clients et la facilitation de la modération et des informations sur les forums."
+          description: "Les LLM (Large Language Models) sont des outils d'IA optimisés pour des tâches telles que la synthèse de contenu, la génération de rapports, l'automatisation des interactions avec les clients et la facilitation de la modération et des informations sur les forums"
           fake: "Configuration manuelle"
           button: "Configurer"
         next:
