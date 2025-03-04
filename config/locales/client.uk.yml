@@ -78,7 +78,6 @@ uk:
               label: "Температура"
             top_p:
               label: "Top P"
-              description: "Top P, параметр LLM, підвищити для збільшення випадковості (0 для використання моделі стандартно)"
         llm_triage:
           fields:
             system_prompt:
@@ -111,6 +110,8 @@ uk:
             model:
               label: "Модель"
               description: "Мовна модель, що використовується для тренування"
+            temperature:
+              label: "Температура"
     discourse_ai:
       title: "ШІ"
       modals:

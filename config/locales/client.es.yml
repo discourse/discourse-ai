@@ -87,10 +87,8 @@ es:
               description: "Priorizar el contenido de este grupo en el informe"
             temperature:
               label: "Temperatura"
-              description: "Temperatura a utilizar para el LLM. Aumentar para aumentar la aleatoriedad (0 para utilizar el modelo por defecto)"
             top_p:
               label: "Top P"
-              description: "Top P a utilizar para el LLM, aumentar para aumentar la aleatoriedad (0 para utilizar el modelo por defecto)"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +130,8 @@ es:
             model:
               label: "Modelo"
               description: "Modelo lingüístico utilizado para el triaje"
+            temperature:
+              label: "Temperatura"
     discourse_ai:
       title: "IA"
       modals:
@@ -195,7 +195,7 @@ es:
         no_users: "No se han encontrado datos de uso del usuario"
         no_models: "No se han encontrado datos de uso del modelo"
         no_features: "No se han encontrado datos de uso de características"
-        subheader_description: "Los tokens son las unidades básicas que utilizan los LLM para comprender y generar texto, los datos de uso pueden afectar a los costes."
+        subheader_description: "Los tokens son las unidades básicas que utilizan los LLM para comprender y generar texto, los datos de uso pueden afectar a los costes"
         stat_tooltips:
           total_requests: "Todas las solicitudes realizadas a los LLM a través de Discourse"
           total_tokens: "Todos los tokens utilizados al solicitar un LLM"
@@ -382,7 +382,7 @@ es:
           open_ai-gpt-4o-mini: "Modelo pequeño, asequible y rápido para tareas ligeras"
           open_ai-o1-mini: "Modelo de razonamiento rentable"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modelo multilingüe, ligero y eficaz"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Potente modelo polivalente"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Potente modelo polivalente"
           mistral-mistral-large-latest: "El modelo más potente de Mistral"
           mistral-pixtral-large-latest: "El modelo más potente de Mistral con capacidad de visión"
         preseeded_model_description: "Modelo de código abierto preconfigurado que utiliza %{model}"
@@ -392,7 +392,7 @@ es:
         preconfigured:
           title_no_llms: "Selecciona una plantilla para empezar"
           title: "Plantillas LLM no configuradas"
-          description: "Los LLM (Large Language Models) son herramientas de IA optimizadas para tareas como resumir contenidos, generar informes, automatizar las interacciones con los clientes y facilitar la moderación y los comentarios en los foros."
+          description: "Los LLM (Large Language Models) son herramientas de IA optimizadas para tareas como resumir contenidos, generar informes, automatizar las interacciones con los clientes y facilitar la moderación y los comentarios en los foros"
           fake: "Configuración manual"
           button: "Configurar"
         next:
