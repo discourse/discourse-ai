@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
@@ -16,7 +17,7 @@ import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import replaceEmoji from "discourse/helpers/replace-emoji";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @service router;
@@ -147,10 +148,11 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
 
     return this.posts.filter((post) => {
+      post.topic_title = replaceEmoji(post.topic_title);
+
       if (this.activeFilter === "all") {
         return true;
       }
-
       return post.sentiment === this.activeFilter;
     });
   }
