@@ -121,7 +121,7 @@ class DiscourseAi::Evals::Eval
   def judge_result(result)
     prompt = judge[:prompt].dup
     prompt.sub!("{{output}}", result)
-    prompt.sub!("{{input}}", args[:input])
+    args.each { |key, value| prompt.sub!("{{#{key}}}", value.to_s) }
 
     prompt += <<~SUFFIX
 
@@ -145,7 +145,8 @@ class DiscourseAi::Evals::Eval
       messages: [{ type: :user, content: prompt }],
     )
 
-    result = judge_llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user)
+    result =
+      judge_llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user, temperature: 0)
 
     if rating = result.match(%r{\[RATING\](\d+)\[/RATING\]})
       rating = rating[1].to_i
@@ -219,7 +220,7 @@ class DiscourseAi::Evals::Eval
     upload.destroy if upload
   end
 
-  def prompt_call(llm, system_prompt:, message:, tools: nil, stream: false)
+  def prompt_call(llm, system_prompt:, message:, temperature: nil, tools: nil, stream: false)
     if tools
       tools.each do |tool|
         tool.symbolize_keys!
@@ -230,8 +231,9 @@ class DiscourseAi::Evals::Eval
       DiscourseAi::Completions::Prompt.new(
         system_prompt,
         messages: [{ type: :user, content: message }],
-        tools: tools,
       )
+
+    prompt.tools = tools if tools
 
     result = nil
     if stream
@@ -239,7 +241,9 @@ class DiscourseAi::Evals::Eval
       llm
         .llm_model
         .to_llm
-        .generate(prompt, user: Discourse.system_user) { |partial| result << partial }
+        .generate(prompt, user: Discourse.system_user, temperature: temperature) do |partial|
+          result << partial
+        end
     else
       result = llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user)
     end
