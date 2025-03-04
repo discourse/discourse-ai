@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
@@ -15,8 +16,11 @@ import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 
 export default class AdminReportSentimentAnalysis extends Component {
+  @service router;
+
   @tracked selectedChart = null;
   @tracked posts = [];
   @tracked hasMorePosts = false;
@@ -30,6 +34,30 @@ export default class AdminReportSentimentAnalysis extends Component {
       .querySelector(`li[data-filter-type="${this.activeFilter}"] button`)
       .classList.add("active");
   });
+
+  @action
+  async openToChart() {
+    const queryParams = this.router.currentRoute.queryParams;
+    if (queryParams.selectedChart) {
+      this.selectedChart = this.transformedData.find(
+        (data) => data.title === queryParams.selectedChart
+      );
+
+      if (!this.selectedChart) {
+        return;
+      }
+      this.showingSelectedChart = true;
+
+      try {
+        const response = await this.postRequest();
+        this.posts = response.posts.map((post) => Post.create(post));
+        this.hasMorePosts = response.has_more;
+        this.nextOffset = response.next_offset;
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+  }
 
   clearActiveFilters(element) {
     const filterButtons = element.querySelectorAll("li button");
@@ -179,6 +207,14 @@ export default class AdminReportSentimentAnalysis extends Component {
       return;
     }
 
+    const currentQueryParams = this.router.currentRoute.queryParams;
+    this.router.transitionTo(this.router.currentRoute.name, {
+      queryParams: {
+        ...currentQueryParams,
+        selectedChart: data.title,
+      },
+    });
+
     this.selectedChart = data;
     this.showingSelectedChart = true;
 
@@ -218,9 +254,19 @@ export default class AdminReportSentimentAnalysis extends Component {
     this.selectedChart = null;
     this.activeFilter = "all";
     this.posts = [];
+
+    const currentQueryParams = this.router.currentRoute.queryParams;
+    this.router.transitionTo(this.router.currentRoute.name, {
+      queryParams: {
+        ...currentQueryParams,
+        selectedChart: null,
+      },
+    });
   }
 
   <template>
+    <span {{didInsert this.openToChart}}></span>
+
     {{#unless this.showingSelectedChart}}
       <div class="admin-report-sentiment-analysis">
         {{#each this.transformedData as |data|}}
