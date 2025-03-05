@@ -361,9 +361,7 @@ discourse_ai:
 
   ai_summary_persona_id:
     default: ""
-    client: true
     hidden: true
   ai_summary_consolidator_persona_id:
     default: ""
-    client: true
     hidden: true
