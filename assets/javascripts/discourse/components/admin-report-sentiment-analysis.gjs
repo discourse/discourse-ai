@@ -310,6 +310,7 @@ export default class AdminReportSentimentAnalysis extends Component {
               @data={{data.scores}}
               @totalScore={{data.total_score}}
               @doughnutTitle={{data.title}}
+              @displayLegend={{true}}
             />
           </div>
         {{/each}}
@@ -342,9 +343,7 @@ export default class AdminReportSentimentAnalysis extends Component {
           @data={{this.selectedChart.scores}}
           @totalScore={{this.selectedChart.total_score}}
           @doughnutTitle={{this.selectedChart.title}}
-          @skipCanvasResize={{true}}
           @displayLegend={{true}}
-          @radius={{100}}
         />
 
       </div>

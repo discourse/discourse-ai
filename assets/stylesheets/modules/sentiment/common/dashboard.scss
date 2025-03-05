@@ -63,6 +63,9 @@
   @include report-container-box();
   flex: 2;
   display: flex;
+  gap: 1rem;
+  justify-content: space-around;
+  align-items: center;
   flex-flow: row wrap;
 
   .admin-report-doughnut {
@@ -77,15 +80,13 @@
 
     .doughnut-chart-title {
       @include ellipsis;
-      position: absolute;
-      top: 3%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: var(--font-0);
-      z-index: 999;
+      margin: 0 auto;
+      margin-top: 1rem;
+      text-align: center;
     }
 
     &:hover {
+      box-shadow: var(--shadow-card);
       transform: translateY(-1rem);
       cursor: pointer;
     }
@@ -136,6 +137,7 @@
   flex-flow: column nowrap;
   overflow-y: auto;
   height: 100%;
+  padding-top: 0;
 
   &__filters {
     border-bottom: 1px solid var(--primary-low);
@@ -208,5 +210,15 @@
       width: 100%;
       height: 100%;
     }
+  }
+}
+
+.admin-reports.admin-contents .sentiment-analysis {
+  .horizontal-overflow-nav {
+    background: var(--secondary);
+    position: sticky;
+    top: 0;
+    padding-top: 1rem;
+    z-index: z("header");
   }
 }
