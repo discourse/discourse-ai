@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
   fab!(:topic) { Fabricate(:topic, highest_post_number: 25) }
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
+  fab!(:admin)
 
   describe "#targets_data" do
     shared_examples "includes only public-visible topics" do
@@ -59,6 +60,56 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
         op_content = content.first[:text]
 
         expect(op_content).to include(topic_embed.embed_content_cache)
+      end
+    end
+  end
+
+  describe "#summary_extension_prompt" do
+    context "when ai_summary_consolidator_persona_id siteSetting is set" do
+      it "returns a prompt with the correct text" do
+        AiPersona.create!(
+          name: "TestPersona",
+          system_prompt: "test prompt",
+          description: "test",
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        )
+        personaClass =
+          DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
+        SiteSetting.ai_summary_consolidator_persona_id = personaClass.id
+
+        expect(
+          topic_summary
+            .summary_extension_prompt(nil, [{ id: 1, poster: "test", text: "hello" }])
+            .messages
+            .first[
+            :content
+          ],
+        ).to include("test prompt")
+      end
+    end
+  end
+
+  describe "#first_summary_prompt" do
+    context "when ai_summary_persona_id siteSetting is set" do
+      it "returns a prompt with the correct text" do
+        AiPersona.create!(
+          name: "TestPersona",
+          system_prompt: "test prompt",
+          description: "test",
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        )
+        personaClass =
+          DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
+        SiteSetting.ai_summary_persona_id = personaClass.id
+
+        expect(
+          topic_summary
+            .first_summary_prompt([{ id: 1, poster: "test", text: "hello" }])
+            .messages
+            .first[
+            :content
+          ],
+        ).to include("test prompt")
       end
     end
   end
