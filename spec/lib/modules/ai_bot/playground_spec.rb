@@ -141,18 +141,20 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
       ai_persona.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
-      responses = [tool_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, ["custom tool did stuff (maybe)"], ["new PM title"]]
 
       prompts = nil
       reply_post = nil
 
+      private_message = Fabricate(:private_message_topic, user: user)
+
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
-        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?", topic: private_message)
         reply_post = playground.reply_to(new_post)
         prompts = _prompts
       end
 
-      expect(prompts.length).to eq(2)
+      expect(prompts.length).to eq(3)
       expect(prompts[0].tool_choice).to eq("search")
       expect(prompts[1].tool_choice).to eq(nil)
 
@@ -381,7 +383,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           }}}
 
           Your instructions:
-          #{user.username} said Hello
+          #{user.username}: Hello
         TEXT
 
         expect(content.strip).to eq(expected)

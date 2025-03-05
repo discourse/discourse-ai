@@ -79,6 +79,21 @@ module DiscourseAi
         UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
       end
 
+      def ==(other)
+        return false unless other.is_a?(Prompt)
+        messages == other.messages && tools == other.tools && topic_id == other.topic_id &&
+          post_id == other.post_id && max_pixels == other.max_pixels &&
+          tool_choice == other.tool_choice
+      end
+
+      def eql?(other)
+        self == other
+      end
+
+      def hash
+        [messages, tools, topic_id, post_id, max_pixels, tool_choice].hash
+      end
+
       private
 
       def validate_message(message)

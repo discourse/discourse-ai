@@ -188,6 +188,40 @@ RSpec.describe AiTool do
     expect(result).to eq("Hello")
   end
 
+  it "is able to run llm completions" do
+    script = <<~JS
+      function invoke(params) {
+        return llm.generate("question two") + llm.generate(
+          { messages: [
+            { type: "system", content: "system message" },
+            { type: "user", content: "user message" }
+          ]}
+        );
+      }
+    JS
+
+    tool = create_tool(script: script)
+
+    result = nil
+    prompts = nil
+    responses = ["Hello ", "World"]
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
+      runner = tool.runner({}, llm: llm, bot_user: nil, context: {})
+      result = runner.invoke
+      prompts = _prompts
+    end
+
+    prompt =
+      DiscourseAi::Completions::Prompt.new(
+        "system message",
+        messages: [{ type: :user, content: "user message" }],
+      )
+    expect(result).to eq("Hello World")
+    expect(prompts[0]).to eq("question two")
+    expect(prompts[1]).to eq(prompt)
+  end
+
   it "can timeout slow JS" do
     script = <<~JS
       function invoke(params) {

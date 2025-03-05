@@ -170,7 +170,7 @@ module DiscourseAi
         schedule_bot_reply(post) if can_attach?(post)
       end
 
-      def conversation_context(post)
+      def conversation_context(post, style: nil)
         # Pay attention to the `post_number <= ?` here.
         # We want to inject the last post as context because they are translated differently.
 
@@ -205,6 +205,7 @@ module DiscourseAi
             )
 
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
+        builder.topic = post.topic
 
         context.reverse_each do |raw, username, custom_prompt, upload_ids|
           custom_prompt_translation =
@@ -245,7 +246,7 @@ module DiscourseAi
           end
         end
 
-        builder.to_a
+        builder.to_a(style: style || (post.topic.private_message? ? :bot : :topic))
       end
 
       def title_playground(post, user)
@@ -418,7 +419,7 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post, custom_instructions: nil, &blk)
+      def reply_to(post, custom_instructions: nil, whisper: nil, context_style: nil, &blk)
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
@@ -428,12 +429,18 @@ module DiscourseAi
         post_streamer = nil
 
         post_type =
-          post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
+          (
+            if (whisper || post.post_type == Post.types[:whisper])
+              Post.types[:whisper]
+            else
+              Post.types[:regular]
+            end
+          )
 
         context =
           get_context(
             participants: post.topic.allowed_users.map(&:username).join(", "),
-            conversation_context: conversation_context(post),
+            conversation_context: conversation_context(post, style: context_style),
             user: post.user,
           )
         context[:post_id] = post.id

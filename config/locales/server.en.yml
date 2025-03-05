@@ -6,6 +6,12 @@ en:
         spam: "Flag as spam and hide post"
         spam_silence: "Flag as spam, hide post and silence user"
     scriptables:
+      llm_tool_triage:
+        title: Triage posts using AI Tool
+        description: "Triage posts using custom logic in an AI tool"
+      llm_persona_triage:
+        title: Triage posts using AI Persona
+        description: "Respond to posts using a specific AI persona"
       llm_triage:
         title: Triage posts using AI
         description: "Triage posts using a large language model"

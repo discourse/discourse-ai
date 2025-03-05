@@ -4,8 +4,10 @@ module DiscourseAi
   module Completions
     class PromptMessagesBuilder
       MAX_CHAT_UPLOADS = 5
+      MAX_TOPIC_UPLOADS = 5
       attr_reader :chat_context_posts
       attr_reader :chat_context_post_upload_ids
+      attr_accessor :topic
 
       def initialize
         @raw_messages = []
@@ -41,6 +43,7 @@ module DiscourseAi
 
       def to_a(limit: nil, style: nil)
         return chat_array(limit: limit) if style == :chat
+        return topic_array if style == :topic
         result = []
 
         # this will create a "valid" messages array
@@ -127,6 +130,57 @@ module DiscourseAi
 
       private
 
+      def topic_array
+        raw_messages = @raw_messages.dup
+        user_content = +"You are operating in a Discourse forum.\n\n"
+
+        if @topic
+          if @topic.private_message?
+            user_content << "Private message info.\n"
+          else
+            user_content << "Topic information:\n"
+          end
+
+          user_content << "- URL: #{@topic.url}\n"
+          user_content << "- Title: #{@topic.title}\n"
+          if SiteSetting.tagging_enabled
+            tags = @topic.tags.pluck(:name)
+            tags -= DiscourseTagging.hidden_tag_names if tags.present?
+            user_content << "- Tags: #{tags.join(", ")}\n" if tags.present?
+          end
+          if !@topic.private_message?
+            user_content << "- Category: #{@topic.category.name}\n" if @topic.category
+          end
+          user_content << "- Number of replies: #{@topic.posts_count - 1}\n\n"
+        end
+
+        last_user_message = raw_messages.pop
+
+        upload_ids = []
+        if raw_messages.present?
+          user_content << "Here is the conversation so far:\n"
+          raw_messages.each do |message|
+            user_content << "#{message[:name] || "User"}: #{message[:content]}\n"
+            upload_ids.concat(message[:upload_ids]) if message[:upload_ids].present?
+          end
+        end
+
+        if last_user_message
+          user_content << "You are responding to #{last_user_message[:name] || "User"} who just said:\n #{last_user_message[:content]}"
+          if last_user_message[:upload_ids].present?
+            upload_ids.concat(last_user_message[:upload_ids])
+          end
+        end
+
+        user_message = { type: :user, content: user_content }
+
+        if upload_ids.present?
+          user_message[:upload_ids] = upload_ids[-MAX_TOPIC_UPLOADS..-1] || upload_ids
+        end
+
+        [user_message]
+      end
+
       def chat_array(limit:)
         if @raw_messages.length > 1
           buffer =
@@ -155,7 +209,7 @@ module DiscourseAi
         end
 
         last_message = @raw_messages[-1]
-        buffer << "#{last_message[:name] || "User"} said #{last_message[:content]} "
+        buffer << "#{last_message[:name] || "User"}: #{last_message[:content]} "
 
         message = { type: :user, content: buffer }
         upload_ids.concat(last_message[:upload_ids]) if last_message[:upload_ids].present?
