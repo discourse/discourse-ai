@@ -48,6 +48,10 @@
     .control:nth-of-type(6):nth-last-of-type(3) {
       display: none;
     }
+
+    .control:has(.export-csv-btn) {
+      display: none;
+    }
   }
 
   .main {

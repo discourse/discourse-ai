@@ -11,13 +11,13 @@ import DButton from "discourse/components/d-button";
 import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
 import dIcon from "discourse/helpers/d-icon";
+import replaceEmoji from "discourse/helpers/replace-emoji";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
-import replaceEmoji from "discourse/helpers/replace-emoji";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @service router;
