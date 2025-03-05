@@ -25,9 +25,6 @@ discourse_ai:
   ai_sentiment_backfill_post_max_age_days:
     default: 60
     hidden: true
-  ai_sentiment_reports_enabled:
-    default: true
-    client: true
 
   ai_openai_dall_e_3_url: "https://api.openai.com/v1/images/generations"
   ai_openai_embeddings_url:
