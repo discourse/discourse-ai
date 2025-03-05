@@ -64,18 +64,23 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
     end
   end
 
-  describe "#summary_extension_prompt" do
+  describe "Summary prompt" do
+    let!(:ai_persona) do
+      AiPersona.create!(
+        name: "TestPersona",
+        system_prompt: "test prompt",
+        description: "test",
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+      )
+    end
+
+    let!(:persona_class) do
+      DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
+    end
+
     context "when ai_summary_consolidator_persona_id siteSetting is set" do
-      it "returns a prompt with the correct text" do
-        AiPersona.create!(
-          name: "TestPersona",
-          system_prompt: "test prompt",
-          description: "test",
-          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-        )
-        personaClass =
-          DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
-        SiteSetting.ai_summary_consolidator_persona_id = personaClass.id
+      it "returns a summary extension prompt with the correct text" do
+        SiteSetting.ai_summary_consolidator_persona_id = persona_class.id
 
         expect(
           topic_summary
@@ -87,20 +92,10 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
         ).to include("test prompt")
       end
     end
-  end
 
-  describe "#first_summary_prompt" do
     context "when ai_summary_persona_id siteSetting is set" do
-      it "returns a prompt with the correct text" do
-        AiPersona.create!(
-          name: "TestPersona",
-          system_prompt: "test prompt",
-          description: "test",
-          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-        )
-        personaClass =
-          DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
-        SiteSetting.ai_summary_persona_id = personaClass.id
+      it "returns a first summary prompt with the correct text" do
+        SiteSetting.ai_summary_persona_id = persona_class.id
 
         expect(
           topic_summary
