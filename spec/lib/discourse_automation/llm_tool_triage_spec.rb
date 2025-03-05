@@ -65,4 +65,49 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
     response = post.topic.reload.posts.order(:post_number).last
     expect(response.raw).to eq("this is how you reset your password")
   end
+
+  it "Is able to respond as a whisper if instructed" do
+    # Create a tool with a script that explicitly requests a whisper response
+    whisper_tool =
+      AiTool.create!(
+        name: "Whisper Triage Tool",
+        tool_name: "whisper_triage_tool",
+        description: "Responds with whispers to moderation issues",
+        parameters: [],
+        script: <<~JS,
+      function invoke(params) {
+        const postId = context.post_id;
+        const post = discourse.getPost(postId);
+
+        const helper = discourse.getPersona("#{ai_persona.name}");
+        // Pass instructions to make response a whisper
+        const answer = helper.respondTo({
+          post_id: post.id,
+          instructions: "Respond as a whisper for moderators only",
+          whisper: true
+        });
+
+        return {
+          answer: answer,
+          processed: true,
+          reason: "responded with whisper"
+        };
+      }
+    JS
+        created_by_id: Discourse.system_user.id,
+        summary: "Responds with whispers",
+        enabled: true,
+      )
+
+    result = nil
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      ["This moderation note is only visible to staff"],
+    ) { result = described_class.handle(post: post, tool_id: whisper_tool.id) }
+
+    expect(result["processed"]).to eq(true)
+    response = post.topic.reload.posts.order(:post_number).last
+    expect(response.raw).to eq("This moderation note is only visible to staff")
+    # Check that the response is indeed a whisper
+    expect(response.post_type).to eq(Post.types[:whisper])
+  end
 end

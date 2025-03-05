@@ -418,7 +418,7 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post, custom_instructions: nil, &blk)
+      def reply_to(post, custom_instructions: nil, whisper: nil, &blk)
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
@@ -428,7 +428,13 @@ module DiscourseAi
         post_streamer = nil
 
         post_type =
-          post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
+          (
+            if (whisper || post.post_type == Post.types[:whisper])
+              Post.types[:whisper]
+            else
+              Post.types[:regular]
+            end
+          )
 
         context =
           get_context(

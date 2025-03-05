@@ -308,7 +308,12 @@ module DiscourseAi
                 post = Post.find_by(id: @context[:post_id])
                 return { error: "Post not found" } if post.nil?
 
-                reply_post = playground.reply_to(post, custom_instructions: params["instructions"])
+                reply_post =
+                  playground.reply_to(
+                    post,
+                    custom_instructions: params["instructions"],
+                    whisper: params["whisper"],
+                  )
 
                 if reply_post
                   return(
