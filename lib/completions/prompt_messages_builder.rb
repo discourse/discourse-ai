@@ -132,7 +132,6 @@ module DiscourseAi
 
       def topic_array
         raw_messages = @raw_messages.dup
-
         user_content = +"You are operating in a Discourse forum.\n\n"
 
         if @topic
@@ -169,7 +168,7 @@ module DiscourseAi
         if last_user_message
           user_content << "You are responding to #{last_user_message[:name] || "User"} who just said:\n #{last_user_message[:content]}"
           if last_user_message[:upload_ids].present?
-            upload_ids.concat(last_user__message[:upload_ids])
+            upload_ids.concat(last_user_message[:upload_ids])
           end
         end
 
