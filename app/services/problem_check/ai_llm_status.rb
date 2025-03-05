@@ -8,10 +8,6 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
     llm_errors
   end
 
-  def base_path
-    Discourse.base_path
-  end
-
   private
 
   def llm_errors
@@ -26,20 +22,21 @@ class ProblemCheck::AiLlmStatus < ProblemCheck
       blk.call
       nil
     rescue => e
-      error_message = parse_error_message(e.message)
-      message =
-        "#{I18n.t("dashboard.problem.ai_llm_status", { base_path: base_path, model_name: model.display_name, model_id: model.id })}"
+      details = {
+        model_id: model.id,
+        model_name: model.display_name,
+        error: parse_error_message(e.message),
+        url: "#{Discourse.base_path}/admin/plugins/discourse-ai/ai-llms/#{model.id}/edit",
+      }
+
+      message = I18n.t("dashboard.problem.ai_llm_status", details)
 
       Problem.new(
         message,
         priority: "high",
         identifier: "ai_llm_status",
         target: model.id,
-        details: {
-          model_id: model.id,
-          model_name: model.display_name,
-          error: error_message,
-        },
+        details:,
       )
     end
   end
