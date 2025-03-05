@@ -38,6 +38,7 @@ module DiscourseAi
             attach_index(ctx)
             attach_upload(ctx)
             attach_chain(ctx)
+            attach_discourse(ctx)
             ctx.eval(framework_script)
             ctx
           end
@@ -70,6 +71,24 @@ module DiscourseAi
         const chain = {
           setCustomRaw: _chain_set_custom_raw,
         };
+
+        const discourse = {
+          getPost: _discourse_get_post,
+          getUser: _discourse_get_user,
+          getPersona: function(name) {
+            return {
+              respondTo: function(params) {
+                result = _discourse_respond_to_persona(name, params);
+                if (result.error) {
+                  throw new Error(result.error);
+                }
+                return result;
+              },
+            };
+          },
+        };
+
+        const context = #{JSON.generate(@context)};
 
         function details() { return ""; };
       JS
@@ -239,6 +258,86 @@ module DiscourseAi
         mini_racer_context.attach("_chain_set_custom_raw", ->(raw) { self.custom_raw = raw })
       end
 
+      def attach_discourse(mini_racer_context)
+        mini_racer_context.attach(
+          "_discourse_get_post",
+          ->(post_id) do
+            in_attached_function do
+              post = Post.find_by(id: post_id)
+              return nil if post.nil?
+              guardian = Guardian.new(Discourse.system_user)
+              recursive_as_json(PostSerializer.new(post, scope: guardian, root: false))
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_get_user",
+          ->(user_id_or_username) do
+            in_attached_function do
+              user = nil
+
+              if user_id_or_username.is_a?(Integer) ||
+                   user_id_or_username.to_i.to_s == user_id_or_username
+                user = User.find_by(id: user_id_or_username.to_i)
+              else
+                user = User.find_by(username: user_id_or_username)
+              end
+
+              return nil if user.nil?
+
+              guardian = Guardian.new(Discourse.system_user)
+              recursive_as_json(UserSerializer.new(user, scope: guardian, root: false))
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_respond_to_persona",
+          ->(persona_name, params) do
+            in_attached_function do
+              # if we have 1000s of personas this can be slow ... we may need to optimize
+              persona_class = AiPersona.all_personas.find { |persona| persona.name == persona_name }
+              return { error: "Persona not found" } if persona_class.nil?
+
+              persona = persona_class.new
+              bot = DiscourseAi::AiBot::Bot.as(@bot_user || persona.user, persona: persona)
+              playground = DiscourseAi::AiBot::Playground.new(bot)
+
+              if @context[:post_id]
+                post = Post.find_by(id: @context[:post_id])
+                return { error: "Post not found" } if post.nil?
+
+                reply_post = playground.reply_to(post, custom_instructions: params["instructions"])
+
+                if reply_post
+                  return(
+                    { success: true, post_id: reply_post.id, post_number: reply_post.post_number }
+                  )
+                else
+                  return { error: "Failed to create reply" }
+                end
+              elsif @context[:message_id] && @context[:channel_id]
+                message = Chat::Message.find_by(id: @context[:message_id])
+                channel = Chat::Channel.find_by(id: @context[:channel_id])
+                return { error: "Message or channel not found" } if message.nil? || channel.nil?
+
+                reply =
+                  playground.reply_to_chat_message(message, channel, @context[:context_post_ids])
+
+                if reply
+                  return { success: true, message_id: reply.id }
+                else
+                  return { error: "Failed to create chat reply" }
+                end
+              else
+                return { error: "No valid context for response" }
+              end
+            end
+          end,
+        )
+      end
+
       def attach_upload(mini_racer_context)
         mini_racer_context.attach(
           "_upload_create",
@@ -342,6 +441,33 @@ module DiscourseAi
         yield
       ensure
         self.running_attached_function = false
+      end
+
+      def recursive_as_json(obj)
+        case obj
+        when Array
+          obj.map { |item| recursive_as_json(item) }
+        when Hash
+          obj.transform_values { |value| recursive_as_json(value) }
+        when ActiveModel::Serializer, ActiveModel::ArraySerializer
+          recursive_as_json(obj.as_json)
+        when ActiveRecord::Base
+          recursive_as_json(obj.as_json)
+        else
+          # Handle objects that respond to as_json but aren't handled above
+          if obj.respond_to?(:as_json)
+            result = obj.as_json
+            if result.equal?(obj)
+              # If as_json returned the same object, return it to avoid infinite recursion
+              result
+            else
+              recursive_as_json(result)
+            end
+          else
+            # Primitive values like strings, numbers, booleans, nil
+            obj
+          end
+        end
       end
     end
   end

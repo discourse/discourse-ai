@@ -7,13 +7,6 @@ if defined?(DiscourseAutomation)
 
     triggerables %i[post_created_edited]
 
-    field :model,
-          component: :choices,
-          required: true,
-          extra: {
-            content: DiscourseAi::Automation.available_models,
-          }
-
     field :tool,
           component: :choices,
           required: true,
@@ -22,16 +15,7 @@ if defined?(DiscourseAutomation)
           }
 
     script do |context, fields|
-      model = fields["model"]["value"]
       tool_id = fields["tool"]["value"]
-
-      category_id = fields.dig("category", "value")
-      tags = fields.dig("tags", "value")
-
-      if post.topic.private_message?
-        include_personal_messages = fields.dig("include_personal_messages", "value")
-        next if !include_personal_messages
-      end
 
       begin
         RateLimiter.new(
@@ -50,10 +34,7 @@ if defined?(DiscourseAutomation)
 
         DiscourseAi::Automation::LlmToolTriage.handle(
           post: post,
-          model: model,
           tool_id: tool_id,
-          category_id: category_id,
-          tags: tags,
           automation: self.automation,
         )
       rescue => e
