@@ -14,10 +14,14 @@ import dIcon from "discourse/helpers/d-icon";
 import replaceEmoji from "discourse/helpers/replace-emoji";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getAbsoluteURL } from "discourse/lib/get-url";
+import discourseLater from "discourse/lib/later";
+import { clipboardCopy } from "discourse/lib/utilities";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
+import DTooltip from "float-kit/components/d-tooltip";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @service router;
@@ -28,6 +32,7 @@ export default class AdminReportSentimentAnalysis extends Component {
   @tracked nextOffset = 0;
   @tracked showingSelectedChart = false;
   @tracked activeFilter = "all";
+  @tracked shareIcon = "link";
 
   setActiveFilter = modifier((element) => {
     this.clearActiveFilters(element);
@@ -266,6 +271,21 @@ export default class AdminReportSentimentAnalysis extends Component {
     });
   }
 
+  @action
+  shareChart() {
+    const url = this.router.currentURL;
+    if (!url) {
+      return;
+    }
+
+    clipboardCopy(getAbsoluteURL(url));
+    this.shareIcon = "check";
+
+    discourseLater(() => {
+      this.shareIcon = "link";
+    }, 2000);
+  }
+
   <template>
     <span {{didInsert this.openToChart}}></span>
 
@@ -298,12 +318,29 @@ export default class AdminReportSentimentAnalysis extends Component {
 
     {{#if (and this.selectedChart this.showingSelectedChart)}}
       <div class="admin-report-sentiment-analysis__selected-chart">
-        <DButton
-          @label="back_button"
-          @icon="chevron-left"
-          class="btn-flat"
-          @action={{this.backToAllCharts}}
-        />
+        <div class="admin-report-sentiment-analysis__selected-chart-actions">
+          <DButton
+            @label="back_button"
+            @icon="chevron-left"
+            class="btn-flat"
+            @action={{this.backToAllCharts}}
+          />
+
+          {{!-- <DButton
+            @title="discourse_ai.sentiments.sentiment_analysis.share_chart"
+            @icon={{this.shareIcon}}
+            @action={{this.shareChart}}
+            class="share btn-flat"
+          /> --}}
+          <DTooltip
+            class="share btn-flat"
+            @icon={{this.shareIcon}}
+            {{on "click" this.shareChart}}
+            @content={{i18n
+              "discourse_ai.sentiments.sentiment_analysis.share_chart"
+            }}
+          />
+        </div>
 
         <DoughnutChart
           @labels={{@model.labels}}
@@ -311,7 +348,9 @@ export default class AdminReportSentimentAnalysis extends Component {
           @data={{this.selectedChart.scores}}
           @totalScore={{this.selectedChart.total_score}}
           @doughnutTitle={{this.selectedChart.title}}
+          @radius={{100}}
         />
+
       </div>
       <div class="admin-report-sentiment-analysis-details">
         <HorizontalOverflowNav

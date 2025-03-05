@@ -1,5 +1,8 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { concat } from "@ember/helper";
+import { htmlSafe } from "@ember/template";
+import { isDevelopment } from "discourse/lib/environment";
 import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
@@ -18,11 +21,19 @@ export default class DoughnutChart extends Component {
     );
   }
 
+  getRadius() {
+    if (this.args.radius) {
+      return this.args.radius;
+    } else if (isDevelopment()) {
+      return this.calculateRadius(Math.floor(Math.random() * (100 + 1)));
+    } else {
+      return this.calculateRadius(this.args.totalScore);
+    }
+  }
+
   get config() {
     const totalScore = this.args.totalScore || "";
-    // const radius = this.calculateRadius(this.args.totalScore)
-    // Temporary for tesitng:
-    const radius = this.calculateRadius(Math.floor(Math.random() * (100 + 1)));
+    const radius = this.getRadius();
 
     const paddingTop = 30;
     const paddingBottom = 0;
@@ -108,7 +119,7 @@ export default class DoughnutChart extends Component {
     {{#if this.config}}
       <h3
         class="doughnut-chart-title"
-        style="max-width: {{this.canvasSize}}px"
+        style={{htmlSafe (concat "max-width: " this.canvasSize "px")}}
       >{{@doughnutTitle}}</h3>
       <Chart @chartConfig={{this.config}} class="admin-report-doughnut" />
     {{/if}}

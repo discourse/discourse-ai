@@ -8,7 +8,10 @@ RSpec.describe DiscourseAi::Sentiment::SentimentAnalysisReport do
   fab!(:post_2) { Fabricate(:post, user: admin, topic: topic) }
   fab!(:classification_result) { Fabricate(:classification_result, target: post) }
 
-  before { SiteSetting.ai_sentiment_enabled = true }
+  before do
+    SiteSetting.ai_sentiment_reports_enabled = true
+    SiteSetting.ai_sentiment_enabled = true
+  end
 
   it "contains the correct filters" do
     report = Report.find("sentiment_analysis")

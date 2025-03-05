@@ -656,6 +656,7 @@ en:
           overview: "Sentiment overview"
           analysis: "Sentiment analysis"
         sentiment_analysis:
+          share_chart: "Copy link to chart"
           filter_types:
             all: "All"
             positive: "Positive"

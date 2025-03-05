@@ -22,8 +22,9 @@ module DiscourseAi
           end,
         ) { ClassificationResult.has_sentiment_classification? }
 
-        if ClassificationResult.has_sentiment_classification? && SiteSetting.ai_sentiment_enabled &&
-             SiteSetting.ai_sentiment_reports_enabled
+        if Rails.env.test? ||
+             ClassificationResult.has_sentiment_classification? &&
+               SiteSetting.ai_sentiment_enabled && SiteSetting.ai_sentiment_reports_enabled
           EmotionFilterOrder.register!(plugin)
           EmotionDashboardReport.register!(plugin)
           SentimentDashboardReport.register!(plugin)
