@@ -432,6 +432,7 @@ en:
 
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          display_name: "The name used to reference this model across your site's interface."
           name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
           enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
