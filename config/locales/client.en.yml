@@ -99,6 +99,15 @@ en:
               label: "Tool"
               description: "Tool to use for triage (tool must have no parameters defined)"
 
+
+        llm_persona_triage:
+          fields:
+            persona:
+              label: "Persona"
+              description: "AI Persona to use for triage (must have default LLM and User set)"
+            whisper:
+              label: "Reply as Whisper"
+              description: "Whether the persona's response should be a whisper"
         llm_triage:
           fields:
             system_prompt:

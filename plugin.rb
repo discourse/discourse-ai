@@ -78,6 +78,7 @@ after_initialize do
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"
   require_relative "discourse_automation/llm_tool_triage"
+  require_relative "discourse_automation/llm_persona_triage"
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 

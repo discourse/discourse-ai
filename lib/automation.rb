@@ -37,5 +37,19 @@ module DiscourseAi
 
       values
     end
+
+    def self.available_persona_choices
+      AiPersona
+        .joins(:user)
+        .where.not(user_id: nil)
+        .where.not(default_llm: nil)
+        .map do |persona|
+          {
+            id: persona.id,
+            translated_name: persona.name,
+            description: "#{persona.name} (#{persona.user.username})",
+          }
+        end
+    end
   end
 end
