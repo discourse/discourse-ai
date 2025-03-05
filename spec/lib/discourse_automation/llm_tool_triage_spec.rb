@@ -61,6 +61,8 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
     DiscourseAi::Completions::Llm.with_prepared_responses(
       ["this is how you reset your password"],
     ) { result = described_class.handle(post: post, tool_id: tool.id) }
-    p result
+    expect(result["processed"]).to eq(true)
+    response = post.topic.reload.posts.order(:post_number).last
+    expect(response.raw).to eq("this is how you reset your password")
   end
 end
