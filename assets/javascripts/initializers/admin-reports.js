@@ -22,6 +22,13 @@ export default {
         "sentiment_analysis",
         AdminReportSentimentAnalysis
       );
+
+      api.registerValueTransformer(
+        "admin-reports-show-query-params",
+        ({ value }) => {
+          return [...value, "selectedChart"];
+        }
+      );
     });
   },
 };
