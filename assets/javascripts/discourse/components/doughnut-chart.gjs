@@ -33,6 +33,7 @@ export default class DoughnutChart extends Component {
 
   get config() {
     const totalScore = this.args.totalScore || "";
+    const skipCanvasResize = this.args.skipCanvasResize || false;
     const radius = this.getRadius();
 
     const paddingTop = 30;
@@ -66,7 +67,8 @@ export default class DoughnutChart extends Component {
         },
         plugins: {
           legend: {
-            display: false,
+            display: this.args.displayLegend || false,
+            position: "bottom",
           },
         },
       },
@@ -104,6 +106,9 @@ export default class DoughnutChart extends Component {
         {
           id: "resizeCanvas",
           afterDraw: function (chart) {
+            if (skipCanvasResize) {
+              return;
+            }
             const size = `${canvasSize}px`;
             chart.canvas.style.width = size;
             chart.canvas.style.height = size;

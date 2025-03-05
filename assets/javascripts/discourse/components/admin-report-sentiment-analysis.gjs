@@ -20,8 +20,8 @@ import { clipboardCopy } from "discourse/lib/utilities";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
-import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
 import DTooltip from "float-kit/components/d-tooltip";
+import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @service router;
@@ -326,12 +326,6 @@ export default class AdminReportSentimentAnalysis extends Component {
             @action={{this.backToAllCharts}}
           />
 
-          {{!-- <DButton
-            @title="discourse_ai.sentiments.sentiment_analysis.share_chart"
-            @icon={{this.shareIcon}}
-            @action={{this.shareChart}}
-            class="share btn-flat"
-          /> --}}
           <DTooltip
             class="share btn-flat"
             @icon={{this.shareIcon}}
@@ -348,6 +342,8 @@ export default class AdminReportSentimentAnalysis extends Component {
           @data={{this.selectedChart.scores}}
           @totalScore={{this.selectedChart.total_score}}
           @doughnutTitle={{this.selectedChart.title}}
+          @skipCanvasResize={{true}}
+          @displayLegend={{true}}
           @radius={{100}}
         />
 
