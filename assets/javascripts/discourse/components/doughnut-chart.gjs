@@ -1,8 +1,5 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { concat } from "@ember/helper";
-import { htmlSafe } from "@ember/template";
-import { isDevelopment } from "discourse/lib/environment";
 import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
