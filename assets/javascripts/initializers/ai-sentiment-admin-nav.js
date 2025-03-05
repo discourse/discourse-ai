@@ -1,6 +1,6 @@
 import { apiInitializer } from "discourse/lib/api";
 
-export default apiInitializer("1.15.0", async (api) => {
+export default apiInitializer("1.15.0", (api) => {
   const currentUser = api.getCurrentUser();
 
   if (
