@@ -358,3 +358,12 @@ discourse_ai:
   ai_rag_images_enabled:
     default: false
     hidden: true
+
+  ai_summary_persona_id:
+    default: ""
+    client: true
+    hidden: true
+  ai_summary_consolidator_persona_id:
+    default: ""
+    client: true
+    hidden: true
