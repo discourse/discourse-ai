@@ -14,13 +14,10 @@ module DiscourseAi
         plugin.on(:post_created, &sentiment_analysis_cb)
         plugin.on(:post_edited, &sentiment_analysis_cb)
 
-        plugin.add_to_serializer(
-          :current_user,
-          :can_see_sentiment_reports,
-          include_condition: -> do
-            SiteSetting.ai_sentiment_enabled && SiteSetting.ai_sentiment_reports_enabled
-          end,
-        ) { ClassificationResult.has_sentiment_classification? }
+        plugin.add_to_serializer(:current_user, :can_see_sentiment_reports) do
+          ClassificationResult.has_sentiment_classification? && SiteSetting.ai_sentiment_enabled &&
+            SiteSetting.ai_sentiment_reports_enabled
+        end
 
         if Rails.env.test? ||
              ClassificationResult.has_sentiment_classification? &&
