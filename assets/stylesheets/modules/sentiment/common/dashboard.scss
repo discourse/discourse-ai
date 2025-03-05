@@ -39,11 +39,6 @@
       flex: 1;
     }
 
-    .control:nth-of-type(n + 6) {
-      flex-basis: 49%;
-      align-self: flex-end;
-    }
-
     // Hides tag selector when showing subcategories selector
     .control:nth-of-type(6):nth-last-of-type(3) {
       display: none;
@@ -59,7 +54,6 @@
     display: flex;
     flex-flow: row wrap;
     order: 2;
-    gap: 1rem;
     align-items: flex-start;
     max-height: 100vh;
   }
@@ -70,29 +64,29 @@
   flex: 2;
   display: flex;
   flex-flow: row wrap;
-  gap: 3rem;
 
   .admin-report-doughnut {
-    max-width: 300px;
-    max-height: 300px;
     padding: 0.25rem;
   }
 
   &__chart-wrapper {
-    width: auto;
-    .doughnut-chart-title {
-      @include ellipsis;
-      margin: 0 auto;
-      text-align: center;
-      margin-bottom: 1rem;
-      max-width: 300px;
-    }
+    height: fit-content;
+    position: relative;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border-radius: var(--d-border-radius);
 
+    .doughnut-chart-title {
+      @include ellipsis;
+      position: absolute;
+      top: 3%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: var(--font-0);
+      z-index: 999;
+    }
+
     &:hover {
       transform: translateY(-1rem);
-      box-shadow: var(--shadow-card);
       cursor: pointer;
     }
   }
@@ -125,7 +119,7 @@
   @include report-container-box();
   flex: 1 1 300px;
   min-width: 300px;
-
+  margin-left: 1rem;
   display: flex;
   flex-flow: column nowrap;
   overflow-y: auto;

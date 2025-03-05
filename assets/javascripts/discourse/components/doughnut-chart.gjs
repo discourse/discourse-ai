@@ -1,9 +1,33 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
+  @tracked canvasSize = null;
+
+  calculateRadius(postCount) {
+    const minPosts = 0;
+    const maxPosts = 100;
+    const minRadius = 30;
+    const maxRadius = 100;
+    const clampedPostCount = Math.min(Math.max(postCount, minPosts), maxPosts);
+    return (
+      minRadius +
+      ((clampedPostCount - minPosts) / (maxPosts - minPosts)) *
+        (maxRadius - minRadius)
+    );
+  }
+
   get config() {
     const totalScore = this.args.totalScore || "";
+    // const radius = this.calculateRadius(this.args.totalScore)
+    // Temporary for tesitng:
+    const radius = this.calculateRadius(Math.floor(Math.random() * (100 + 1)));
+
+    const paddingTop = 30;
+    const paddingBottom = 0;
+    const canvasSize = 2 * radius + paddingTop + paddingBottom;
+    this.canvasSize = canvasSize;
 
     return {
       type: "doughnut",
@@ -13,14 +37,25 @@ export default class DoughnutChart extends Component {
           {
             data: this.args.data,
             backgroundColor: this.args.colors,
+            cutout: "70%",
+            radius,
           },
         ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: paddingTop,
+            left: 0,
+            right: 0,
+            bottom: 0,
+          },
+        },
         plugins: {
           legend: {
-            position: this.args.legendPosition || "bottom",
+            display: false,
           },
         },
       },
@@ -55,13 +90,26 @@ export default class DoughnutChart extends Component {
             ctx.save();
           },
         },
+        {
+          id: "resizeCanvas",
+          afterDraw: function (chart) {
+            const size = `${canvasSize}px`;
+            chart.canvas.style.width = size;
+            chart.canvas.style.height = size;
+
+            chart.resize();
+          },
+        },
       ],
     };
   }
 
   <template>
     {{#if this.config}}
-      <h3 class="doughnut-chart-title">{{@doughnutTitle}}</h3>
+      <h3
+        class="doughnut-chart-title"
+        style="max-width: {{this.canvasSize}}px"
+      >{{@doughnutTitle}}</h3>
       <Chart @chartConfig={{this.config}} class="admin-report-doughnut" />
     {{/if}}
   </template>
