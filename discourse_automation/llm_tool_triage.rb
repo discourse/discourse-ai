@@ -2,7 +2,7 @@
 
 # TODO: this is still highly experimental and subject to a lot of change
 # leaving it off in production for now Sam
-if defined?(DiscourseAutomation) && !Rails.production?
+if defined?(DiscourseAutomation) && !Rails.env.production?
   DiscourseAutomation::Scriptable.add("llm_tool_triage") do
     version 1
     run_in_background
