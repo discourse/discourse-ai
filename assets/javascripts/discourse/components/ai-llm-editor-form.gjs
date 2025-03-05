@@ -275,7 +275,7 @@ export default class AiLlmEditorForm extends Component {
         @validation="required|length:1,100"
         @disabled={{this.seeded}}
         @format="large"
-        @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
+        @tooltip={{i18n "discourse_ai.llms.hints.display_name"}}
         as |field|
       >
         <field.Input />
