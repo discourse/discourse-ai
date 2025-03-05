@@ -32,35 +32,41 @@ module DiscourseAi
           end
         end
 
+        def summary_prompt(topic_id:, persona_id:, default_prompt:)
+          prompt_text = default_prompt
+          if persona_id
+            persona = AiPersona.find_by(id: persona_id)
+            prompt_text = persona.system_prompt if persona
+          end
+          DiscourseAi::Completions::Prompt.new(prompt_text, topic_id: topic_id)
+        end
+
         def summary_extension_prompt(summary, contents)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
 
-          if SiteSetting.ai_summary_consolidator_persona_id
-            prompt =
-              DiscourseAi::Completions::Prompt.new(
-                AiPersona.find_by(id: SiteSetting.ai_summary_consolidator_persona_id).system_prompt,
-                topic_id: target.id,
-              )
-          else
-            prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT, topic_id: target.id) # summary extension prompt
-              You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
+          prompt =
+            summary_prompt(
+              topic_id: target.id,
+              persona_id: SiteSetting.ai_summary_consolidator_persona_id,
+              default_prompt: <<~TEXT,
+                You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
 
-              ### Guidelines:
-              - Only include the enhanced summary, without any additional commentary.
-              - Understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
-              - Maintain the original language of the text being summarized.
-              - Aim for summaries to be 400 words or less.
-              - Each new post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-              - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
-                - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
-                - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-                - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
-              - When formatting usernames either use @USERNAME or [USERNAME](#{resource_path}/POST_NUMBER)
-            TEXT
-          end
+                ### Guidelines:
+                - Only include the enhanced summary, without any additional commentary.
+                - Understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
+                - Maintain the original language of the text being summarized.
+                - Aim for summaries to be 400 words or less.
+                - Each new post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
+                - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
+                  - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
+                  - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
+                  - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
+                - When formatting usernames either use @USERNAME or [USERNAME](#{resource_path}/POST_NUMBER)
+              TEXT
+            )
 
           prompt.push(type: :user, content: <<~TEXT.strip)
             ### Context:
@@ -89,28 +95,25 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          if SiteSetting.ai_summary_persona_id.present?
-            prompt =
-              DiscourseAi::Completions::Prompt.new(
-                AiPersona.find_by(id: SiteSetting.ai_summary_consolidator_persona_id).system_prompt,
-                topic_id: target.id,
-              )
-          else
-            prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
-              You are an advanced summarization bot that generates concise, coherent summaries of provided text.
+          prompt =
+            summary_prompt(
+              topic_id: target.id,
+              persona_id: SiteSetting.ai_summary_persona_id,
+              default_prompt: <<~TEXT,
+                You are an advanced summarization bot that generates concise, coherent summaries of provided text.
 
-              - Only include the summary, without any additional commentary.
-              - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
-              - Maintain the original language of the text being summarized.
-              - Aim for summaries to be 400 words or less.
-              - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-              - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
-                - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
-                - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-                - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
-              - When formatting usernames either use @USERNMAE OR [USERNAME](#{resource_path}/POST_NUMBER)
-            TEXT
-          end
+                - Only include the summary, without any additional commentary.
+                - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
+                - Maintain the original language of the text being summarized.
+                - Aim for summaries to be 400 words or less.
+                - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
+                - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
+                  - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
+                  - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
+                  - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
+                - When formatting usernames either use @USERNMAE OR [USERNAME](#{resource_path}/POST_NUMBER)
+              TEXT
+            )
 
           prompt.push(
             type: :user,
