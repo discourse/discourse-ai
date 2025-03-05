@@ -16,6 +16,7 @@ if defined?(DiscourseAutomation)
 
     script do |context, fields|
       tool_id = fields["tool"]["value"]
+      post = context["post"]
 
       begin
         RateLimiter.new(
