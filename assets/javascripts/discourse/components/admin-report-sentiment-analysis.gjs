@@ -41,30 +41,6 @@ export default class AdminReportSentimentAnalysis extends Component {
       .classList.add("active");
   });
 
-  @action
-  async openToChart() {
-    const queryParams = this.router.currentRoute.queryParams;
-    if (queryParams.selectedChart) {
-      this.selectedChart = this.transformedData.find(
-        (data) => data.title === queryParams.selectedChart
-      );
-
-      if (!this.selectedChart) {
-        return;
-      }
-      this.showingSelectedChart = true;
-
-      try {
-        const response = await this.postRequest();
-        this.posts = response.posts.map((post) => Post.create(post));
-        this.hasMorePosts = response.has_more;
-        this.nextOffset = response.next_offset;
-      } catch (e) {
-        popupAjaxError(e);
-      }
-    }
-  }
-
   clearActiveFilters(element) {
     const filterButtons = element.querySelectorAll("li button");
     for (let button of filterButtons) {
@@ -103,18 +79,6 @@ export default class AdminReportSentimentAnalysis extends Component {
           icon: "face-angry",
         };
     }
-  }
-
-  async postRequest() {
-    return await ajax("/discourse-ai/sentiment/posts", {
-      data: {
-        group_by: this.currentGroupFilter,
-        group_value: this.selectedChart?.title,
-        start_date: this.args.model.start_date,
-        end_date: this.args.model.end_date,
-        offset: this.nextOffset,
-      },
-    });
   }
 
   get colors() {
@@ -205,6 +169,42 @@ export default class AdminReportSentimentAnalysis extends Component {
         },
       },
     ];
+  }
+
+  async postRequest() {
+    return await ajax("/discourse-ai/sentiment/posts", {
+      data: {
+        group_by: this.currentGroupFilter,
+        group_value: this.selectedChart?.title,
+        start_date: this.args.model.start_date,
+        end_date: this.args.model.end_date,
+        offset: this.nextOffset,
+      },
+    });
+  }
+
+  @action
+  async openToChart() {
+    const queryParams = this.router.currentRoute.queryParams;
+    if (queryParams.selectedChart) {
+      this.selectedChart = this.transformedData.find(
+        (data) => data.title === queryParams.selectedChart
+      );
+
+      if (!this.selectedChart) {
+        return;
+      }
+      this.showingSelectedChart = true;
+
+      try {
+        const response = await this.postRequest();
+        this.posts = response.posts.map((post) => Post.create(post));
+        this.hasMorePosts = response.has_more;
+        this.nextOffset = response.next_offset;
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
   }
 
   @action
