@@ -18,13 +18,11 @@ module DiscourseAi
           ClassificationResult.has_sentiment_classification? && SiteSetting.ai_sentiment_enabled
         end
 
-        if Rails.env.test? ||
-             ClassificationResult.has_sentiment_classification? && SiteSetting.ai_sentiment_enabled
-          EmotionFilterOrder.register!(plugin)
-          EmotionDashboardReport.register!(plugin)
-          SentimentDashboardReport.register!(plugin)
-          SentimentAnalysisReport.register!(plugin)
-        end
+        # TODO we need new interfaces to conditionally register depending on site in the multisite
+        EmotionFilterOrder.register!(plugin)
+        EmotionDashboardReport.register!(plugin)
+        SentimentDashboardReport.register!(plugin)
+        SentimentAnalysisReport.register!(plugin)
       end
     end
   end
