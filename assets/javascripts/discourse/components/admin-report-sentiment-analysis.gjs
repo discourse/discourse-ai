@@ -3,36 +3,26 @@ import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
 import dIcon from "discourse/helpers/d-icon";
-import replaceEmoji from "discourse/helpers/replace-emoji";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
-import { getAbsoluteURL } from "discourse/lib/get-url";
-import discourseLater from "discourse/lib/later";
-import { clipboardCopy } from "discourse/lib/utilities";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
-import DTooltip from "float-kit/components/d-tooltip";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
 
 export default class AdminReportSentimentAnalysis extends Component {
-  @service router;
-
   @tracked selectedChart = null;
-  @tracked posts = [];
+  @tracked posts = null;
   @tracked hasMorePosts = false;
   @tracked nextOffset = 0;
   @tracked showingSelectedChart = false;
   @tracked activeFilter = "all";
-  @tracked shareIcon = "link";
 
   setActiveFilter = modifier((element) => {
     this.clearActiveFilters(element);
@@ -81,6 +71,32 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
   }
 
+  doughnutTitle(data) {
+    const MAX_TITLE_LENGTH = 18;
+    const title = data?.title || "";
+    const score = data?.total_score ? ` (${data.total_score})` : "";
+
+    if (title.length + score.length > MAX_TITLE_LENGTH) {
+      return (
+        title.substring(0, MAX_TITLE_LENGTH - score.length) + "..." + score
+      );
+    }
+
+    return title + score;
+  }
+
+  async postRequest() {
+    return await ajax("/discourse-ai/sentiment/posts", {
+      data: {
+        group_by: this.currentGroupFilter,
+        group_value: this.selectedChart?.title,
+        start_date: this.args.model.start_date,
+        end_date: this.args.model.end_date,
+        offset: this.nextOffset,
+      },
+    });
+  }
+
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
   }
@@ -117,11 +133,10 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
 
     return this.posts.filter((post) => {
-      post.topic_title = replaceEmoji(post.topic_title);
-
       if (this.activeFilter === "all") {
         return true;
       }
+
       return post.sentiment === this.activeFilter;
     });
   }
@@ -171,56 +186,12 @@ export default class AdminReportSentimentAnalysis extends Component {
     ];
   }
 
-  async postRequest() {
-    return await ajax("/discourse-ai/sentiment/posts", {
-      data: {
-        group_by: this.currentGroupFilter,
-        group_value: this.selectedChart?.title,
-        start_date: this.args.model.start_date,
-        end_date: this.args.model.end_date,
-        offset: this.nextOffset,
-      },
-    });
-  }
-
-  @action
-  async openToChart() {
-    const queryParams = this.router.currentRoute.queryParams;
-    if (queryParams.selectedChart) {
-      this.selectedChart = this.transformedData.find(
-        (data) => data.title === queryParams.selectedChart
-      );
-
-      if (!this.selectedChart) {
-        return;
-      }
-      this.showingSelectedChart = true;
-
-      try {
-        const response = await this.postRequest();
-        this.posts = response.posts.map((post) => Post.create(post));
-        this.hasMorePosts = response.has_more;
-        this.nextOffset = response.next_offset;
-      } catch (e) {
-        popupAjaxError(e);
-      }
-    }
-  }
-
   @action
   async showDetails(data) {
     if (this.selectedChart === data) {
       // Don't do anything if the same chart is clicked again
       return;
     }
-
-    const currentQueryParams = this.router.currentRoute.queryParams;
-    this.router.transitionTo(this.router.currentRoute.name, {
-      queryParams: {
-        ...currentQueryParams,
-        selectedChart: data.title,
-      },
-    });
 
     this.selectedChart = data;
     this.showingSelectedChart = true;
@@ -246,10 +217,7 @@ export default class AdminReportSentimentAnalysis extends Component {
 
       this.hasMorePosts = response.has_more;
       this.nextOffset = response.next_offset;
-
-      const mappedPosts = response.posts.map((post) => Post.create(post));
-      this.posts.pushObjects(mappedPosts);
-      return mappedPosts;
+      return response.posts.map((post) => Post.create(post));
     } catch (e) {
       popupAjaxError(e);
     }
@@ -260,35 +228,9 @@ export default class AdminReportSentimentAnalysis extends Component {
     this.showingSelectedChart = false;
     this.selectedChart = null;
     this.activeFilter = "all";
-    this.posts = [];
-
-    const currentQueryParams = this.router.currentRoute.queryParams;
-    this.router.transitionTo(this.router.currentRoute.name, {
-      queryParams: {
-        ...currentQueryParams,
-        selectedChart: null,
-      },
-    });
-  }
-
-  @action
-  shareChart() {
-    const url = this.router.currentURL;
-    if (!url) {
-      return;
-    }
-
-    clipboardCopy(getAbsoluteURL(url));
-    this.shareIcon = "check";
-
-    discourseLater(() => {
-      this.shareIcon = "link";
-    }, 2000);
   }
 
   <template>
-    <span {{didInsert this.openToChart}}></span>
-
     {{#unless this.showingSelectedChart}}
       <div class="admin-report-sentiment-analysis">
         {{#each this.transformedData as |data|}}
@@ -310,7 +252,6 @@ export default class AdminReportSentimentAnalysis extends Component {
               @data={{data.scores}}
               @totalScore={{data.total_score}}
               @doughnutTitle={{data.title}}
-              @displayLegend={{true}}
             />
           </div>
         {{/each}}
@@ -319,23 +260,12 @@ export default class AdminReportSentimentAnalysis extends Component {
 
     {{#if (and this.selectedChart this.showingSelectedChart)}}
       <div class="admin-report-sentiment-analysis__selected-chart">
-        <div class="admin-report-sentiment-analysis__selected-chart-actions">
-          <DButton
-            @label="back_button"
-            @icon="chevron-left"
-            class="btn-flat"
-            @action={{this.backToAllCharts}}
-          />
-
-          <DTooltip
-            class="share btn-flat"
-            @icon={{this.shareIcon}}
-            {{on "click" this.shareChart}}
-            @content={{i18n
-              "discourse_ai.sentiments.sentiment_analysis.share_chart"
-            }}
-          />
-        </div>
+        <DButton
+          @label="back_button"
+          @icon="chevron-left"
+          class="btn-flat"
+          @action={{this.backToAllCharts}}
+        />
 
         <DoughnutChart
           @labels={{@model.labels}}
@@ -343,9 +273,7 @@ export default class AdminReportSentimentAnalysis extends Component {
           @data={{this.selectedChart.scores}}
           @totalScore={{this.selectedChart.total_score}}
           @doughnutTitle={{this.selectedChart.title}}
-          @displayLegend={{true}}
         />
-
       </div>
       <div class="admin-report-sentiment-analysis-details">
         <HorizontalOverflowNav

@@ -39,12 +39,13 @@
       flex: 1;
     }
 
-    // Hides tag selector when showing subcategories selector
-    .control:nth-of-type(6):nth-last-of-type(3) {
-      display: none;
+    .control:nth-of-type(n + 6) {
+      flex-basis: 49%;
+      align-self: flex-end;
     }
 
-    .control:has(.export-csv-btn) {
+    // Hides tag selector when showing subcategories selector
+    .control:nth-of-type(6):nth-last-of-type(3) {
       display: none;
     }
   }
@@ -54,6 +55,7 @@
     display: flex;
     flex-flow: row wrap;
     order: 2;
+    gap: 1rem;
     align-items: flex-start;
     max-height: 100vh;
   }
@@ -63,31 +65,30 @@
   @include report-container-box();
   flex: 2;
   display: flex;
-  gap: 1rem;
-  justify-content: space-around;
-  align-items: center;
   flex-flow: row wrap;
+  gap: 3rem;
 
   .admin-report-doughnut {
+    max-width: 300px;
+    max-height: 300px;
     padding: 0.25rem;
   }
 
   &__chart-wrapper {
-    height: fit-content;
-    position: relative;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border-radius: var(--d-border-radius);
-
+    width: auto;
     .doughnut-chart-title {
       @include ellipsis;
       margin: 0 auto;
-      margin-top: 1rem;
       text-align: center;
+      margin-bottom: 1rem;
+      max-width: 300px;
     }
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: var(--d-border-radius);
 
     &:hover {
-      box-shadow: var(--shadow-card);
       transform: translateY(-1rem);
+      box-shadow: var(--shadow-card);
       cursor: pointer;
     }
   }
@@ -101,23 +102,11 @@
       font-size: var(--font-up-2);
       margin: 0 auto;
       text-align: center;
+      margin-bottom: 1rem;
       margin-top: 0.3rem;
       padding-top: 2rem;
-    }
-  }
-
-  &__selected-chart-actions {
-    display: flex;
-    align-items: center;
-    padding-bottom: 0.35rem;
-    border-bottom: 1px solid var(--primary-low);
-
-    .share {
-      margin-left: auto;
-
-      .d-icon-check {
-        color: var(--success);
-      }
+      padding-bottom: 1rem;
+      border-top: 1px solid var(--primary-low);
     }
   }
 }
@@ -132,12 +121,11 @@
   @include report-container-box();
   flex: 1 1 300px;
   min-width: 300px;
-  margin-left: 1rem;
+
   display: flex;
   flex-flow: column nowrap;
   overflow-y: auto;
   height: 100%;
-  padding-top: 0;
 
   &__filters {
     border-bottom: 1px solid var(--primary-low);
@@ -210,15 +198,5 @@
       width: 100%;
       height: 100%;
     }
-  }
-}
-
-.admin-reports.admin-contents .sentiment-analysis {
-  .horizontal-overflow-nav {
-    background: var(--secondary);
-    position: sticky;
-    top: 0;
-    padding-top: 1rem;
-    z-index: z("header");
   }
 }

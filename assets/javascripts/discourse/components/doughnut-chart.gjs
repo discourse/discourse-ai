@@ -1,10 +1,7 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
 import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
-  @tracked canvasSize = null;
-
   get config() {
     const totalScore = this.args.totalScore || "";
 
@@ -16,18 +13,14 @@ export default class DoughnutChart extends Component {
           {
             data: this.args.data,
             backgroundColor: this.args.colors,
-            cutout: "50%",
-            radius: 100,
           },
         ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: this.args.displayLegend || false,
-            position: "bottom",
+            position: this.args.legendPosition || "bottom",
           },
         },
       },
