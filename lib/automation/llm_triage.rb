@@ -18,7 +18,9 @@ module DiscourseAi
         automation: nil,
         max_post_tokens: nil,
         stop_sequences: nil,
-        temperature: nil
+        temperature: nil,
+        whisper: nil,
+        reply_persona_id: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
              flag_post.blank?
@@ -55,13 +57,29 @@ module DiscourseAi
         if result.present? && result.downcase.include?(search_for_text.downcase)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
           user = user || Discourse.system_user
-          if canned_reply.present?
+          if reply_persona_id.present?
+            ai_persona = AiPersona.find_by(id: persona_id)
+            if ai_persona.present?
+              persona_class = ai_persona.class_instance
+              persona = persona_class.new
+
+              bot_user = ai_persona.user
+              if bot_user.nil?
+                bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+                playground = DiscourseAi::AiBot::Playground.new(bot)
+
+                playground.reply_to(post, whisper: whisper, context_style: :topic)
+              end
+            end
+          elsif canned_reply.present?
+            post_type = whisper ? Post.types[:whisper] : Post.types[:regular]
             PostCreator.create!(
               user,
               topic_id: post.topic_id,
               raw: canned_reply,
               reply_to_post_number: post.post_number,
               skip_validations: true,
+              post_type: post_type,
             )
           end
 

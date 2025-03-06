@@ -9,22 +9,27 @@ if defined?(DiscourseAutomation)
 
     triggerables %i[post_created_edited]
 
-    field :system_prompt, component: :message, required: false
-    field :search_for_text, component: :text, required: true
-    field :max_post_tokens, component: :text
-    field :stop_sequences, component: :text_list, required: false
+    # TODO move to triggerables
+    field :include_personal_messages, component: :boolean
+
+    # Inputs
     field :model,
           component: :choices,
           required: true,
           extra: {
             content: DiscourseAi::Automation.available_models,
           }
+    field :system_prompt, component: :message, required: false
+    field :search_for_text, component: :text, required: true
+    field :max_post_tokens, component: :text
+    field :stop_sequences, component: :text_list, required: false
+    field :temperature, component: :text
+
+    # Actions
     field :category, component: :category
     field :tags, component: :tags
     field :hide_topic, component: :boolean
     field :flag_post, component: :boolean
-    field :include_personal_messages, component: :boolean
-    field :temperature, component: :text
     field :flag_type,
           component: :choices,
           required: false,
@@ -32,13 +37,30 @@ if defined?(DiscourseAutomation)
             content: DiscourseAi::Automation.flag_types,
           },
           default: "review"
-    field :canned_reply, component: :message
     field :canned_reply_user, component: :user
+    field :canned_reply, component: :message
+    field :reply_persona,
+          component: :choices,
+          extra: {
+            content: DiscourseAi::Automation.available_persona_choices,
+          }
+    field :whisper, component: :boolean
 
     script do |context, fields|
       post = context["post"]
+
+      post = context["post"]
+      next if post&.user&.bot?
+
+      if post.topic.private_message?
+        include_personal_messages = fields.dig("include_personal_messages", "value")
+        next if !include_personal_messages
+      end
+
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
+      reply_persona_id = fields["reply_persona"]["value"]
+      whisper = fields["whisper"]["value"]
 
       # nothing to do if we already replied
       next if post.user.username == canned_reply_user
@@ -65,11 +87,6 @@ if defined?(DiscourseAutomation)
 
       stop_sequences = fields.dig("stop_sequences", "value")
 
-      if post.topic.private_message?
-        include_personal_messages = fields.dig("include_personal_messages", "value")
-        next if !include_personal_messages
-      end
-
       begin
         RateLimiter.new(
           Discourse.system_user,
@@ -94,6 +111,8 @@ if defined?(DiscourseAutomation)
           tags: tags,
           canned_reply: canned_reply,
           canned_reply_user: canned_reply_user,
+          reply_persona_id: reply_persona_id,
+          whisper: whisper,
           hide_topic: hide_topic,
           flag_post: flag_post,
           flag_type: flag_type.to_s.to_sym,
