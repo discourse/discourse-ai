@@ -44,6 +44,13 @@
       display: none;
     }
 
+    .control:last-child {
+      align-self: flex-end;
+
+      input {
+      }
+    }
+
     .control:has(.export-csv-btn) {
       display: none;
     }
@@ -63,10 +70,12 @@
   @include report-container-box();
   flex: 2;
   display: flex;
-  gap: 1rem;
-  justify-content: space-around;
+  gap: 2rem 1rem;
+  justify-content: space-evenly;
   align-items: center;
   flex-flow: row wrap;
+  padding-inline: 0;
+  padding-block: 1.5rem;
 
   .admin-report-doughnut {
     padding: 0.25rem;
@@ -87,7 +96,7 @@
 
     &:hover {
       box-shadow: var(--shadow-card);
-      transform: translateY(-1rem);
+      transform: translateY(-0.5rem);
       cursor: pointer;
     }
   }
@@ -219,6 +228,20 @@
     position: sticky;
     top: 0;
     padding-top: 1rem;
-    z-index: z("header");
+    z-index: z("timeline");
+  }
+}
+
+.showing-sentiment-analysis-chart
+  .admin-report.sentiment-analysis
+  .body
+  .filters {
+  // Hide elements 2 - 6 when showing selected chart
+  // as they're not supported being changed in this view
+  .control:first-of-type {
+    flex: unset;
+  }
+  .control:nth-of-type(n + 2):nth-of-type(-n + 6) {
+    display: none;
   }
 }
