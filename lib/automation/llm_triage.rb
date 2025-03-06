@@ -20,11 +20,17 @@ module DiscourseAi
         stop_sequences: nil,
         temperature: nil,
         whisper: nil,
-        reply_persona_id: nil
+        reply_persona_id: nil,
+        action: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
-             flag_post.blank?
+             flag_post.blank? && reply_persona_id.blank?
           raise ArgumentError, "llm_triage: no action specified!"
+        end
+
+        if action == :edit && category_id.blank? && tags.blank? && flag_post.blank? &&
+             hide_topic.blank?
+          return
         end
 
         llm = DiscourseAi::Completions::Llm.proxy(model)
@@ -56,22 +62,24 @@ module DiscourseAi
 
         if result.present? && result.downcase.include?(search_for_text.downcase)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
+          original_user = user
           user = user || Discourse.system_user
-          if reply_persona_id.present?
-            ai_persona = AiPersona.find_by(id: persona_id)
-            if ai_persona.present?
-              persona_class = ai_persona.class_instance
-              persona = persona_class.new
-
-              bot_user = ai_persona.user
-              if bot_user.nil?
-                bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
-                playground = DiscourseAi::AiBot::Playground.new(bot)
-
-                playground.reply_to(post, whisper: whisper, context_style: :topic)
-              end
+          if reply_persona_id.present? && action != :edit
+            begin
+              DiscourseAi::AiBot::Playground.reply_to_post(
+                post: post,
+                persona_id: reply_persona_id,
+                whisper: whisper,
+                user: original_user,
+              )
+            rescue StandardError => e
+              Discourse.warn_exception(
+                e,
+                message: "Error responding to: #{post&.url} in LlmTriage.handle",
+              )
+              raise e if Rails.env.test?
             end
-          elsif canned_reply.present?
+          elsif canned_reply.present? && action != :edit
             post_type = whisper ? Post.types[:whisper] : Post.types[:regular]
             PostCreator.create!(
               user,

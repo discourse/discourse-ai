@@ -162,6 +162,20 @@ module DiscourseAi
         end
       end
 
+      def self.reply_to_post(post:, user: nil, persona_id: nil, whisper: nil)
+        ai_persona = AiPersona.find_by(id: persona_id)
+        raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
+        persona_class = ai_persona.class_instance
+        persona = persona_class.new
+
+        bot_user = user || ai_persona.user
+        raise Discourse::InvalidParameters.new(:user) if bot_user.nil?
+        bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+        playground = DiscourseAi::AiBot::Playground.new(bot)
+
+        playground.reply_to(post, whisper: whisper, context_style: :topic)
+      end
+
       def initialize(bot)
         @bot = bot
       end

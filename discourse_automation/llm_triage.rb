@@ -42,13 +42,15 @@ if defined?(DiscourseAutomation)
     field :reply_persona,
           component: :choices,
           extra: {
-            content: DiscourseAi::Automation.available_persona_choices,
+            content:
+              DiscourseAi::Automation.available_persona_choices(
+                require_user: false,
+                require_default_llm: true,
+              ),
           }
     field :whisper, component: :boolean
 
     script do |context, fields|
-      post = context["post"]
-
       post = context["post"]
       next if post&.user&.bot?
 
@@ -59,16 +61,16 @@ if defined?(DiscourseAutomation)
 
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
-      reply_persona_id = fields["reply_persona"]["value"]
-      whisper = fields["whisper"]["value"]
+      reply_persona_id = fields.dig("reply_persona", "value")
+      whisper = fields.dig("whisper", "value")
 
       # nothing to do if we already replied
       next if post.user.username == canned_reply_user
       next if post.raw.strip == canned_reply.to_s.strip
 
-      system_prompt = fields["system_prompt"]["value"]
-      search_for_text = fields["search_for_text"]["value"]
-      model = fields["model"]["value"]
+      system_prompt = fields.dig("system_prompt", "value")
+      search_for_text = fields.dig("search_for_text", "value")
+      model = fields.dig("model", "value")
 
       category_id = fields.dig("category", "value")
       tags = fields.dig("tags", "value")
@@ -120,9 +122,13 @@ if defined?(DiscourseAutomation)
           stop_sequences: stop_sequences,
           automation: self.automation,
           temperature: temperature,
+          action: context["action"],
         )
       rescue => e
-        Discourse.warn_exception(e, message: "llm_triage: skipped triage on post #{post.id}")
+        Discourse.warn_exception(
+          e,
+          message: "llm_triage: skipped triage on post #{post.id} #{post.url}",
+        )
       end
     end
   end
