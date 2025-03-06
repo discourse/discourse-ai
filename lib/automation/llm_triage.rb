@@ -18,11 +18,19 @@ module DiscourseAi
         automation: nil,
         max_post_tokens: nil,
         stop_sequences: nil,
-        temperature: nil
+        temperature: nil,
+        whisper: nil,
+        reply_persona_id: nil,
+        action: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
-             flag_post.blank?
+             flag_post.blank? && reply_persona_id.blank?
           raise ArgumentError, "llm_triage: no action specified!"
+        end
+
+        if action == :edit && category_id.blank? && tags.blank? && flag_post.blank? &&
+             hide_topic.blank?
+          return
         end
 
         llm = DiscourseAi::Completions::Llm.proxy(model)
@@ -54,14 +62,32 @@ module DiscourseAi
 
         if result.present? && result.downcase.include?(search_for_text.downcase)
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
+          original_user = user
           user = user || Discourse.system_user
-          if canned_reply.present?
+          if reply_persona_id.present? && action != :edit
+            begin
+              DiscourseAi::AiBot::Playground.reply_to_post(
+                post: post,
+                persona_id: reply_persona_id,
+                whisper: whisper,
+                user: original_user,
+              )
+            rescue StandardError => e
+              Discourse.warn_exception(
+                e,
+                message: "Error responding to: #{post&.url} in LlmTriage.handle",
+              )
+              raise e if Rails.env.test?
+            end
+          elsif canned_reply.present? && action != :edit
+            post_type = whisper ? Post.types[:whisper] : Post.types[:regular]
             PostCreator.create!(
               user,
               topic_id: post.topic_id,
               raw: canned_reply,
               reply_to_post_number: post.post_number,
               skip_validations: true,
+              post_type: post_type,
             )
           end
 
