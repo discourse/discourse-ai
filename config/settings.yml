@@ -18,7 +18,7 @@ discourse_ai:
     default: ""
     json_schema: DiscourseAi::Sentiment::SentimentSiteSettingJsonSchema
   ai_sentiment_backfill_maximum_posts_per_hour:
-    default: 250
+    default: 2500
     min: 0
     max: 10000
     hidden: true
