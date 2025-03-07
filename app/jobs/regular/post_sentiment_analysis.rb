@@ -2,6 +2,8 @@
 
 module ::Jobs
   class PostSentimentAnalysis < ::Jobs::Base
+    sidekiq_options queue: "low"
+
     def execute(args)
       return unless SiteSetting.ai_sentiment_enabled
       return if (post_id = args[:post_id]).blank?
