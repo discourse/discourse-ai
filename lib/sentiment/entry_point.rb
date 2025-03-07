@@ -11,7 +11,6 @@ module DiscourseAi
             end
           end
 
-        plugin.on(:post_created, &sentiment_analysis_cb)
         plugin.on(:post_edited, &sentiment_analysis_cb)
 
         plugin.add_to_serializer(:current_user, :can_see_sentiment_reports) do
