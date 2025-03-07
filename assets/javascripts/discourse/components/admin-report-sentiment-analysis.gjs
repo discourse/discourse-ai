@@ -10,6 +10,7 @@ import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
+import bodyClass from "discourse/helpers/body-class";
 import dIcon from "discourse/helpers/d-icon";
 import replaceEmoji from "discourse/helpers/replace-emoji";
 import { ajax } from "discourse/lib/ajax";
@@ -318,6 +319,7 @@ export default class AdminReportSentimentAnalysis extends Component {
     {{/unless}}
 
     {{#if (and this.selectedChart this.showingSelectedChart)}}
+      {{bodyClass "showing-sentiment-analysis-chart"}}
       <div class="admin-report-sentiment-analysis__selected-chart">
         <div class="admin-report-sentiment-analysis__selected-chart-actions">
           <DButton
