@@ -10,16 +10,6 @@ module DiscourseAi
       def self.register!(plugin)
         plugin.add_report("sentiment_analysis") do |report|
           report.modes = [:sentiment_analysis]
-          pp "============== #{report.filters} ========= #{report.filters.class} ========== #{report.filters.inspect}"
-
-          if report.filters.is_a?(String)
-            begin
-              report.filters = JSON.parse(report.filters)
-            rescue JSON::ParserError => e
-              Rails.logger.error("#{self.class.name}: #{e.message}")
-              report.filters = {}
-            end
-          end
 
           group_by_filter = report.filters.dig(:group_by) || GROUP_BY_FILTER_DEFAULT
           report.add_filter(
