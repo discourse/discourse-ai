@@ -77,5 +77,21 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
         expect(poster_name).to eq("test")
       end
     end
+
+    context "when enable_names enabled and prioritize_username_in_ux enabled" do
+      fab!(:user) { Fabricate(:user, username: "test") }
+
+      it "includes the username" do
+        SiteSetting.enable_names = true
+        SiteSetting.prioritize_username_in_ux = true
+
+        post_1.update!(user: user)
+
+        content = topic_summary.targets_data
+        poster_name = content.first[:poster]
+
+        expect(poster_name).to eq("test")
+      end
+    end
   end
 end
