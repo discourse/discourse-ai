@@ -99,7 +99,6 @@ en:
               label: "Tool"
               description: "Tool to use for triage (tool must have no parameters defined)"
 
-
         llm_persona_triage:
           fields:
             persona:
@@ -714,9 +713,16 @@ en:
         tell_me_more: "Tell me more..."
         collapse: "Collapse"
         timed_out: "Discobot couldn't find any discoveries. Something went wrong."
+        user_setting: "Enable search discoveries"
         tooltip:
           header: "AI powered search"
           content: "Natural language search powered by %{model}"
+          actions:
+            info: "How does it work?"
+            disable: "Disable"
+
+      user_preferences:
+        empty: "There are no relevant settings available at this time"
     review:
       types:
         reviewable_ai_post:

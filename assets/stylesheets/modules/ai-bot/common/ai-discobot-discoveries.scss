@@ -63,9 +63,24 @@
 }
 
 .ai-search-discoveries-tooltip {
+  &__content {
+    padding: 0.5rem;
+  }
+
   &__header {
     font-weight: bold;
     margin-bottom: 0.5em;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .btn {
+      padding: 0;
+    }
   }
 
   .fk-d-tooltip__trigger {
