@@ -31,7 +31,7 @@ RSpec.describe UserOption do
     end
 
     it "is present" do
-      expect(described_class.new.ai_search_discoveries).to eq(false)
+      expect(described_class.new.ai_search_discoveries).to eq(true)
     end
   end
 end

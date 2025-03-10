@@ -168,7 +168,7 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
 
       serializer =
         CurrentUserSerializer.new(Fabricate(:user), scope: Guardian.new(Fabricate(:user)))
-      expect(serializer.user_option.ai_search_discoveries).to eq(false)
+      expect(serializer.user_option.ai_search_discoveries).to eq(true)
     end
   end
 end
