@@ -53,19 +53,32 @@ module DiscourseAi
       end
 
       def suggest_title
-        input = get_text_param!
+        assistant = DiscourseAi::AiHelper::Assistant.new
+
+        if params[:topic_id]
+          topic = Topic.find_by(id: params[:topic_id])
+
+          topic_content =
+            topic
+              .posts
+              .joins(:user)
+              .pluck(:post_number, :raw, :username, :last_version_at)
+              .map do |pn, raw_text, username, last_version_at|
+                { poster: username, id: pn, text: raw_text, last_version_at: last_version_at }
+              end
+
+          truncated_content = topic_content.map { |item| assistant.truncate(item) }
+
+          input = truncated_content
+        else
+          input = get_text_param!
+        end
 
         prompt = CompletionPrompt.enabled_by_name("generate_titles")
         raise Discourse::InvalidParameters.new(:mode) if !prompt
 
         hijack do
-          render json:
-                   DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
-                     prompt,
-                     input,
-                     current_user,
-                   ),
-                 status: 200
+          render json: assistant.generate_and_send_prompt(prompt, input, current_user), status: 200
         end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
