@@ -34,7 +34,7 @@ module DiscourseAi
                   enum: %w[latest latest_topic oldest views likes],
                 },
                 {
-                  name: "limit",
+                  name: "max_results",
                   description:
                     "limit number of results returned (generally prefer to just keep to default)",
                   type: "integer",
@@ -103,102 +103,38 @@ module DiscourseAi
 
         def invoke
           search_terms = []
-
           search_terms << options[:base_query] if options[:base_query].present?
-          search_terms << search_query.strip if search_query.present?
+          search_terms << search_query if search_query.present?
           search_args.each { |key, value| search_terms << "#{key}:#{value}" if value.present? }
 
-          guardian = nil
-          if options[:search_private] && context[:user]
-            guardian = Guardian.new(context[:user])
-          else
-            guardian = Guardian.new
-            search_terms << "status:public"
-          end
+          @last_query = search_terms.join(" ").to_s
 
-          search_string = search_terms.join(" ").to_s
-          @last_query = search_string
-
-          yield(I18n.t("discourse_ai.ai_bot.searching", query: search_string))
-
-          results = ::Search.execute(search_string, search_type: :full_page, guardian: guardian)
+          yield(I18n.t("discourse_ai.ai_bot.searching", query: @last_query))
 
           max_results = calculate_max_results(llm)
-          results_limit = parameters[:limit] || max_results
-          results_limit = max_results if parameters[:limit].to_i > max_results
-
-          should_try_semantic_search =
-            SiteSetting.ai_embeddings_semantic_search_enabled && search_query.present?
-
-          max_semantic_results = max_results / 4
-          results_limit = results_limit - max_semantic_results if should_try_semantic_search
-
-          posts = results&.posts || []
-          posts = posts[0..results_limit.to_i - 1]
-
-          if should_try_semantic_search
-            semantic_search = DiscourseAi::Embeddings::SemanticSearch.new(guardian)
-            topic_ids = Set.new(posts.map(&:topic_id))
-
-            search = ::Search.new(search_string, guardian: guardian)
-
-            results = nil
-            begin
-              results = semantic_search.search_for_topics(search.term)
-            rescue => e
-              Discourse.warn_exception(e, message: "Semantic search failed")
-            end
-
-            if results
-              results = search.apply_filters(results)
-
-              results.each do |post|
-                next if topic_ids.include?(post.topic_id)
-
-                topic_ids << post.topic_id
-                posts << post
-
-                break if posts.length >= max_results
-              end
-            end
+          if parameters[:max_results].to_i > 0
+            max_results = [parameters[:max_results].to_i, max_results].min
           end
 
-          @last_num_results = posts.length
-          # this is the general pattern from core
-          # if there are millions of hidden tags it may fail
-          hidden_tags = nil
+          search_query_with_base = [options[:base_query], search_query].compact.join(" ").strip
 
-          if posts.blank?
-            { args: parameters, rows: [], instruction: "nothing was found, expand your search" }
-          else
-            format_results(posts, args: parameters) do |post|
-              category_names = [
-                post.topic.category&.parent_category&.name,
-                post.topic.category&.name,
-              ].compact.join(" > ")
-              row = {
-                title: post.topic.title,
-                url: Discourse.base_path + post.url,
-                username: post.user&.username,
-                excerpt: post.excerpt,
-                created: post.created_at,
-                category: category_names,
-                likes: post.like_count,
-                topic_views: post.topic.views,
-                topic_likes: post.topic.like_count,
-                topic_replies: post.topic.posts_count - 1,
-              }
+          results =
+            DiscourseAi::Utils::Search.perform_search(
+              search_query: search_query_with_base,
+              category: parameters[:category],
+              user: parameters[:user],
+              order: parameters[:order],
+              max_posts: parameters[:max_posts],
+              tags: parameters[:tags],
+              before: parameters[:before],
+              after: parameters[:after],
+              status: parameters[:status],
+              max_results: max_results,
+              current_user: options[:search_private] ? context[:user] : nil,
+            )
 
-              if SiteSetting.tagging_enabled
-                hidden_tags ||= DiscourseTagging.hidden_tag_names
-                # using map over pluck to avoid n+1 (assuming caller preloading)
-                tags = post.topic.tags.map(&:name) - hidden_tags
-                row[:tags] = tags.join(", ") if tags.present?
-              end
-
-              row
-            end
-          end
+          @last_num_results = results[:rows]&.length || 0
+          results
         end
 
         protected

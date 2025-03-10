@@ -328,4 +328,39 @@ RSpec.describe AiTool do
       expect(result).to eq(expected)
     end
   end
+
+  context "when using the search API" do
+    before { SearchIndexer.enable }
+    after { SearchIndexer.disable }
+
+    it "can perform a discourse search" do
+      # Create a new topic
+      topic = Fabricate(:topic, title: "Test Search Topic", category: Fabricate(:category))
+      post = Fabricate(:post, topic: topic, raw: "This is a test post content, banana")
+
+      # Ensure the topic is indexed
+      SearchIndexer.index(topic, force: true)
+      SearchIndexer.index(post, force: true)
+
+      # Define the tool script
+      script = <<~JS
+      function invoke(params) {
+        return discourse.search({ search_query: params.query });
+      }
+    JS
+
+      # Create the tool and runner
+      tool = create_tool(script: script)
+      runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil, context: {})
+
+      # Invoke the tool and get the results
+      result = runner.invoke
+
+      p result
+
+      # Verify the topic is found
+      expect(result["rows"].length).to be > 0
+      expect(result["rows"].first["title"]).to eq("Test Search Topic")
+    end
+  end
 end

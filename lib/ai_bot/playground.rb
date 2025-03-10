@@ -162,7 +162,7 @@ module DiscourseAi
         end
       end
 
-      def self.reply_to_post(post:, user: nil, persona_id: nil, whisper: nil)
+      def self.reply_to_post(post:, user: nil, persona_id: nil, whisper: nil, add_user_to_pm: false)
         ai_persona = AiPersona.find_by(id: persona_id)
         raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
         persona_class = ai_persona.class_instance
@@ -173,7 +173,12 @@ module DiscourseAi
         bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
         playground = DiscourseAi::AiBot::Playground.new(bot)
 
-        playground.reply_to(post, whisper: whisper, context_style: :topic)
+        playground.reply_to(
+          post,
+          whisper: whisper,
+          context_style: :topic,
+          add_user_to_pm: add_user_to_pm,
+        )
       end
 
       def initialize(bot)
@@ -433,7 +438,14 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post, custom_instructions: nil, whisper: nil, context_style: nil, &blk)
+      def reply_to(
+        post,
+        custom_instructions: nil,
+        whisper: nil,
+        context_style: nil,
+        add_user_to_pm: true,
+        &blk
+      )
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
@@ -470,7 +482,7 @@ module DiscourseAi
         stream_reply = post.topic.private_message?
 
         # we need to ensure persona user is allowed to reply to the pm
-        if post.topic.private_message?
+        if post.topic.private_message? && add_user_to_pm
           if !post.topic.topic_allowed_users.exists?(user_id: reply_user.id)
             post.topic.topic_allowed_users.create!(user_id: reply_user.id)
           end
@@ -485,6 +497,7 @@ module DiscourseAi
               skip_validations: true,
               skip_jobs: true,
               post_type: post_type,
+              skip_guardian: true,
             )
 
           publish_update(reply_post, { raw: reply_post.cooked })
@@ -560,6 +573,7 @@ module DiscourseAi
               raw: reply,
               skip_validations: true,
               post_type: post_type,
+              skip_guardian: true,
             )
         end
 
