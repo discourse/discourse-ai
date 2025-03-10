@@ -13,11 +13,18 @@ module DiscourseAi
         end
 
         def targets_data
+          name_or_username =
+            if SiteSetting.enable_names && !SiteSetting.prioritize_username_in_ux
+              :name || :username
+            else
+              :username
+            end
+
           posts_data =
             (target.has_summary? ? best_replies : pick_selection).pluck(
               :post_number,
               :raw,
-              :username,
+              name_or_username,
               :last_version_at,
             )
 
