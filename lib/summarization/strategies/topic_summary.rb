@@ -13,29 +13,28 @@ module DiscourseAi
         end
 
         def targets_data
-          name_or_username =
-            if SiteSetting.enable_names && !SiteSetting.prioritize_username_in_ux
-              :name || :username
-            else
-              :username
-            end
+          post_attributes = %i[post_number raw username last_version_at]
+          if SiteSetting.enable_names && !SiteSetting.prioritize_username_in_ux
+            post_attributes.push(:name)
+          end
 
-          posts_data =
-            (target.has_summary? ? best_replies : pick_selection).pluck(
-              :post_number,
-              :raw,
-              name_or_username,
-              :last_version_at,
-            )
+          posts_data = (target.has_summary? ? best_replies : pick_selection).pluck(post_attributes)
 
-          posts_data.reduce([]) do |memo, (pn, raw, username, last_version_at)|
+          posts_data.reduce([]) do |memo, (pn, raw, username, last_version_at, name)|
             raw_text = raw
 
             if pn == 1 && target.topic_embed&.embed_content_cache.present?
               raw_text = target.topic_embed&.embed_content_cache
             end
 
-            memo << { poster: username, id: pn, text: raw_text, last_version_at: last_version_at }
+            display_name = name.presence || username
+
+            memo << {
+              poster: display_name,
+              id: pn,
+              text: raw_text,
+              last_version_at: last_version_at,
+            }
           end
         end
 
