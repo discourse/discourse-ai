@@ -219,6 +219,7 @@ export default class AdminReportSentimentAnalysis extends Component {
     this.router.transitionTo(this.router.currentRoute.name, {
       queryParams: {
         ...currentQueryParams,
+        filters: JSON.parse(currentQueryParams.filters), // avoids a double escaping
         selectedChart: data.title,
       },
     });
