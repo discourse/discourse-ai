@@ -54,11 +54,10 @@ export default class RagUploader extends Component {
       this.uppyUpload.cancelAllUploads();
     }
 
-    this.ragUploads = this.target?.rag_uploads || [];
+    this.ragUploads = this.target?.rag_uploads?.slice() || [];
     this.filteredUploads = this.ragUploads;
 
-    const targetName = this.target?.constructor?.name;
-
+    const targetName = this.targetName || this.target?.constructor?.name;
     if (this.ragUploads?.length && this.target?.id) {
       ajax(
         `/admin/plugins/discourse-ai/rag-document-fragments/files/status.json?target_type=${targetName}&target_id=${this.target.id}`
@@ -127,7 +126,6 @@ export default class RagUploader extends Component {
 
   <template>
     <div class="rag-uploader">
-      <h3>{{i18n "discourse_ai.rag.uploads.title"}}</h3>
       {{#if @allowImages}}
         <p>{{i18n "discourse_ai.rag.uploads.description_with_images"}}</p>
       {{else}}

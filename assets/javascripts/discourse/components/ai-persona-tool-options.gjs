@@ -1,82 +1,106 @@
 import Component from "@glimmer/component";
+import { action, get } from "@ember/object";
+import { eq } from "truth-helpers";
 import { i18n } from "discourse-i18n";
-import AiPersonaToolOptionEditor from "./ai-persona-tool-option-editor";
+import AiLlmSelector from "./ai-llm-selector";
 
 export default class AiPersonaToolOptions extends Component {
   get showToolOptions() {
     const allTools = this.args.allTools;
-    if (!allTools) {
+    if (!allTools || !this.args.data.tools) {
       return false;
     }
-
-    return this.toolNames.any((tool) => allTools.findBy("id", tool)?.options);
+    return this.args.data?.tools.any(
+      (tool) => allTools.findBy("id", tool)?.options
+    );
   }
 
-  get toolNames() {
-    if (!this.args.tools) {
-      return [];
-    }
-    return this.args.tools.map((tool) => {
-      if (typeof tool === "string") {
-        return tool;
-      } else {
-        return tool[0];
-      }
+  get toolsMetadata() {
+    const metatada = {};
+
+    this.args.allTools.map((t) => {
+      metatada[t.id] = {
+        name: t.name,
+        ...t?.options,
+      };
     });
+
+    return metatada;
   }
 
-  get toolOptions() {
-    if (!this.args.tools) {
-      return [];
-    }
-
-    const allTools = this.args.allTools;
-    if (!allTools) {
-      return [];
-    }
-
-    const options = [];
-    this.toolNames.forEach((toolId) => {
-      const tool = allTools.findBy("id", toolId);
-
-      const toolName = tool?.name;
-      const toolOptions = tool?.options;
-
-      if (toolOptions) {
-        const mappedOptions = Object.keys(toolOptions).map((key) => {
-          const value = this.args.persona.getToolOption(toolId, key);
-          return Object.assign({}, toolOptions[key], { id: key, value });
-        });
-
-        options.push({ toolName, options: mappedOptions });
-      }
-    });
-
-    return options;
+  @action
+  formObjectKeys(toolOptions) {
+    return Object.keys(toolOptions);
   }
 
   <template>
     {{#if this.showToolOptions}}
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.tool_options"}}</label>
+      <@form.Container @title={{i18n "discourse_ai.ai_persona.tool_options"}}>
         <div>
-          {{#each this.toolOptions as |toolOption|}}
-            <div class="ai-persona-editor__tool-options">
-              <div class="ai-persona-editor__tool-options-name">
-                {{toolOption.toolName}}
+          <@form.Object
+            @name="toolOptions"
+            @title={{i18n "discourse_ai.ai_persona.tool_options"}}
+            as |toolObj optsPerTool|
+          >
+            {{#each (this.formObjectKeys optsPerTool) as |toolId|}}
+              <div class="ai-persona-editor__tool-options">
+                {{#let (get this.toolsMetadata toolId) as |toolMeta|}}
+                  <div class="ai-persona-editor__tool-options-name">
+                    {{toolMeta.name}}
+                  </div>
+                  <toolObj.Object @name={{toolId}} as |optionsObj optionData|>
+                    {{#each (this.formObjectKeys optionData) as |optionName|}}
+                      <div class="ai-persona-editor__tool-option-options">
+                        <div class="control-group">
+                          {{#let (get toolMeta optionName) as |optionMeta|}}
+                            <optionsObj.Field
+                              @name={{optionName}}
+                              @title={{optionMeta.name}}
+                              as |field|
+                            >
+                              {{#if (eq optionMeta.type "enum")}}
+                                <field.Select
+                                  @includeNone={{false}}
+                                  as |select|
+                                >
+                                  {{#each optionsObj.values as |v|}}
+                                    <select.Option
+                                      @value={{v}}
+                                    >{{v}}</select.Option>
+                                  {{/each}}
+                                </field.Select>
+                              {{else if (eq optionMeta.type "llm")}}
+                                <field.Custom>
+                                  <AiLlmSelector
+                                    @value={{field.value}}
+                                    @llms={{@llms}}
+                                    @onChange={{field.set}}
+                                    @class="ai-persona-tool-option-editor__llms"
+                                  />
+                                </field.Custom>
+                              {{else if (eq optionMeta.type "boolean")}}
+                                <field.Checkbox />
+                              {{else}}
+                                <field.Input />
+                              {{/if}}
+
+                              <div
+                                class="ai-persona-tool-option-editor__instructions"
+                              >
+                                {{optionMeta.description}}
+                              </div>
+                            </optionsObj.Field>
+                          {{/let}}
+                        </div>
+                      </div>
+                    {{/each}}
+                  </toolObj.Object>
+                {{/let}}
               </div>
-              <div class="ai-persona-editor__tool-option-options">
-                {{#each toolOption.options as |option|}}
-                  <AiPersonaToolOptionEditor
-                    @option={{option}}
-                    @llms={{@llms}}
-                  />
-                {{/each}}
-              </div>
-            </div>
-          {{/each}}
+            {{/each}}
+          </@form.Object>
         </div>
-      </div>
+      </@form.Container>
     {{/if}}
   </template>
 }

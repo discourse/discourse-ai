@@ -42,15 +42,6 @@
 .ai-persona-editor {
   padding-left: 0.5em;
 
-  .fk-d-tooltip__icon {
-    padding-left: 0.25em;
-    color: var(--primary-medium);
-  }
-
-  label {
-    display: block;
-  }
-
   &__tool-options {
     padding: 5px 10px 5px;
     border: 1px solid var(--primary-low-mid);
@@ -60,27 +51,6 @@
   &__tool-options-name {
     margin-bottom: 10px;
     font-size: var(--font-down-1);
-  }
-
-  &__description {
-    width: 500px;
-  }
-
-  &__system_prompt {
-    width: 500px;
-    height: 400px;
-  }
-
-  &__tool-details,
-  &__vision_enabled,
-  &__allow_chat_direct_messages,
-  &__allow_chat_channel_mentions,
-  &__allow_topic_mentions,
-  &__allow_personal_messages,
-  &__force_default_llm,
-  &__priority {
-    display: flex;
-    align-items: center;
   }
 }
 
