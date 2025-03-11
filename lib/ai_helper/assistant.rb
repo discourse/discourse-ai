@@ -206,22 +206,6 @@ module DiscourseAi
         raw_caption.delete("|").squish.truncate_words(IMAGE_CAPTION_MAX_WORDS)
       end
 
-      def truncate(item)
-        item_content = item[:text].to_s
-        split_1, split_2 =
-          [item_content[0, item_content.size / 2], item_content[(item_content.size / 2)..-1]]
-
-        truncation_length = 500
-        tokenizer = helper_llm.llm_model.tokenizer_class
-
-        item[:text] = [
-          tokenizer.truncate(split_1, truncation_length),
-          tokenizer.truncate(split_2.reverse, truncation_length).reverse,
-        ].join(" ")
-
-        item
-      end
-
       private
 
       SANITIZE_REGEX_STR =
