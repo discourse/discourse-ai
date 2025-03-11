@@ -134,6 +134,70 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
   end
 
+  describe "#suggest_title" do
+    fab!(:topic)
+    fab!(:post_1) { Fabricate(:post, topic: topic, raw: "I love apples") }
+    fab!(:post_3) { Fabricate(:post, topic: topic, raw: "I love mangos") }
+    fab!(:post_2) { Fabricate(:post, topic: topic, raw: "I love bananas") }
+
+    context "when logged in as an allowed user" do
+      fab!(:user)
+
+      before do
+        sign_in(user)
+        user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
+        SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
+      end
+
+      context "when suggesting titles with a topic_id" do
+        let(:title_suggestions) do
+          "<item>What are your favourite fruits?</item><item>Love for fruits</item><item>Fruits are amazing</item><item>Favourite fruit list</item><item>Fruit share topic</item>"
+        end
+        let(:title_suggestions_array) do
+          [
+            "What are your favourite fruits?",
+            "Love for fruits",
+            "Fruits are amazing",
+            "Favourite fruit list",
+            "Fruit share topic",
+          ]
+        end
+
+        it "returns title suggestions based on all topic post context" do
+          DiscourseAi::Completions::Llm.with_prepared_responses([title_suggestions]) do
+            post "/discourse-ai/ai-helper/suggest_title", params: { topic_id: topic.id }
+
+            expect(response.status).to eq(200)
+            expect(response.parsed_body["suggestions"]).to eq(title_suggestions_array)
+          end
+        end
+      end
+
+      context "when suggesting titles with input text" do
+        let(:title_suggestions) do
+          "<item>Apples - the best fruit</item><item>Why apples are great</item><item>Apples are the best fruit</item><item>My love for apples</item><item>I love apples</item>"
+        end
+        let(:title_suggestions_array) do
+          [
+            "Apples - the best fruit",
+            "Why apples are great",
+            "Apples are the best fruit",
+            "My love for apples",
+            "I love apples",
+          ]
+        end
+        it "returns title suggestions based on the input text" do
+          DiscourseAi::Completions::Llm.with_prepared_responses([title_suggestions]) do
+            post "/discourse-ai/ai-helper/suggest_title", params: { text: post_1.raw }
+
+            expect(response.status).to eq(200)
+            expect(response.parsed_body["suggestions"]).to eq(title_suggestions_array)
+          end
+        end
+      end
+    end
+  end
+
   describe "#caption_image" do
     let(:image) { plugin_file_from_fixtures("100x100.jpg") }
     let(:upload) { UploadCreator.new(image, "image.jpg").create_for(Discourse.system_user.id) }
