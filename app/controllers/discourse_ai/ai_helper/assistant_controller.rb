@@ -64,7 +64,13 @@ module DiscourseAi
         raise Discourse::InvalidParameters.new(:mode) if !prompt
 
         hijack do
-          render json: DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(prompt, input, current_user), status: 200
+          render json:
+                   DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
+                     prompt,
+                     input,
+                     current_user,
+                   ),
+                 status: 200
         end
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
