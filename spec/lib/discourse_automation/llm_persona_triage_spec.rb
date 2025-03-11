@@ -165,7 +165,7 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     expect(context).to include("support")
   end
 
-  it "passes private message metadata in context when responding to PM" do
+  it "interacts correctly with PMs" do
     # Create a private message topic
     pm_topic = Fabricate(:private_message_topic, user: user, title: "Important PM")
 
@@ -190,6 +190,8 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     # Capture the prompt sent to the LLM
     prompt = nil
 
+    original_user_ids = pm_topic.topic_allowed_users.pluck(:user_id)
+
     DiscourseAi::Completions::Llm.with_prepared_responses(
       ["I've received your private message"],
     ) do |_, _, _prompts|
@@ -204,5 +206,13 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     expect(context).to include("Important PM")
     expect(context).to include(pm_post.raw)
     expect(context).to include(pm_post2.raw)
+
+    reply = pm_topic.posts.order(:post_number).last
+    expect(reply.raw).to eq("I've received your private message")
+
+    topic = reply.topic
+
+    # should not inject persona into allowed users
+    expect(topic.topic_allowed_users.pluck(:user_id).sort).to eq(original_user_ids.sort)
   end
 end

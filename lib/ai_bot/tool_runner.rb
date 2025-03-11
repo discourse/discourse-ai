@@ -73,6 +73,9 @@ module DiscourseAi
         };
 
         const discourse = {
+          search: function(params) {
+            return _discourse_search(params);
+          },
           getPost: _discourse_get_post,
           getUser: _discourse_get_user,
           getPersona: function(name) {
@@ -338,6 +341,21 @@ module DiscourseAi
               else
                 return { error: "No valid context for response" }
               end
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_search",
+          ->(params) do
+            in_attached_function do
+              search_params = params.symbolize_keys
+              if search_params.delete(:with_private)
+                search_params[:current_user] = Discourse.system_user
+              end
+              search_params[:result_style] = :detailed
+              results = DiscourseAi::Utils::Search.perform_search(**search_params)
+              recursive_as_json(results)
             end
           end,
         )
