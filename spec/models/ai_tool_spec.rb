@@ -356,8 +356,6 @@ RSpec.describe AiTool do
       # Invoke the tool and get the results
       result = runner.invoke
 
-      p result
-
       # Verify the topic is found
       expect(result["rows"].length).to be > 0
       expect(result["rows"].first["title"]).to eq("Test Search Topic")
