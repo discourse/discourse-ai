@@ -53,7 +53,12 @@ module DiscourseAi
       end
 
       def suggest_title
-        input = get_text_param!
+        if params[:topic_id]
+          topic = Topic.find_by(id: params[:topic_id])
+          input = DiscourseAi::Summarization::Strategies::TopicSummary.new(topic).targets_data
+        else
+          input = get_text_param!
+        end
 
         prompt = CompletionPrompt.enabled_by_name("generate_titles")
         raise Discourse::InvalidParameters.new(:mode) if !prompt
