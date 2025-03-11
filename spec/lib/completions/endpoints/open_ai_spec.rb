@@ -395,6 +395,37 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     end
   end
 
+  describe "parameter disabling" do
+    it "excludes disabled parameters from the request" do
+      model.update!(provider_params: { disable_top_p: true, disable_temperature: true })
+
+      parsed_body = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(
+        status: 200,
+        body: { choices: [{ message: { content: "test response" } }] }.to_json,
+      )
+
+      dialect = compliance.dialect(prompt: compliance.generic_prompt)
+
+      # Request with parameters that should be ignored
+      endpoint.perform_completion!(dialect, user, { top_p: 0.9, temperature: 0.8, max_tokens: 100 })
+
+      # Verify disabled parameters aren't included
+      expect(parsed_body).not_to have_key(:top_p)
+      expect(parsed_body).not_to have_key(:temperature)
+
+      # Verify other parameters still work
+      expect(parsed_body).to have_key(:max_tokens)
+      expect(parsed_body[:max_tokens]).to eq(100)
+    end
+  end
+
   describe "image support" do
     it "can handle images" do
       model = Fabricate(:llm_model, vision_enabled: true)

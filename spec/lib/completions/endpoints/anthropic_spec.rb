@@ -664,4 +664,54 @@ data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_
     expect(log.feature_name).to eq("testing")
     expect(log.response_tokens).to eq(30)
   end
+
+  describe "parameter disabling" do
+    it "excludes disabled parameters from the request" do
+      model.update!(provider_params: { disable_top_p: true, disable_temperature: true })
+
+      parsed_body = nil
+      stub_request(:post, url).with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+        headers: {
+          "Content-Type" => "application/json",
+          "X-Api-Key" => "123",
+          "Anthropic-Version" => "2023-06-01",
+        },
+      ).to_return(
+        status: 200,
+        body: {
+          id: "msg_123",
+          type: "message",
+          role: "assistant",
+          content: [{ type: "text", text: "test response" }],
+          model: "claude-3-opus-20240229",
+          usage: {
+            input_tokens: 10,
+            output_tokens: 5,
+          },
+        }.to_json,
+      )
+
+      # Request with parameters that should be ignored
+      llm.generate(
+        prompt,
+        user: Discourse.system_user,
+        top_p: 0.9,
+        temperature: 0.8,
+        max_tokens: 500,
+      )
+
+      # Verify disabled parameters aren't included
+      expect(parsed_body).not_to have_key(:top_p)
+      expect(parsed_body).not_to have_key(:temperature)
+
+      # Verify other parameters still work
+      expect(parsed_body).to have_key(:max_tokens)
+      expect(parsed_body[:max_tokens]).to eq(500)
+    end
+  end
 end

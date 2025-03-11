@@ -16,6 +16,9 @@ module DiscourseAi
           model_params = model_params.dup
 
           # max_tokens, temperature, stop_sequences, top_p are already supported
+          #
+          model_params.delete(:top_p) if llm_model.lookup_custom_param("disable_top_p")
+          model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
 
           model_params
         end
