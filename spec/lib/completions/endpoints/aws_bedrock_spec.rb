@@ -436,4 +436,52 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       end
     end
   end
+
+  describe "parameter disabling" do
+    it "excludes disabled parameters from the request" do
+      model.update!(
+        provider_params: {
+          access_key_id: "123",
+          region: "us-east-1",
+          disable_top_p: true,
+          disable_temperature: true,
+        },
+      )
+
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      request = nil
+
+      content = {
+        content: [text: "test response"],
+        usage: {
+          input_tokens: 10,
+          output_tokens: 5,
+        },
+      }.to_json
+
+      stub_request(
+        :post,
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+      )
+        .with do |inner_request|
+          request = inner_request
+          true
+        end
+        .to_return(status: 200, body: content)
+
+      # Request with parameters that should be ignored
+      proxy.generate("test prompt", user: user, top_p: 0.9, temperature: 0.8, max_tokens: 500)
+
+      # Parse the request body
+      request_body = JSON.parse(request.body)
+
+      # Verify disabled parameters aren't included
+      expect(request_body).not_to have_key("top_p")
+      expect(request_body).not_to have_key("temperature")
+
+      # Verify other parameters still work
+      expect(request_body).to have_key("max_tokens")
+      expect(request_body["max_tokens"]).to eq(500)
+    end
+  end
 end

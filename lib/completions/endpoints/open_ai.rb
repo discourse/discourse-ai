@@ -24,6 +24,9 @@ module DiscourseAi
             model_params[:stop] = model_params.delete(:stop_sequences)
           end
 
+          model_params.delete(:top_p) if llm_model.lookup_custom_param("disable_top_p")
+          model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
+
           model_params
         end
 

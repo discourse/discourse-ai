@@ -26,17 +26,23 @@ class LlmModel < ActiveRecord::Base
         access_key_id: :text,
         region: :text,
         disable_native_tools: :checkbox,
+        disable_temperature: :checkbox,
+        disable_top_p: :checkbox,
         enable_reasoning: :checkbox,
         reasoning_tokens: :number,
       },
       anthropic: {
         disable_native_tools: :checkbox,
+        disable_temperature: :checkbox,
+        disable_top_p: :checkbox,
         enable_reasoning: :checkbox,
         reasoning_tokens: :number,
       },
       open_ai: {
         organization: :text,
         disable_native_tools: :checkbox,
+        disable_temperature: :checkbox,
+        disable_top_p: :checkbox,
         disable_streaming: :checkbox,
         reasoning_effort: {
           type: :enum,
@@ -69,6 +75,8 @@ class LlmModel < ActiveRecord::Base
         provider_order: :text,
         provider_quantizations: :text,
         disable_streaming: :checkbox,
+        disable_temperature: :checkbox,
+        disable_top_p: :checkbox,
       },
     }
   end

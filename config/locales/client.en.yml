@@ -488,6 +488,8 @@ en:
           reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
           enable_reasoning: "Enable reasoning (only applicable to Sonnet 3.7)"
           reasoning_tokens: "Number of tokens used for reasoning"
+          disable_temperature: "Disable temperature (some thinking models don't support temperature)"
+          disable_top_p: "Disable top P (some thinking models don't support top P)"
 
       related_topics:
         title: "Related topics"
