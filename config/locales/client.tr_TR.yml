@@ -89,6 +89,10 @@ tr_TR:
               label: "Sıcaklık"
             top_p:
               label: "Üst P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -634,6 +638,9 @@ tr_TR:
       discobot_discoveries:
         regular_results: "Konular"
         collapse: "Daralt"
+        tooltip:
+          actions:
+            disable: "Devredışı"
     review:
       types:
         reviewable_ai_post:

@@ -89,6 +89,10 @@ ru:
               label: "Температура"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Модель"
         llm_triage:
           fields:
             system_prompt:
@@ -641,6 +645,9 @@ ru:
       discobot_discoveries:
         regular_results: "Новые темы"
         collapse: "Свернуть"
+        tooltip:
+          actions:
+            disable: "Отключить"
     review:
       types:
         reviewable_ai_post:

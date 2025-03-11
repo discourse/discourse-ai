@@ -124,3 +124,6 @@ sw:
       discobot_discoveries:
         regular_results: "Mada"
         collapse: "Kunja"
+        tooltip:
+          actions:
+            disable: "Sitisha"

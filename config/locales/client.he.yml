@@ -89,8 +89,15 @@ he:
               description: "תיעדוף תוכן מהקבוצה הזאת בדוח"
             temperature:
               label: "טמפרטורה"
+              description: "טמפרטורה לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (להשאיר ריק כדי להשתמש בברירת המחדל של הדגם)"
             top_p:
               label: "ה־P המובילים"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "מודל"
+            tool:
+              label: "כלי"
         llm_triage:
           fields:
             system_prompt:
@@ -134,6 +141,7 @@ he:
               description: "מודל שפה שמשמש למיון ראשוני"
             temperature:
               label: "טמפרטורה"
+              description: "טמפרטורה לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (להשאיר ריק כדי להשתמש בברירת המחדל של הדגם)"
     discourse_ai:
       title: "בינה מלאכותית"
       modals:
@@ -609,6 +617,7 @@ he:
         dashboard:
           title: "רגש"
         sentiment_analysis:
+          share_chart: "העתקת קישור לתרשים"
           filter_types:
             all: "הכול"
             positive: "חיובי"
@@ -635,6 +644,10 @@ he:
       discobot_discoveries:
         regular_results: "נושאים"
         collapse: "צמצום"
+        tooltip:
+          header: "חיפוש מופעל בינה מלאכותית"
+          actions:
+            disable: "השבתה"
     review:
       types:
         reviewable_ai_post:

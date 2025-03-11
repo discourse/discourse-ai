@@ -158,3 +158,6 @@ ug:
       discobot_discoveries:
         regular_results: "تېما"
         collapse: "يىغ"
+        tooltip:
+          actions:
+            disable: "چەكلە"

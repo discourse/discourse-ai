@@ -132,3 +132,6 @@ et:
       discobot_discoveries:
         regular_results: "Teemasid"
         collapse: "Ahenda"
+        tooltip:
+          actions:
+            disable: "Lülita välja"

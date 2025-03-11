@@ -76,6 +76,10 @@ pl_PL:
               description: "Nadaj priorytet treściom z tej grupy w raporcie"
             temperature:
               label: "Temperatura"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -284,6 +288,9 @@ pl_PL:
       discobot_discoveries:
         regular_results: "Tematy"
         collapse: "Zwiń"
+        tooltip:
+          actions:
+            disable: "Wyłącz"
     review:
       types:
         reviewable_ai_post:

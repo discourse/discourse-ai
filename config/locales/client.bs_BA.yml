@@ -127,3 +127,6 @@ bs_BA:
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Spusti"
+        tooltip:
+          actions:
+            disable: "Onemogući"

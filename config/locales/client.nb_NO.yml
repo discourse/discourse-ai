@@ -138,3 +138,6 @@ nb_NO:
       discobot_discoveries:
         regular_results: "Emner"
         collapse: "Fold sammen"
+        tooltip:
+          actions:
+            disable: "Deaktiver"

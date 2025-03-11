@@ -125,3 +125,6 @@ th:
       discobot_discoveries:
         regular_results: "หัวข้อ"
         collapse: "ย่อ"
+        tooltip:
+          actions:
+            disable: "ปิดใช้งาน"

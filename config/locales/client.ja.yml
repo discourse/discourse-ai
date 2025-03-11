@@ -89,6 +89,10 @@ ja:
               label: "Temperature"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "モデル"
         llm_triage:
           fields:
             system_prompt:
@@ -627,6 +631,9 @@ ja:
       discobot_discoveries:
         regular_results: "トピック"
         collapse: "折りたたむ"
+        tooltip:
+          actions:
+            disable: "無効化"
     review:
       types:
         reviewable_ai_post:

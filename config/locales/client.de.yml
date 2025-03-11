@@ -93,6 +93,22 @@ de:
             top_p:
               label: "Top P"
               description: "Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um das Standardmodell zu verwenden)"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Modell"
+              description: "Das für die Triage verwendete Standard-Sprachmodell"
+            tool:
+              label: "Werkzeug"
+              description: "Werkzeug für die Triage (das Werkzeug darf keine Parameter definiert haben)"
+        llm_persona_triage:
+          fields:
+            persona:
+              label: "Persona"
+              description: "KI-Persona, die für die Triage verwendet werden soll (Standard-LLM und -Benutzer müssen eingestellt sein)"
+            whisper:
+              label: "Als Flüstern antworten"
+              description: "Ob die Antwort der Persona ein Flüstern sein soll"
         llm_triage:
           fields:
             system_prompt:
@@ -131,6 +147,12 @@ de:
             include_personal_messages:
               label: "Persönliche Nachrichten einbeziehen"
               description: "Auch persönliche Nachrichten scannen und sortieren"
+            whisper:
+              label: "Als Flüstern antworten"
+              description: "Ob die Antwort der KI ein Flüstern sein soll"
+            reply_persona:
+              label: "Antwort Persona"
+              description: "KI-Persona, die für Antworten verwendet werden soll (muss Standard-LLM haben), wird gegenüber vorgefertigten Antworten bevorzugt"
             model:
               label: "Modell"
               description: "Für die Triage verwendetes Sprachmodell"
@@ -422,6 +444,7 @@ de:
           failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
         hints:
           max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
+          display_name: "Der Name, der verwendet wird, um dieses Modell in der Benutzeroberfläche deiner Website zu referenzieren."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden"
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
           enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PN mit dem KI-Bot erstellen"
@@ -453,6 +476,8 @@ de:
           reasoning_effort: "Argumentationsaufwand (gilt nur für Argumentationsmodelle)"
           enable_reasoning: "Argumentation aktivieren (gilt nur für Sonnet 3.7)"
           reasoning_tokens: "Anzahl der für die Argumentation verwendeten Token"
+          disable_temperature: "Temperatur deaktivieren (einige Denkmodelle unterstützen keine Temperatur)"
+          disable_top_p: "Top P deaktivieren (einige Denkmodelle unterstützen Top P nicht)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -636,6 +661,7 @@ de:
           overview: "Stimmungsübersicht"
           analysis: "Stimmungsanalyse"
         sentiment_analysis:
+          share_chart: "Link zur Tabelle kopieren"
           filter_types:
             all: "Gesamt"
             positive: "Positiv"
@@ -663,9 +689,15 @@ de:
         tell_me_more: "Erzähl mir mehr..."
         collapse: "Zuklappen"
         timed_out: "Discobot konnte keine Entdeckungen finden. Irgendetwas ist schief gelaufen."
+        user_setting: "Sucherkennungen ermöglichen"
         tooltip:
           header: "KI-gestützte Suche"
           content: "Natürliche Sprachsuche unterstützt von %{model}"
+          actions:
+            info: "Wie funktioniert es?"
+            disable: "Deaktivieren"
+      user_preferences:
+        empty: "Zurzeit sind keine relevanten Einstellungen verfügbar"
     review:
       types:
         reviewable_ai_post:

@@ -142,3 +142,6 @@ pt:
       discobot_discoveries:
         regular_results: "Tópicos"
         collapse: "Colapsar"
+        tooltip:
+          actions:
+            disable: "Desativar"

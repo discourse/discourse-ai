@@ -155,3 +155,6 @@ hr:
       discobot_discoveries:
         regular_results: "Tema"
         collapse: "Sakrij"
+        tooltip:
+          actions:
+            disable: "Onemogući"

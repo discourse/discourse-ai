@@ -89,6 +89,10 @@ zh_CN:
               label: "温度"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "模型"
         llm_triage:
           fields:
             system_prompt:
@@ -627,6 +631,9 @@ zh_CN:
       discobot_discoveries:
         regular_results: "话题"
         collapse: "收起"
+        tooltip:
+          actions:
+            disable: "禁用"
     review:
       types:
         reviewable_ai_post:

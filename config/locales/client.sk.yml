@@ -162,3 +162,6 @@ sk:
       discobot_discoveries:
         regular_results: "Témy"
         collapse: "Zbaliť"
+        tooltip:
+          actions:
+            disable: "Zakázať"
