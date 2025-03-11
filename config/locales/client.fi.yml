@@ -89,6 +89,10 @@ fi:
               label: "Lämpötila"
             top_p:
               label: "Top-p"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Malli"
         llm_triage:
           fields:
             system_prompt:
@@ -633,6 +637,9 @@ fi:
       discobot_discoveries:
         regular_results: "Aiheet"
         collapse: "Kutista"
+        tooltip:
+          actions:
+            disable: "Poista käytöstä"
     review:
       types:
         reviewable_ai_post:

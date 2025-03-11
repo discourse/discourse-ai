@@ -89,6 +89,10 @@ nl:
               label: "Temperatuur"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -633,6 +637,9 @@ nl:
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Samenvouwen"
+        tooltip:
+          actions:
+            disable: "Uitschakelen"
     review:
       types:
         reviewable_ai_post:

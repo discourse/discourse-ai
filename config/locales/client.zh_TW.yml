@@ -148,3 +148,6 @@ zh_TW:
       discobot_discoveries:
         regular_results: "話題"
         collapse: "收起"
+        tooltip:
+          actions:
+            disable: "禁用"

@@ -89,6 +89,10 @@ es:
               label: "Temperatura"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Modelo"
         llm_triage:
           fields:
             system_prompt:
@@ -633,6 +637,9 @@ es:
       discobot_discoveries:
         regular_results: "Temas"
         collapse: "Contraer"
+        tooltip:
+          actions:
+            disable: "Desactivar"
     review:
       types:
         reviewable_ai_post:

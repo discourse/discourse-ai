@@ -118,3 +118,6 @@ sr:
       discobot_discoveries:
         regular_results: "Teme"
         collapse: "Spusti"
+        tooltip:
+          actions:
+            disable: "Onemogući"

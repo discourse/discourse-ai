@@ -146,3 +146,6 @@ ro:
       discobot_discoveries:
         regular_results: "Discuții"
         collapse: "Colaps"
+        tooltip:
+          actions:
+            disable: "Dezactivează"

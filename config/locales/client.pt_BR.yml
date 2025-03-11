@@ -89,6 +89,10 @@ pt_BR:
               label: "Temperatura"
             top_p:
               label: "Maior P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Modelo"
         llm_triage:
           fields:
             system_prompt:
@@ -633,6 +637,9 @@ pt_BR:
       discobot_discoveries:
         regular_results: "Tópicos"
         collapse: "Recolher"
+        tooltip:
+          actions:
+            disable: "Desativar"
     review:
       types:
         reviewable_ai_post:

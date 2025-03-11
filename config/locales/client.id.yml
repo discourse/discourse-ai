@@ -71,6 +71,10 @@ id:
               label: "Temperatur"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -248,3 +252,6 @@ id:
       discobot_discoveries:
         regular_results: "Topik"
         collapse: "Persempit"
+        tooltip:
+          actions:
+            disable: "Nonaktifkan"

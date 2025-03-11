@@ -133,3 +133,6 @@ ca:
       discobot_discoveries:
         regular_results: "Temes"
         collapse: "Redueix"
+        tooltip:
+          actions:
+            disable: "Desactiva"

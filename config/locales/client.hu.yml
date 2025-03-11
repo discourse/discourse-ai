@@ -153,3 +153,6 @@ hu:
       discobot_discoveries:
         regular_results: "Témák"
         collapse: "Összecsukás"
+        tooltip:
+          actions:
+            disable: "Letiltás"

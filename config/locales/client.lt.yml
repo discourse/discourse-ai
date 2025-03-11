@@ -44,6 +44,10 @@ lt:
               label: "Kategorijos"
             tags:
               label: "Žymos"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Modelis"
         llm_triage:
           fields:
             system_prompt:
@@ -188,3 +192,6 @@ lt:
       discobot_discoveries:
         regular_results: "Temos"
         collapse: "Suskleisti"
+        tooltip:
+          actions:
+            disable: "Išjungti"

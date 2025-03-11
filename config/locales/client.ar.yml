@@ -89,6 +89,10 @@ ar:
               label: "درجة الحرارة"
             top_p:
               label: "Top P"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "النموذج"
         llm_triage:
           fields:
             system_prompt:
@@ -649,6 +653,9 @@ ar:
       discobot_discoveries:
         regular_results: "الموضوعات"
         collapse: "طي"
+        tooltip:
+          actions:
+            disable: "إيقاف"
     review:
       types:
         reviewable_ai_post:

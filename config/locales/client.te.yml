@@ -135,3 +135,6 @@ te:
       discobot_discoveries:
         regular_results: "విషయాలు"
         collapse: "కుదించండి"
+        tooltip:
+          actions:
+            disable: "నిలిపివేయండి"

@@ -117,3 +117,6 @@ be:
             neutral: "нейтральны"
       discobot_discoveries:
         regular_results: "тэмы"
+        tooltip:
+          actions:
+            disable: "Адключыць"

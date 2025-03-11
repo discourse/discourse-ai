@@ -138,3 +138,6 @@ sl:
       discobot_discoveries:
         regular_results: "Tem"
         collapse: "Skrči"
+        tooltip:
+          actions:
+            disable: "Onemogoči"

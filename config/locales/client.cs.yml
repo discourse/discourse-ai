@@ -245,3 +245,6 @@ cs:
       discobot_discoveries:
         regular_results: "Témata"
         collapse: "Sbalit"
+        tooltip:
+          actions:
+            disable: "Vypnout"

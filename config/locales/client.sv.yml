@@ -158,3 +158,6 @@ sv:
       discobot_discoveries:
         regular_results: "Ämnen"
         collapse: "Förminska"
+        tooltip:
+          actions:
+            disable: "Inaktivera"
