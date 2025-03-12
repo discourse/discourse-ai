@@ -162,7 +162,14 @@ module DiscourseAi
         end
       end
 
-      def self.reply_to_post(post:, user: nil, persona_id: nil, whisper: nil, add_user_to_pm: false)
+      def self.reply_to_post(
+        post:,
+        user: nil,
+        persona_id: nil,
+        whisper: nil,
+        add_user_to_pm: false,
+        stream_reply: false
+      )
         ai_persona = AiPersona.find_by(id: persona_id)
         raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
         persona_class = ai_persona.class_instance
@@ -178,6 +185,7 @@ module DiscourseAi
           whisper: whisper,
           context_style: :topic,
           add_user_to_pm: add_user_to_pm,
+          stream_reply: stream_reply,
         )
       end
 
@@ -444,6 +452,7 @@ module DiscourseAi
         whisper: nil,
         context_style: nil,
         add_user_to_pm: true,
+        stream_reply: nil,
         &blk
       )
         # this is a multithreading issue
@@ -479,7 +488,7 @@ module DiscourseAi
           reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
         end
 
-        stream_reply = post.topic.private_message?
+        stream_reply = post.topic.private_message? if stream_reply.nil?
 
         # we need to ensure persona user is allowed to reply to the pm
         if post.topic.private_message? && add_user_to_pm
