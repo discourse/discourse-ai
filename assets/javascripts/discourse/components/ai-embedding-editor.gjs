@@ -196,19 +196,10 @@ export default class AiEmbeddingEditor extends Component {
     const isNew = this.args.model.isNew;
 
     try {
-      const dataToSave = Object.entries(formData).reduce(
-        (acc, [key, newVal]) => {
-          const originalVal = this._originalFormData?.[key];
-          if (newVal !== originalVal) {
-            acc[key] = newVal;
-          }
-          return acc;
-        },
-        {}
-      );
+      const dataToSave = { ...formData };
 
       if (this.selectedPreset) {
-        // new embeddings from presets
+        // new embeddings
         const newModel = this.store.createRecord("ai-embedding", {
           ...this.selectedPreset,
           ...dataToSave,
@@ -225,6 +216,11 @@ export default class AiEmbeddingEditor extends Component {
           "adminPlugins.show.discourse-ai-embeddings.index"
         );
       } else {
+        const savedProvider = this.currentProvider;
+
+        this._originalFormData = JSON.parse(JSON.stringify(dataToSave));
+        this.currentProvider = savedProvider;
+
         this.toasts.success({
           data: { message: i18n("discourse_ai.embeddings.saved") },
           duration: 2000,
