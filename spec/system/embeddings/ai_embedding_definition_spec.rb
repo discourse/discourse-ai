@@ -46,7 +46,6 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='manual'] button").click()
 
-    # Use the FormKit helper to fill in the form fields
     form.field("display_name").fill_in("text-embedding-3-small")
     form.field("provider").select(EmbeddingDefinition::OPEN_AI)
     form.field("url").fill_in("https://api.openai.com/v1/embeddings")
@@ -60,6 +59,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     form.field("dimensions").fill_in(1536)
     form.field("max_sequence_length").fill_in(8191)
     form.field("pg_function").select("<=>")
+    form.field("provider_params.model_name").fill_in("text-embedding-3-small")
 
     form.submit
 
