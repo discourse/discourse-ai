@@ -158,7 +158,7 @@ export default class AiEmbeddingEditor extends Component {
     set("provider_params", initialParams);
   }
 
-  get providerParamsForCurrentProvider() {
+  get providerParams() {
     const normalizeParam = (value) => {
       if (!value) {
         return { type: "text" };
@@ -482,10 +482,7 @@ export default class AiEmbeddingEditor extends Component {
         {{#if this.currentProvider}}
           {{#if data.provider_params}}
             <form.Object @name="provider_params" as |object name|>
-              {{#let
-                (get this.providerParamsForCurrentProvider name)
-                as |params|
-              }}
+              {{#let (get this.providerParams name) as |params|}}
                 {{#if params}}
                   <object.Field
                     @name={{name}}
