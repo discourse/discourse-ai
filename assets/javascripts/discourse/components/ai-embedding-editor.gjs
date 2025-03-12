@@ -316,7 +316,7 @@ export default class AiEmbeddingEditor extends Component {
         class="form-horizontal ai-embedding-editor {{if this.seeded 'seeded'}}"
         as |form data|
       >
-        {{#if this.args.model.isNew}}
+        {{#if @model.isNew}}
           <DButton
             @action={{this.resetForm}}
             @label="back_button"
@@ -404,7 +404,7 @@ export default class AiEmbeddingEditor extends Component {
           @validation="required"
           @format="large"
           @tooltip={{if
-            this.args.model.isNew
+            @model.isNew
             (i18n "discourse_ai.embeddings.hints.dimensions_warning")
           }}
           class="ai-embedding-editor__dimensions"
@@ -415,7 +415,7 @@ export default class AiEmbeddingEditor extends Component {
             step="any"
             min="0"
             lang="en"
-            disabled={{not this.args.model.isNew}}
+            disabled={{not @model.isNew}}
           />
         </form.Field>
 
