@@ -26,6 +26,8 @@ import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
 import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
+import Form from "discourse/components/form";
+
 
 export default class PersonaEditor extends Component {
   @service router;
@@ -36,15 +38,20 @@ export default class PersonaEditor extends Component {
 
   @tracked allGroups = [];
   @tracked isSaving = false;
-  @tracked editingModel = null;
   @tracked showDelete = false;
   @tracked maxPixelsValue = null;
+  @tracked editingModel = null;
   @tracked ragIndexingStatuses = null;
 
   @tracked selectedTools = [];
   @tracked selectedToolNames = [];
   @tracked forcedToolNames = [];
   @tracked hasDefaultLlm = false;
+
+  @cached
+  get formData() {
+    this.args.model.workingCopy();
+  }
 
   get chatPluginEnabled() {
     return this.siteSettings.chat_enabled;
@@ -293,101 +300,66 @@ export default class PersonaEditor extends Component {
       @route="adminPlugins.show.discourse-ai-personas"
       @label="discourse_ai.ai_persona.back"
     />
-    <form
-      class="form-horizontal ai-persona-editor"
+    <Form
+      @onSubmit={{this.save}}
+      @data={{this.formData}}
+      class="ai-persona-editor"
       {{didUpdate this.updateModel @model.id}}
       {{didInsert this.updateModel @model.id}}
       {{didInsert this.updateAllGroups @model.id}}
+      as |form data|
     >
+      <form.Field
+        @name="enabled"
+        @title={{i18n "discourse_ai.ai_persona.enabled"}} 
+        @onSet={{this.toggleEnabled}} 
+        as |field|>
+          <field.Toggle />
+      </form.Field>
+
+      <form.Field
+        @name="priority"
+        @title={{i18n "discourse_ai.ai_persona.priority"}} 
+        @onSet={{this.togglePriority}} 
+        @tooltip={{i18n "discourse_ai.ai_persona.priority_help"}}
+        as |field|>
+          <field.Toggle />
+      </form.Field>
+
+      <form.Field
+        @name="name"
+        @title={{i18n "discourse_ai.ai_persona.name"}}
+        @validation="required|length:1,100"
+        @disabled={{data.system}}
+        @format="large"
+        as |field|
+      >
+        <field.Input />
+      </form.Field>
+  
+      <form.Field
+        @name="description"
+        @title={{i18n "discourse_ai.ai_persona.description"}}
+        @validation="required|length:1,100"
+        @disabled={{data.system}}
+        as |field|
+      >
+        <field.Textarea @height={{120}} />
+      </form.Field>
+      
       <div class="control-group">
-        <DToggleSwitch
-          class="ai-persona-editor__enabled"
-          @state={{@model.enabled}}
-          @label="discourse_ai.ai_persona.enabled"
-          {{on "click" this.toggleEnabled}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__priority">
-        <DToggleSwitch
-          class="ai-persona-editor__priority"
-          @state={{@model.priority}}
-          @label="discourse_ai.ai_persona.priority"
-          {{on "click" this.togglePriority}}
+        <label>{{i18n "discourse_ai.ai_persona.default_llm"}}</label>
+        <AiLlmSelector
+          class="ai-persona-editor__llms"
+          @value={{this.mappedDefaultLlm}}
+          @llms={{@personas.resultSetMeta.llms}}
         />
         <DTooltip
           @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.priority_help"}}
+          @content={{i18n "discourse_ai.ai_persona.default_llm_help"}}
         />
       </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.name"}}</label>
-        <Input
-          class="ai-persona-editor__name"
-          @type="text"
-          @value={{this.editingModel.name}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.description"}}</label>
-        <Textarea
-          class="ai-persona-editor__description"
-          @value={{this.editingModel.description}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      {{#if this.editingModel.user}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.default_llm"}}</label>
-          <AiLlmSelector
-            class="ai-persona-editor__llms"
-            @value={{this.mappedDefaultLlm}}
-            @llms={{@personas.resultSetMeta.llms}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.default_llm_help"}}
-          />
-        </div>
-        {{#if this.hasDefaultLlm}}
-          <div class="control-group">
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.force_default_llm}}
-              />
-              {{i18n "discourse_ai.ai_persona.force_default_llm"}}</label>
-          </div>
-        {{/if}}
-      {{/if}}
-      {{#unless @model.isNew}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.user"}}</label>
-          {{#if this.editingModel.user}}
-            <a
-              class="avatar"
-              href={{this.editingModel.user.path}}
-              data-user-card={{this.editingModel.user.username}}
-            >
-              {{Avatar this.editingModel.user.avatar_template "small"}}
-            </a>
-            <LinkTo @route="adminUser" @model={{this.adminUser}}>
-              {{this.editingModel.user.username}}
-            </LinkTo>
-          {{else}}
-            <DButton
-              @action={{this.createUser}}
-              class="ai-persona-editor__create-user"
-            >
-              {{i18n "discourse_ai.ai_persona.create_user"}}
-            </DButton>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n "discourse_ai.ai_persona.create_user_help"}}
-            />
-          {{/if}}
-        </div>
-      {{/unless}}
+      
       <div class="control-group">
         <label>{{i18n "discourse_ai.ai_persona.tools"}}</label>
         <AiToolSelector
@@ -434,162 +406,86 @@ export default class PersonaEditor extends Component {
           @onChange={{this.updateAllowedGroups}}
         />
       </div>
-      <div class="control-group">
-        <label for="ai-persona-editor__system_prompt">{{i18n
-            "discourse_ai.ai_persona.system_prompt"
-          }}</label>
-        <Textarea
-          class="ai-persona-editor__system_prompt"
-          @value={{this.editingModel.system_prompt}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__allow_personal_messages">
-        <label>
-          <Input
-            @type="checkbox"
-            @checked={{this.editingModel.allow_personal_messages}}
-          />
-          {{i18n "discourse_ai.ai_persona.allow_personal_messages"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n
-            "discourse_ai.ai_persona.allow_personal_messages_help"
-          }}
-        />
-      </div>
-      {{#if this.editingModel.user}}
-        <div class="control-group ai-persona-editor__allow_topic_mentions">
-          <label>
-            <Input
-              @type="checkbox"
-              @checked={{this.editingModel.allow_topic_mentions}}
-            />
-            {{i18n "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n
-              "discourse_ai.ai_persona.allow_topic_mentions_help"
-            }}
-          />
-        </div>
-        {{#if this.chatPluginEnabled}}
-          <div
-            class="control-group ai-persona-editor__allow_chat_direct_messages"
-          >
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.allow_chat_direct_messages}}
-              />
-              {{i18n
-                "discourse_ai.ai_persona.allow_chat_direct_messages"
-              }}</label>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.allow_chat_direct_messages_help"
-              }}
-            />
-          </div>
-          <div
-            class="control-group ai-persona-editor__allow_chat_channel_mentions"
-          >
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.allow_chat_channel_mentions}}
-              />
-              {{i18n
-                "discourse_ai.ai_persona.allow_chat_channel_mentions"
-              }}</label>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
-              }}
-            />
-          </div>
-        {{/if}}
+
+      <form.Field
+        @name="system_prompt"
+        @title={{i18n "discourse_ai.ai_persona.system_prompt"}}
+        @validation="required|length:1,300"
+        @disabled={{data.system}}
+        as |field|
+      >
+        <field.Textarea @height={{300}} />
+      </form.Field>
+
+      <form.Field
+        @name="tool_details"
+        @title={{i18n "discourse_ai.ai_persona.tool_details"}}
+        @tooltip={{i18n "discourse_ai.ai_persona.tool_details_help"}}
+        @format="large"
+        as |field|
+      >
+        <field.Checkbox />
+      </form.Field>
+
+      <form.Field
+        @name="vision_enabled"
+        @title={{i18n "discourse_ai.ai_persona.vision_enabled"}}
+        @tooltip={{i18n "discourse_ai.ai_persona.vision_enabled_help"}}
+        @format="large"
+        as |field|
+      >
+        <field.Checkbox />
+      </form.Field>
+
+      {{#if data.vision_enabled}}
+        <form.Field
+          @title={{i18n "discourse_ai.ai_persona.vision_max_pixels"}}
+          @onSet={{this.onChangeMaxPixels}}
+          as |field|
+        >
+          <field.Select as |select|>
+            {{#each this.maxPixelValues as |pixelValue| }}
+              <select.Option
+                @value={{pixelValue.id}}
+              >{{pixelValue.name}}</select.Option>
+            {{/each}}
+          </field.Select>
+        </form.Field>
       {{/if}}
-      <div class="control-group ai-persona-editor__tool-details">
-        <label>
-          <Input @type="checkbox" @checked={{this.editingModel.tool_details}} />
-          {{i18n "discourse_ai.ai_persona.tool_details"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.tool_details_help"}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__vision_enabled">
-        <label>
-          <Input
-            @type="checkbox"
-            @checked={{this.editingModel.vision_enabled}}
-          />
-          {{i18n "discourse_ai.ai_persona.vision_enabled"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.vision_enabled_help"}}
-        />
-      </div>
-      {{#if this.editingModel.vision_enabled}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.vision_max_pixels"}}</label>
-          <ComboBox
-            @value={{this.maxPixelsValue}}
-            @content={{this.maxPixelValues}}
-            @onChange={{this.onChangeMaxPixels}}
-          />
-        </div>
-      {{/if}}
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.max_context_posts"}}</label>
-        <Input
-          @type="number"
-          lang="en"
-          class="ai-persona-editor__max_context_posts"
-          @value={{this.editingModel.max_context_posts}}
-        />
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.max_context_posts_help"}}
-        />
-      </div>
+
+      <form.Field
+        @name="max_context_posts"
+        @title={{i18n "discourse_ai.ai_persona.max_context_posts"}}
+        @tooltip={{i18n "discourse_ai.ai_persona.max_context_posts_help"}}
+        as |field|
+      >
+        <field.Input @type="number" lang="en"/>
+      </form.Field>
+
       {{#if this.showTemperature}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.temperature"}}</label>
-          <Input
-            @type="number"
-            class="ai-persona-editor__temperature"
-            step="any"
-            lang="en"
-            @value={{this.editingModel.temperature}}
-            disabled={{this.editingModel.system}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.temperature_help"}}
-          />
-        </div>
+        <form.Field
+          @name="temperature"
+          @title={{i18n "discourse_ai.ai_persona.max_context_posts"}}
+          @tooltip={{i18n "discourse_ai.ai_persona.temperature_help"}}
+          @disabled={{data.system}}
+          as |field|
+        >
+          <field.Input @type="number" step="any" lang="en"/>
+        </form.Field>
       {{/if}}
+
       {{#if this.showTopP}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.top_p"}}</label>
-          <Input
-            @type="number"
-            step="any"
-            lang="en"
-            class="ai-persona-editor__top_p"
-            @value={{this.editingModel.top_p}}
-            disabled={{this.editingModel.system}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.top_p_help"}}
-          />
-        </div>
+        <form.Field
+          @name="top_p"
+          @title={{i18n "discourse_ai.ai_persona.top_p"}}
+          @tooltip={{i18n "discourse_ai.ai_persona.top_p_help"}}
+          @disabled={{data.system}}
+          as |field|
+        >
+          <field.Input @type="number" step="any" lang="en"/>
+        </form.Field>
       {{/if}}
+
       {{#if this.siteSettings.ai_embeddings_enabled}}
         <div class="control-group">
           <RagUploader
@@ -604,58 +500,126 @@ export default class PersonaEditor extends Component {
           @llms={{@personas.resultSetMeta.llms}}
           @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
         >
-          <div class="control-group">
-            <label>{{i18n
-                "discourse_ai.ai_persona.rag_conversation_chunks"
-              }}</label>
-            <Input
-              @type="number"
-              step="any"
-              lang="en"
-              class="ai-persona-editor__rag_conversation_chunks"
-              @value={{this.editingModel.rag_conversation_chunks}}
-            />
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.rag_conversation_chunks_help"
-              }}
-            />
-          </div>
-          <div class="control-group">
-            <label>{{i18n
-                "discourse_ai.ai_persona.question_consolidator_llm"
-              }}</label>
+          <form.Field
+            @name="rag_conversation_chunks"
+            @title={{i18n "discourse_ai.ai_persona.rag_conversation_chunks"}}
+            @tooltip={{i18n "discourse_ai.ai_persona.rag_conversation_chunks_help"}}
+            as |field|
+          >
+            <field.Input @type="number" step="any" lang="en"/>
+          </form.Field>
+
+          <form.Field
+            @name="editor_llms"
+            @title={{i18n "discourse_ai.ai_persona.question_consolidator_llm"}}
+            @tooltip={{i18n "discourse_ai.ai_persona.question_consolidator_llm_help"}}
+          >
             <AiLlmSelector
               class="ai-persona-editor__llms"
               @value={{this.mappedQuestionConsolidatorLlm}}
               @llms={{@personas.resultSetMeta.llms}}
             />
-
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.question_consolidator_llm_help"
-              }}
-            />
-          </div>
+          </form.Field>
         </RagOptions>
       {{/if}}
-      <div class="control-group ai-persona-editor__action_panel">
-        <DButton
-          class="btn-primary ai-persona-editor__save"
-          @action={{this.save}}
-          @disabled={{this.isSaving}}
-        >{{i18n "discourse_ai.ai_persona.save"}}</DButton>
-        {{#if this.showDelete}}
-          <DButton
-            @action={{this.delete}}
-            class="btn-danger ai-persona-editor__delete"
-          >
-            {{i18n "discourse_ai.ai_persona.delete"}}
-          </DButton>
+
+      <div class="control-group ai-persona-editor__ai_bot_options">
+        <h3>{{i18n "discourse_ai.ai_persona.ai_bot.title"}}</h3>
+
+        {{#if @model.isNew}}
+          <div>{{i18n "discourse_ai.ai_persona.ai_bot.save_first"}}</div>
+        {{else}}
+          {{#if this.hasDefaultLlm}}
+            <div class="control-group">
+            <label>
+              <Input
+                @type="checkbox"
+                @checked={{this.editingModel.force_default_llm}}
+              />
+              {{i18n "discourse_ai.ai_persona.force_default_llm"}}</label>
+            </div>
+          {{/if}}
+
+          <div class="control-group">
+            <label>{{i18n "discourse_ai.ai_persona.user"}}</label>
+            {{#if this.editingModel.user}}
+              <a
+                class="avatar"
+                href={{this.editingModel.user.path}}
+                data-user-card={{this.editingModel.user.username}}
+              >
+                {{Avatar this.editingModel.user.avatar_template "small"}}
+              </a>
+              <LinkTo @route="adminUser" @model={{this.adminUser}}>
+                {{this.editingModel.user.username}}
+              </LinkTo>
+            {{else}}
+              <DButton
+                @action={{this.createUser}}
+                class="ai-persona-editor__create-user"
+              >
+                {{i18n "discourse_ai.ai_persona.create_user"}}
+              </DButton>
+              <DTooltip
+                @icon="circle-question"
+                @content={{i18n "discourse_ai.ai_persona.create_user_help"}}
+              />
+            {{/if}}
+          </div>
+
+          {{#if this.editingModel.user}}
+            <form.Field
+              @name="allow_personal_messages"
+              @title={{i18n "discourse_ai.ai_persona.allow_personal_messages"}}
+              @tooltip={{i18n "discourse_ai.ai_persona.allow_personal_messages_help"}}
+              as |field|
+            >
+              <field.Checkbox/>
+            </form.Field>
+
+            <form.Field
+              @name="allow_topic_mentions"
+              @title={{i18n "discourse_ai.ai_persona.allow_topic_mentions"}}
+              @tooltip={{i18n "discourse_ai.ai_persona.allow_topic_mentions_help"}}
+              as |field|
+            >
+              <field.Checkbox/>
+            </form.Field>
+          
+            {{#if this.chatPluginEnabled}}
+              <form.Field
+                @name="allow_chat_direct_messages"
+                @title={{i18n "discourse_ai.ai_persona.allow_chat_direct_messages"}}
+                @tooltip={{i18n "discourse_ai.ai_persona.allow_chat_direct_messages_help"}}
+                as |field|
+              >
+                <field.Checkbox/>
+              </form.Field>    
+
+              <form.Field
+                @name="allow_chat_channel_mentions"
+                @title={{i18n "discourse_ai.ai_persona.allow_chat_channel_mentions"}}
+                @tooltip={{i18n "discourse_ai.ai_persona.allow_chat_channel_mentions_help"}}
+                as |field|
+              >
+                <field.Checkbox/>
+              </form.Field>
+            {{/if}}
+          {{/if}}
         {{/if}}
       </div>
-    </form>
+
+      <form.Actions>
+        <form.Submit />
+
+        {{#if this.showDelete}}
+          <form.Button
+            @action={{this.delete}}
+            @label="discourse_ai.ai_persona.delete"
+            class="btn-danger"
+          />
+        {{/if}}
+      </form.Actions>
+    </Form>
   </template>
 }
