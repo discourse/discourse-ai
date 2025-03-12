@@ -16,7 +16,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='text-embedding-3-small'] button").click()
 
-    find("input.ai-embedding-editor__api-key").fill_in(with: api_key)
+    find("input.form-kit__control-password").fill_in(with: api_key)
     find(".ai-embedding-editor__save").click()
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-embeddings")
@@ -45,7 +45,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='manual'] button").click()
 
-    find("input.ai-embedding-editor__display-name").fill_in(with: "text-embedding-3-small")
+    find("#control-display_name input").fill_in(with: "text-embedding-3-small")
 
     select_kit = PageObjects::Components::SelectKit.new(".ai-embedding-editor__provider")
     select_kit.expand
