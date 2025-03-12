@@ -3,6 +3,7 @@
 RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
   fab!(:admin)
   let(:page_header) { PageObjects::Components::DPageHeader.new }
+  let(:form) { PageObjects::Components::FormKit.new("form") }
 
   before { sign_in(admin) }
 
@@ -16,8 +17,8 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='text-embedding-3-small'] button").click()
 
-    find(".form-kit__control-password").fill_in(with: api_key)
-    find(".ai-embedding-editor__save").click()
+    form.field("api_key").fill_in(api_key)
+    form.submit
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-embeddings")
 
@@ -45,29 +46,27 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='manual'] button").click()
 
-    find("#control-display_name input").fill_in(with: "text-embedding-3-small")
-
-    find("#control-provider select").select(EmbeddingDefinition::OPEN_AI)
-
-    find("#control-url input").fill_in(with: "https://api.openai.com/v1/embeddings")
-    find("#control-api_key input").fill_in(with: api_key)
-
-    find("#control-tokenizer_class select").select("OpenAiTokenizer")
+    # Use the FormKit helper to fill in the form fields
+    form.field("display_name").fill_in("text-embedding-3-small")
+    form.field("provider").select(EmbeddingDefinition::OPEN_AI)
+    form.field("url").fill_in("https://api.openai.com/v1/embeddings")
+    form.field("api_key").fill_in(api_key)
+    form.field("tokenizer_class").select("DiscourseAi::Tokenizer::OpenAiTokenizer")
 
     embed_prefix = "On creation:"
     search_prefix = "On search:"
-    find("#control-embed_prompt textarea").fill_in(with: embed_prefix)
-    find("#control-search_prompt textarea").fill_in(with: search_prefix)
-    find("#control-dimensions input").fill_in(with: 1536)
-    find("#control-max_sequence_length input").fill_in(with: 8191)
+    form.field("embed_prompt").fill_in(embed_prefix)
+    form.field("search_prompt").fill_in(search_prefix)
+    form.field("dimensions").fill_in(1536)
+    form.field("max_sequence_length").fill_in(8191)
+    form.field("pg_function").select("<=>")
 
-    find("#control-pg_function select").select("Cosine distance")
-
-    find(".ai-embedding-editor__save").click()
+    form.submit
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-embeddings")
 
     embedding_def = EmbeddingDefinition.order(:id).last
+
     expect(embedding_def.api_key).to eq(api_key)
 
     preset = EmbeddingDefinition.presets.find { |p| p[:preset_id] == "text-embedding-3-small" }
