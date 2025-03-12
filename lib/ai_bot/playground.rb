@@ -65,26 +65,8 @@ module DiscourseAi
         user_id.to_i <= 0
       end
 
-      def self.schedule_reply(post)
-        return if is_bot_user_id?(post.user_id)
-        mentionables = nil
-
-        if post.topic.private_message?
-          mentionables =
-            AiPersona.allowed_modalities(user: post.user, allow_personal_messages: true)
-        else
-          mentionables = AiPersona.allowed_modalities(user: post.user, allow_topic_mentions: true)
-        end
-
+      def self.get_bot_user(post:, all_llm_users:)
         bot_user = nil
-        mentioned = nil
-
-        all_llm_users =
-          LlmModel
-            .where(enabled_chat_bot: true)
-            .joins(:user)
-            .pluck("users.id", "users.username_lower")
-
         if post.topic.private_message?
           # this ensures that we reply using the correct llm
           # 1. if we have a preferred llm user we use that
@@ -107,6 +89,29 @@ module DiscourseAi
               .first
               &.user
         end
+        bot_user
+      end
+
+      def self.schedule_reply(post)
+        return if is_bot_user_id?(post.user_id)
+        mentionables = nil
+
+        if post.topic.private_message?
+          mentionables =
+            AiPersona.allowed_modalities(user: post.user, allow_personal_messages: true)
+        else
+          mentionables = AiPersona.allowed_modalities(user: post.user, allow_topic_mentions: true)
+        end
+
+        mentioned = nil
+
+        all_llm_users =
+          LlmModel
+            .where(enabled_chat_bot: true)
+            .joins(:user)
+            .pluck("users.id", "users.username_lower")
+
+        bot_user = get_bot_user(post: post, all_llm_users: all_llm_users)
 
         mentions = nil
         if mentionables.present? || (bot_user && post.topic.private_message?)
