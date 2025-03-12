@@ -13,6 +13,6 @@ export default class AiTagSuggestion extends Component {
   }
 
   <template>
-    <AiTagSuggester @composer={{@outletArgs.composer}} />
+    <AiTagSuggester @composer={{@outletArgs.composer}} @topicState="new" />
   </template>
 }

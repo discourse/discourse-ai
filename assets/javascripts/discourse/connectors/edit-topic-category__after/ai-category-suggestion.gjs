@@ -13,6 +13,9 @@ export default class AiCategorySuggestion extends Component {
   }
 
   <template>
-    <AiCategorySuggester @buffered={{@outletArgs.buffered}} />
+    <AiCategorySuggester
+      @buffered={{@outletArgs.buffered}}
+      @topicState="edit"
+    />
   </template>
 }
