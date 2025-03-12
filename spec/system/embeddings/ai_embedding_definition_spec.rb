@@ -16,7 +16,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("[data-preset-id='text-embedding-3-small'] button").click()
 
-    find("input.form-kit__control-password").fill_in(with: api_key)
+    find(".form-kit__control-password").fill_in(with: api_key)
     find(".ai-embedding-editor__save").click()
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-embeddings")
@@ -47,28 +47,22 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
 
     find("#control-display_name input").fill_in(with: "text-embedding-3-small")
 
-    select_kit = PageObjects::Components::SelectKit.new(".ai-embedding-editor__provider")
-    select_kit.expand
-    select_kit.select_row_by_value(EmbeddingDefinition::OPEN_AI)
+    find("#control-provider select").select(EmbeddingDefinition::OPEN_AI)
 
-    find("input.ai-embedding-editor__url").fill_in(with: "https://api.openai.com/v1/embeddings")
-    find("input.ai-embedding-editor__api-key").fill_in(with: api_key)
+    find("#control-url input").fill_in(with: "https://api.openai.com/v1/embeddings")
+    find("#control-api_key input").fill_in(with: api_key)
 
-    select_kit = PageObjects::Components::SelectKit.new(".ai-embedding-editor__tokenizer")
-    select_kit.expand
-    select_kit.select_row_by_value("DiscourseAi::Tokenizer::OpenAiTokenizer")
+    find("#control-tokenizer_class select").select("OpenAiTokenizer")
 
     embed_prefix = "On creation:"
     search_prefix = "On search:"
-    find(".ai-embedding-editor__embed_prompt").fill_in(with: embed_prefix)
-    find(".ai-embedding-editor__search_prompt").fill_in(with: search_prefix)
+    find("#control-embed_prompt textarea").fill_in(with: embed_prefix)
+    find("#control-search_prompt textarea").fill_in(with: search_prefix)
+    find("#control-dimensions input").fill_in(with: 1536)
+    find("#control-max_sequence_length input").fill_in(with: 8191)
 
-    find("input.ai-embedding-editor__dimensions").fill_in(with: 1536)
-    find("input.ai-embedding-editor__max_sequence_length").fill_in(with: 8191)
+    find("#control-pg_function select").select("Cosine distance")
 
-    select_kit = PageObjects::Components::SelectKit.new(".ai-embedding-editor__distance_functions")
-    select_kit.expand
-    select_kit.select_row_by_value("<=>")
     find(".ai-embedding-editor__save").click()
 
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-embeddings")
