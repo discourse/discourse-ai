@@ -181,7 +181,8 @@ module DiscourseAi
         persona_id: nil,
         whisper: nil,
         add_user_to_pm: false,
-        stream_reply: false
+        stream_reply: false,
+        auto_set_title: false
       )
         ai_persona = AiPersona.find_by(id: persona_id)
         raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
@@ -199,6 +200,7 @@ module DiscourseAi
           context_style: :topic,
           add_user_to_pm: add_user_to_pm,
           stream_reply: stream_reply,
+          auto_set_title: auto_set_title,
         )
       end
 
@@ -466,6 +468,7 @@ module DiscourseAi
         context_style: nil,
         add_user_to_pm: true,
         stream_reply: nil,
+        auto_set_title: true,
         &blk
       )
         # this is a multithreading issue
@@ -641,7 +644,7 @@ module DiscourseAi
         end
         post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
-        if reply_post && post.post_number == 1 && post.topic.private_message?
+        if reply_post && post.post_number == 1 && post.topic.private_message? && auto_set_title
           title_playground(reply_post, post.user)
         end
       end

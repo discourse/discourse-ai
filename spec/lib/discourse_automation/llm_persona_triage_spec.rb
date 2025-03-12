@@ -165,6 +165,30 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     expect(context).to include("support")
   end
 
+  it "interacts correctly with a PM with no replies" do
+    pm_topic = Fabricate(:private_message_topic, user: user, title: "Important PM")
+
+    # Create initial PM post
+    pm_post =
+      Fabricate(
+        :post,
+        topic: pm_topic,
+        user: user,
+        raw: "This is a private message that needs triage",
+      )
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      ["I've received your private message"],
+    ) do |_, _, _prompts|
+      automation.running_in_background!
+      automation.trigger!({ "post" => pm_post })
+    end
+
+    reply = pm_topic.posts.order(:post_number).last
+    expect(reply.raw).to eq("I've received your private message")
+    expect(reply.topic.reload.title).to eq("Important PM")
+  end
+
   it "interacts correctly with PMs" do
     # Create a private message topic
     pm_topic = Fabricate(:private_message_topic, user: user, title: "Important PM")
