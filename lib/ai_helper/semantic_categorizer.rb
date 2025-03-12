@@ -11,7 +11,7 @@ module DiscourseAi
       end
 
       def categories
-        return [] if @text.blank? && !@topic_id
+        return [] if @text.blank? && @topic_id.nil?
         return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors
@@ -56,7 +56,7 @@ module DiscourseAi
       end
 
       def tags
-        return [] if @text.blank? && !@topic_id
+        return [] if @text.blank? && @topic_id.nil?
         return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors(limit: 100)
@@ -102,13 +102,19 @@ module DiscourseAi
 
       def nearest_neighbors(limit: 50)
         if @topic_id
-          table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
-          embeddings =
-            DB
-              .query("SELECT embeddings::text FROM #{table_name} WHERE topic_id=#{@topic_id}")
-              .first
-              .embeddings
-          raw_vector = JSON.parse(embeddings)
+          target = Topic.find_by(id: @topic_id)
+          embeddings = @schema.find_by_target(target)&.embeddings
+
+          if embeddings.blank?
+            @text =
+              DiscourseAi::Summarization::Strategies::TopicSummary
+                .new(target)
+                .targets_data
+                .pluck(:text)
+            raw_vector = @vector.vector_from(@text)
+          else
+            raw_vector = JSON.parse(embeddings)
+          end
         else
           raw_vector = @vector.vector_from(@text)
         end
