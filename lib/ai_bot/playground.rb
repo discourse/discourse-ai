@@ -65,7 +65,7 @@ module DiscourseAi
         user_id.to_i <= 0
       end
 
-      def self.get_bot_user(post:, all_llm_users:)
+      def self.get_bot_user(post:, all_llm_users:, mentionables:)
         bot_user = nil
         if post.topic.private_message?
           # this ensures that we reply using the correct llm
@@ -111,7 +111,8 @@ module DiscourseAi
             .joins(:user)
             .pluck("users.id", "users.username_lower")
 
-        bot_user = get_bot_user(post: post, all_llm_users: all_llm_users)
+        bot_user =
+          get_bot_user(post: post, all_llm_users: all_llm_users, mentionables: mentionables)
 
         mentions = nil
         if mentionables.present? || (bot_user && post.topic.private_message?)
