@@ -125,6 +125,7 @@ module DiscourseAi
 
       def self.format_results(rows, args: nil, result_style:)
         rows = rows&.map { |row| yield row } if block_given?
+        column_names = nil
 
         if result_style == :compact
           index = -1
@@ -142,7 +143,8 @@ module DiscourseAi
           column_names = column_indexes.keys
         end
 
-        result = { column_names: column_names, rows: rows }
+        result = { rows: rows }
+        result[:column_names] = column_names if column_names
         result[:args] = args if args
         result
       end

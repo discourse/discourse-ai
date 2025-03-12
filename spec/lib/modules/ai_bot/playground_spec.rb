@@ -637,13 +637,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           create_post(
             title: "I just made a PM",
             raw: "Hey there #{persona.user.username}, can you help me?",
-            target_usernames: "#{user.username},#{persona.user.username}",
+            target_usernames: "#{user.username},#{persona.user.username},#{claude_2.user.username}",
             archetype: Archetype.private_message,
             user: admin,
           )
       end
 
-      post.topic.custom_fields["ai_persona_id"] = persona.id
+      # note that this is a string due to custom field shananigans
+      post.topic.custom_fields["ai_persona_id"] = persona.id.to_s
       post.topic.save_custom_fields
 
       llm2 = Fabricate(:llm_model, enabled_chat_bot: true)
@@ -654,6 +655,22 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         create_post(
           user: admin,
           raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot two")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      current_users = last_post.topic.reload.topic_allowed_users.joins(:user).pluck(:username)
+      expect(current_users).to include(llm2.user.username)
+
+      # subseqent replies should come from the new llm
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Hi from bot two"], llm: llm2) do
+        create_post(
+          user: admin,
+          raw: "just confirming everything switched",
           topic_id: post.topic_id,
         )
       end

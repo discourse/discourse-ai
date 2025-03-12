@@ -72,8 +72,26 @@ RSpec.describe DiscourseAi::Utils::Search do
       GroupUser.create!(group: group, user: user)
 
       # Now should find the private post
-      results = described_class.perform_search(search_query: private_post.raw, current_user: user)
+      results =
+        described_class.perform_search(
+          search_query: private_post.raw,
+          current_user: user,
+          result_style: :detailed,
+        )
       expect(results[:rows].length).to eq(1)
+      # so API is less confusing
+      expect(results.key?(:column_names)).to eq(false)
+
+      results =
+        described_class.perform_search(
+          search_query: private_post.raw,
+          current_user: user,
+          result_style: :compact,
+        )
+
+      expect(results[:rows].length).to eq(1)
+      # so API is less confusing
+      expect(results[:column_names]).to be_present
     end
 
     it "properly handles subfolder URLs" do
