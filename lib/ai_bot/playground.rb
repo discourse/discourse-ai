@@ -4,6 +4,7 @@ module DiscourseAi
   module AiBot
     class Playground
       BYPASS_AI_REPLY_CUSTOM_FIELD = "discourse_ai_bypass_ai_reply"
+      BOT_USER_PREF_ID_CUSTOM_FIELD = "discourse_ai_bot_user_pref_id"
 
       attr_reader :bot
 
@@ -85,8 +86,18 @@ module DiscourseAi
             .pluck("users.id", "users.username_lower")
 
         if post.topic.private_message?
-          # this is an edge case, you started a PM with a different bot
-          bot_user =
+          # this ensures that we reply using the correct llm
+          # 1. if we have a preferred llm user we use that
+          # 2. if we don't just take first topic allowed user
+          # 3. if we don't have that we take the first mentionable
+          bot_user = nil
+          if preferred_user =
+               all_llm_users.find { |id, username|
+                 id == post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD].to_i
+               }
+            bot_user = User.find_by(id: preferred_user[0])
+          end
+          bot_user ||=
             post.topic.topic_allowed_users.where(user_id: all_llm_users.map(&:first)).first&.user
           bot_user ||=
             post
@@ -126,6 +137,8 @@ module DiscourseAi
 
         if bot_user
           topic_persona_id = post.topic.custom_fields["ai_persona_id"]
+          topic_persona_id = topic_persona_id.to_i if topic_persona_id.present?
+
           persona_id = mentioned&.dig(:id) || topic_persona_id
 
           persona = nil
@@ -141,7 +154,7 @@ module DiscourseAi
           end
 
           # edge case, llm was mentioned in an ai persona conversation
-          if persona_id == topic_persona_id.to_i && post.topic.private_message? && persona &&
+          if persona_id == topic_persona_id && post.topic.private_message? && persona &&
                all_llm_users.present?
             if !persona.force_default_llm && mentions.present?
               mentioned_llm_user_id, _ =
@@ -494,6 +507,16 @@ module DiscourseAi
         if post.topic.private_message? && add_user_to_pm
           if !post.topic.topic_allowed_users.exists?(user_id: reply_user.id)
             post.topic.topic_allowed_users.create!(user_id: reply_user.id)
+          end
+          # edge case, maybe the llm user is missing?
+          if !post.topic.topic_allowed_users.exists?(user_id: bot.bot_user.id)
+            post.topic.topic_allowed_users.create!(user_id: bot.bot_user.id)
+          end
+
+          # we store the id of the last bot_user, this is then used to give it preference
+          if post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD].to_i != bot.bot_user.id
+            post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD] = bot.bot_user.id
+            post.topic.save_custom_fields
           end
         end
 
