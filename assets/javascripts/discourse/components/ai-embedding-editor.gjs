@@ -69,18 +69,9 @@ export default class AiEmbeddingEditor extends Component {
     };
 
     return this.args.embeddings.resultSetMeta.distance_functions.map((df) => {
-      let iconName;
-
-      if (df === "<=>") {
-        iconName = "discourse-spaceship-operator";
-      } else if (df === "<#>") {
-        iconName = "discourse-negative-inner-product";
-      }
-
       return {
         id: df,
         name: t(df),
-        icon: iconName,
       };
     });
   }
@@ -486,10 +477,7 @@ export default class AiEmbeddingEditor extends Component {
         >
           <field.Select @includeNone={{false}} as |select|>
             {{#each this.distanceFunctions as |df|}}
-              <select.Option
-                @value={{df.id}}
-                @icon={{df.icon}}
-              >{{df.name}}</select.Option>
+              <select.Option @value={{df.id}}>{{df.name}}</select.Option>
             {{/each}}
           </field.Select>
         </form.Field>
