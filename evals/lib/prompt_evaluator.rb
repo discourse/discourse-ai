@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiscourseAi::Evals::PromptEvaluator
   def initialize(llm)
     @llm = llm.llm_model.to_llm
