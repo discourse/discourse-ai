@@ -57,13 +57,51 @@ class DiscourseAi::Evals::Eval
       when "image_to_text"
         image_to_text(llm, **args)
       when "prompt"
-        prompt_call(llm, **args)
+        DiscourseAi::Evals::PromptEvaluator.new(llm).prompt_call(**args)
       when "edit_artifact"
         edit_artifact(llm, **args)
       when "summarization"
         summarization(llm, **args)
       end
 
+    classify_results(result)
+  rescue EvalError => e
+    { result: :fail, message: e.message, context: e.context }
+  end
+
+  def print
+    puts "#{id}: #{description}"
+  end
+
+  def to_json
+    {
+      type: @type,
+      path: @path,
+      name: @name,
+      description: @description,
+      id: @id,
+      args: @args,
+      vision: @vision,
+      expected_output: @expected_output,
+      expected_output_regex: @expected_output_regex,
+    }.compact
+  end
+
+  private
+
+  # @param result [String, Array<Hash>] the result of the eval, either
+  # "llm response" or [{ result: "llm response", other_attrs: here }]
+  # @return [Array<Hash>] an array of hashes with the result classified
+  # as pass or fail, along with extra attributes
+  def classify_results(result)
+    if result.is_a?(Array)
+      result.each { |r| r.merge!(classify_result_pass_fail(r)) }
+    else
+      [classify_result_pass_fail(result)]
+    end
+  end
+
+  def classify_result_pass_fail(result)
     if expected_output
       if result == expected_output
         { result: :pass }
@@ -94,34 +132,17 @@ class DiscourseAi::Evals::Eval
     else
       { result: :pass }
     end
-  rescue EvalError => e
-    { result: :fail, message: e.message, context: e.context }
   end
-
-  def print
-    puts "#{id}: #{description}"
-  end
-
-  def to_json
-    {
-      type: @type,
-      path: @path,
-      name: @name,
-      description: @description,
-      id: @id,
-      args: @args,
-      vision: @vision,
-      expected_output: @expected_output,
-      expected_output_regex: @expected_output_regex,
-    }.compact
-  end
-
-  private
 
   def judge_result(result)
     prompt = judge[:prompt].dup
-    prompt.sub!("{{output}}", result)
-    args.each { |key, value| prompt.sub!("{{#{key}}}", value.to_s) }
+    if result.is_a?(String)
+      prompt.sub!("{{output}}", result)
+      args.each { |key, value| prompt.sub!("{{#{key}}}", value.to_s) }
+    else
+      prompt.sub!("{{output}}", result[:result])
+      result.each { |key, value| prompt.sub!("{{#{key}}}", value.to_s) }
+    end
 
     prompt += <<~SUFFIX
 
@@ -218,36 +239,6 @@ class DiscourseAi::Evals::Eval
     text
   ensure
     upload.destroy if upload
-  end
-
-  def prompt_call(llm, system_prompt:, message:, temperature: nil, tools: nil, stream: false)
-    if tools
-      tools.each do |tool|
-        tool.symbolize_keys!
-        tool[:parameters].symbolize_keys! if tool[:parameters]
-      end
-    end
-    prompt =
-      DiscourseAi::Completions::Prompt.new(
-        system_prompt,
-        messages: [{ type: :user, content: message }],
-      )
-
-    prompt.tools = tools if tools
-
-    result = nil
-    if stream
-      result = []
-      llm
-        .llm_model
-        .to_llm
-        .generate(prompt, user: Discourse.system_user, temperature: temperature) do |partial|
-          result << partial
-        end
-    else
-      result = llm.llm_model.to_llm.generate(prompt, user: Discourse.system_user)
-    end
-    result
   end
 
   def edit_artifact(llm, css_path:, js_path:, html_path:, instructions_path:)
