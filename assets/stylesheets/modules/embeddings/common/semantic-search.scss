@@ -15,6 +15,7 @@
       &__searching {
         display: flex;
         align-items: center;
+        margin-left: 5px;
 
         &.in-progress,
         &.unavailable {
@@ -33,14 +34,10 @@
         margin-left: 4px;
         font-size: var(--font-down-1);
       }
-    }
 
-    .semantic-search__entries {
-      margin-top: 10px;
-    }
-
-    .semantic-search__searching {
-      margin-left: 5px;
+      &__entries {
+        margin-top: 10px;
+      }
     }
   }
 }

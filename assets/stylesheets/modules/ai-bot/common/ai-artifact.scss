@@ -38,6 +38,7 @@ html.ai-artifact-expanded {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
   .ai-artifact__expand-button {
     margin-left: auto;
   }
@@ -70,14 +71,17 @@ html.ai-artifact-expanded {
     background-color: var(--secondary-low);
     opacity: 0.9;
     transform: translateY(0);
+
     button {
       width: 100%;
       text-align: left;
       box-sizing: border-box;
       justify-content: flex-start;
       color: var(--secondary-very-high);
+
       &:hover {
         color: var(--secondary-very-high);
+
         .d-icon {
           color: var(--secondary-high);
         }
@@ -95,7 +99,6 @@ html.ai-artifact-expanded {
     bottom: 0;
     z-index: z("fullscreen");
   }
-
   position: fixed;
   top: 0;
   left: 0;

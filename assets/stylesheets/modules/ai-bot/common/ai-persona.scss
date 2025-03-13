@@ -46,21 +46,26 @@
     padding-left: 0.25em;
     color: var(--primary-medium);
   }
+
   label {
     display: block;
   }
+
   &__tool-options {
     padding: 5px 10px 5px;
     border: 1px solid var(--primary-low-mid);
     width: 480px;
   }
+
   &__tool-options-name {
     margin-bottom: 10px;
     font-size: var(--font-down-1);
   }
+
   &__description {
     width: 500px;
   }
+
   &__system_prompt {
     width: 500px;
     height: 400px;
@@ -101,7 +106,7 @@
 
     &:focus,
     &:focus-within {
-      @include default-focus();
+      @include default-focus;
     }
 
     &-container {

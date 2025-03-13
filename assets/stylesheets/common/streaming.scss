@@ -3,6 +3,7 @@
   100% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
@@ -10,8 +11,8 @@
 
 @mixin progress-dot {
   content: "\25CF";
-  font-family: Söhne Circle, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
-    Cantarell, Noto Sans, sans-serif;
+  font-family: "Söhne Circle", system-ui, -apple-system, "Segoe UI", Roboto,
+    Ubuntu, Cantarell, "Noto Sans", sans-serif;
   line-height: normal;
   margin-left: 0.25rem;
   vertical-align: baseline;
@@ -44,6 +45,7 @@ article.streaming .cooked {
   100% {
     transform: initial;
   }
+
   30% {
     transform: translateY(-0.2em);
   }
@@ -55,12 +57,15 @@ article.streaming .cooked {
 
   &__dot {
     display: inline-block;
+
     @media (prefers-reduced-motion: no-preference) {
       animation: ai-indicator-wave 1.8s linear infinite;
     }
+
     &:nth-child(2) {
       animation-delay: -1.6s;
     }
+
     &:nth-child(3) {
       animation-delay: -1.4s;
     }
