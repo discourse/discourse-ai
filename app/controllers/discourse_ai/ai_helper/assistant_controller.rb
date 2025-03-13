@@ -78,22 +78,26 @@ module DiscourseAi
       end
 
       def suggest_category
-        input = get_text_param!
-        input_hash = { text: input }
+        if params[:topic_id]
+          opts = { topic_id: params[:topic_id] }
+        else
+          input = get_text_param!
+          opts = { text: input }
+        end
 
-        render json:
-                 DiscourseAi::AiHelper::SemanticCategorizer.new(
-                   input_hash,
-                   current_user,
-                 ).categories,
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(current_user, opts).categories,
                status: 200
       end
 
       def suggest_tags
-        input = get_text_param!
-        input_hash = { text: input }
+        if params[:topic_id]
+          opts = { topic_id: params[:topic_id] }
+        else
+          input = get_text_param!
+          opts = { text: input }
+        end
 
-        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(input_hash, current_user).tags,
+        render json: DiscourseAi::AiHelper::SemanticCategorizer.new(current_user, opts).tags,
                status: 200
       end
 

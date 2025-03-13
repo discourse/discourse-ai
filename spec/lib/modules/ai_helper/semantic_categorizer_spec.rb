@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::AiHelper::SemanticCategorizer do
   fab!(:topic) { Fabricate(:topic, category: category) }
 
   let(:vector) { DiscourseAi::Embeddings::Vector.instance }
-  let(:categorizer) { DiscourseAi::AiHelper::SemanticCategorizer.new({ text: "hello" }, user) }
+  let(:categorizer) { DiscourseAi::AiHelper::SemanticCategorizer.new(user, { text: "hello" }) }
   let(:expected_embedding) { [0.0038493] * vector.vdef.dimensions }
 
   before do

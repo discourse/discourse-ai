@@ -2,15 +2,16 @@
 module DiscourseAi
   module AiHelper
     class SemanticCategorizer
-      def initialize(input, user)
+      def initialize(user, opts)
         @user = user
-        @text = input[:text]
+        @text = opts[:text]
         @vector = DiscourseAi::Embeddings::Vector.instance
         @schema = DiscourseAi::Embeddings::Schema.for(Topic)
+        @topic_id = opts[:topic_id]
       end
 
       def categories
-        return [] if @text.blank?
+        return [] if @text.blank? && @topic_id.nil?
         return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors
@@ -55,7 +56,7 @@ module DiscourseAi
       end
 
       def tags
-        return [] if @text.blank?
+        return [] if @text.blank? && @topic_id.nil?
         return [] if !DiscourseAi::Embeddings.enabled?
 
         candidates = nearest_neighbors(limit: 100)
@@ -100,7 +101,23 @@ module DiscourseAi
       private
 
       def nearest_neighbors(limit: 50)
-        raw_vector = @vector.vector_from(@text)
+        if @topic_id
+          target = Topic.find_by(id: @topic_id)
+          embeddings = @schema.find_by_target(target)&.embeddings
+
+          if embeddings.blank?
+            @text =
+              DiscourseAi::Summarization::Strategies::TopicSummary
+                .new(target)
+                .targets_data
+                .pluck(:text)
+            raw_vector = @vector.vector_from(@text)
+          else
+            raw_vector = JSON.parse(embeddings)
+          end
+        else
+          raw_vector = @vector.vector_from(@text)
+        end
 
         muted_category_ids = nil
         if @user.present?
