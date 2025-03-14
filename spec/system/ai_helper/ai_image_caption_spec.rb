@@ -10,7 +10,10 @@ RSpec.describe "AI image caption", type: :system, js: true do
   let(:composer) { PageObjects::Components::Composer.new }
   let(:popup) { PageObjects::Components::AiCaptionPopup.new }
   let(:dialog) { PageObjects::Components::Dialog.new }
-  let(:file_path) { file_from_fixtures("logo.jpg", "images").path }
+  let(:file_path) { plugin_file_from_fixtures("100x100.jpg").path }
+  let(:captioned_image_path) do
+    plugin_file_from_fixtures("An image of discobot in action.png").path
+  end
   let(:caption) do
     "The image shows a stylized speech bubble icon with a multicolored border on a black background."
   end
@@ -123,12 +126,9 @@ RSpec.describe "AI image caption", type: :system, js: true do
       end
 
       it "should not show a prompt when submitting a post with no captionable images uploaded" do
-        original_file_path = Rails.root.join("spec/fixtures/images/logo.jpg")
-        temp_file_path = Rails.root.join("spec/fixtures/images/An image of Discourse logo.jpg")
-        FileUtils.cp(original_file_path, temp_file_path)
         visit("/latest")
         page.find("#create-topic").click
-        attach_file([temp_file_path]) { composer.click_toolbar_button("upload") }
+        attach_file([captioned_image_path]) { composer.click_toolbar_button("upload") }
         wait_for { composer.has_no_in_progress_uploads? }
         composer.fill_title("I love using Discourse! It is my favorite forum software")
         composer.create
@@ -146,25 +146,6 @@ RSpec.describe "AI image caption", type: :system, js: true do
           dialog.click_yes
           wait_for(timeout: 100) { page.find("#post_1 .cooked img")["alt"] == caption_with_attrs }
           expect(page.find("#post_1 .cooked img")["alt"]).to eq(caption_with_attrs)
-        end
-      end
-    end
-
-    context "when the user preference is enabled" do
-      before { user.user_option.update!(auto_image_caption: true) }
-
-      skip "TODO: Fix auto_image_caption user option not present in testing environment?" do
-        it "should auto caption the image after uploading" do
-          DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
-            visit("/latest")
-            page.find("#create-topic").click
-            attach_file([Rails.root.join("spec/fixtures/images/logo.jpg")]) do
-              composer.click_toolbar_button("upload")
-            end
-            wait_for { composer.has_no_in_progress_uploads? }
-            wait_for { page.find(".image-wrapper img")["alt"] == caption_with_attrs }
-            expect(page.find(".image-wrapper img")["alt"]).to eq(caption_with_attrs)
-          end
         end
       end
     end
