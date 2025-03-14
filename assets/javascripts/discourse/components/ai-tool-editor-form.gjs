@@ -276,7 +276,6 @@ export default class AiToolEditorForm extends Component {
           as |field|
         >
           <field.Custom>
-            {{! TODO: remove this.editingModel (target not needed?) }}
             <RagUploader
               @target={{@editingModel}}
               @updateUploads={{fn this.updateUploads form.addItemToCollection}}
@@ -284,7 +283,7 @@ export default class AiToolEditorForm extends Component {
               @allowImages={{@settings.rag_images_enabled}}
             />
             <RagOptions
-              @model={{this.editingModel}}
+              @model={{@editingModel}}
               @llms={{@llms}}
               @allowImages={{@settings.rag_images_enabled}}
             />

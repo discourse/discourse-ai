@@ -136,7 +136,10 @@ export default class RagUploader extends Component {
       {{#if this.ragUploads}}
         <div class="rag-uploader__search-input-container">
           <div class="rag-uploader__search-input">
-            {{icon "search" class="rag-uploader__search-input__search-icon"}}
+            {{icon
+              "magnifying-glass"
+              class="rag-uploader__search-input__search-icon"
+            }}
             <Input
               class="rag-uploader__search-input__input"
               placeholder={{i18n "discourse_ai.rag.uploads.filter"}}
