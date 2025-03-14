@@ -240,7 +240,20 @@ export default class AiEmbeddingEditor extends Component {
     this.testRunning = true;
 
     try {
-      const configTestResult = await this.args.model.testConfig(data);
+      let testModel;
+
+      // new embeddings
+      if (this.args.model.isNew || this.selectedPreset) {
+        testModel = this.store.createRecord("ai-embedding", {
+          ...this.selectedPreset,
+          ...data,
+        });
+      } else {
+        // existing embeddings
+        testModel = this.args.model;
+      }
+
+      const configTestResult = await testModel.testConfig(data);
       this.testResult = configTestResult.success;
 
       if (this.testResult) {
