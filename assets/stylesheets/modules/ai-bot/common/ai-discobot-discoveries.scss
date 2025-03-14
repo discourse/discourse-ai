@@ -106,3 +106,46 @@
   height: 1.15em;
   width: 1.15em;
 }
+
+@include breakpoint("medium", min-width) {
+  .search-menu .menu-panel:has(.ai-discobot-discoveries) {
+    width: 80vw;
+    max-width: 800px;
+    transition: width 0.5s;
+
+    .search-result-topic {
+      display: grid;
+      grid-template-areas: "results-title ai-title" "results ai";
+      grid-template-columns: 59% 39%;
+      gap: 0 2%;
+
+      .list {
+        grid-area: results;
+      }
+
+      .ai-discobot-discoveries {
+        grid-area: ai;
+      }
+    }
+
+    .ai-search-discoveries {
+      font-size: var(--font-0);
+    }
+
+    .ai-search-discoveries__regular-results-title {
+      display: none;
+    }
+
+    .ai-search-discoveries__toggle {
+      display: none;
+    }
+
+    .ai-search-discoveries__discovery.preview {
+      height: 100%;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
