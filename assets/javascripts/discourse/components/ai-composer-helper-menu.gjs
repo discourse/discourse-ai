@@ -15,6 +15,7 @@ export default class AiComposerHelperMenu extends Component {
   @service siteSettings;
   @service currentUser;
   @service site;
+
   @tracked newSelectedText;
   @tracked diff;
   @tracked customPromptValue = "";

@@ -9,7 +9,5 @@ export default class AiTopicGist extends Component {
     return !this.topicThumbnails?.enabledForRoute;
   }
 
-  <template>
-    <AiGistToggle />
-  </template>
+  <template><AiGistToggle /></template>
 }

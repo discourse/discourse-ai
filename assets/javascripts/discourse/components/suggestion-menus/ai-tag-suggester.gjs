@@ -16,6 +16,7 @@ import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
 export default class AiTagSuggester extends Component {
   @service siteSettings;
   @service toasts;
+
   @tracked loading = false;
   @tracked suggestions = null;
   @tracked untriggers = [];
