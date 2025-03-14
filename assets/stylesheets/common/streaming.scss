@@ -11,8 +11,16 @@
 
 @mixin progress-dot {
   content: "\25CF";
-  font-family: "Söhne Circle", system-ui, -apple-system, "Segoe UI", Roboto,
-    Ubuntu, Cantarell, "Noto Sans", sans-serif;
+  font-family:
+    "Söhne Circle",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    "Noto Sans",
+    sans-serif;
   line-height: normal;
   margin-left: 0.25rem;
   vertical-align: baseline;

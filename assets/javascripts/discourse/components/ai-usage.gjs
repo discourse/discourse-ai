@@ -23,6 +23,7 @@ import ComboBox from "select-kit/components/combo-box";
 
 export default class AiUsage extends Component {
   @service store;
+
   @tracked startDate = moment().subtract(30, "days").toDate();
   @tracked endDate = new Date();
   @tracked data = this.args.model;

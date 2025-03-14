@@ -13,6 +13,7 @@ import { i18n } from "discourse-i18n";
 
 export default class ShareModal extends Component {
   @service toasts;
+
   @tracked shareKey = "";
 
   constructor() {

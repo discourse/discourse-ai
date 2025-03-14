@@ -13,6 +13,7 @@ export default class AiEditSuggestionButton extends Component {
   }
 
   @service currentUser;
+
   @tracked loading = false;
   @tracked suggestion = "";
   @tracked _activeAIRequest = null;

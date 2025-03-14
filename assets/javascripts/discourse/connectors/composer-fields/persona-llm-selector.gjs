@@ -31,6 +31,7 @@ export default class BotSelector extends Component {
 
   @service currentUser;
   @service siteSettings;
+
   @tracked llm;
   @tracked allowLLMSelector = true;
 

@@ -16,6 +16,7 @@ export default class ShareModal extends Component {
   @service modal;
   @service siteSettings;
   @service currentUser;
+
   @tracked contextValue = 1;
   @tracked htmlContext = "";
   @tracked maxContext = 0;

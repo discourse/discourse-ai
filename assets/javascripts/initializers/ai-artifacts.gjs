@@ -18,12 +18,15 @@ function initializeAiArtifacts(api) {
             "data-ai-artifact-version"
           );
 
-          helper.renderGlimmer(artifactElement, <template>
-            <AiArtifact
-              @artifactId={{artifactId}}
-              @artifactVersion={{artifactVersion}}
-            />
-          </template>);
+          helper.renderGlimmer(
+            artifactElement,
+            <template>
+              <AiArtifact
+                @artifactId={{artifactId}}
+                @artifactVersion={{artifactVersion}}
+              />
+            </template>
+          );
         }
       );
     },

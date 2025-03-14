@@ -15,6 +15,7 @@ import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
 
 export default class AiCategorySuggester extends Component {
   @service siteSettings;
+
   @tracked loading = false;
   @tracked suggestions = null;
   @tracked untriggers = [];

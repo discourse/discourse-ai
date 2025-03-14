@@ -16,6 +16,7 @@ import RagUploadProgress from "./rag-upload-progress";
 
 export default class RagUploader extends Component {
   @service appEvents;
+
   @tracked term = null;
   @tracked filteredUploads = null;
   @tracked ragIndexingStatuses = null;
