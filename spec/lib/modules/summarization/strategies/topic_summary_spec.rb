@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
   fab!(:topic) { Fabricate(:topic, highest_post_number: 25) }
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
+  fab!(:admin)
 
   describe "#targets_data" do
     shared_examples "includes only public-visible topics" do
@@ -91,6 +92,51 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
         poster_name = content.first[:poster]
 
         expect(poster_name).to eq("test")
+      end
+    end
+  end
+
+  describe "Summary prompt" do
+    let!(:ai_persona) do
+      AiPersona.create!(
+        name: "TestPersona",
+        system_prompt: "test prompt",
+        description: "test",
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+      )
+    end
+
+    let!(:persona_class) do
+      DiscourseAi::AiBot::Personas::Persona.find_by(user: admin, name: "TestPersona")
+    end
+
+    context "when ai_summary_consolidator_persona_id siteSetting is set" do
+      it "returns a summary extension prompt with the correct text" do
+        SiteSetting.ai_summary_consolidator_persona_id = persona_class.id
+
+        expect(
+          topic_summary
+            .summary_extension_prompt(nil, [{ id: 1, poster: "test", text: "hello" }])
+            .messages
+            .first[
+            :content
+          ],
+        ).to include("test prompt")
+      end
+    end
+
+    context "when ai_summary_persona_id siteSetting is set" do
+      it "returns a first summary prompt with the correct text" do
+        SiteSetting.ai_summary_persona_id = persona_class.id
+
+        expect(
+          topic_summary
+            .first_summary_prompt([{ id: 1, poster: "test", text: "hello" }])
+            .messages
+            .first[
+            :content
+          ],
+        ).to include("test prompt")
       end
     end
   end
