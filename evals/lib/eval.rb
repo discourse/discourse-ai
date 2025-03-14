@@ -241,6 +241,7 @@ class DiscourseAi::Evals::Eval
     upload.destroy if upload
   end
 
+  ### TODO: SAM this code needs to move into PromptEvaluator in a coherent way in a future PR
   def prompt_call(
     llm,
     system_prompt:,
