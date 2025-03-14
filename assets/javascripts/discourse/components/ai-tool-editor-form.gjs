@@ -1,26 +1,24 @@
 import Component from "@glimmer/component";
-import { cached, tracked } from "@glimmer/tracking";
-import { concat, fn, get } from "@ember/helper";
-import { hash } from "@ember/helper";
+import { tracked } from "@glimmer/tracking";
+import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
-import { LinkTo } from "@ember/routing";
-import { later } from "@ember/runloop";
 import { service } from "@ember/service";
-import { eq, gt } from "truth-helpers";
-import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import Form from "discourse/components/form";
-import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
+import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptions from "./rag-options";
 import RagUploader from "./rag-uploader";
 
 export default class AiToolEditorForm extends Component {
+  @service modal;
   @service siteSettings;
   @service dialog;
   @service router;
+  @service toasts;
 
   @tracked uploadedFiles = [];
+  @tracked isSaving = false;
 
   PARAMETER_TYPES = [
     { name: "string", id: "string" },
@@ -29,42 +27,53 @@ export default class AiToolEditorForm extends Component {
     { name: "array", id: "array" },
   ];
 
-  constructor() {
-    super(...arguments);
-    console.log(
-      "editingModel",
-      this.args.editingModel,
-      this.args.selectedPreset
-    );
-  }
-
-  @cached
   get formData() {
-    // todo
     return {
-      name: "",
-      tool_name: "",
-      description: "",
-      summary: "",
-      parameters: [],
-      script: "",
-      rag_uploads: [],
+      name: this.args.editingModel.name || "",
+      tool_name: this.args.editingModel.tool_name || "",
+      description: this.args.editingModel.description || "",
+      summary: this.args.editingModel.summary || "",
+      parameters: this.args.editingModel.parameters || [],
+      script: this.args.editingModel.script || "",
+      rag_uploads: this.args.editingModel.rag_uploads || [],
     };
   }
 
   @action
   async save(data) {
-    console.log(data, "is saved!");
+    this.isSaving = true;
+
+    try {
+      await this.args.model.save(data);
+
+      this.toasts.success({
+        data: { message: i18n("discourse_ai.tools.saved") },
+        duration: 2000,
+      });
+
+      if (!this.args.tools.any((tool) => tool.id === this.args.model.id)) {
+        this.args.tools.pushObject(this.args.model);
+      }
+
+      this.router.transitionTo(
+        "adminPlugins.show.discourse-ai-tools.edit",
+        this.args.model
+      );
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      this.isSaving = false;
+    }
   }
 
   @action
   delete() {
     return this.dialog.confirm({
       message: i18n("discourse_ai.tools.confirm_delete"),
+
       didConfirm: async () => {
-        // ! TODO: handle deletion properly.
-        // await this.args.model.destroyRecord();
-        // this.args.tools.removeObject(this.args.model);
+        await this.args.model.destroyRecord();
+        this.args.tools.removeObject(this.args.model);
         this.router.transitionTo("adminPlugins.show.discourse-ai-tools.index");
       },
     });
@@ -87,8 +96,23 @@ export default class AiToolEditorForm extends Component {
     form.set("rag_uploads", this.uploadedFiles);
   }
 
+  @action
+  openTestModal() {
+    this.modal.show(AiToolTestModal, {
+      model: {
+        tool: this.args.editingModel,
+      },
+    });
+  }
+
   currentParameterSelection(data, index) {
     return data.parameters[index].type;
+  }
+
+  get ragUploadsDescription() {
+    return this.siteSettings.rag_images_enabled
+      ? i18n("discourse_ai.rag.uploads.description_with_images")
+      : i18n("discourse_ai.rag.uploads.description");
   }
 
   <template>
@@ -98,7 +122,6 @@ export default class AiToolEditorForm extends Component {
       class="ai-tool-editor"
       as |form data|
     >
-      {{log data}}
 
       {{! NAME }}
       <form.Field
@@ -241,7 +264,7 @@ export default class AiToolEditorForm extends Component {
         @format="full"
         as |field|
       >
-        <field.Code @lang="javascript" @height={{400}} />
+        <field.Code @lang="javascript" @height={{600}} />
       </form.Field>
 
       {{! Uploads }}
@@ -249,12 +272,13 @@ export default class AiToolEditorForm extends Component {
         <form.Field
           @name="rag_uploads"
           @title={{i18n "discourse_ai.rag.uploads.title"}}
+          @tooltip={{this.ragUploadsDescription}}
           as |field|
         >
           <field.Custom>
             {{! TODO: remove this.editingModel (target not needed?) }}
             <RagUploader
-              @target={{this.editingModel}}
+              @target={{this.args.editingModel}}
               @updateUploads={{fn this.updateUploads form.addItemToCollection}}
               @onRemove={{fn this.removeUpload form}}
               @allowImages={{@settings.rag_images_enabled}}
@@ -269,10 +293,12 @@ export default class AiToolEditorForm extends Component {
       {{/if}}
 
       <form.Actions>
-        {{! TODO add delete and test actions when /edit }}
-
         {{#unless @isNew}}
-          Run Test
+          <form.Button
+            @label="discourse_ai.tools.test"
+            @action={{this.openTestModal}}
+            class="ai-tool-editor__test-button"
+          />
 
           <form.Button
             @label="discourse_ai.tools.delete"
