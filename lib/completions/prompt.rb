@@ -41,6 +41,49 @@ module DiscourseAi
         @tool_choice = tool_choice
       end
 
+      # this new api tries to create symmetry between responses and prompts
+      # this means anything we get back from the model via endpoint can be easily appended
+      def push_model_response(response)
+        response = [response] if !response.is_a? Array
+
+        thinking, thinking_signature, redacted_thinking_signature = nil
+
+        response.each do |message|
+          if message.is_a?(Thinking)
+            # we can safely skip partials here
+            next if message.partial?
+            if message.redacted
+              redacted_thinking_signature = message.signature
+            else
+              thinking = message.message
+              thinking_signature = message.signature
+            end
+          elsif message.is_a?(ToolCall)
+            next if message.partial?
+            # this is a bit surprising about the API
+            # needing to add arguments is not ideal
+            push(
+              type: :tool_call,
+              content: { arguments: message.parameters }.to_json,
+              id: message.id,
+              name: message.name,
+            )
+          elsif message.is_a?(String)
+            push(type: :model, content: message)
+          else
+            raise ArgumentError, "response must be an array of strings, ToolCalls, or Thinkings"
+          end
+        end
+
+        # anthropic rules are that we attach thinking to last for the response
+        # it is odd, I wonder if long term we just keep thinking as a separate object
+        if thinking || redacted_thinking_signature
+          messages.last[:thinking] = thinking
+          messages.last[:thinking_signature] = thinking_signature
+          messages.last[:redacted_thinking_signature] = redacted_thinking_signature
+        end
+      end
+
       def push(
         type:,
         content:,
