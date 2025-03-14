@@ -308,7 +308,10 @@ export default class AiToolEditorForm extends Component {
           />
         {{/unless}}
 
-        <form.Submit @label="discourse_ai.tools.save" />
+        <form.Submit
+          @label="discourse_ai.tools.save"
+          class="ai-tool-editor__save"
+        />
       </form.Actions>
     </Form>
   </template>

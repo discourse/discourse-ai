@@ -16,9 +16,7 @@ export default class AiToolEditor extends Component {
 
   get editingModel() {
     if (this.args.model.isNew) {
-      return this.store
-        .createRecord("ai-tool", this.selectedPreset)
-        .workingCopy();
+      return this.store.createRecord("ai-tool", this.selectedPreset);
     } else {
       return this.args.model;
     }

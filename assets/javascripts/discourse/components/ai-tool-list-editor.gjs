@@ -45,7 +45,7 @@ export default class AiToolListEditor extends Component {
       >
         <:actions>
           <DMenu
-            @triggerClass="btn-primary btn-small"
+            @triggerClass="btn-primary btn-small ai-tool-list-editor__new-button"
             @label={{i18n "discourse_ai.tools.new"}}
             @icon="plus"
             @placement="bottom-end"
@@ -62,6 +62,7 @@ export default class AiToolListEditor extends Component {
                       @translatedLabel={{preset.preset_name}}
                       @action={{fn this.routeToNewTool preset}}
                       class="btn-transparent"
+                      data-option={{preset.preset_id}}
                     />
                   </dropdown.item>
                 {{/each}}
