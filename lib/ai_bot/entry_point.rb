@@ -180,6 +180,25 @@ module DiscourseAi
           scope.user.in_any_groups?(persona_allowed_groups)
         end
 
+        UserUpdater::OPTION_ATTR.push(:ai_search_discoveries)
+        plugin.add_to_serializer(
+          :user_option,
+          :ai_search_discoveries,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_persona.present? &&
+              scope.authenticated?
+          end,
+        ) { object.ai_search_discoveries }
+
+        plugin.add_to_serializer(
+          :current_user_option,
+          :ai_search_discoveries,
+          include_condition: -> do
+            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_persona.present? &&
+              scope.authenticated?
+          end,
+        ) { object.ai_search_discoveries }
+
         plugin.add_to_serializer(
           :topic_view,
           :ai_persona_name,

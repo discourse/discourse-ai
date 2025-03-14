@@ -71,7 +71,10 @@ id:
               label: "Temperatur"
             top_p:
               label: "Top P"
-              description: "Top P yang akan digunakan untuk LLM, tingkatkan untuk meningkatkan keacakan (0 untuk menggunakan model default)"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -88,6 +91,8 @@ id:
               label: "Balas"
             model:
               label: "Model"
+            temperature:
+              label: "Temperatur"
     discourse_ai:
       title: "AI"
       modals:
@@ -247,3 +252,6 @@ id:
       discobot_discoveries:
         regular_results: "Topik"
         collapse: "Persempit"
+        tooltip:
+          actions:
+            disable: "Nonaktifkan"

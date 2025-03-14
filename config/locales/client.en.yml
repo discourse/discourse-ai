@@ -85,11 +85,28 @@ en:
               description: "Prioritize content from this group in the report"
             temperature:
               label: "Temperature"
-              description: "Temperature to use for the LLM. Increase to increase randomness (0 to use model default)"
+              description: "Temperature to use for the LLM. Increase to increase randomness (leave empty to use model default)"
             top_p:
               label: "Top P"
-              description: "Top P to use for the LLM, increase to increase randomness (0 to use model default)"
+              description: "Top P to use for the LLM, increase to increase randomness (leave empty to use model default)"
 
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
+              description: "The default language model used for triage"
+            tool:
+              label: "Tool"
+              description: "Tool to use for triage (tool must have no parameters defined)"
+
+        llm_persona_triage:
+          fields:
+            persona:
+              label: "Persona"
+              description: "AI Persona to use for triage (must have default LLM and User set)"
+            whisper:
+              label: "Reply as Whisper"
+              description: "Whether the persona's response should be a whisper"
         llm_triage:
           fields:
             system_prompt:
@@ -128,9 +145,18 @@ en:
             include_personal_messages:
               label: "Include personal messages"
               description: "Also scan and triage personal messages"
+            whisper:
+              label: "Reply as Whisper"
+              description: "Whether the AI's response should be a whisper"
+            reply_persona:
+              label: "Reply Persona"
+              description: "AI Persona to use for replies (must have default LLM), will be prioritized over canned reply"
             model:
               label: "Model"
               description: "Language model used for triage"
+            temperature:
+              label: "Temperature"
+              description: "Temperature to use for the LLM. Increase to increase randomness (leave empty to use model default)"
 
     discourse_ai:
       title: "AI"
@@ -402,7 +428,7 @@ en:
           open_ai-o1: "Open AI's most capable reasoning model"
           open_ai-o3-mini: "Advanced Cost-efficient reasoning model"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Powerful multipurpose model"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Powerful multipurpose model"
           mistral-mistral-large-latest: "Mistral's most powerful model"
           mistral-pixtral-large-latest: "Mistral's most powerful vision capable model"
 
@@ -428,6 +454,7 @@ en:
 
         hints:
           max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          display_name: "The name used to reference this model across your site's interface."
           name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
           enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
@@ -460,6 +487,8 @@ en:
           reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
           enable_reasoning: "Enable reasoning (only applicable to Sonnet 3.7)"
           reasoning_tokens: "Number of tokens used for reasoning"
+          disable_temperature: "Disable temperature (some thinking models don't support temperature)"
+          disable_top_p: "Disable top P (some thinking models don't support top P)"
 
       related_topics:
         title: "Related topics"
@@ -651,7 +680,11 @@ en:
       sentiments:
         dashboard:
           title: "Sentiment"
+        sidebar:
+          overview: "Sentiment overview"
+          analysis: "Sentiment analysis"
         sentiment_analysis:
+          share_chart: "Copy link to chart"
           filter_types:
             all: "All"
             positive: "Positive"
@@ -681,9 +714,16 @@ en:
         tell_me_more: "Tell me more..."
         collapse: "Collapse"
         timed_out: "Discobot couldn't find any discoveries. Something went wrong."
+        user_setting: "Enable search discoveries"
         tooltip:
           header: "AI powered search"
           content: "Natural language search powered by %{model}"
+          actions:
+            info: "How does it work?"
+            disable: "Disable"
+
+      user_preferences:
+        empty: "There are no relevant settings available at this time"
     review:
       types:
         reviewable_ai_post:

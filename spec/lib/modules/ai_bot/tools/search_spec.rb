@@ -98,7 +98,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
 
       results = search.invoke(&progress_blk)
 
-      expect(results[:args]).to eq({ search_query: "ABDDCDCEDGDG", order: "fake" })
+      expect(results[:args]).to eq({ search_query: "ABDDCDCEDGDG", order: "fake", max_results: 60 })
       expect(results[:rows]).to eq([])
     end
 
@@ -131,7 +131,9 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
             search.invoke(&progress_blk)
           end
 
-        expect(results[:args]).to eq({ search_query: "hello world, sam", status: "public" })
+        expect(results[:args]).to eq(
+          { max_results: 60, search_query: "hello world, sam", status: "public" },
+        )
         expect(results[:rows].length).to eq(1)
 
         # it also works with no query
@@ -174,6 +176,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
               [param[:name], "test"]
             end
           end
+          .compact
           .to_h
           .symbolize_keys
 

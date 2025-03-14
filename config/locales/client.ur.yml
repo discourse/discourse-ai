@@ -146,3 +146,6 @@ ur:
       discobot_discoveries:
         regular_results: "ٹاپک"
         collapse: "بند کریں"
+        tooltip:
+          actions:
+            disable: "غیر فعال کریں"

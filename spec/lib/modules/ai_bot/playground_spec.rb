@@ -141,18 +141,20 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
       ai_persona.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
-      responses = [tool_call, "custom tool did stuff (maybe)"]
+      responses = [tool_call, ["custom tool did stuff (maybe)"], ["new PM title"]]
 
       prompts = nil
       reply_post = nil
 
+      private_message = Fabricate(:private_message_topic, user: user)
+
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
-        new_post = Fabricate(:post, raw: "Can you use the custom tool?")
+        new_post = Fabricate(:post, raw: "Can you use the custom tool?", topic: private_message)
         reply_post = playground.reply_to(new_post)
         prompts = _prompts
       end
 
-      expect(prompts.length).to eq(2)
+      expect(prompts.length).to eq(3)
       expect(prompts[0].tool_choice).to eq("search")
       expect(prompts[1].tool_choice).to eq(nil)
 
@@ -381,7 +383,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           }}}
 
           Your instructions:
-          #{user.username} said Hello
+          #{user.username}: Hello
         TEXT
 
         expect(content.strip).to eq(expected)
@@ -635,13 +637,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           create_post(
             title: "I just made a PM",
             raw: "Hey there #{persona.user.username}, can you help me?",
-            target_usernames: "#{user.username},#{persona.user.username}",
+            target_usernames: "#{user.username},#{persona.user.username},#{claude_2.user.username}",
             archetype: Archetype.private_message,
             user: admin,
           )
       end
 
-      post.topic.custom_fields["ai_persona_id"] = persona.id
+      # note that this is a string due to custom field shananigans
+      post.topic.custom_fields["ai_persona_id"] = persona.id.to_s
       post.topic.save_custom_fields
 
       llm2 = Fabricate(:llm_model, enabled_chat_bot: true)
@@ -652,6 +655,22 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         create_post(
           user: admin,
           raw: "hi @#{llm2.user.username.capitalize} how are you",
+          topic_id: post.topic_id,
+        )
+      end
+
+      last_post = post.topic.reload.posts.order("id desc").first
+      expect(last_post.raw).to eq("Hi from bot two")
+      expect(last_post.user_id).to eq(persona.user_id)
+
+      current_users = last_post.topic.reload.topic_allowed_users.joins(:user).pluck(:username)
+      expect(current_users).to include(llm2.user.username)
+
+      # subseqent replies should come from the new llm
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Hi from bot two"], llm: llm2) do
+        create_post(
+          user: admin,
+          raw: "just confirming everything switched",
           topic_id: post.topic_id,
         )
       end
@@ -828,6 +847,61 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#reply_to" do
+    it "preserves thinking context between replies and correctly renders" do
+      thinking_progress =
+        DiscourseAi::Completions::Thinking.new(message: "I should say hello", partial: true)
+      thinking =
+        DiscourseAi::Completions::Thinking.new(
+          message: "I should say hello",
+          signature: "thinking-signature-123",
+          partial: false,
+        )
+
+      thinking_redacted =
+        DiscourseAi::Completions::Thinking.new(
+          message: nil,
+          signature: "thinking-redacted-signature-123",
+          partial: false,
+          redacted: true,
+        )
+
+      first_responses = [[thinking_progress, thinking, thinking_redacted, "Hello Sam"]]
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(first_responses) do
+        playground.reply_to(third_post)
+      end
+
+      new_post = third_post.topic.reload.posts.order(:post_number).last
+      # confirm message is there
+      expect(new_post.raw).to include("Hello Sam")
+      # confirm thinking is there
+      expect(new_post.raw).to include("I should say hello")
+
+      post = Fabricate(:post, topic: third_post.topic, user: user, raw: "Say Cat")
+
+      prompt_detail = nil
+      # Capture the prompt to verify thinking context was included
+      DiscourseAi::Completions::Llm.with_prepared_responses(["Cat"]) do |_, _, prompts|
+        playground.reply_to(post)
+        prompt_detail = prompts.first
+      end
+
+      last_messages = prompt_detail.messages.last(2)
+
+      expect(last_messages).to eq(
+        [
+          {
+            type: :model,
+            content: "Hello Sam",
+            thinking: "I should say hello",
+            thinking_signature: "thinking-signature-123",
+            redacted_thinking_signature: "thinking-redacted-signature-123",
+          },
+          { type: :user, content: "Say Cat", id: user.username },
+        ],
+      )
+    end
+
     it "streams the bot reply through MB and create a new post in the PM with a cooked responses" do
       expected_bot_response =
         "Hello this is a bot and what you just said is an interesting question"

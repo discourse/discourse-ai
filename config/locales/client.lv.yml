@@ -129,3 +129,6 @@ lv:
       discobot_discoveries:
         regular_results: "Tēmas"
         collapse: "Sakļaut"
+        tooltip:
+          actions:
+            disable: "Atslēgt"

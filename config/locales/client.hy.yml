@@ -133,3 +133,6 @@ hy:
       discobot_discoveries:
         regular_results: "Թեմաներ"
         collapse: "Կրճատել"
+        tooltip:
+          actions:
+            disable: "Անջատել"

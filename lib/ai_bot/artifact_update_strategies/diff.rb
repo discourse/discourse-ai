@@ -90,15 +90,45 @@ module DiscourseAi
 
         def extract_search_replace_blocks(content)
           return nil if content.blank? || content.to_s.strip.downcase.match?(/^\(?no changes?\)?$/m)
-          return [{ replace: content }] if !content.match?(/<<+\s*SEARCH/)
+          return [{ replace: content }] if !content.include?("<<< SEARCH")
 
           blocks = []
-          remaining = content
+          current_block = {}
+          state = :initial
+          search_lines = []
+          replace_lines = []
 
-          pattern = /<<+\s*SEARCH\s*\n(.*?)\n=+\s*\n(.*?)\n>>+\s*REPLACE/m
-          while remaining =~ pattern
-            blocks << { search: $1.strip, replace: $2.strip }
-            remaining = $'
+          content.each_line do |line|
+            line = line.chomp
+
+            case state
+            when :initial
+              state = :collecting_search if line.match?(/^<<<* SEARCH/)
+            when :collecting_search
+              if line.start_with?("===")
+                current_block[:search] = search_lines.join("\n").strip
+                search_lines = []
+                state = :collecting_replace
+              else
+                search_lines << line
+              end
+            when :collecting_replace
+              if line.match?(/>>>* REPLACE/)
+                current_block[:replace] = replace_lines.join("\n").strip
+                replace_lines = []
+                blocks << current_block
+                current_block = {}
+                state = :initial
+              else
+                replace_lines << line
+              end
+            end
+          end
+
+          # Handle any remaining block
+          if state == :collecting_replace && !replace_lines.empty?
+            current_block[:replace] = replace_lines.join("\n").strip
+            blocks << current_block
           end
 
           blocks.empty? ? nil : blocks
@@ -108,26 +138,50 @@ module DiscourseAi
           <<~PROMPT
             You are a web development expert generating precise search/replace changes for updating HTML, CSS, and JavaScript code.
 
-            Important rules:
+            CRITICAL RULES:
 
             1. Use EXACTLY this format for changes:
                <<<<<<< SEARCH
-               (first line of code to replace)
-               (other lines of code to avoid ambiguity)
-               (last line of code to replace)
+               (code to replace)
                =======
                (replacement code)
                >>>>>>> REPLACE
-            2. DO NOT modify the markers or add spaces around them
-            3. DO NOT add explanations or comments within sections
-            4. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes
-            5. HTML should not include <html>, <head>, or <body> tags, it is injected into a template
-            6. When specifying a SEARCH block, ALWAYS keep it 8 lines or less, you will be interrupted and a retry will be required if you exceed this limit
-            7. NEVER EVER ask followup questions, ALL changes must be performed in a single response, you are consumed via an API, there is no opportunity for humans in the loop
-            8. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines
-            9. Be mindful that ... non-contiguous search is not greedy, the following line will only match the first occurrence of the search block
-            10. Never mix a full section replacement with a search/replace block in the same section
-            11. ALWAYS skip sections you to not want to change, do not include them in the response
+
+            2. SEARCH blocks MUST be 8 lines or less. Break larger changes into multiple smaller search/replace blocks.
+
+            3. DO NOT modify the markers or add spaces around them.
+
+            4. DO NOT add explanations or comments within sections.
+
+            5. ONLY include [HTML], [CSS], and [JavaScript] sections if they have changes.
+
+            6. HTML should not include <html>, <head>, or <body> tags, it is injected into a template.
+
+            7. NEVER EVER ask followup questions, ALL changes must be performed in a single response.
+
+            8. When performing a non-contiguous search, ALWAYS use ... to denote the skipped lines.
+
+            9. Be mindful that ... non-contiguous search is not greedy, it will only match the first occurrence.
+
+            10. Never mix a full section replacement with a search/replace block in the same section.
+
+            11. ALWAYS skip sections you do not want to change, do not include them in the response.
+
+            HANDLING LARGE CHANGES:
+
+            - Break large HTML structures into multiple smaller search/replace blocks.
+            - Use strategic anchor points like unique IDs or class names to target specific elements.
+            - Consider replacing entire components rather than modifying complex internals.
+            - When elements contain dynamic content, use precise context markers or replace entire containers.
+
+            VALIDATION CHECKLIST:
+            - Each SEARCH block is 8 lines or less
+            - Every SEARCH has exactly one matching REPLACE
+            - All blocks are properly closed
+            - No SEARCH/REPLACE blocks are nested
+            - Each change is a complete, separate block with its own SEARCH/REPLACE markers
+
+            WARNING: Never nest search/replace blocks. Each change must be a complete sequence.
 
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
@@ -143,7 +197,7 @@ module DiscourseAi
             (changes or empty if no changes or entire JavaScript)
             [/JavaScript]
 
-            Example - Multiple changes in one file:
+            EXAMPLE 1 - Multiple small changes in one file:
 
             [JavaScript]
             <<<<<<< SEARCH
@@ -158,39 +212,35 @@ module DiscourseAi
             >>>>>>> REPLACE
             [/JavaScript]
 
-            Example - CSS with multiple blocks:
+            EXAMPLE 2 - Breaking up large HTML changes:
 
-            [CSS]
+            [HTML]
             <<<<<<< SEARCH
-            .button { color: blue; }
+            <div class="header">
+              <div class="logo">
+                <img src="old-logo.png">
+              </div>
             =======
-            .button { color: red; }
+            <div class="header">
+              <div class="logo">
+                <img src="new-logo.png">
+              </div>
             >>>>>>> REPLACE
+
             <<<<<<< SEARCH
-            .text { font-size: 12px; }
+              <div class="navigation">
+                <ul>
+                  <li>Home</li>
+                  <li>Products</li>
             =======
-            .text { font-size: 16px; }
+              <div class="navigation">
+                <ul>
+                  <li>Home</li>
+                  <li>Services</li>
             >>>>>>> REPLACE
-            [/CSS]
+            [/HTML]
 
-            Example - Non contiguous search in CSS (replace most CSS with new CSS)
-
-            Original CSS:
-
-            [CSS]
-            body {
-              color: red;
-            }
-            .button {
-              color: blue;
-            }
-            .alert {
-              background-color: green;
-            }
-            .alert2 {
-              background-color: green;
-            }
-            [/CSS]
+            EXAMPLE 3 - Non-contiguous search in CSS:
 
             [CSS]
             <<<<<<< SEARCH
@@ -203,23 +253,13 @@ module DiscourseAi
               color: red;
             }
             >>>>>>> REPLACE
-
-            RESULT:
-
-            [CSS]
-            body {
-              color: red;
-            }
-            .alert2 {
-              background-color: green;
-            }
             [/CSS]
 
-            Example - full HTML replacement:
+            EXAMPLE 4 - Full HTML replacement:
 
             [HTML]
             <div>something old</div>
-            <div>another somethin old</div>
+            <div>another something old</div>
             [/HTML]
 
             output:
@@ -227,13 +267,6 @@ module DiscourseAi
             [HTML]
             <div>something new</div>
             [/HTML]
-
-            result:
-            [HTML]
-            <div>something new</div>
-            [/HTML]
-
-
           PROMPT
         end
 

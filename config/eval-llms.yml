@@ -39,6 +39,16 @@ llms:
     max_prompt_tokens: 200000
     vision_enabled: true
 
+  claude-3.7-sonnet:
+    display_name: Claude 3.7 Sonnet
+    name: claude-3-7-sonnet-latest
+    tokenizer: DiscourseAi::Tokenizer::AnthropicTokenizer
+    api_key_env: ANTHROPIC_API_KEY
+    provider: anthropic
+    url: https://api.anthropic.com/v1/messages
+    max_prompt_tokens: 200000
+    vision_enabled: true
+
   gemini-2.0-flash:
     display_name: Gemini 2.0 Flash
     name: gemini-2-0-flash

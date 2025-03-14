@@ -11,9 +11,13 @@ module DiscourseAi
             end
           end
 
-        plugin.on(:post_created, &sentiment_analysis_cb)
         plugin.on(:post_edited, &sentiment_analysis_cb)
 
+        plugin.add_to_serializer(:current_user, :can_see_sentiment_reports) do
+          ClassificationResult.has_sentiment_classification? && SiteSetting.ai_sentiment_enabled
+        end
+
+        # TODO we need new interfaces to conditionally register depending on site in the multisite
         EmotionFilterOrder.register!(plugin)
         EmotionDashboardReport.register!(plugin)
         SentimentDashboardReport.register!(plugin)

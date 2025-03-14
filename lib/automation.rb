@@ -12,6 +12,15 @@ module DiscourseAi
         },
       ]
     end
+
+    def self.available_custom_tools
+      AiTool
+        .where(enabled: true)
+        .where("parameters = '[]'::jsonb")
+        .pluck(:id, :name, :description)
+        .map { |id, name, description| { id: id, translated_name: name, description: description } }
+    end
+
     def self.available_models
       values = DB.query_hash(<<~SQL)
         SELECT display_name AS translated_name, id AS id
@@ -27,6 +36,19 @@ module DiscourseAi
           .each { |value_h| value_h["id"] = "custom:#{value_h["id"]}" }
 
       values
+    end
+
+    def self.available_persona_choices(require_user: true, require_default_llm: true)
+      relation = AiPersona.joins(:user)
+      relation = relation.where.not(user_id: nil) if require_user
+      relation = relation.where.not(default_llm: nil) if require_default_llm
+      relation.map do |persona|
+        {
+          id: persona.id,
+          translated_name: persona.name,
+          description: "#{persona.name} (#{persona.user.username})",
+        }
+      end
     end
   end
 end

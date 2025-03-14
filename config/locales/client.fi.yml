@@ -87,10 +87,12 @@ fi:
               description: "Priorisoi tämän ryhmän sisältö raportissa"
             temperature:
               label: "Lämpötila"
-              description: "LLM:lle käytettävä lämpötila. Lisää satunnaisuutta kasvattamalla arvoa (käytä mallin oletusta käyttämällä arvoa 0)"
             top_p:
               label: "Top-p"
-              description: "LLM:lle käytettävä top-p, lisää satunnaisuutta kasvattamalla arvoa (käytä mallin oletusta käyttämällä arvoa 0)"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Malli"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +134,8 @@ fi:
             model:
               label: "Malli"
               description: "Luokitteluun käytettävä kielimalli"
+            temperature:
+              label: "Lämpötila"
     discourse_ai:
       title: "Tekoäly"
       modals:
@@ -195,7 +199,7 @@ fi:
         no_users: "Käyttäjien käyttötietoja ei löytynyt"
         no_models: "Mallin käyttötietoja ei löytynyt"
         no_features: "Ominaisuuden käyttötietoja ei löytynyt"
-        subheader_description: "Saneet ovat perusyksiköitä, joita suuret kielimallit käyttävät tekstin ymmärtämiseen ja luomiseen. Käyttötiedot voivat vaikuttaa kustannuksiin."
+        subheader_description: "Saneet ovat perusyksiköitä, joita suuret kielimallit käyttävät tekstin ymmärtämiseen ja luomiseen. Käyttötiedot voivat vaikuttaa kustannuksiin"
         stat_tooltips:
           total_requests: "Kaikki suurille kielimalleille Discoursen kautta tehdyt pyynnöt"
           total_tokens: "Kaikki käytetyt saneet kehotteissa suurille kielimalleille"
@@ -382,7 +386,7 @@ fi:
           open_ai-gpt-4o-mini: "Edullinen ja nopea pieni malli kevyisiin tehtäviin"
           open_ai-o1-mini: "Kustannustehokas päättelymalli"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Tehokas kevyt monikielinen malli"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Tehokas monikäyttöinen malli"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Tehokas monikäyttöinen malli"
           mistral-mistral-large-latest: "Mistralin tehokkain malli"
           mistral-pixtral-large-latest: "Mistralin tehokkain näkökykyinen malli"
         preseeded_model_description: "Ennalta määritetty avoimen lähdekoodin malli, joka käyttää mallia %{model}"
@@ -392,7 +396,7 @@ fi:
         preconfigured:
           title_no_llms: "Aloita valitsemalla malli"
           title: "Määrittämättömät LLM-mallit"
-          description: "LLM:t (suuret kielimallit) ovat tekoälytyökaluja, jotka on optimoitu tehtäviin, kuten sisällön yhteenvedon laatimiseen sisällöstä, raporttien luomiseen, asiakasvuorovaikutusten automatisointiin sekä foorumin valvonnan ja tietokatsausten helpottamiseen."
+          description: "LLM:t (suuret kielimallit) ovat tekoälytyökaluja, jotka on optimoitu tehtäviin, kuten sisällön yhteenvedon laatimiseen sisällöstä, raporttien luomiseen, asiakasvuorovaikutusten automatisointiin sekä foorumin valvonnan ja tietokatsausten helpottamiseen"
           fake: "Manuaalinen määritys"
           button: "Määritä"
         next:
@@ -633,6 +637,9 @@ fi:
       discobot_discoveries:
         regular_results: "Aiheet"
         collapse: "Kutista"
+        tooltip:
+          actions:
+            disable: "Poista käytöstä"
     review:
       types:
         reviewable_ai_post:

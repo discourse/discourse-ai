@@ -10,6 +10,9 @@ module DiscourseAi
 
         def normalize_model_params(model_params)
           # max_tokens, temperature, stop_sequences are already supported
+          model_params = model_params.dup
+          model_params.delete(:top_p) if llm_model.lookup_custom_param("disable_top_p")
+          model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
           model_params
         end
 
@@ -34,13 +37,15 @@ module DiscourseAi
 
           # Note: Anthropic requires this param
           max_tokens = 4096
-          max_tokens = 8192 if mapped_model.match?(/3.5/)
+          # 3.5 and 3.7 models have a higher token limit
+          max_tokens = 8192 if mapped_model.match?(/3.[57]/)
 
           options = { model: mapped_model, max_tokens: max_tokens }
 
+          # reasoning has even higher token limits
           if llm_model.lookup_custom_param("enable_reasoning")
             reasoning_tokens =
-              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(100, 65_536)
+              llm_model.lookup_custom_param("reasoning_tokens").to_i.clamp(1024, 32_768)
 
             # this allows for lots of tokens beyond reasoning
             options[:max_tokens] = reasoning_tokens + 30_000
@@ -123,6 +128,7 @@ module DiscourseAi
             DiscourseAi::Completions::AnthropicMessageProcessor.new(
               streaming_mode: @streaming_mode,
               partial_tool_calls: partial_tool_calls,
+              output_thinking: output_thinking,
             )
         end
 

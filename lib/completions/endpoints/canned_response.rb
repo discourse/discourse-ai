@@ -29,7 +29,8 @@ module DiscourseAi
           model_params,
           feature_name: nil,
           feature_context: nil,
-          partial_tool_calls: false
+          partial_tool_calls: false,
+          output_thinking: false
         )
           @dialect = dialect
           @model_params = model_params
@@ -51,6 +52,8 @@ module DiscourseAi
             as_array.each do |response|
               if is_tool?(response)
                 yield(response, cancel_fn)
+              elsif is_thinking?(response)
+                yield(response, cancel_fn)
               else
                 response.each_char do |char|
                   break if cancelled
@@ -69,6 +72,10 @@ module DiscourseAi
         end
 
         private
+
+        def is_thinking?(response)
+          response.is_a?(DiscourseAi::Completions::Thinking)
+        end
 
         def is_tool?(response)
           response.is_a?(DiscourseAi::Completions::ToolCall)

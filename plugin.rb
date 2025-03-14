@@ -26,6 +26,7 @@ enabled_site_setting :discourse_ai_enabled
 
 register_asset "stylesheets/common/streaming.scss"
 register_asset "stylesheets/common/ai-blinking-animation.scss"
+register_asset "stylesheets/common/ai-user-settings.scss"
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
@@ -77,6 +78,8 @@ after_initialize do
   # do not autoload this cause we may have no namespace
   require_relative "discourse_automation/llm_triage"
   require_relative "discourse_automation/llm_report"
+  require_relative "discourse_automation/llm_tool_triage"
+  require_relative "discourse_automation/llm_persona_triage"
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 
@@ -123,6 +126,7 @@ after_initialize do
   end
 
   plugin_icons = %w[
+    chart-column
     spell-check
     language
     images

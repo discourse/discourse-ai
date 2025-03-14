@@ -4,6 +4,7 @@
     grid-template-areas: "icon title" "icon description";
     grid-template-columns: auto 1fr;
     text-align: left;
+
     .btn__description {
       grid-area: description;
       width: 100%;
@@ -34,22 +35,26 @@
       margin-top: 0.25em;
       line-height: var(--line-height-medium);
     }
+
     .excerpt {
       width: 100%;
       line-height: var(--line-height-large);
       margin-top: 0.15em;
       margin-bottom: 0.15em;
+
       &__contents {
         max-width: 70ch;
         overflow-wrap: break-word;
       }
     }
+
     &:not(.visited) {
       .excerpt {
         color: var(--primary-high);
       }
     }
   }
+
   .topic-excerpt {
     display: none;
   }

@@ -40,6 +40,10 @@ fa_IR:
               label: "توقف آگاه‌سازی‌ها"
             debug_mode:
               label: "حالت اشکال زدایی"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "مدل"
         llm_triage:
           fields:
             search_for_text:
@@ -190,3 +194,6 @@ fa_IR:
       discobot_discoveries:
         regular_results: "موضوعات"
         collapse: "جمع کردن"
+        tooltip:
+          actions:
+            disable: "غیرفعال"

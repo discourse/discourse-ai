@@ -136,3 +136,6 @@ bg:
       discobot_discoveries:
         regular_results: "Теми"
         collapse: "Намали"
+        tooltip:
+          actions:
+            disable: "Деактивиране"

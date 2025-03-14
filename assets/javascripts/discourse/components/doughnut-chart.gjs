@@ -1,7 +1,10 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import Chart from "admin/components/chart";
 
 export default class DoughnutChart extends Component {
+  @tracked canvasSize = null;
+
   get config() {
     const totalScore = this.args.totalScore || "";
 
@@ -13,14 +16,18 @@ export default class DoughnutChart extends Component {
           {
             data: this.args.data,
             backgroundColor: this.args.colors,
+            cutout: "50%",
+            radius: 100,
           },
         ],
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
-            position: this.args.legendPosition || "bottom",
+            display: this.args.displayLegend || false,
+            position: "bottom",
           },
         },
       },
@@ -53,6 +60,40 @@ export default class DoughnutChart extends Component {
 
             ctx.fillText(totalScore, centerX, centerY);
             ctx.save();
+          },
+        },
+        {
+          // Custom plugin to draw labels inside the doughnut chart
+          id: "doughnutLabels",
+          afterDraw(chart) {
+            const ctx = chart.ctx;
+            const dataset = chart.data.datasets[0];
+            const meta = chart.getDatasetMeta(0);
+            const cssFontSize =
+              getComputedStyle(document.documentElement).getPropertyValue(
+                "--font-down-2"
+              ) || "1.3em";
+            const cssFontFamily =
+              getComputedStyle(document.documentElement).getPropertyValue(
+                "--font-family"
+              ) || "sans-serif";
+
+            ctx.font = `${cssFontSize.trim()} ${cssFontFamily.trim()}`;
+            ctx.fillStyle = "#fafafa";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            meta.data.forEach((element, index) => {
+              const { x, y } = element.tooltipPosition();
+              const value = dataset.data[index];
+              const nonZeroCount = dataset.data.filter((v) => v > 0).length;
+
+              if (value === 0 || nonZeroCount === 1) {
+                return;
+              }
+
+              ctx.fillText(value, x, y);
+            });
           },
         },
       ],

@@ -45,15 +45,35 @@ module DiscourseAi
 
         def from_raw_tool_call(raw_message)
           call_details = JSON.parse(raw_message[:content], symbolize_names: true)
+          result = []
+
+          if raw_message[:thinking] || raw_message[:redacted_thinking_signature]
+            if raw_message[:thinking]
+              result << {
+                type: "thinking",
+                thinking: raw_message[:thinking],
+                signature: raw_message[:thinking_signature],
+              }
+            end
+
+            if raw_message[:redacted_thinking_signature]
+              result << {
+                type: "redacted_thinking",
+                data: raw_message[:redacted_thinking_signature],
+              }
+            end
+          end
+
           tool_call_id = raw_message[:id]
-          [
-            {
-              type: "tool_use",
-              id: tool_call_id,
-              name: raw_message[:name],
-              input: call_details[:arguments],
-            },
-          ]
+
+          result << {
+            type: "tool_use",
+            id: tool_call_id,
+            name: raw_message[:name],
+            input: call_details[:arguments],
+          }
+
+          result
         end
 
         def from_raw_tool(raw_message)

@@ -87,10 +87,12 @@ tr_TR:
               description: "Raporda bu gruptan gelen içeriği önceliklendirin"
             temperature:
               label: "Sıcaklık"
-              description: "LLM için kullanılacak sıcaklık. Rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
             top_p:
               label: "Üst P"
-              description: "LLM için kullanılacak en iyi P, rastgeleliği artırmak için artırın (model varsayılanını kullanmak için 0)"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "Model"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +134,8 @@ tr_TR:
             model:
               label: "Model"
               description: "Triyaj için kullanılan dil modeli"
+            temperature:
+              label: "Sıcaklık"
     discourse_ai:
       title: "YZ"
       modals:
@@ -195,7 +199,7 @@ tr_TR:
         no_users: "Kullanıcı kullanım verisi bulunamadı"
         no_models: "Model kullanım verisi bulunamadı"
         no_features: "Özellik kullanım verisi bulunamadı"
-        subheader_description: "Token'lar, LLM'lerin metinleri anlamak ve üretmek için kullandıkları temel birimlerdir, kullanım verileri maliyetleri etkileyebilir."
+        subheader_description: "Token'lar, LLM'lerin metinleri anlamak ve üretmek için kullandıkları temel birimlerdir, kullanım verileri maliyetleri etkileyebilir"
         stat_tooltips:
           total_requests: "Discourse aracılığıyla LLM'lere yapılan tüm talepler"
           total_tokens: "LLM istenirken kullanılan tüm token'lar"
@@ -382,7 +386,7 @@ tr_TR:
           open_ai-gpt-4o-mini: "Hafif görevler için uygun fiyatlı ve hızlı küçük model"
           open_ai-o1-mini: "Uygun maliyetli muhakeme modeli"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Verimli hafif çok dilli model"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "Güçlü çok amaçlı model"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "Güçlü çok amaçlı model"
           mistral-mistral-large-latest: "Mistral'in en güçlü modeli"
           mistral-pixtral-large-latest: "Mistral'in en güçlü görüş yeteneğine sahip modeli"
         preseeded_model_description: "%{model} kullanan önceden yapılandırılmış açık kaynaklı model"
@@ -392,7 +396,7 @@ tr_TR:
         preconfigured:
           title_no_llms: "Başlamak için bir şablon seçin"
           title: "Yapılandırılmamış LLM şablonları"
-          description: "LLM'ler (Büyük Dil Modelleri) içeriği özetlemek, raporlar oluşturmak, müşteri etkileşimlerini otomatikleştirmek ve forum moderasyonunu ve içgörülerini kolaylaştırmak gibi görevler için optimize edilmiş YZ araçlarıdır."
+          description: "LLM'ler (Büyük Dil Modelleri) içeriği özetlemek, raporlar oluşturmak, müşteri etkileşimlerini otomatikleştirmek ve forum moderasyonunu ve içgörülerini kolaylaştırmak gibi görevler için optimize edilmiş YZ araçlarıdır"
           fake: "Manuel yapılandırma"
           button: "Kur"
         next:
@@ -634,6 +638,9 @@ tr_TR:
       discobot_discoveries:
         regular_results: "Konular"
         collapse: "Daralt"
+        tooltip:
+          actions:
+            disable: "Devredışı"
     review:
       types:
         reviewable_ai_post:

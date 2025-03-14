@@ -37,7 +37,7 @@ module DiscourseAi
           SELECT
             p.id AS post_id,
             p.topic_id,
-            t.title AS topic_title,
+            t.fancy_title AS topic_title,
             p.cooked as post_cooked,
             p.user_id,
             p.post_number,

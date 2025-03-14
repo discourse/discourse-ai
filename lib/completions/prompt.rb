@@ -41,12 +41,26 @@ module DiscourseAi
         @tool_choice = tool_choice
       end
 
-      def push(type:, content:, id: nil, name: nil, upload_ids: nil)
+      def push(
+        type:,
+        content:,
+        id: nil,
+        name: nil,
+        upload_ids: nil,
+        thinking: nil,
+        thinking_signature: nil,
+        redacted_thinking_signature: nil
+      )
         return if type == :system
         new_message = { type: type, content: content }
         new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
         new_message[:upload_ids] = upload_ids if upload_ids
+        new_message[:thinking] = thinking if thinking
+        new_message[:thinking_signature] = thinking_signature if thinking_signature
+        new_message[
+          :redacted_thinking_signature
+        ] = redacted_thinking_signature if redacted_thinking_signature
 
         validate_message(new_message)
         validate_turn(messages.last, new_message)
@@ -65,6 +79,21 @@ module DiscourseAi
         UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
       end
 
+      def ==(other)
+        return false unless other.is_a?(Prompt)
+        messages == other.messages && tools == other.tools && topic_id == other.topic_id &&
+          post_id == other.post_id && max_pixels == other.max_pixels &&
+          tool_choice == other.tool_choice
+      end
+
+      def eql?(other)
+        self == other
+      end
+
+      def hash
+        [messages, tools, topic_id, post_id, max_pixels, tool_choice].hash
+      end
+
       private
 
       def validate_message(message)
@@ -73,7 +102,16 @@ module DiscourseAi
           raise ArgumentError, "message type must be one of #{valid_types}"
         end
 
-        valid_keys = %i[type content id name upload_ids]
+        valid_keys = %i[
+          type
+          content
+          id
+          name
+          upload_ids
+          thinking
+          thinking_signature
+          redacted_thinking_signature
+        ]
         if (invalid_keys = message.keys - valid_keys).any?
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end

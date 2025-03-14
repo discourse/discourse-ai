@@ -140,3 +140,6 @@ gl:
       discobot_discoveries:
         regular_results: "Temas"
         collapse: "Pregar"
+        tooltip:
+          actions:
+            disable: "Desactivar"

@@ -141,3 +141,6 @@ el:
       discobot_discoveries:
         regular_results: "Θέματα"
         collapse: "Σύμπτυξη"
+        tooltip:
+          actions:
+            disable: "Απενεργοποίηση"

@@ -12,6 +12,12 @@ de:
         spam: "Als Spam markieren und Beitrag verbergen"
         spam_silence: "Als Spam melden, Beitrag ausblenden und Benutzer stummschalten"
     scriptables:
+      llm_tool_triage:
+        title: Triage von Beiträgen mit dem KI-Tool
+        description: "Triage von Beiträgen mit benutzerdefinierter Logik in einem KI-Tool"
+      llm_persona_triage:
+        title: Triage von Posts mit KI-Persona
+        description: "Reagiere auf Beiträge mit einer bestimmten KI-Persona"
       llm_triage:
         title: Beiträge mithilfe von KI sortieren
         description: "Beiträge mithilfe eines großen Sprachmodells sortieren"
@@ -251,6 +257,7 @@ de:
     ai_bot:
       reply_error: "Entschuldigung, es sieht so aus, als ob unser System beim Versuch, zu antworten, auf ein unerwartetes Problem gestoßen ist.\n\n[details='Fehlerdetails']\n%{details}\n[/details]"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
+      thinking: "Ich denke..."
       personas:
         default_llm_required: "Standard-LLM-Modell ist erforderlich, bevor der Chat aktiviert werden kann"
         cannot_delete_system_persona: "System-Personas können nicht gelöscht werden, bitte deaktiviere sie stattdessen"
@@ -466,4 +473,4 @@ de:
       prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
   dashboard:
     problem:
-      ai_llm_status: "Bei dem LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}/edit'>die Konfigurationsseite des Modells</a>."
+      ai_llm_status: "Bei dem LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe <a href='%{url}'>die Konfigurationsseite des Modells</a>."

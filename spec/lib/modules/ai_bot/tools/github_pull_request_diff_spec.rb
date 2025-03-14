@@ -49,15 +49,47 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
     let(:repo) { "discourse/discourse-automation" }
     let(:pull_id) { 253 }
     let(:diff) { <<~DIFF }
-        diff --git a/lib/discourse_automation/automation.rb b/lib/discourse_automation/automation.rb
-        index 3e3e3e3..4f4f4f4 100644
-        --- a/lib/discourse_automation/automation.rb
-        +++ b/lib/discourse_automation/automation.rb
-        @@ -1,3 +1,3 @@
-        -module DiscourseAutomation
-      DIFF
+      diff --git a/lib/discourse_automation/automation.rb b/lib/discourse_automation/automation.rb
+      index 3e3e3e3..4f4f4f4 100644
+      --- a/lib/discourse_automation/automation.rb
+      +++ b/lib/discourse_automation/automation.rb
+      @@ -1,3 +1,3 @@
+      -module DiscourseAutomation
+    DIFF
 
-    it "retrieves the diff for the pull request" do
+    let(:pr_info) do
+      {
+        "title" => "Test PR",
+        "state" => "open",
+        "user" => {
+          "login" => "test-user",
+        },
+        "created_at" => "2023-01-01T00:00:00Z",
+        "updated_at" => "2023-01-02T00:00:00Z",
+        "head" => {
+          "repo" => {
+            "full_name" => "test/repo",
+          },
+          "ref" => "feature-branch",
+          "sha" => "abc123",
+        },
+        "base" => {
+          "repo" => {
+            "full_name" => "main/repo",
+          },
+          "ref" => "main",
+        },
+      }
+    end
+
+    it "retrieves both PR info and diff" do
+      stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
+        headers: {
+          "Accept" => "application/json",
+          "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
+        },
+      ).to_return(status: 200, body: pr_info.to_json)
+
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
           "Accept" => "application/vnd.github.v3.diff",
@@ -67,11 +99,20 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
 
       result = tool.invoke
       expect(result[:diff]).to eq(diff)
+      expect(result[:pr_info]).to include(title: "Test PR", state: "open", author: "test-user")
       expect(result[:error]).to be_nil
     end
 
     it "uses the github access token if present" do
       SiteSetting.ai_bot_github_access_token = "ABC"
+
+      stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
+        headers: {
+          "Accept" => "application/json",
+          "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
+          "Authorization" => "Bearer ABC",
+        },
+      ).to_return(status: 200, body: pr_info.to_json)
 
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
@@ -94,14 +135,14 @@ RSpec.describe DiscourseAi::AiBot::Tools::GithubPullRequestDiff do
     it "returns an error message" do
       stub_request(:get, "https://api.github.com/repos/#{repo}/pulls/#{pull_id}").with(
         headers: {
-          "Accept" => "application/vnd.github.v3.diff",
+          "Accept" => "application/json",
           "User-Agent" => DiscourseAi::AiBot::USER_AGENT,
         },
       ).to_return(status: 404)
 
       result = tool.invoke
       expect(result[:diff]).to be_nil
-      expect(result[:error]).to include("Failed to retrieve the diff")
+      expect(result[:error]).to include("Failed to retrieve the PR information")
     end
   end
 end

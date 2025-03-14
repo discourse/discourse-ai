@@ -87,10 +87,12 @@ ja:
               description: "レポートでこのグループのコンテンツを優先します"
             temperature:
               label: "Temperature"
-              description: "LLM に使用する Temperature。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
             top_p:
               label: "Top P"
-              description: "LLM に使用する Top P。値を増やすとランダム性が増加します (モデルのデフォルトを使用する場合は 0)"
+        llm_tool_triage:
+          fields:
+            model:
+              label: "モデル"
         llm_triage:
           fields:
             system_prompt:
@@ -132,6 +134,8 @@ ja:
             model:
               label: "モデル"
               description: "トリアージに使用される言語モデル"
+            temperature:
+              label: "Temperature"
     discourse_ai:
       title: "AI"
       modals:
@@ -195,7 +199,6 @@ ja:
         no_users: "ユーザー使用状況データが見つかりません"
         no_models: "モデル使用状況データが見つかりません"
         no_features: "機能使用状況データが見つかりません"
-        subheader_description: "トークンは、LLM がテキストを理解して生成するために使用する基本単位であり、使用状況データがコストに影響する可能性があります。"
         stat_tooltips:
           total_requests: "Discourse を通じて LLM に行われたすべてのリクエスト"
           total_tokens: "LLM のプロンプトに使用されるすべてのトークン"
@@ -380,7 +383,7 @@ ja:
           open_ai-gpt-4o-mini: "軽量なタスクに対応する手頃で高速な小型モデル"
           open_ai-o1-mini: "コスト効率の良い推論モデル"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "効率的な軽量多言語モデル"
-          samba_nova-Meta-Llama-3-1-70B-Instruct": "強力な多目的モデル"
+          samba_nova-Meta-Llama-3-3-70B-Instruct": "強力な多目的モデル"
           mistral-mistral-large-latest: "Mistral の最も強力なモデル"
           mistral-pixtral-large-latest: "Mistral の最も強力なビジョン対応モデル"
         preseeded_model_description: "%{model} を利用する事前構成済みのオープンソースモデル"
@@ -390,7 +393,6 @@ ja:
         preconfigured:
           title_no_llms: "開始するにはテンプレートを選択してください"
           title: "未構成の LLM テンプレート"
-          description: "LLM (大規模言語モデル) は、コンテンツの要約、レポートの生成、顧客とのやり取りの自動化、フォーラムのモデレーションとインサイトの促進などのタスク用に最適化された AI ツールです。"
           fake: "手動構成"
           button: "セットアップ"
         next:
@@ -629,6 +631,9 @@ ja:
       discobot_discoveries:
         regular_results: "トピック"
         collapse: "折りたたむ"
+        tooltip:
+          actions:
+            disable: "無効化"
     review:
       types:
         reviewable_ai_post:

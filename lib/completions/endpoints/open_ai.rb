@@ -24,6 +24,9 @@ module DiscourseAi
             model_params[:stop] = model_params.delete(:stop_sequences)
           end
 
+          model_params.delete(:top_p) if llm_model.lookup_custom_param("disable_top_p")
+          model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
+
           model_params
         end
 
@@ -42,6 +45,7 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil,
           partial_tool_calls: false,
+          output_thinking: false,
           &blk
         )
           @disable_native_tools = dialect.disable_native_tools?

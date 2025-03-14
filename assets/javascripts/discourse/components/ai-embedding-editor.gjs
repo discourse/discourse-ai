@@ -1,23 +1,19 @@
 import Component from "@glimmer/component";
-import { tracked } from "@glimmer/tracking";
-import { Input, Textarea } from "@ember/component";
+import { cached, tracked } from "@glimmer/tracking";
 import { concat, fn, get } from "@ember/helper";
-import { on } from "@ember/modifier";
-import { action, computed } from "@ember/object";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import didUpdate from "@ember/render-modifiers/modifiers/did-update";
+import { action } from "@ember/object";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
+import { eq, not } from "truth-helpers";
 import BackButton from "discourse/components/back-button";
+import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
+import Form from "discourse/components/form";
 import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import AdminSectionLandingItem from "admin/components/admin-section-landing-item";
 import AdminSectionLandingWrapper from "admin/components/admin-section-landing-wrapper";
-import ComboBox from "select-kit/components/combo-box";
-import DTooltip from "float-kit/components/d-tooltip";
-import not from "truth-helpers/helpers/not";
 
 export default class AiEmbeddingEditor extends Component {
   @service toasts;
@@ -27,12 +23,35 @@ export default class AiEmbeddingEditor extends Component {
 
   @tracked isSaving = false;
   @tracked selectedPreset = null;
-
   @tracked testRunning = false;
   @tracked testResult = null;
   @tracked testError = null;
-  @tracked apiKeySecret = true;
-  @tracked editingModel = null;
+  @tracked currentProvider = null;
+
+  constructor() {
+    super(...arguments);
+    if (this.args.model) {
+      this.currentProvider = this.args.model.provider;
+    }
+  }
+
+  @cached
+  get formData() {
+    let data;
+
+    if (this.selectedPreset) {
+      data = this.store
+        .createRecord("ai-embedding", this.selectedPreset)
+        .workingCopy();
+    } else {
+      data = this.args.model.workingCopy();
+    }
+
+    const originalData = JSON.parse(JSON.stringify(data));
+    this._originalFormData = originalData;
+
+    return originalData;
+  }
 
   get selectedProviders() {
     const t = (provName) => {
@@ -50,18 +69,9 @@ export default class AiEmbeddingEditor extends Component {
     };
 
     return this.args.embeddings.resultSetMeta.distance_functions.map((df) => {
-      let iconName;
-
-      if (df === "<=>") {
-        iconName = "discourse-spaceship-operator";
-      } else if (df === "<#>") {
-        iconName = "discourse-negative-inner-product";
-      }
-
       return {
         id: df,
         name: t(df),
-        icon: iconName,
       };
     });
   }
@@ -88,13 +98,17 @@ export default class AiEmbeddingEditor extends Component {
     return !this.selectedPreset && this.args.model.isNew;
   }
 
-  @computed("editingModel.provider")
   get metaProviderParams() {
-    return (
-      this.args.embeddings.resultSetMeta.provider_params[
-        this.editingModel?.provider
-      ] || {}
-    );
+    const provider = this.currentProvider;
+    if (!provider) {
+      return {};
+    }
+
+    const embeddings = this.args.embeddings || {};
+    const meta = embeddings.resultSetMeta || {};
+    const providerParams = meta.provider_params || {};
+
+    return providerParams[provider] || {};
   }
 
   get testErrorMessage() {
@@ -105,6 +119,10 @@ export default class AiEmbeddingEditor extends Component {
     return this.testRunning || this.testResult !== null;
   }
 
+  get seeded() {
+    return this.args.model.id < 0;
+  }
+
   @action
   configurePreset(preset) {
     this.selectedPreset =
@@ -113,40 +131,96 @@ export default class AiEmbeddingEditor extends Component {
         preset.id
       ) || {};
 
-    this.editingModel = this.store
-      .createRecord("ai-embedding", this.selectedPreset)
-      .workingCopy();
+    if (this.selectedPreset.provider) {
+      this.currentProvider = this.selectedPreset.provider;
+    }
   }
 
   @action
-  updateModel() {
-    this.editingModel = this.args.model.workingCopy();
+  setProvider(provider, { set }) {
+    set("provider", provider);
+
+    this.currentProvider = provider;
+
+    const providerParams =
+      this.args.embeddings?.resultSetMeta?.provider_params || {};
+    const params = providerParams[provider] || {};
+
+    const initialParams = {};
+
+    if (params) {
+      const keys = Object.keys(params);
+      keys.forEach((key) => {
+        initialParams[key] = null;
+      });
+    }
+
+    set("provider_params", initialParams);
+  }
+
+  get providerParams() {
+    const normalizeParam = (value) => {
+      if (!value) {
+        return { type: "text" };
+      }
+
+      if (typeof value === "string") {
+        return { type: value };
+      }
+
+      return {
+        type: value.type || "text",
+        values: (value.values || []).map((v) => ({ id: v, name: v })),
+        default: value.default,
+      };
+    };
+
+    return Object.entries(this.metaProviderParams).reduce(
+      (acc, [field, value]) => {
+        acc[field] = normalizeParam(value);
+        return acc;
+      },
+      {}
+    );
   }
 
   @action
-  makeApiKeySecret() {
-    this.apiKeySecret = true;
+  resetForm() {
+    this.selectedPreset = null;
+    this.currentProvider = null;
   }
 
   @action
-  toggleApiKeySecret() {
-    this.apiKeySecret = !this.apiKeySecret;
-  }
-
-  @action
-  async save() {
+  async save(formData) {
     this.isSaving = true;
     const isNew = this.args.model.isNew;
 
     try {
-      await this.editingModel.save();
+      const dataToSave = { ...formData };
+
+      if (this.selectedPreset) {
+        // new embeddings
+        const newModel = this.store.createRecord("ai-embedding", {
+          ...this.selectedPreset,
+          ...dataToSave,
+        });
+        await newModel.save();
+        this.args.embeddings.addObject(newModel);
+      } else {
+        // existing embeddings
+        await this.args.model.save(dataToSave);
+      }
 
       if (isNew) {
-        this.args.embeddings.addObject(this.editingModel);
         this.router.transitionTo(
           "adminPlugins.show.discourse-ai-embeddings.index"
         );
       } else {
+        const savedProvider = this.currentProvider;
+
+        this._originalFormData = JSON.parse(JSON.stringify(dataToSave));
+        this.currentProvider = savedProvider;
+
         this.toasts.success({
           data: { message: i18n("discourse_ai.embeddings.saved") },
           duration: 2000,
@@ -162,11 +236,24 @@ export default class AiEmbeddingEditor extends Component {
   }
 
   @action
-  async test() {
+  async test(data) {
     this.testRunning = true;
 
     try {
-      const configTestResult = await this.editingModel.testConfig();
+      let testModel;
+
+      // new embeddings
+      if (this.args.model.isNew || this.selectedPreset) {
+        testModel = this.store.createRecord("ai-embedding", {
+          ...this.selectedPreset,
+          ...data,
+        });
+      } else {
+        // existing embeddings
+        testModel = this.args.model;
+      }
+
+      const configTestResult = await testModel.testConfig(data);
       this.testResult = configTestResult.success;
 
       if (this.testResult) {
@@ -191,7 +278,7 @@ export default class AiEmbeddingEditor extends Component {
         return this.args.model
           .destroyRecord()
           .then(() => {
-            this.args.llms.removeObject(this.args.model);
+            this.args.embeddings.removeObject(this.args.model);
             this.router.transitionTo(
               "adminPlugins.show.discourse-ai-embeddings.index"
             );
@@ -201,52 +288,44 @@ export default class AiEmbeddingEditor extends Component {
     });
   }
 
-  @action
-  resetForm() {
-    this.selectedPreset = null;
-    this.editingModel = null;
-  }
-
   <template>
-    <form
-      {{didInsert this.updateModel @model.id}}
-      {{didUpdate this.updateModel @model.id}}
-      class="form-horizontal ai-embedding-editor"
-    >
-      {{#if this.showPresets}}
-        <BackButton
-          @route="adminPlugins.show.discourse-ai-embeddings"
-          @label="discourse_ai.embeddings.back"
-        />
-        <div class="control-group">
-          <h2>{{i18n "discourse_ai.embeddings.presets"}}</h2>
-          <AdminSectionLandingWrapper>
-            {{#each this.presets as |preset|}}
-              <AdminSectionLandingItem
-                @titleLabelTranslated={{preset.name}}
-                @taglineLabel={{concat
-                  "discourse_ai.embeddings.providers."
-                  preset.provider
-                }}
-                data-preset-id={{preset.id}}
-                class="ai-llms-list-editor__templates-list-item"
-              >
-                <:buttons as |buttons|>
-                  <buttons.Default
-                    @action={{fn this.configurePreset preset}}
-                    @icon="gear"
-                    @label="discourse_ai.llms.preconfigured.button"
-                  />
-                </:buttons>
-              </AdminSectionLandingItem>
-
-            {{/each}}
-          </AdminSectionLandingWrapper>
-
-        </div>
-
-      {{else}}
-        {{#if this.editingModel.isNew}}
+    {{#if this.showPresets}}
+      <BackButton
+        @route="adminPlugins.show.discourse-ai-embeddings"
+        @label="discourse_ai.embeddings.back"
+      />
+      <div class="control-group">
+        <h2>{{i18n "discourse_ai.embeddings.presets"}}</h2>
+        <AdminSectionLandingWrapper>
+          {{#each this.presets as |preset|}}
+            <AdminSectionLandingItem
+              @titleLabelTranslated={{preset.name}}
+              @taglineLabel={{concat
+                "discourse_ai.embeddings.providers."
+                preset.provider
+              }}
+              data-preset-id={{preset.id}}
+              class="ai-llms-list-editor__templates-list-item"
+            >
+              <:buttons as |buttons|>
+                <buttons.Default
+                  @action={{fn this.configurePreset preset}}
+                  @icon="gear"
+                  @label="discourse_ai.llms.preconfigured.button"
+                />
+              </:buttons>
+            </AdminSectionLandingItem>
+          {{/each}}
+        </AdminSectionLandingWrapper>
+      </div>
+    {{else}}
+      <Form
+        @onSubmit={{this.save}}
+        @data={{this.formData}}
+        class="form-horizontal ai-embedding-editor {{if this.seeded 'seeded'}}"
+        as |form data|
+      >
+        {{#if @model.isNew}}
           <DButton
             @action={{this.resetForm}}
             @label="back_button"
@@ -259,194 +338,231 @@ export default class AiEmbeddingEditor extends Component {
             @label="discourse_ai.embeddings.back"
           />
         {{/if}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.display_name"}}</label>
-          <Input
-            class="ai-embedding-editor-input ai-embedding-editor__display-name"
-            @type="text"
-            @value={{this.editingModel.display_name}}
-          />
-        </div>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.provider"}}</label>
-          <ComboBox
-            @value={{this.editingModel.provider}}
-            @content={{this.selectedProviders}}
-            @class="ai-embedding-editor__provider"
-          />
-        </div>
+        <form.Field
+          @name="display_name"
+          @title={{i18n "discourse_ai.embeddings.display_name"}}
+          @validation="required|length:1,100"
+          @format="large"
+          class="ai-embedding-editor__display-name"
+          as |field|
+        >
+          <field.Input />
+        </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.url"}}</label>
-          <Input
-            class="ai-embedding-editor-input ai-embedding-editor__url"
-            @type="text"
-            @value={{this.editingModel.url}}
-            required="true"
-          />
-        </div>
+        <form.Field
+          @name="provider"
+          @title={{i18n "discourse_ai.embeddings.provider"}}
+          @validation="required"
+          @format="large"
+          @onSet={{this.setProvider}}
+          class="ai-embedding-editor__provider"
+          as |field|
+        >
+          <field.Select as |select|>
+            {{#each this.selectedProviders as |provider|}}
+              <select.Option
+                @value={{provider.id}}
+              >{{provider.name}}</select.Option>
+            {{/each}}
+          </field.Select>
+        </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.api_key"}}</label>
-          <div class="ai-embedding-editor__secret-api-key-group">
-            <Input
-              @value={{this.editingModel.api_key}}
-              class="ai-embedding-editor-input ai-embedding-editor__api-key"
-              @type={{if this.apiKeySecret "password" "text"}}
-              required="true"
-              {{on "focusout" this.makeApiKeySecret}}
-            />
-            <DButton
-              @action={{this.toggleApiKeySecret}}
-              @icon="far-eye-slash"
-            />
-          </div>
-        </div>
+        <form.Field
+          @name="url"
+          @title={{i18n "discourse_ai.embeddings.url"}}
+          @validation="required"
+          @format="large"
+          class="ai-embedding-editor__url"
+          as |field|
+        >
+          <field.Input />
+        </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.tokenizer"}}</label>
-          <ComboBox
-            @value={{this.editingModel.tokenizer_class}}
-            @content={{@embeddings.resultSetMeta.tokenizers}}
-            @class="ai-embedding-editor__tokenizer"
-          />
-        </div>
+        <form.Field
+          @name="api_key"
+          @title={{i18n "discourse_ai.embeddings.api_key"}}
+          @validation="required"
+          @format="large"
+          class="ai-embedding-editor__api-key"
+          as |field|
+        >
+          <field.Password />
+        </form.Field>
 
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.dimensions"}}</label>
-          <Input
+        <form.Field
+          @name="tokenizer_class"
+          @title={{i18n "discourse_ai.embeddings.tokenizer"}}
+          @validation="required"
+          @format="large"
+          class="ai-embedding-editor__tokenizer"
+          as |field|
+        >
+          <field.Select as |select|>
+            {{#each @embeddings.resultSetMeta.tokenizers as |tokenizer|}}
+              <select.Option
+                @value={{tokenizer.id}}
+              >{{tokenizer.name}}</select.Option>
+            {{/each}}
+          </field.Select>
+        </form.Field>
+
+        <form.Field
+          @name="dimensions"
+          @title={{i18n "discourse_ai.embeddings.dimensions"}}
+          @validation="required"
+          @format="large"
+          @tooltip={{if
+            @model.isNew
+            (i18n "discourse_ai.embeddings.hints.dimensions_warning")
+          }}
+          class="ai-embedding-editor__dimensions"
+          as |field|
+        >
+          <field.Input
             @type="number"
-            class="ai-embedding-editor-input ai-embedding-editor__dimensions"
             step="any"
             min="0"
             lang="en"
-            @value={{this.editingModel.dimensions}}
-            required="true"
-            disabled={{not this.editingModel.isNew}}
+            disabled={{not @model.isNew}}
           />
-          {{#if this.editingModel.isNew}}
-            <DTooltip
-              @icon="circle-exclamation"
-              @content={{i18n
-                "discourse_ai.embeddings.hints.dimensions_warning"
-              }}
-            />
+        </form.Field>
+
+        <form.Field
+          @name="matryoshka_dimensions"
+          @title={{i18n "discourse_ai.embeddings.matryoshka_dimensions"}}
+          @tooltip={{i18n
+            "discourse_ai.embeddings.hints.matryoshka_dimensions"
+          }}
+          @format="large"
+          class="ai-embedding-editor__matryoshka_dimensions"
+          as |field|
+        >
+          <field.Checkbox />
+        </form.Field>
+
+        <form.Field
+          @name="embed_prompt"
+          @title={{i18n "discourse_ai.embeddings.embed_prompt"}}
+          @tooltip={{i18n "discourse_ai.embeddings.hints.embed_prompt"}}
+          @format="large"
+          class="ai-embedding-editor__embed_prompt"
+          as |field|
+        >
+          <field.Textarea />
+        </form.Field>
+
+        <form.Field
+          @name="search_prompt"
+          @title={{i18n "discourse_ai.embeddings.search_prompt"}}
+          @tooltip={{i18n "discourse_ai.embeddings.hints.search_prompt"}}
+          @format="large"
+          class="ai-embedding-editor__search_prompt"
+          as |field|
+        >
+          <field.Textarea />
+        </form.Field>
+
+        <form.Field
+          @name="max_sequence_length"
+          @title={{i18n "discourse_ai.embeddings.max_sequence_length"}}
+          @tooltip={{i18n "discourse_ai.embeddings.hints.sequence_length"}}
+          @validation="required"
+          @format="large"
+          class="ai-embedding-editor__max_sequence_length"
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+        </form.Field>
+
+        <form.Field
+          @name="pg_function"
+          @title={{i18n "discourse_ai.embeddings.distance_function"}}
+          @tooltip={{i18n "discourse_ai.embeddings.hints.distance_function"}}
+          @format="large"
+          @validation="required"
+          class="ai-embedding-editor__distance_functions"
+          as |field|
+        >
+          <field.Select @includeNone={{false}} as |select|>
+            {{#each this.distanceFunctions as |df|}}
+              <select.Option @value={{df.id}}>{{df.name}}</select.Option>
+            {{/each}}
+          </field.Select>
+        </form.Field>
+
+        {{! provider-specific content }}
+        {{#if this.currentProvider}}
+          {{#if data.provider_params}}
+            <form.Object @name="provider_params" as |object name|>
+              {{#let (get this.providerParams name) as |params|}}
+                {{#if params}}
+                  <object.Field
+                    @name={{name}}
+                    @title={{i18n
+                      (concat "discourse_ai.embeddings.provider_fields." name)
+                    }}
+                    @format="large"
+                    @validation="required"
+                    class="ai-embedding-editor-provider-param__{{params.type}}"
+                    as |field|
+                  >
+                    {{#if (eq params.type "enum")}}
+                      <field.Select @includeNone={{false}} as |select|>
+                        {{#each params.values as |option|}}
+                          <select.Option
+                            @value={{option.id}}
+                          >{{option.name}}</select.Option>
+                        {{/each}}
+                      </field.Select>
+                    {{else if (eq params.type "checkbox")}}
+                      <field.Checkbox />
+                    {{else}}
+                      <field.Input @type={{params.type}} />
+                    {{/if}}
+                  </object.Field>
+                {{/if}}
+              {{/let}}
+            </form.Object>
           {{/if}}
-        </div>
+        {{/if}}
 
-        <div class="control-group ai-embedding-editor__matryoshka_dimensions">
-          <Input
-            @type="checkbox"
-            @checked={{this.editingModel.matryoshka_dimensions}}
-          />
-          <label>{{i18n "discourse_ai.embeddings.matryoshka_dimensions"}}
-          </label>
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n
-              "discourse_ai.embeddings.hints.matryoshka_dimensions"
-            }}
-          />
-        </div>
-
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.embed_prompt"}}</label>
-          <Textarea
-            class="ai-embedding-editor-input ai-embedding-editor__embed_prompt"
-            @value={{this.editingModel.embed_prompt}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.embeddings.hints.embed_prompt"}}
-          />
-        </div>
-
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.search_prompt"}}</label>
-          <Textarea
-            class="ai-embedding-editor-input ai-embedding-editor__search_prompt"
-            @value={{this.editingModel.search_prompt}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.embeddings.hints.search_prompt"}}
-          />
-        </div>
-
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.max_sequence_length"}}</label>
-          <Input
-            @type="number"
-            class="ai-embedding-editor-input ai-embedding-editor__max_sequence_length"
-            step="any"
-            min="0"
-            lang="en"
-            @value={{this.editingModel.max_sequence_length}}
-            required="true"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.embeddings.hints.sequence_length"}}
-          />
-        </div>
-
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.embeddings.distance_function"}}</label>
-          <ComboBox
-            @value={{this.editingModel.pg_function}}
-            @content={{this.distanceFunctions}}
-            @class="ai-embedding-editor__distance_functions"
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.embeddings.hints.distance_function"}}
-          />
-        </div>
-
-        {{#each-in this.metaProviderParams as |field type|}}
-          <div
-            class="control-group ai-embedding-editor-provider-param__{{type}}"
-          >
-            <label>
-              {{i18n (concat "discourse_ai.embeddings.provider_fields." field)}}
-            </label>
-            <Input
-              @type="text"
-              class="ai-embedding-editor-input ai-embedding-editor__{{field}}"
-              @value={{mut (get this.editingModel.provider_params field)}}
-            />
-          </div>
-        {{/each-in}}
-
-        <div class="control-group ai-embedding-editor__action_panel">
-          <DButton
-            class="ai-embedding-editor__test"
-            @action={{this.test}}
+        <form.Actions class="ai-embedding-editor__action_panel">
+          <form.Button
+            @action={{fn this.test data}}
             @disabled={{this.testRunning}}
             @label="discourse_ai.embeddings.tests.title"
+            class="ai-embedding-editor__test"
           />
 
-          <DButton
-            class="btn-primary ai-embedding-editor__save"
-            @action={{this.save}}
-            @disabled={{this.isSaving}}
+          <form.Submit
             @label="discourse_ai.embeddings.save"
+            class="btn-primary ai-embedding-editor__save"
           />
-          {{#unless this.editingModel.isNew}}
-            <DButton
+
+          {{#unless data.isNew}}
+            <form.Button
               @action={{this.delete}}
-              class="btn-danger ai-embedding-editor__delete"
               @label="discourse_ai.embeddings.delete"
+              class="btn-danger ai-embedding-editor__delete"
             />
           {{/unless}}
+        </form.Actions>
 
-          <div class="control-group ai-embedding-editor-tests">
-            {{#if this.displayTestResult}}
-              {{#if this.testRunning}}
-                <div class="spinner small"></div>
-                {{i18n "discourse_ai.embeddings.tests.running"}}
-              {{else}}
+        {{#if this.displayTestResult}}
+          <form.Field
+            @showTitle={{false}}
+            @name="test_results"
+            @title="test_results"
+            @format="full"
+            class="ai-embedding-editor-tests"
+            as |field|
+          >
+            <field.Custom>
+              <ConditionalLoadingSpinner
+                @size="small"
+                @condition={{this.testRunning}}
+              >
                 {{#if this.testResult}}
                   <div class="ai-embedding-editor-tests__success">
                     {{icon "check"}}
@@ -458,11 +574,11 @@ export default class AiEmbeddingEditor extends Component {
                     {{this.testErrorMessage}}
                   </div>
                 {{/if}}
-              {{/if}}
-            {{/if}}
-          </div>
-        </div>
-      {{/if}}
-    </form>
+              </ConditionalLoadingSpinner>
+            </field.Custom>
+          </form.Field>
+        {{/if}}
+      </Form>
+    {{/if}}
   </template>
 }

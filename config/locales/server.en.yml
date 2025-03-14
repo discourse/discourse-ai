@@ -6,6 +6,12 @@ en:
         spam: "Flag as spam and hide post"
         spam_silence: "Flag as spam, hide post and silence user"
     scriptables:
+      llm_tool_triage:
+        title: Triage posts using AI Tool
+        description: "Triage posts using custom logic in an AI tool"
+      llm_persona_triage:
+        title: Triage posts using AI Persona
+        description: "Respond to posts using a specific AI persona"
       llm_triage:
         title: Triage posts using AI
         description: "Triage posts using a large language model"
@@ -261,6 +267,7 @@ en:
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Untitled AI bot PM]"
+      thinking: "Thinking..."
       personas:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
         cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
@@ -483,4 +490,4 @@ en:
       prompt_message_length: The message %{idx} is over the 1000 character limit.
   dashboard:
     problem:
-      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{base_path}/admin/plugins/discourse-ai/ai-llms/%{model_id}/edit'>model's configuration page</a>."
+      ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{url}'>model's configuration page</a>."

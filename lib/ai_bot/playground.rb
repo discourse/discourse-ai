@@ -4,6 +4,7 @@ module DiscourseAi
   module AiBot
     class Playground
       BYPASS_AI_REPLY_CUSTOM_FIELD = "discourse_ai_bypass_ai_reply"
+      BOT_USER_PREF_ID_CUSTOM_FIELD = "discourse_ai_bot_user_pref_id"
 
       attr_reader :bot
 
@@ -64,6 +65,33 @@ module DiscourseAi
         user_id.to_i <= 0
       end
 
+      def self.get_bot_user(post:, all_llm_users:, mentionables:)
+        bot_user = nil
+        if post.topic.private_message?
+          # this ensures that we reply using the correct llm
+          # 1. if we have a preferred llm user we use that
+          # 2. if we don't just take first topic allowed user
+          # 3. if we don't have that we take the first mentionable
+          bot_user = nil
+          if preferred_user =
+               all_llm_users.find { |id, username|
+                 id == post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD].to_i
+               }
+            bot_user = User.find_by(id: preferred_user[0])
+          end
+          bot_user ||=
+            post.topic.topic_allowed_users.where(user_id: all_llm_users.map(&:first)).first&.user
+          bot_user ||=
+            post
+              .topic
+              .topic_allowed_users
+              .where(user_id: mentionables.map { |m| m[:user_id] })
+              .first
+              &.user
+        end
+        bot_user
+      end
+
       def self.schedule_reply(post)
         return if is_bot_user_id?(post.user_id)
         mentionables = nil
@@ -75,7 +103,6 @@ module DiscourseAi
           mentionables = AiPersona.allowed_modalities(user: post.user, allow_topic_mentions: true)
         end
 
-        bot_user = nil
         mentioned = nil
 
         all_llm_users =
@@ -84,18 +111,8 @@ module DiscourseAi
             .joins(:user)
             .pluck("users.id", "users.username_lower")
 
-        if post.topic.private_message?
-          # this is an edge case, you started a PM with a different bot
-          bot_user =
-            post.topic.topic_allowed_users.where(user_id: all_llm_users.map(&:first)).first&.user
-          bot_user ||=
-            post
-              .topic
-              .topic_allowed_users
-              .where(user_id: mentionables.map { |m| m[:user_id] })
-              .first
-              &.user
-        end
+        bot_user =
+          get_bot_user(post: post, all_llm_users: all_llm_users, mentionables: mentionables)
 
         mentions = nil
         if mentionables.present? || (bot_user && post.topic.private_message?)
@@ -119,13 +136,15 @@ module DiscourseAi
           bot_user ||= User.find_by(id: mentioned[:user_id]) if mentioned
         end
 
-        if bot_user && post.reply_to_post_number && !post.reply_to_post.user&.bot?
+        if !mentioned && bot_user && post.reply_to_post_number && !post.reply_to_post.user&.bot?
           # replying to a non-bot user
           return
         end
 
         if bot_user
           topic_persona_id = post.topic.custom_fields["ai_persona_id"]
+          topic_persona_id = topic_persona_id.to_i if topic_persona_id.present?
+
           persona_id = mentioned&.dig(:id) || topic_persona_id
 
           persona = nil
@@ -141,7 +160,7 @@ module DiscourseAi
           end
 
           # edge case, llm was mentioned in an ai persona conversation
-          if persona_id == topic_persona_id.to_i && post.topic.private_message? && persona &&
+          if persona_id == topic_persona_id && post.topic.private_message? && persona &&
                all_llm_users.present?
             if !persona.force_default_llm && mentions.present?
               mentioned_llm_user_id, _ =
@@ -162,6 +181,35 @@ module DiscourseAi
         end
       end
 
+      def self.reply_to_post(
+        post:,
+        user: nil,
+        persona_id: nil,
+        whisper: nil,
+        add_user_to_pm: false,
+        stream_reply: false,
+        auto_set_title: false
+      )
+        ai_persona = AiPersona.find_by(id: persona_id)
+        raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
+        persona_class = ai_persona.class_instance
+        persona = persona_class.new
+
+        bot_user = user || ai_persona.user
+        raise Discourse::InvalidParameters.new(:user) if bot_user.nil?
+        bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+        playground = DiscourseAi::AiBot::Playground.new(bot)
+
+        playground.reply_to(
+          post,
+          whisper: whisper,
+          context_style: :topic,
+          add_user_to_pm: add_user_to_pm,
+          stream_reply: stream_reply,
+          auto_set_title: auto_set_title,
+        )
+      end
+
       def initialize(bot)
         @bot = bot
       end
@@ -170,7 +218,7 @@ module DiscourseAi
         schedule_bot_reply(post) if can_attach?(post)
       end
 
-      def conversation_context(post)
+      def conversation_context(post, style: nil)
         # Pay attention to the `post_number <= ?` here.
         # We want to inject the last post as context because they are translated differently.
 
@@ -205,6 +253,7 @@ module DiscourseAi
             )
 
         builder = DiscourseAi::Completions::PromptMessagesBuilder.new
+        builder.topic = post.topic
 
         context.reverse_each do |raw, username, custom_prompt, upload_ids|
           custom_prompt_translation =
@@ -219,6 +268,9 @@ module DiscourseAi
 
                 custom_context[:id] = message[1] if custom_context[:type] != :model
                 custom_context[:name] = message[3] if message[3]
+
+                thinking = message[4]
+                custom_context[:thinking] = thinking if thinking
 
                 builder.push(**custom_context)
               end
@@ -242,7 +294,7 @@ module DiscourseAi
           end
         end
 
-        builder.to_a
+        builder.to_a(style: style || (post.topic.private_message? ? :bot : :topic))
       end
 
       def title_playground(post, user)
@@ -415,7 +467,16 @@ module DiscourseAi
         result
       end
 
-      def reply_to(post, custom_instructions: nil, &blk)
+      def reply_to(
+        post,
+        custom_instructions: nil,
+        whisper: nil,
+        context_style: nil,
+        add_user_to_pm: true,
+        stream_reply: nil,
+        auto_set_title: true,
+        &blk
+      )
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
@@ -425,12 +486,18 @@ module DiscourseAi
         post_streamer = nil
 
         post_type =
-          post.post_type == Post.types[:whisper] ? Post.types[:whisper] : Post.types[:regular]
+          (
+            if (whisper || post.post_type == Post.types[:whisper])
+              Post.types[:whisper]
+            else
+              Post.types[:regular]
+            end
+          )
 
         context =
           get_context(
             participants: post.topic.allowed_users.map(&:username).join(", "),
-            conversation_context: conversation_context(post),
+            conversation_context: conversation_context(post, style: context_style),
             user: post.user,
           )
         context[:post_id] = post.id
@@ -443,12 +510,22 @@ module DiscourseAi
           reply_user = User.find_by(id: bot.persona.class.user_id) || reply_user
         end
 
-        stream_reply = post.topic.private_message?
+        stream_reply = post.topic.private_message? if stream_reply.nil?
 
         # we need to ensure persona user is allowed to reply to the pm
-        if post.topic.private_message?
+        if post.topic.private_message? && add_user_to_pm
           if !post.topic.topic_allowed_users.exists?(user_id: reply_user.id)
             post.topic.topic_allowed_users.create!(user_id: reply_user.id)
+          end
+          # edge case, maybe the llm user is missing?
+          if !post.topic.topic_allowed_users.exists?(user_id: bot.bot_user.id)
+            post.topic.topic_allowed_users.create!(user_id: bot.bot_user.id)
+          end
+
+          # we store the id of the last bot_user, this is then used to give it preference
+          if post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD].to_i != bot.bot_user.id
+            post.topic.custom_fields[BOT_USER_PREF_ID_CUSTOM_FIELD] = bot.bot_user.id
+            post.topic.save_custom_fields
           end
         end
 
@@ -461,6 +538,7 @@ module DiscourseAi
               skip_validations: true,
               skip_jobs: true,
               post_type: post_type,
+              skip_guardian: true,
             )
 
           publish_update(reply_post, { raw: reply_post.cooked })
@@ -473,8 +551,20 @@ module DiscourseAi
 
         post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
 
+        started_thinking = false
+
         new_custom_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
+            if type == :thinking && !started_thinking
+              reply << "<details><summary>#{I18n.t("discourse_ai.ai_bot.thinking")}</summary>"
+              started_thinking = true
+            end
+
+            if type != :thinking && started_thinking
+              reply << "</details>\n\n"
+              started_thinking = false
+            end
+
             reply << partial
             raw = reply.dup
             raw << "\n\n" << placeholder if placeholder.present?
@@ -524,11 +614,14 @@ module DiscourseAi
               raw: reply,
               skip_validations: true,
               post_type: post_type,
+              skip_guardian: true,
             )
         end
 
-        # we do not need to add a custom prompt for a single reply
-        if new_custom_prompts.length > 1
+        # a bit messy internally, but this is how we tell
+        is_thinking = new_custom_prompts.any? { |prompt| prompt[4].present? }
+
+        if is_thinking || new_custom_prompts.length > 1
           reply_post.post_custom_prompt ||= reply_post.build_post_custom_prompt(custom_prompt: [])
           prompt = reply_post.post_custom_prompt.custom_prompt || []
           prompt.concat(new_custom_prompts)
@@ -557,7 +650,7 @@ module DiscourseAi
         end
         post_streamer&.finish(skip_callback: true)
         publish_final_update(reply_post) if stream_reply
-        if reply_post && post.post_number == 1 && post.topic.private_message?
+        if reply_post && post.post_number == 1 && post.topic.private_message? && auto_set_title
           title_playground(reply_post, post.user)
         end
       end

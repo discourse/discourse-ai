@@ -126,3 +126,6 @@ sq:
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Zvogëloni"
+        tooltip:
+          actions:
+            disable: "Çaktivizoni"

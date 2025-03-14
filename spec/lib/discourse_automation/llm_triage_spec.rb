@@ -94,12 +94,19 @@ describe DiscourseAi::Automation::LlmTriage do
     # PM
     reply_user.update!(admin: true)
     add_automation_field("include_personal_messages", true, type: :boolean)
+    add_automation_field("temperature", "0.2")
     post = Fabricate(:post, topic: personal_message)
 
-    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+    prompt_options = nil
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      ["bad"],
+    ) do |_resp, _llm, _prompts, _prompt_options|
       automation.running_in_background!
       automation.trigger!({ "post" => post })
+      prompt_options = _prompt_options.first
     end
+
+    expect(prompt_options[:temperature]).to eq(0.2)
 
     last_post = post.topic.reload.posts.order(:post_number).last
     expect(last_post.raw).to eq(canned_reply_text)
@@ -115,5 +122,85 @@ describe DiscourseAi::Automation::LlmTriage do
 
     last_post = post.topic.reload.posts.order(:post_number).last
     expect(last_post.raw).to eq post.raw
+  end
+
+  it "can respond using an AI persona when configured" do
+    bot_user = Fabricate(:user, username: "ai_assistant")
+    ai_persona =
+      Fabricate(
+        :ai_persona,
+        name: "Help Bot",
+        description: "AI assistant for forum help",
+        system_prompt: "You are a helpful forum assistant",
+        default_llm: llm_model,
+        user_id: bot_user.id,
+      )
+
+    # Configure the automation to use the persona instead of canned reply
+    add_automation_field("canned_reply", nil, type: "message") # Clear canned reply
+    add_automation_field("reply_persona", ai_persona.id, type: "choices")
+    add_automation_field("whisper", true, type: "boolean")
+
+    post = Fabricate(:post, raw: "I need help with a problem")
+
+    ai_response = "I'll help you with your problem!"
+
+    # Set up the test to provide both the triage and the persona responses
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad", ai_response]) do
+      automation.running_in_background!
+      automation.trigger!({ "post" => post })
+    end
+
+    # Verify the response was created
+    topic = post.topic.reload
+    last_post = topic.posts.order(:post_number).last
+
+    # Verify the AI persona's user created the post
+    expect(last_post.user_id).to eq(bot_user.id)
+
+    # Verify the content matches the AI response
+    expect(last_post.raw).to eq(ai_response)
+
+    # Verify it's a whisper post (since we set whisper: true)
+    expect(last_post.post_type).to eq(Post.types[:whisper])
+  end
+
+  it "does not create replies when the action is edit" do
+    # Set up bot user and persona
+    bot_user = Fabricate(:user, username: "helper_bot")
+    ai_persona =
+      Fabricate(
+        :ai_persona,
+        name: "Edit Helper",
+        description: "AI assistant for editing",
+        system_prompt: "You help with editing",
+        default_llm: llm_model,
+        user_id: bot_user.id,
+      )
+
+    # Configure the automation with both reply methods
+    add_automation_field("canned_reply", "This is a canned reply", type: "message")
+    add_automation_field("reply_persona", ai_persona.id, type: "choices")
+
+    # Create a post and capture its topic
+    post = Fabricate(:post, raw: "This needs to be evaluated")
+    topic = post.topic
+
+    # Get initial post count
+    initial_post_count = topic.posts.count
+
+    # Run automation with action: :edit and a matching response
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      automation.running_in_background!
+      automation.trigger!({ "post" => post, "action" => :edit })
+    end
+
+    # Topic should be updated (if configured) but no new posts
+    topic.reload
+    expect(topic.posts.count).to eq(initial_post_count)
+
+    # Verify no replies were created
+    last_post = topic.posts.order(:post_number).last
+    expect(last_post.id).to eq(post.id)
   end
 end

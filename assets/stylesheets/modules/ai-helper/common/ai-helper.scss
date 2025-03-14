@@ -5,6 +5,7 @@
       background-color: var(--success-low);
       text-decoration: underline;
     }
+
     del {
       background-color: var(--danger-low);
       text-decoration: line-through;
@@ -14,10 +15,12 @@
       height: 200px;
     }
   }
+
   @keyframes fadeOpacity {
     0% {
       opacity: 1;
     }
+
     100% {
       opacity: 0.5;
     }
@@ -96,9 +99,11 @@
   0% {
     color: var(--primary);
   }
+
   50% {
     color: var(--tertiary);
   }
+
   100% {
     color: var(--primary);
   }
@@ -121,6 +126,7 @@
   animation: dot-falling 1s infinite linear;
   animation-delay: 0.1s;
 }
+
 .dot-falling::before,
 .dot-falling::after {
   content: "";
@@ -128,6 +134,7 @@
   position: absolute;
   top: 0;
 }
+
 .dot-falling::before {
   width: 10px;
   height: 10px;
@@ -137,6 +144,7 @@
   animation: dot-falling-before 1s infinite linear;
   animation-delay: 0s;
 }
+
 .dot-falling::after {
   width: 10px;
   height: 10px;
@@ -151,44 +159,51 @@
   0% {
     box-shadow: 9999px -15px 0 0 rgba(152, 128, 255, 0);
   }
+
   25%,
   50%,
   75% {
     box-shadow: 9999px 0 0 0 var(--tertiary);
   }
+
   100% {
     box-shadow: 9999px 15px 0 0 rgba(152, 128, 255, 0);
   }
 }
+
 @keyframes dot-falling-before {
   0% {
     box-shadow: 9984px -15px 0 0 rgba(152, 128, 255, 0);
   }
+
   25%,
   50%,
   75% {
     box-shadow: 9984px 0 0 0 var(--tertiary);
   }
+
   100% {
     box-shadow: 9984px 15px 0 0 rgba(152, 128, 255, 0);
   }
 }
+
 @keyframes dot-falling-after {
   0% {
     box-shadow: 10014px -15px 0 0 rgba(152, 128, 255, 0);
   }
+
   25%,
   50%,
   75% {
     box-shadow: 10014px 0 0 0 var(--tertiary);
   }
+
   100% {
     box-shadow: 10014px 15px 0 0 rgba(152, 128, 255, 0);
   }
 }
 
 // Suggest Titles Related
-
 .showing-ai-suggestions {
   .title-input {
     // border on focus should be on top of suggestion button
@@ -229,6 +244,7 @@
   .select-kit.is-expanded {
     // need to raise the z-index so the sibling input buttons don't cover the dropdown
     z-index: z("dropdown") + 1;
+
     + button {
       z-index: z("dropdown") + 1;
     }
@@ -266,6 +282,40 @@
     // because we need another layer to put the AI icon above dropdowns
     // while also keeping them below the composer tips
     z-index: z("composer", "dropdown") + 2;
+  }
+
+  .with-category .showing-ai-suggestions .category-input {
+    flex-wrap: nowrap;
+    max-width: calc(50% - 0.2em);
+
+    .category-chooser {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+  }
+
+  .with-category:not(.with-tags) {
+    // when tagging is disabled
+    .showing-ai-suggestions .category-input {
+      max-width: 40%;
+    }
+  }
+
+  .with-tags {
+    .showing-ai-suggestions .tags-input {
+      display: flex;
+      max-width: calc(50% - 0.2em);
+
+      .mini-tag-chooser {
+        min-width: 0;
+      }
+    }
+  }
+
+  .showing-ai-suggestions {
+    #reply-title {
+      padding-right: 2em;
+    }
   }
 }
 
@@ -333,41 +383,6 @@
   }
 }
 
-// Prevent suggestion button from wrapping
-#reply-control {
-  .with-category .showing-ai-suggestions .category-input {
-    flex-wrap: nowrap;
-    max-width: calc(50% - 0.2em);
-    .category-chooser {
-      min-width: 0;
-      flex: 1 1 auto;
-    }
-  }
-
-  .with-category:not(.with-tags) {
-    // when tagging is disabled
-    .showing-ai-suggestions .category-input {
-      max-width: 40%;
-    }
-  }
-
-  .with-tags {
-    .showing-ai-suggestions .tags-input {
-      display: flex;
-      max-width: calc(50% - 0.2em);
-      .mini-tag-chooser {
-        min-width: 0;
-      }
-    }
-  }
-
-  .showing-ai-suggestions {
-    #reply-title {
-      padding-right: 2em;
-    }
-  }
-}
-
 .suggest-tags-button + .ai-suggestions-menu {
   top: 4.25rem;
 }
@@ -376,6 +391,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(359deg);
   }
@@ -410,6 +426,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+
       .btn {
         flex-grow: 1;
         padding-inline: 0;
@@ -453,7 +470,6 @@
 
 .ai-split-topic-suggestion__results {
   list-style: none;
-  margin-left: 0;
   margin: 0;
 
   .btn {
@@ -542,6 +558,7 @@
       left: 0.35rem;
       padding: 0.33em 0.75em;
       transition: all 0.25s ease;
+
       .discourse-no-touch & {
         display: none;
       }
@@ -568,6 +585,7 @@
       }
     }
   }
+
   .discourse-no-touch & {
     &:hover {
       .button-wrapper .generate-caption {
@@ -597,6 +615,7 @@
     min-height: 3em;
     height: 7em;
     min-width: var(--ai-caption-popup-min-width);
+
     @include breakpoint(tablet) {
       width: 100%;
       max-width: unset;
@@ -613,6 +632,7 @@
       font-size: var(--font-down-1);
       margin-left: auto;
       color: var(--tertiary);
+
       .desktop-view & {
         // a little extra space for extra narrow desktop view
         @media screen and (max-width: 675px) {

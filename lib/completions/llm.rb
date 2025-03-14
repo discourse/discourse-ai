@@ -78,14 +78,14 @@ module DiscourseAi
                   id: "samba_nova",
                   models: [
                     {
+                      name: "Meta-Llama-3.3-70B-Instruct",
+                      tokens: 131_072,
+                      display_name: "Llama 3.3 70B",
+                    },
+                    {
                       name: "Meta-Llama-3.1-8B-Instruct",
                       tokens: 16_384,
                       display_name: "Llama 3.1 8B",
-                    },
-                    {
-                      name: "Meta-Llama-3.1-70B-Instruct",
-                      tokens: 65_536,
-                      display_name: "Llama 3.1 70B",
                     },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::Llama3Tokenizer,
@@ -172,8 +172,9 @@ module DiscourseAi
           @canned_response = DiscourseAi::Completions::Endpoints::CannedResponse.new(responses)
           @canned_llm = llm
           @prompts = []
+          @prompt_options = []
 
-          yield(@canned_response, llm, @prompts)
+          yield(@canned_response, llm, @prompts, @prompt_options)
         ensure
           # Don't leak prepared response if there's an exception.
           @canned_response = nil
@@ -181,8 +182,13 @@ module DiscourseAi
           @prompts = nil
         end
 
-        def record_prompt(prompt)
+        def record_prompt(prompt, options)
           @prompts << prompt.dup if @prompts
+          @prompt_options << options if @prompt_options
+        end
+
+        def prompt_options
+          @prompt_options
         end
 
         def prompts
@@ -234,6 +240,7 @@ module DiscourseAi
       # @param feature_name { String - Optional } - The feature name to use for the completion.
       # @param feature_context { Hash - Optional } - The feature context to use for the completion.
       # @param partial_tool_calls { Boolean - Optional } - If true, the completion will return partial tool calls.
+      # @param output_thinking { Boolean - Optional } - If true, the completion will return the thinking output for thinking models.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
@@ -250,9 +257,23 @@ module DiscourseAi
         feature_name: nil,
         feature_context: nil,
         partial_tool_calls: false,
+        output_thinking: false,
         &partial_read_blk
       )
-        self.class.record_prompt(prompt)
+        self.class.record_prompt(
+          prompt,
+          {
+            temperature: temperature,
+            top_p: top_p,
+            max_tokens: max_tokens,
+            stop_sequences: stop_sequences,
+            user: user,
+            feature_name: feature_name,
+            feature_context: feature_context,
+            partial_tool_calls: partial_tool_calls,
+            output_thinking: output_thinking,
+          },
+        )
 
         model_params = { max_tokens: max_tokens, stop_sequences: stop_sequences }
 
@@ -285,6 +306,7 @@ module DiscourseAi
           feature_name: feature_name,
           feature_context: feature_context,
           partial_tool_calls: partial_tool_calls,
+          output_thinking: output_thinking,
           &partial_read_blk
         )
       end

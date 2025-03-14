@@ -6,8 +6,10 @@ module DiscourseAi
       attr_reader :model
 
       BOT_NOT_FOUND = Class.new(StandardError)
-      MAX_COMPLETIONS = 5
-      MAX_TOOLS = 5
+      # the future is agentic, allow for more turns
+      MAX_COMPLETIONS = 8
+      # limit is arbitrary, but 5 which was used in the past was too low
+      MAX_TOOLS = 20
 
       def self.as(bot_user, persona: DiscourseAi::AiBot::Personas::General.new, model: nil)
         new(bot_user, persona, model)
@@ -111,12 +113,14 @@ module DiscourseAi
 
           allow_partial_tool_calls = persona.allow_partial_tool_calls?
           existing_tools = Set.new
+          current_thinking = []
 
           result =
             llm.generate(
               prompt,
               feature_name: "bot",
               partial_tool_calls: allow_partial_tool_calls,
+              output_thinking: true,
               **llm_kwargs,
             ) do |partial, cancel|
               tool =
@@ -147,7 +151,17 @@ module DiscourseAi
                   needs_newlines = false
                 end
 
-                process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+                process_tool(
+                  tool: tool,
+                  raw_context: raw_context,
+                  llm: llm,
+                  cancel: cancel,
+                  update_blk: update_blk,
+                  prompt: prompt,
+                  context: context,
+                  current_thinking: current_thinking,
+                )
+
                 tools_ran += 1
                 ongoing_chain &&= tool.chain_next_response?
 
@@ -158,27 +172,79 @@ module DiscourseAi
                 if partial.is_a?(DiscourseAi::Completions::ToolCall)
                   Rails.logger.warn("DiscourseAi: Tool not found: #{partial.name}")
                 else
-                  update_blk.call(partial, cancel)
+                  if partial.is_a?(DiscourseAi::Completions::Thinking)
+                    if partial.partial? && partial.message.present?
+                      update_blk.call(partial.message, cancel, nil, :thinking)
+                    end
+                    if !partial.partial?
+                      # this will be dealt with later
+                      raw_context << partial
+                      current_thinking << partial
+                    end
+                  else
+                    update_blk.call(partial, cancel)
+                  end
                 end
               end
             end
 
           if !tool_found
             ongoing_chain = false
-            raw_context << [result, bot_user.username]
+            text = result
+
+            # we must strip out thinking and other types of blocks
+            if result.is_a?(Array)
+              text = +""
+              result.each { |item| text << item if item.is_a?(String) }
+            end
+            raw_context << [text, bot_user.username]
           end
+
           total_completions += 1
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS)
           prompt.tools = [] if total_completions == MAX_COMPLETIONS
         end
 
-        raw_context
+        embed_thinking(raw_context)
       end
 
       private
 
-      def process_tool(tool, raw_context, llm, cancel, update_blk, prompt, context)
+      def embed_thinking(raw_context)
+        embedded_thinking = []
+        thinking_info = nil
+        raw_context.each do |context|
+          if context.is_a?(DiscourseAi::Completions::Thinking)
+            thinking_info ||= {}
+            if context.redacted
+              thinking_info[:redacted_thinking_signature] = context.signature
+            else
+              thinking_info[:thinking] = context.message
+              thinking_info[:thinking_signature] = context.signature
+            end
+          else
+            if thinking_info
+              context = context.dup
+              context[4] = thinking_info
+            end
+            embedded_thinking << context
+          end
+        end
+
+        embedded_thinking
+      end
+
+      def process_tool(
+        tool:,
+        raw_context:,
+        llm:,
+        cancel:,
+        update_blk:,
+        prompt:,
+        context:,
+        current_thinking:
+      )
         tool_call_id = tool.tool_call_id
         invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
 
@@ -188,6 +254,17 @@ module DiscourseAi
           content: { arguments: tool.parameters }.to_json,
           name: tool.name,
         }
+
+        if current_thinking.present?
+          current_thinking.each do |thinking|
+            if thinking.redacted
+              tool_call_message[:redacted_thinking_signature] = thinking.signature
+            else
+              tool_call_message[:thinking] = thinking.message
+              tool_call_message[:thinking_signature] = thinking.signature
+            end
+          end
+        end
 
         tool_message = {
           type: :tool,

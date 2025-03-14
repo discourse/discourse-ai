@@ -146,3 +146,6 @@ vi:
       discobot_discoveries:
         regular_results: "Các chủ đề"
         collapse: "Thu gọn"
+        tooltip:
+          actions:
+            disable: "Tắt"

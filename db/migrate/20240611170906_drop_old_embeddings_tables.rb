@@ -27,4 +27,8 @@ class DropOldEmbeddingsTables < ActiveRecord::Migration[7.0]
     drop_table :ai_document_fragment_embeddings_7_1
     drop_table :ai_document_fragment_embeddings_8_1
   end
+
+  def down
+    raise ActiveRecord::IrreversibleMigration
+  end
 end
