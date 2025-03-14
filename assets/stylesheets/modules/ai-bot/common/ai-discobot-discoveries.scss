@@ -116,8 +116,8 @@
     .search-result-topic {
       display: grid;
       grid-template-areas: "results-title ai-title" "results ai";
-      grid-template-columns: 59% 39%;
-      gap: 0 2%;
+      grid-template-columns: 58% 38%;
+      gap: 0 4%;
 
       .list {
         grid-area: results;
@@ -130,6 +130,7 @@
 
     .ai-search-discoveries {
       font-size: var(--font-0);
+      color: var(--primary-high);
     }
 
     .ai-search-discoveries__regular-results-title {
