@@ -6,6 +6,7 @@ require_relative "lib/llm"
 require_relative "lib/cli"
 require_relative "lib/runner"
 require_relative "lib/eval"
+require_relative "lib/prompt_evaluator"
 
 options = DiscourseAi::Evals::Cli.parse_options!
 

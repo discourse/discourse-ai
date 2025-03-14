@@ -148,31 +148,33 @@ class DiscourseAi::Evals::Runner
         structured_logger.step("Evaluating with LLM: #{llm.name}") do |step|
           logger.info("Evaluating with LLM: #{llm.name}")
           print "#{llm.name}: "
-          result = @eval.run(llm: llm)
+          results = @eval.run(llm: llm)
 
-          step[:args] = result
-          step[:cname] = result[:result] == :pass ? :good : :bad
+          results.each do |result|
+            step[:args] = result
+            step[:cname] = result[:result] == :pass ? :good : :bad
 
-          if result[:result] == :fail
-            puts "Failed 🔴"
-            puts "Error: #{result[:message]}" if result[:message]
-            # this is deliberate, it creates a lot of noise, but sometimes for debugging it's useful
-            #puts "Context: #{result[:context].to_s[0..2000]}" if result[:context]
-            if result[:expected_output] && result[:actual_output]
-              puts "---- Expected ----\n#{result[:expected_output]}"
-              puts "---- Actual ----\n#{result[:actual_output]}"
+            if result[:result] == :fail
+              puts "Failed 🔴"
+              puts "Error: #{result[:message]}" if result[:message]
+              # this is deliberate, it creates a lot of noise, but sometimes for debugging it's useful
+              #puts "Context: #{result[:context].to_s[0..2000]}" if result[:context]
+              if result[:expected_output] && result[:actual_output]
+                puts "---- Expected ----\n#{result[:expected_output]}"
+                puts "---- Actual ----\n#{result[:actual_output]}"
+              end
+              logger.error("Evaluation failed with LLM: #{llm.name}")
+              logger.error("Error: #{result[:message]}") if result[:message]
+              logger.error("Expected: #{result[:expected_output]}") if result[:expected_output]
+              logger.error("Actual: #{result[:actual_output]}") if result[:actual_output]
+              logger.error("Context: #{result[:context]}") if result[:context]
+            elsif result[:result] == :pass
+              puts "Passed 🟢"
+              logger.info("Evaluation passed with LLM: #{llm.name}")
+            else
+              STDERR.puts "Error: Unknown result #{eval.inspect}"
+              logger.error("Unknown result: #{eval.inspect}")
             end
-            logger.error("Evaluation failed with LLM: #{llm.name}")
-            logger.error("Error: #{result[:message]}") if result[:message]
-            logger.error("Expected: #{result[:expected_output]}") if result[:expected_output]
-            logger.error("Actual: #{result[:actual_output]}") if result[:actual_output]
-            logger.error("Context: #{result[:context]}") if result[:context]
-          elsif result[:result] == :pass
-            puts "Passed 🟢"
-            logger.info("Evaluation passed with LLM: #{llm.name}")
-          else
-            STDERR.puts "Error: Unknown result #{eval.inspect}"
-            logger.error("Unknown result: #{eval.inspect}")
           end
         end
       end
