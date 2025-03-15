@@ -14,13 +14,15 @@ if defined?(DiscourseAutomation)
             content: DiscourseAi::Automation.available_persona_choices,
           }
     field :whisper, component: :boolean
+    field :silent_mode, component: :boolean
 
     script do |context, fields|
       post = context["post"]
       next if post&.user&.bot?
 
-      persona_id = fields["persona"]["value"]
-      whisper = fields["whisper"]["value"]
+      persona_id = fields.dig("persona", "value")
+      whisper = !!fields.dig("whisper", "value")
+      silent_mode = !!fields.dig("silent_mode", "value")
 
       begin
         RateLimiter.new(
@@ -42,6 +44,7 @@ if defined?(DiscourseAutomation)
           persona_id: persona_id,
           whisper: whisper,
           automation: self.automation,
+          silent_mode: silent_mode,
         )
       rescue => e
         Discourse.warn_exception(

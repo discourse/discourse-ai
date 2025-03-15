@@ -2,11 +2,12 @@
 module DiscourseAi
   module Automation
     module LlmPersonaTriage
-      def self.handle(post:, persona_id:, whisper: false, automation: nil)
+      def self.handle(post:, persona_id:, whisper: false, silent_mode: false, automation: nil)
         DiscourseAi::AiBot::Playground.reply_to_post(
           post: post,
           persona_id: persona_id,
           whisper: whisper,
+          silent_mode: silent_mode,
         )
       rescue => e
         Discourse.warn_exception(

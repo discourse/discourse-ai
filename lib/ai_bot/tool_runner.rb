@@ -89,6 +89,13 @@ module DiscourseAi
               },
             };
           },
+          createChatMessage: function(params) {
+            const result = _discourse_create_chat_message(params);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+            return result;
+          },
         };
 
         const context = #{JSON.generate(@context)};
@@ -340,6 +347,55 @@ module DiscourseAi
                 end
               else
                 return { error: "No valid context for response" }
+              end
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_create_chat_message",
+          ->(params) do
+            in_attached_function do
+              params = params.symbolize_keys
+              channel_name = params[:channel_name]
+              username = params[:username]
+              message = params[:message]
+
+              # Validate parameters
+              return { error: "Missing required parameter: channel_name" } if channel_name.blank?
+              return { error: "Missing required parameter: username" } if username.blank?
+              return { error: "Missing required parameter: message" } if message.blank?
+
+              # Find the user
+              user = User.find_by(username: username)
+              return { error: "User not found: #{username}" } if user.nil?
+
+              # Find the channel
+              channel = Chat::Channel.find_by(name: channel_name)
+              if channel.nil?
+                # Try finding by slug if not found by name
+                channel = Chat::Channel.find_by(slug: channel_name.parameterize)
+              end
+              return { error: "Channel not found: #{channel_name}" } if channel.nil?
+
+              begin
+                guardian = Guardian.new(user)
+                message =
+                  ChatSDK::Message.create(
+                    raw: message,
+                    channel_id: channel.id,
+                    guardian: guardian,
+                    enforce_membership: !channel.direct_message_channel?,
+                  )
+
+                {
+                  success: true,
+                  message_id: message.id,
+                  message: message.message,
+                  created_at: message.created_at.iso8601,
+                }
+              rescue => e
+                { error: "Failed to create chat message: #{e.message}" }
               end
             end
           end,

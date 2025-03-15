@@ -239,4 +239,92 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     # should not inject persona into allowed users
     expect(topic.topic_allowed_users.pluck(:user_id).sort).to eq(original_user_ids.sort)
   end
+
+  describe "LLM Persona Triage with Chat Message Creation" do
+    fab!(:user)
+    fab!(:bot_user) { Fabricate(:user) }
+    fab!(:chat_channel) { Fabricate(:category_channel) }
+
+    fab!(:custom_tool) do
+      AiTool.create!(
+        name: "Chat Notifier",
+        tool_name: "chat_notifier",
+        description: "Creates a chat notification in a channel",
+        parameters: [
+          { name: "channel_id", type: "integer", description: "Chat channel ID" },
+          { name: "message", type: "string", description: "Message to post" },
+        ],
+        script: <<~JS,
+        function invoke(params) {
+          // Create a chat message using the Chat API
+          const result = discourse.createChatMessage({
+            channel_name: '#{chat_channel.name}',
+            username: '#{user.username}',
+            message: params.message
+          });
+
+          chain.setCustomRaw("We are done, stopping chaing");
+
+          return {
+            success: true,
+            message_id: result.message_id,
+            url: result.url,
+            message: params.message
+          };
+        }
+      JS
+        summary: "Notify in chat channel",
+        created_by: Discourse.system_user,
+      )
+    end
+
+    before do
+      SiteSetting.chat_enabled = true
+
+      ai_persona.update!(tools: ["custom-#{custom_tool.id}"])
+
+      # Set up automation fields
+      automation.fields.create!(
+        component: "choices",
+        name: "persona",
+        metadata: {
+          value: ai_persona.id,
+        },
+        target: "script",
+      )
+
+      automation.fields.create!(
+        component: "boolean",
+        name: "silent_mode",
+        metadata: {
+          value: true,
+        },
+        target: "script",
+      )
+    end
+
+    it "can silently analyze a post and create a chat notification" do
+      post = Fabricate(:post, raw: "Please help with my billing issue")
+
+      # Tool response from LLM
+      tool_call =
+        DiscourseAi::Completions::ToolCall.new(
+          name: "chat_notifier",
+          parameters: {
+            "message" => "Hello world!",
+          },
+          id: "tool_call_1",
+        )
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([tool_call]) do
+        automation.running_in_background!
+        automation.trigger!({ "post" => post })
+      end
+
+      expect(post.topic.reload.posts.count).to eq(1)
+
+      expect(chat_channel.chat_messages.count).to eq(1)
+      expect(chat_channel.chat_messages.last.message).to eq("Hello world!")
+    end
+  end
 end
