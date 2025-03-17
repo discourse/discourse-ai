@@ -239,6 +239,8 @@ export default class AiSummaryModal extends Component {
           class="ai-summary-container"
           {{didInsert this.generateSummary}}
           {{on "click" this.onSummaryTextClick}}
+          role="button"
+          tabindex="0"
         >
           <article
             class={{concatClass
