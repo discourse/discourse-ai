@@ -13,6 +13,7 @@ import getURL from "discourse/lib/get-url";
 
 export default class AiArtifactComponent extends Component {
   @service siteSettings;
+
   @tracked expanded = false;
   @tracked showingArtifact = false;
 

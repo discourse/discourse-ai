@@ -7,7 +7,5 @@ export default class AiTopicGistPlacement extends Component {
     return settings.discourse_ai_enabled && settings.ai_summarization_enabled;
   }
 
-  <template>
-    <AiTopicGist @topic={{@outletArgs.topic}} />
-  </template>
+  <template><AiTopicGist @topic={{@outletArgs.topic}} /></template>
 }

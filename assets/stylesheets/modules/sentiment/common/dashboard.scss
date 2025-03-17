@@ -82,7 +82,9 @@
   &__chart-wrapper {
     height: fit-content;
     position: relative;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
     border-radius: var(--d-border-radius);
 
     .doughnut-chart-title {

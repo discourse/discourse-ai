@@ -7,6 +7,7 @@ import { isTesting } from "discourse/lib/environment";
 
 export default class PreferencesAiController extends Controller {
   @service siteSettings;
+
   @tracked saved = false;
 
   get booleanSettings() {

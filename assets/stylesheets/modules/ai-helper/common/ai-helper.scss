@@ -737,8 +737,8 @@
     .fk-d-toasts:has(.ai-proofread-error-toast) {
       transform: translateX(
         calc(
-          (100vw - var(--d-max-width) - var(--d-sidebar-width) / 0.5) / 2 + 17em +
-            1rem
+          (100vw - var(--d-max-width) - var(--d-sidebar-width) / 0.5) / 2 +
+            17em + 1rem
         )
       );
     }
