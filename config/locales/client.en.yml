@@ -107,6 +107,9 @@ en:
             whisper:
               label: "Reply as Whisper"
               description: "Whether the persona's response should be a whisper"
+            silent_mode:
+              label: "Silent Mode"
+              description: "In silent mode persona will receive the content but will not post anything on the forum - useful when performing triage using tools"
         llm_triage:
           fields:
             system_prompt:

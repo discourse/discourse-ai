@@ -188,7 +188,8 @@ module DiscourseAi
         whisper: nil,
         add_user_to_pm: false,
         stream_reply: false,
-        auto_set_title: false
+        auto_set_title: false,
+        silent_mode: false
       )
         ai_persona = AiPersona.find_by(id: persona_id)
         raise Discourse::InvalidParameters.new(:persona_id) if !ai_persona
@@ -207,7 +208,15 @@ module DiscourseAi
           add_user_to_pm: add_user_to_pm,
           stream_reply: stream_reply,
           auto_set_title: auto_set_title,
+          silent_mode: silent_mode,
         )
+      rescue => e
+        if Rails.env.test?
+          p e
+          puts e.backtrace[0..10]
+        else
+          raise e
+        end
       end
 
       def initialize(bot)
@@ -475,12 +484,18 @@ module DiscourseAi
         add_user_to_pm: true,
         stream_reply: nil,
         auto_set_title: true,
+        silent_mode: false,
         &blk
       )
         # this is a multithreading issue
         # post custom prompt is needed and it may not
         # be properly loaded, ensure it is loaded
         PostCustomPrompt.none
+
+        if silent_mode
+          auto_set_title = false
+          stream_reply = false
+        end
 
         reply = +""
         post_streamer = nil
@@ -590,7 +605,7 @@ module DiscourseAi
             end
           end
 
-        return if reply.blank?
+        return if reply.blank? || silent_mode
 
         if stream_reply
           post_streamer.finish
