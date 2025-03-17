@@ -77,6 +77,7 @@ module DiscourseAi
             return _discourse_search(params);
           },
           getPost: _discourse_get_post,
+          getTopic: _discourse_get_topic,
           getUser: _discourse_get_user,
           getPersona: function(name) {
             return {
@@ -276,7 +277,28 @@ module DiscourseAi
               post = Post.find_by(id: post_id)
               return nil if post.nil?
               guardian = Guardian.new(Discourse.system_user)
-              recursive_as_json(PostSerializer.new(post, scope: guardian, root: false))
+              obj =
+                recursive_as_json(
+                  PostSerializer.new(post, scope: guardian, root: false, add_raw: true),
+                )
+              topic_obj =
+                recursive_as_json(
+                  ListableTopicSerializer.new(post.topic, scope: guardian, root: false),
+                )
+              obj["topic"] = topic_obj
+              obj
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_get_topic",
+          ->(topic_id) do
+            in_attached_function do
+              topic = Topic.find_by(id: topic_id)
+              return nil if topic.nil?
+              guardian = Guardian.new(Discourse.system_user)
+              recursive_as_json(ListableTopicSerializer.new(topic, scope: guardian, root: false))
             end
           end,
         )

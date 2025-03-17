@@ -3,6 +3,8 @@
 RSpec.describe AiTool do
   fab!(:llm_model) { Fabricate(:llm_model, name: "claude-2") }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
+  fab!(:topic)
+  fab!(:post) { Fabricate(:post, topic: topic, raw: "bananas are a tasty fruit") }
 
   def create_tool(
     parameters: nil,
@@ -329,36 +331,74 @@ RSpec.describe AiTool do
     end
   end
 
+  context "when using the topic API" do
+    it "can fetch topic details" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.getTopic(params.topic_id);
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ "topic_id" => topic.id }, llm: nil, bot_user: nil, context: {})
+
+      result = runner.invoke
+
+      expect(result["id"]).to eq(topic.id)
+      expect(result["title"]).to eq(topic.title)
+      expect(result["archetype"]).to eq("regular")
+      expect(result["posts_count"]).to eq(1)
+    end
+  end
+
+  context "when using the post API" do
+    it "can fetch post details" do
+      script = <<~JS
+        function invoke(params) {
+          const post = discourse.getPost(params.post_id);
+          return {
+            post: post,
+            topic: post.topic
+          }
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ "post_id" => post.id }, llm: nil, bot_user: nil, context: {})
+
+      result = runner.invoke
+      post_hash = result["post"]
+      topic_hash = result["topic"]
+
+      expect(post_hash["id"]).to eq(post.id)
+      expect(post_hash["topic_id"]).to eq(topic.id)
+      expect(post_hash["raw"]).to eq(post.raw)
+
+      expect(topic_hash["id"]).to eq(topic.id)
+    end
+  end
+
   context "when using the search API" do
     before { SearchIndexer.enable }
     after { SearchIndexer.disable }
 
     it "can perform a discourse search" do
-      # Create a new topic
-      topic = Fabricate(:topic, title: "Test Search Topic", category: Fabricate(:category))
-      post = Fabricate(:post, topic: topic, raw: "This is a test post content, banana")
-
-      # Ensure the topic is indexed
       SearchIndexer.index(topic, force: true)
       SearchIndexer.index(post, force: true)
 
-      # Define the tool script
       script = <<~JS
-      function invoke(params) {
-        return discourse.search({ search_query: params.query });
-      }
-    JS
+        function invoke(params) {
+          return discourse.search({ search_query: params.query });
+        }
+      JS
 
-      # Create the tool and runner
       tool = create_tool(script: script)
       runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil, context: {})
 
-      # Invoke the tool and get the results
       result = runner.invoke
 
-      # Verify the topic is found
       expect(result["rows"].length).to be > 0
-      expect(result["rows"].first["title"]).to eq("Test Search Topic")
+      expect(result["rows"].first["title"]).to eq(topic.title)
     end
   end
 end
