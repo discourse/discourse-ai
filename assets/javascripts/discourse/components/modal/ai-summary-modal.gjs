@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { array } from "@ember/helper";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
@@ -29,6 +30,7 @@ export default class AiSummaryModal extends Component {
   @service currentUser;
   @service site;
   @service modal;
+  @service appEvents;
 
   @tracked text = "";
   @tracked summarizedOn = null;
@@ -208,6 +210,18 @@ export default class AiSummaryModal extends Component {
     this.args.closeModal();
   }
 
+  @action
+  onSummaryTextClick(event) {
+    // Check if the clicked element is an anchor tag
+    if (event.target.tagName === "A" && event.target.href) {
+      this.appEvents.trigger("ai_summary_link_clicked", {
+        topic_id: this.args.model.topic.id,
+        user_id: this.currentUser.id,
+        link: event.target.href,
+      });
+    }
+  }
+
   <template>
     <DModal
       @title={{i18n "discourse_ai.summarization.topic.title"}}
@@ -221,7 +235,11 @@ export default class AiSummaryModal extends Component {
     >
       <:body>
         {{htmlClass "scrollable-modal"}}
-        <div class="ai-summary-container" {{didInsert this.generateSummary}}>
+        <div
+          class="ai-summary-container"
+          {{didInsert this.generateSummary}}
+          {{on "click" this.onSummaryTextClick}}
+        >
           <article
             class={{concatClass
               "ai-summary-box"
