@@ -1,3 +1,4 @@
+import { getOwner } from "@ember/owner";
 import { click, visit } from "@ember/test-helpers";
 import { test } from "qunit";
 import { cloneJSON } from "discourse/lib/object";
@@ -97,10 +98,19 @@ acceptance("Topic - Summary", function (needs) {
       },
     });
 
+    let appEventTriggered = 0;
+    const appEvents = getOwner(this).lookup("service:app-events");
+    appEvents.on("ai_summary_link_clicked", this, () => appEventTriggered++);
+
     await click(".generated-summary a");
     assert
       .dom(".ai-summary-box .generated-summary p")
       .hasText(finalSummaryResult, "Retains final summary after clicking link");
+    assert.equal(
+      appEventTriggered,
+      1,
+      "ai_summary_link_clicked appEvent triggered once"
+    );
   });
 });
 
