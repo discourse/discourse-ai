@@ -28,12 +28,13 @@ export default class AiToolEditorForm extends Component {
   ];
 
   get formData() {
+    const parameters = this.args.editingModel.parameters || [];
     return {
       name: this.args.editingModel.name || "",
       tool_name: this.args.editingModel.tool_name || "",
       description: this.args.editingModel.description || "",
       summary: this.args.editingModel.summary || "",
-      parameters: this.args.editingModel.parameters || [],
+      parameters,
       script: this.args.editingModel.script || "",
       rag_uploads: this.args.editingModel.rag_uploads || [],
     };
@@ -107,6 +108,10 @@ export default class AiToolEditorForm extends Component {
 
   currentParameterSelection(data, index) {
     return data.parameters[index].type;
+  }
+
+  parameterIsEnum(data, index) {
+    return data.parameters[index].isEnum;
   }
 
   get ragUploadsDescription() {
@@ -229,7 +234,7 @@ export default class AiToolEditorForm extends Component {
             </row.Col>
 
             <row.Col @size={{4}}>
-              <collection.Field @name="enum" @title="Enum" as |field|>
+              <collection.Field @name="isEnum" @title="Enum" as |field|>
                 <field.Checkbox />
               </collection.Field>
             </row.Col>
@@ -243,6 +248,9 @@ export default class AiToolEditorForm extends Component {
               />
             </row.Col>
           </form.Row>
+          {{#if (this.parameterIsEnum data index)}}
+            I am an enum
+          {{/if}}
         </div>
       </form.Collection>
 
@@ -252,7 +260,9 @@ export default class AiToolEditorForm extends Component {
         @action={{fn
           form.addItemToCollection
           "parameters"
-          (hash name="" type="string" description="" required=false enum=false)
+          (hash
+            name="" type="string" description="" required=false isEnum=false
+          )
         }}
       />
 
@@ -299,6 +309,13 @@ export default class AiToolEditorForm extends Component {
             class="ai-tool-editor__test-button"
           />
 
+        {{/unless}}
+
+        <form.Submit
+          @label="discourse_ai.tools.save"
+          class="ai-tool-editor__save"
+        />
+        {{#unless @isNew}}
           <form.Button
             @label="discourse_ai.tools.delete"
             @icon="trash-can"
@@ -306,11 +323,6 @@ export default class AiToolEditorForm extends Component {
             class="btn-danger ai-tool-editor__delete"
           />
         {{/unless}}
-
-        <form.Submit
-          @label="discourse_ai.tools.save"
-          class="ai-tool-editor__save"
-        />
       </form.Actions>
     </Form>
   </template>

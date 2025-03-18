@@ -32,8 +32,10 @@ export default class AiTool extends RestModel {
 
         if (parameter.enum && parameter.enum.length) {
           parameter.enum = new TrackedArray(parameter.enum);
+          parameter.isEnum = true;
         } else {
           parameter.enum = null;
+          parameter.isEnum = false;
         }
 
         return parameter;
