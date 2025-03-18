@@ -345,9 +345,7 @@ en:
         script: "Script"
         parameters: "Parameters"
         save: "Save"
-        parameter_type: "Parameter type"
-        add_parameter: "Add parameter"
-        remove_parameter: "Remove"
+        add_parameter: "Add Parameter"
         parameter_required: "Required"
         parameter_enum: "Enum"
         parameter_name: "Parameter name"
@@ -358,7 +356,10 @@ en:
         test: "Run test"
         delete: "Delete"
         saved: "Tool saved"
+        presets: "Select a preset..."
         confirm_delete: "Are you sure you want to delete this tool?"
+        next:
+          title: "Next"
         test_modal:
           title: "Test AI tool"
           run: "Run test"
