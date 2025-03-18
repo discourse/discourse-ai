@@ -250,6 +250,11 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
+  @action
+  providerParamsKeys(data) {
+    return data ? Object.keys(data) : [];
+  }
+
   <template>
     <Form
       @onSubmit={{this.save}}
@@ -334,32 +339,36 @@ export default class AiLlmEditorForm extends Component {
           <field.Password />
         </form.Field>
 
-        <form.Object @name="provider_params" as |object name|>
-          {{#let
-            (get (this.metaProviderParams data.provider) name)
-            as |params|
-          }}
-            <object.Field
-              @name={{name}}
-              @title={{i18n (concat "discourse_ai.llms.provider_fields." name)}}
-              @format="large"
-              as |field|
-            >
-              {{#if (eq params.type "enum")}}
-                <field.Select @includeNone={{false}} as |select|>
-                  {{#each params.values as |option|}}
-                    <select.Option
-                      @value={{option.id}}
-                    >{{option.name}}</select.Option>
-                  {{/each}}
-                </field.Select>
-              {{else if (eq params.type "checkbox")}}
-                <field.Checkbox />
-              {{else}}
-                <field.Input @type={{params.type}} />
-              {{/if}}
-            </object.Field>
-          {{/let}}
+        <form.Object @name="provider_params" as |object providerParamsData|>
+          {{#each (this.providerParamsKeys providerParamsData) as |name|}}
+            {{#let
+              (get (this.metaProviderParams data.provider) name)
+              as |params|
+            }}
+              <object.Field
+                @name={{name}}
+                @title={{i18n
+                  (concat "discourse_ai.llms.provider_fields." name)
+                }}
+                @format="large"
+                as |field|
+              >
+                {{#if (eq params.type "enum")}}
+                  <field.Select @includeNone={{false}} as |select|>
+                    {{#each params.values as |option|}}
+                      <select.Option
+                        @value={{option.id}}
+                      >{{option.name}}</select.Option>
+                    {{/each}}
+                  </field.Select>
+                {{else if (eq params.type "checkbox")}}
+                  <field.Checkbox />
+                {{else}}
+                  <field.Input @type={{params.type}} />
+                {{/if}}
+              </object.Field>
+            {{/let}}
+          {{/each}}
         </form.Object>
 
         <form.Field
@@ -555,32 +564,24 @@ export default class AiLlmEditorForm extends Component {
       {{/unless}}
 
       {{#if this.displayTestResult}}
-        <form.Field
-          @showTitle={{false}}
-          @name="test_results"
-          @title="test_results"
-          @format="full"
-          as |field|
-        >
-          <field.Custom>
-            <ConditionalLoadingSpinner
-              @size="small"
-              @condition={{this.testRunning}}
-            >
-              {{#if this.testResult}}
-                <div class="ai-llm-editor-tests__success">
-                  {{icon "check"}}
-                  {{i18n "discourse_ai.llms.tests.success"}}
-                </div>
-              {{else}}
-                <div class="ai-llm-editor-tests__failure">
-                  {{icon "xmark"}}
-                  {{this.testErrorMessage}}
-                </div>
-              {{/if}}
-            </ConditionalLoadingSpinner>
-          </field.Custom>
-        </form.Field>
+        <form.Container @format="full">
+          <ConditionalLoadingSpinner
+            @size="small"
+            @condition={{this.testRunning}}
+          >
+            {{#if this.testResult}}
+              <div class="ai-llm-editor-tests__success">
+                {{icon "check"}}
+                {{i18n "discourse_ai.llms.tests.success"}}
+              </div>
+            {{else}}
+              <div class="ai-llm-editor-tests__failure">
+                {{icon "xmark"}}
+                {{this.testErrorMessage}}
+              </div>
+            {{/if}}
+          </ConditionalLoadingSpinner>
+        </form.Container>
       {{/if}}
     </Form>
   </template>
