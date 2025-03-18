@@ -317,7 +317,7 @@ es:
         test: "Realizar prueba"
         delete: "Eliminar"
         saved: "Herramienta guardada"
-        presets: "Seleccione un preajuste..."
+        presets: "Selecciona un preajuste..."
         confirm_delete: "¿Seguro que quieres eliminar esta herramienta?"
         next:
           title: "Siguiente"
