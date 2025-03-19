@@ -250,11 +250,6 @@ export default class AiLlmEditorForm extends Component {
     });
   }
 
-  @action
-  providerParamsKeys(data) {
-    return data ? Object.keys(data) : [];
-  }
-
   <template>
     <Form
       @onSubmit={{this.save}}
@@ -340,7 +335,7 @@ export default class AiLlmEditorForm extends Component {
         </form.Field>
 
         <form.Object @name="provider_params" as |object providerParamsData|>
-          {{#each (this.providerParamsKeys providerParamsData) as |name|}}
+          {{#each-in providerParamsData as |name|}}
             {{#let
               (get (this.metaProviderParams data.provider) name)
               as |params|
@@ -368,7 +363,7 @@ export default class AiLlmEditorForm extends Component {
                 {{/if}}
               </object.Field>
             {{/let}}
-          {{/each}}
+          {{/each-in}}
         </form.Object>
 
         <form.Field
