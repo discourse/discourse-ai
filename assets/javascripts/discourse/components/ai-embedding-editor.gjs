@@ -288,6 +288,11 @@ export default class AiEmbeddingEditor extends Component {
     });
   }
 
+  @action
+  providerKeys(providerParams) {
+    return Object.keys(providerParams);
+  }
+
   <template>
     {{#if this.showPresets}}
       <BackButton
@@ -494,7 +499,7 @@ export default class AiEmbeddingEditor extends Component {
         {{! provider-specific content }}
         {{#if this.currentProvider}}
           <form.Object @name="provider_params" as |object providerData|>
-            {{#each-in providerData as |name|}}
+            {{#each (this.providerKeys providerData) as |name|}}
               {{#let (get this.providerParams name) as |params|}}
                 {{#if params}}
                   <object.Field
@@ -523,7 +528,7 @@ export default class AiEmbeddingEditor extends Component {
                   </object.Field>
                 {{/if}}
               {{/let}}
-            {{/each-in}}
+            {{/each}}
           </form.Object>
         {{/if}}
 
