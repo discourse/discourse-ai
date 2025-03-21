@@ -172,9 +172,6 @@ export default class AiFullPageSearch extends Component {
     this.AiResults = [];
     this.showingAiResults = false;
     this.args.addSearchResults([], "topic_id");
-    this.appEvents.trigger(AI_RESULTS_TOGGLED, {
-      enabled: false,
-    });
   }
 
   performHyDESearch() {
