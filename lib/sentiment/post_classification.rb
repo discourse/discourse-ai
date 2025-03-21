@@ -92,7 +92,7 @@ module DiscourseAi
           .zip(*promised_classifications)
           .value!
           .each { |r| store_classification(r[:target], r[:classification]) }
-
+      ensure
         pool.shutdown
         pool.wait_for_termination
       end
