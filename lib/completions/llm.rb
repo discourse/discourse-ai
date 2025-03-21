@@ -258,6 +258,7 @@ module DiscourseAi
         feature_context: nil,
         partial_tool_calls: false,
         output_thinking: false,
+        extra_model_params: nil,
         &partial_read_blk
       )
         self.class.record_prompt(
@@ -272,6 +273,7 @@ module DiscourseAi
             feature_context: feature_context,
             partial_tool_calls: partial_tool_calls,
             output_thinking: output_thinking,
+            extra_model_params: extra_model_params,
           },
         )
 
@@ -279,6 +281,7 @@ module DiscourseAi
 
         model_params[:temperature] = temperature if temperature
         model_params[:top_p] = top_p if top_p
+        model_params.merge!(extra_model_params) if extra_model_params
 
         if prompt.is_a?(String)
           prompt =
