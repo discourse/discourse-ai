@@ -1,30 +1,24 @@
 import Component from "@glimmer/component";
 import { cached, tracked } from "@glimmer/tracking";
-import { Input } from "@ember/component";
-import { on } from "@ember/modifier";
+import { fn } from "@ember/helper";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
-import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { later } from "@ember/runloop";
 import { service } from "@ember/service";
+import { gt, or } from "truth-helpers";
 import BackButton from "discourse/components/back-button";
-import DButton from "discourse/components/d-button";
-import Textarea from "discourse/components/d-textarea";
-import DToggleSwitch from "discourse/components/d-toggle-switch";
+import Form from "discourse/components/form";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import Group from "discourse/models/group";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
-import ComboBox from "select-kit/components/combo-box";
 import GroupChooser from "select-kit/components/group-chooser";
-import DTooltip from "float-kit/components/d-tooltip";
-import AiForcedToolStrategySelector from "./ai-forced-tool-strategy-selector";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
-import RagOptions from "./rag-options";
+import RagOptionsFk from "./rag-options-fk";
 import RagUploader from "./rag-uploader";
 
 export default class PersonaEditor extends Component {
@@ -36,84 +30,55 @@ export default class PersonaEditor extends Component {
 
   @tracked allGroups = [];
   @tracked isSaving = false;
-  @tracked editingModel = null;
-  @tracked showDelete = false;
-  @tracked maxPixelsValue = null;
-  @tracked ragIndexingStatuses = null;
+  @tracked availableForcedTools = [];
 
-  @tracked selectedTools = [];
-  @tracked selectedToolNames = [];
-  @tracked forcedToolNames = [];
-  @tracked hasDefaultLlm = false;
+  @cached
+  get formData() {
+    const data = this.args.model.toPOJO();
+
+    if (data.tools) {
+      data.toolOptions = this.mapToolOptions(data.toolOptions, data.tools);
+    }
+
+    return data;
+  }
 
   get chatPluginEnabled() {
     return this.siteSettings.chat_enabled;
   }
 
-  get allowForceTools() {
-    return !this.editingModel?.system && this.selectedToolNames.length > 0;
+  get allTools() {
+    return this.args.personas.resultSetMeta.tools;
   }
 
-  get hasForcedTools() {
-    return this.forcedToolNames.length > 0;
-  }
-
-  @action
-  forcedToolsChanged(tools) {
-    this.forcedToolNames = tools;
-    this.editingModel.forcedTools = this.forcedToolNames;
-  }
-
-  @action
-  toolsChanged(tools) {
-    this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
-      tools.includes(tool.id)
-    );
-    this.selectedToolNames = tools.slice();
-
-    this.forcedToolNames = this.forcedToolNames.filter(
-      (tool) => this.editingModel.tools.indexOf(tool) !== -1
-    );
-
-    this.editingModel.tools = this.selectedToolNames;
-    this.editingModel.forcedTools = this.forcedToolNames;
-  }
-
-  @action
-  updateModel() {
-    this.editingModel = this.args.model.workingCopy();
-    this.hasDefaultLlm = !!this.editingModel.default_llm;
-    this.showDelete = !this.args.model.isNew && !this.args.model.system;
-    this.maxPixelsValue = this.findClosestPixelValue(
-      this.editingModel.vision_max_pixels
-    );
-
-    this.selectedToolNames = this.editingModel.tools || [];
-    this.selectedTools = this.args.personas.resultSetMeta.tools.filter((tool) =>
-      this.selectedToolNames.includes(tool.id)
-    );
-    this.forcedToolNames = this.editingModel.forcedTools || [];
-  }
-
-  findClosestPixelValue(pixels) {
-    let value = "high";
-    this.maxPixelValues.forEach((info) => {
-      if (pixels === info.pixels) {
-        value = info.id;
-      }
-    });
-    return value;
-  }
-
-  @cached
   get maxPixelValues() {
     const l = (key) =>
       i18n(`discourse_ai.ai_persona.vision_max_pixel_sizes.${key}`);
     return [
-      { id: "low", name: l("low"), pixels: 65536 },
-      { id: "medium", name: l("medium"), pixels: 262144 },
-      { id: "high", name: l("high"), pixels: 1048576 },
+      { name: l("low"), id: 65536 },
+      { name: l("medium"), id: 262144 },
+      { name: l("high"), id: 1048576 },
     ];
+  }
+
+  get forcedToolStrategies() {
+    const content = [
+      {
+        id: -1,
+        name: i18n("discourse_ai.ai_persona.tool_strategies.all"),
+      },
+    ];
+
+    [1, 2, 5].forEach((i) => {
+      content.push({
+        id: i,
+        name: i18n("discourse_ai.ai_persona.tool_strategies.replies", {
+          count: i,
+        }),
+      });
+    });
+
+    return content;
   }
 
   @action
@@ -122,21 +87,24 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  async save() {
+  async save(data) {
     const isNew = this.args.model.isNew;
     this.isSaving = true;
 
-    const backupModel = this.args.model.workingCopy();
-
-    this.args.model.setProperties(this.editingModel);
     try {
-      await this.args.model.save();
+      const personaToSave = Object.assign(
+        this.args.model,
+        this.args.model.fromPOJO(data)
+      );
+
+      await personaToSave.save();
       this.#sortPersonas();
+
       if (isNew && this.args.model.rag_uploads.length === 0) {
-        this.args.personas.addObject(this.args.model);
+        this.args.personas.addObject(personaToSave);
         this.router.transitionTo(
           "adminPlugins.show.discourse-ai-personas.edit",
-          this.args.model
+          personaToSave
         );
       } else {
         this.toasts.success({
@@ -145,7 +113,6 @@ export default class PersonaEditor extends Component {
         });
       }
     } catch (e) {
-      this.args.model.setProperties(backupModel);
       popupAjaxError(e);
     } finally {
       later(() => {
@@ -154,52 +121,11 @@ export default class PersonaEditor extends Component {
     }
   }
 
-  get showTemperature() {
-    return this.editingModel?.temperature || !this.editingModel?.system;
-  }
-
-  get showTopP() {
-    return this.editingModel?.top_p || !this.editingModel?.system;
-  }
-
   get adminUser() {
-    return AdminUser.create(this.editingModel?.user);
-  }
+    // Work around user not being extensible.
+    const userClone = Object.assign({}, this.args.model?.user);
 
-  get mappedQuestionConsolidatorLlm() {
-    return this.editingModel?.question_consolidator_llm_id ?? "blank";
-  }
-
-  set mappedQuestionConsolidatorLlm(value) {
-    if (value === "blank") {
-      this.editingModel.question_consolidator_llm_id = null;
-    } else {
-      this.editingModel.question_consolidator_llm_id = value;
-    }
-  }
-
-  get mappedDefaultLlm() {
-    return this.editingModel?.default_llm_id ?? "blank";
-  }
-
-  set mappedDefaultLlm(value) {
-    if (value === "blank") {
-      this.editingModel.default_llm_id = null;
-      this.hasDefaultLlm = false;
-    } else {
-      this.editingModel.default_llm_id = value;
-      this.hasDefaultLlm = true;
-    }
-  }
-
-  @action
-  onChangeMaxPixels(value) {
-    const entry = this.maxPixelValues.findBy("id", value);
-    if (!entry) {
-      return;
-    }
-    this.maxPixelsValue = value;
-    this.editingModel.vision_max_pixels = entry.pixels;
+    return AdminUser.create(userClone);
   }
 
   @action
@@ -218,51 +144,101 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  updateAllowedGroups(ids) {
-    this.editingModel.set("allowed_group_ids", ids);
+  async toggleEnabled(value, { set }) {
+    set("enabled", value);
+    await this.persistField("enabled", value);
   }
 
   @action
-  async toggleEnabled() {
-    await this.toggleField("enabled");
+  async togglePriority(value, { set }) {
+    set("priority", value);
+    await this.persistField("priority", value, true);
   }
 
   @action
-  async togglePriority() {
-    await this.toggleField("priority", true);
-  }
-
-  @action
-  async createUser() {
+  async createUser(form) {
     try {
       let user = await this.args.model.createUser();
-      this.editingModel.set("user", user);
-      this.editingModel.set("user_id", user.id);
+      form.set("user", user);
+      form.set("user_id", user.id);
     } catch (e) {
       popupAjaxError(e);
     }
   }
 
   @action
-  updateUploads(uploads) {
-    this.editingModel.rag_uploads = uploads;
+  updateUploads(form, newUploads) {
+    form.set("rag_uploads", newUploads);
   }
 
   @action
-  removeUpload(upload) {
-    this.editingModel.rag_uploads.removeObject(upload);
+  async removeUpload(form, currentUploads, upload) {
+    const updatedUploads = currentUploads.filter(
+      (file) => file.id !== upload.id
+    );
+
+    form.set("rag_uploads", updatedUploads);
+
     if (!this.args.model.isNew) {
-      this.save();
+      await this.persistField("rag_uploads", updatedUploads);
     }
   }
 
-  async toggleField(field, sortPersonas) {
-    this.args.model.set(field, !this.args.model[field]);
-    this.editingModel.set(field, this.args.model[field]);
+  @action
+  updateToolNames(form, currentData, updatedTools) {
+    const removedTools =
+      currentData?.tools?.filter((ct) => !updatedTools.includes(ct)) || [];
+    const updatedOptions = this.mapToolOptions(
+      currentData.toolOptions,
+      updatedTools
+    );
+
+    form.setProperties({
+      tools: updatedTools,
+      toolOptions: updatedOptions,
+    });
+
+    this.availableForcedTools = this.allTools.filter((tool) =>
+      updatedTools.includes(tool.id)
+    );
+
+    if (currentData.forcedTools?.length > 0) {
+      const updatedForcedTools = currentData.forcedTools.filter(
+        (fct) => !removedTools.includes(fct)
+      );
+      form.set("forcedTools", updatedForcedTools);
+    }
+  }
+
+  mapToolOptions(currentOptions, toolNames) {
+    const updatedOptions = Object.assign({}, currentOptions);
+
+    toolNames.forEach((toolId) => {
+      const tool = this.allTools.findBy("id", toolId);
+      const toolOptions = tool?.options;
+
+      if (!toolOptions || updatedOptions[toolId]) {
+        return;
+      }
+
+      const mappedOptions = {};
+      Object.keys(toolOptions).forEach((key) => {
+        mappedOptions[key] = null;
+      });
+
+      updatedOptions[toolId] = mappedOptions;
+    });
+
+    return updatedOptions;
+  }
+
+  async persistField(field, newValue, sortPersonas) {
+    this.args.model.set(field, newValue);
+
     if (!this.args.model.isNew) {
       try {
         const args = {};
-        args[field] = this.args.model[field];
+        args[field] = newValue;
 
         await this.args.model.update(args);
         if (sortPersonas) {
@@ -293,369 +269,401 @@ export default class PersonaEditor extends Component {
       @route="adminPlugins.show.discourse-ai-personas"
       @label="discourse_ai.ai_persona.back"
     />
-    <form
-      class="form-horizontal ai-persona-editor"
-      {{didUpdate this.updateModel @model.id}}
-      {{didInsert this.updateModel @model.id}}
-      {{didInsert this.updateAllGroups @model.id}}
-    >
-      <div class="control-group">
-        <DToggleSwitch
-          class="ai-persona-editor__enabled"
-          @state={{@model.enabled}}
-          @label="discourse_ai.ai_persona.enabled"
-          {{on "click" this.toggleEnabled}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__priority">
-        <DToggleSwitch
-          class="ai-persona-editor__priority"
-          @state={{@model.priority}}
-          @label="discourse_ai.ai_persona.priority"
-          {{on "click" this.togglePriority}}
-        />
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.priority_help"}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.name"}}</label>
-        <Input
-          class="ai-persona-editor__name"
-          @type="text"
-          @value={{this.editingModel.name}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.description"}}</label>
-        <Textarea
-          class="ai-persona-editor__description"
-          @value={{this.editingModel.description}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      {{#if this.editingModel.user}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.default_llm"}}</label>
-          <AiLlmSelector
-            class="ai-persona-editor__llms"
-            @value={{this.mappedDefaultLlm}}
-            @llms={{@personas.resultSetMeta.llms}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.default_llm_help"}}
-          />
-        </div>
-        {{#if this.hasDefaultLlm}}
-          <div class="control-group">
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.force_default_llm}}
-              />
-              {{i18n "discourse_ai.ai_persona.force_default_llm"}}</label>
-          </div>
+    <div class="ai-persona-editor" {{didInsert this.updateAllGroups @model.id}}>
+      <Form @onSubmit={{this.save}} @data={{this.formData}} as |form data|>
+        <form.Field
+          @name="enabled"
+          @title={{i18n "discourse_ai.ai_persona.enabled"}}
+          @onSet={{this.toggleEnabled}}
+          as |field|
+        >
+          <field.Toggle />
+        </form.Field>
+
+        <form.Field
+          @name="priority"
+          @title={{i18n "discourse_ai.ai_persona.priority"}}
+          @onSet={{this.togglePriority}}
+          @tooltip={{i18n "discourse_ai.ai_persona.priority_help"}}
+          as |field|
+        >
+          <field.Toggle />
+        </form.Field>
+
+        <form.Field
+          @name="name"
+          @title={{i18n "discourse_ai.ai_persona.name"}}
+          @validation="required|length:1,100"
+          @disabled={{data.system}}
+          @format="large"
+          as |field|
+        >
+          <field.Input />
+        </form.Field>
+
+        <form.Field
+          @name="description"
+          @title={{i18n "discourse_ai.ai_persona.description"}}
+          @validation="required|length:1,100"
+          @disabled={{data.system}}
+          @format="large"
+          as |field|
+        >
+          <field.Textarea />
+        </form.Field>
+
+        <form.Field
+          @name="system_prompt"
+          @title={{i18n "discourse_ai.ai_persona.system_prompt"}}
+          @validation="required|length:1,300"
+          @disabled={{data.system}}
+          @format="large"
+          as |field|
+        >
+          <field.Textarea />
+        </form.Field>
+
+        <form.Field
+          @name="default_llm_id"
+          @title={{i18n "discourse_ai.ai_persona.default_llm"}}
+          @tooltip={{i18n "discourse_ai.ai_persona.default_llm_help"}}
+          @format="large"
+          as |field|
+        >
+          <field.Custom>
+            <AiLlmSelector
+              @value={{field.value}}
+              @llms={{@personas.resultSetMeta.llms}}
+              @onChange={{field.set}}
+              @class="ai-persona-editor__llms"
+            />
+          </field.Custom>
+        </form.Field>
+
+        <form.Field
+          @name="allowed_group_ids"
+          @title={{i18n "discourse_ai.ai_persona.allowed_groups"}}
+          @format="large"
+          as |field|
+        >
+          <field.Custom>
+            <GroupChooser
+              @value={{data.allowed_group_ids}}
+              @content={{this.allGroups}}
+              @onChange={{field.set}}
+            />
+          </field.Custom>
+        </form.Field>
+
+        <form.Field
+          @name="vision_enabled"
+          @title={{i18n "discourse_ai.ai_persona.vision_enabled"}}
+          @tooltip={{i18n "discourse_ai.ai_persona.vision_enabled_help"}}
+          @format="large"
+          as |field|
+        >
+          <field.Checkbox />
+        </form.Field>
+
+        {{#if data.vision_enabled}}
+          <form.Field
+            @name="vision_max_pixels"
+            @title={{i18n "discourse_ai.ai_persona.vision_max_pixels"}}
+            @onSet={{this.onChangeMaxPixels}}
+            @format="large"
+            as |field|
+          >
+            <field.Select @includeNone={{false}} as |select|>
+              {{#each this.maxPixelValues as |pixelValue|}}
+                <select.Option
+                  @value={{pixelValue.id}}
+                >{{pixelValue.name}}</select.Option>
+              {{/each}}
+            </field.Select>
+          </form.Field>
         {{/if}}
-      {{/if}}
-      {{#unless @model.isNew}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.user"}}</label>
-          {{#if this.editingModel.user}}
-            <a
-              class="avatar"
-              href={{this.editingModel.user.path}}
-              data-user-card={{this.editingModel.user.username}}
+
+        <form.Field
+          @name="max_context_posts"
+          @title={{i18n "discourse_ai.ai_persona.max_context_posts"}}
+          @tooltip={{i18n "discourse_ai.ai_persona.max_context_posts_help"}}
+          @format="large"
+          as |field|
+        >
+          <field.Input @type="number" lang="en" />
+        </form.Field>
+
+        {{#unless data.system}}
+          <form.Field
+            @name="temperature"
+            @title={{i18n "discourse_ai.ai_persona.temperature"}}
+            @tooltip={{i18n "discourse_ai.ai_persona.temperature_help"}}
+            @disabled={{data.system}}
+            @format="large"
+            as |field|
+          >
+            <field.Input @type="number" step="any" lang="en" />
+          </form.Field>
+
+          <form.Field
+            @name="top_p"
+            @title={{i18n "discourse_ai.ai_persona.top_p"}}
+            @tooltip={{i18n "discourse_ai.ai_persona.top_p_help"}}
+            @disabled={{data.system}}
+            @format="large"
+            as |field|
+          >
+            <field.Input @type="number" step="any" lang="en" />
+          </form.Field>
+        {{/unless}}
+
+        <form.Section @title={{i18n "discourse_ai.ai_persona.ai_tools"}}>
+          <form.Field
+            @name="tools"
+            @title={{i18n "discourse_ai.ai_persona.tools"}}
+            @format="large"
+            as |field|
+          >
+            <field.Custom>
+              <AiToolSelector
+                @value={{field.value}}
+                @disabled={{data.system}}
+                @onChange={{fn this.updateToolNames form data}}
+                @content={{@personas.resultSetMeta.tools}}
+              />
+            </field.Custom>
+          </form.Field>
+
+          {{#if (gt data.tools.length 0)}}
+            <form.Field
+              @name="forcedTools"
+              @title={{i18n "discourse_ai.ai_persona.forced_tools"}}
+              @format="large"
+              as |field|
             >
-              {{Avatar this.editingModel.user.avatar_template "small"}}
-            </a>
-            <LinkTo @route="adminUser" @model={{this.adminUser}}>
-              {{this.editingModel.user.username}}
-            </LinkTo>
-          {{else}}
-            <DButton
-              @action={{this.createUser}}
-              class="ai-persona-editor__create-user"
+              <field.Custom>
+                <AiToolSelector
+                  @value={{field.value}}
+                  @disabled={{data.system}}
+                  @onChange={{field.set}}
+                  @content={{this.availableForcedTools}}
+                />
+              </field.Custom>
+            </form.Field>
+          {{/if}}
+
+          {{#if (gt data.forcedTools.length 0)}}
+            <form.Field
+              @name="forced_tool_count"
+              @title={{i18n "discourse_ai.ai_persona.forced_tool_strategy"}}
+              @format="large"
+              as |field|
             >
-              {{i18n "discourse_ai.ai_persona.create_user"}}
-            </DButton>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n "discourse_ai.ai_persona.create_user_help"}}
+              <field.Select @includeNone={{false}} as |select|>
+                {{#each this.forcedToolStrategies as |fts|}}
+                  <select.Option @value={{fts.id}}>{{fts.name}}</select.Option>
+                {{/each}}
+              </field.Select>
+            </form.Field>
+          {{/if}}
+
+          {{#if (gt data.tools.length 0)}}
+            <form.Field
+              @name="tool_details"
+              @title={{i18n "discourse_ai.ai_persona.tool_details"}}
+              @tooltip={{i18n "discourse_ai.ai_persona.tool_details_help"}}
+              @format="large"
+              as |field|
+            >
+              <field.Checkbox />
+            </form.Field>
+
+            <AiPersonaToolOptions
+              @form={{form}}
+              @data={{data}}
+              @llms={{@personas.resultSetMeta.llms}}
+              @allTools={{@personas.resultSetMeta.tools}}
             />
           {{/if}}
-        </div>
-      {{/unless}}
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.tools"}}</label>
-        <AiToolSelector
-          class="ai-persona-editor__tools"
-          @value={{this.selectedToolNames}}
-          @disabled={{this.editingModel.system}}
-          @tools={{@personas.resultSetMeta.tools}}
-          @onChange={{this.toolsChanged}}
-        />
-      </div>
-      {{#if this.allowForceTools}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.forced_tools"}}</label>
-          <AiToolSelector
-            class="ai-persona-editor__forced_tools"
-            @value={{this.forcedToolNames}}
-            @tools={{this.selectedTools}}
-            @onChange={{this.forcedToolsChanged}}
-          />
-        </div>
-        {{#if this.hasForcedTools}}
-          <div class="control-group">
-            <label>{{i18n
-                "discourse_ai.ai_persona.forced_tool_strategy"
-              }}</label>
-            <AiForcedToolStrategySelector
-              class="ai-persona-editor__forced_tool_strategy"
-              @value={{this.editingModel.forced_tool_count}}
-            />
-          </div>
-        {{/if}}
-      {{/if}}
-      <AiPersonaToolOptions
-        @persona={{this.editingModel}}
-        @tools={{this.selectedToolNames}}
-        @llms={{@personas.resultSetMeta.llms}}
-        @allTools={{@personas.resultSetMeta.tools}}
-      />
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.allowed_groups"}}</label>
-        <GroupChooser
-          @value={{this.editingModel.allowed_group_ids}}
-          @content={{this.allGroups}}
-          @onChange={{this.updateAllowedGroups}}
-        />
-      </div>
-      <div class="control-group">
-        <label for="ai-persona-editor__system_prompt">{{i18n
-            "discourse_ai.ai_persona.system_prompt"
-          }}</label>
-        <Textarea
-          class="ai-persona-editor__system_prompt"
-          @value={{this.editingModel.system_prompt}}
-          disabled={{this.editingModel.system}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__allow_personal_messages">
-        <label>
-          <Input
-            @type="checkbox"
-            @checked={{this.editingModel.allow_personal_messages}}
-          />
-          {{i18n "discourse_ai.ai_persona.allow_personal_messages"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n
-            "discourse_ai.ai_persona.allow_personal_messages_help"
-          }}
-        />
-      </div>
-      {{#if this.editingModel.user}}
-        <div class="control-group ai-persona-editor__allow_topic_mentions">
-          <label>
-            <Input
-              @type="checkbox"
-              @checked={{this.editingModel.allow_topic_mentions}}
-            />
-            {{i18n "discourse_ai.ai_persona.allow_topic_mentions"}}</label>
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n
-              "discourse_ai.ai_persona.allow_topic_mentions_help"
-            }}
-          />
-        </div>
-        {{#if this.chatPluginEnabled}}
-          <div
-            class="control-group ai-persona-editor__allow_chat_direct_messages"
-          >
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.allow_chat_direct_messages}}
-              />
-              {{i18n
-                "discourse_ai.ai_persona.allow_chat_direct_messages"
-              }}</label>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.allow_chat_direct_messages_help"
-              }}
-            />
-          </div>
-          <div
-            class="control-group ai-persona-editor__allow_chat_channel_mentions"
-          >
-            <label>
-              <Input
-                @type="checkbox"
-                @checked={{this.editingModel.allow_chat_channel_mentions}}
-              />
-              {{i18n
-                "discourse_ai.ai_persona.allow_chat_channel_mentions"
-              }}</label>
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
-              }}
-            />
-          </div>
-        {{/if}}
-      {{/if}}
-      <div class="control-group ai-persona-editor__tool-details">
-        <label>
-          <Input @type="checkbox" @checked={{this.editingModel.tool_details}} />
-          {{i18n "discourse_ai.ai_persona.tool_details"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.tool_details_help"}}
-        />
-      </div>
-      <div class="control-group ai-persona-editor__vision_enabled">
-        <label>
-          <Input
-            @type="checkbox"
-            @checked={{this.editingModel.vision_enabled}}
-          />
-          {{i18n "discourse_ai.ai_persona.vision_enabled"}}</label>
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.vision_enabled_help"}}
-        />
-      </div>
-      {{#if this.editingModel.vision_enabled}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.vision_max_pixels"}}</label>
-          <ComboBox
-            @value={{this.maxPixelsValue}}
-            @content={{this.maxPixelValues}}
-            @onChange={{this.onChangeMaxPixels}}
-          />
-        </div>
-      {{/if}}
-      <div class="control-group">
-        <label>{{i18n "discourse_ai.ai_persona.max_context_posts"}}</label>
-        <Input
-          @type="number"
-          lang="en"
-          class="ai-persona-editor__max_context_posts"
-          @value={{this.editingModel.max_context_posts}}
-        />
-        <DTooltip
-          @icon="circle-question"
-          @content={{i18n "discourse_ai.ai_persona.max_context_posts_help"}}
-        />
-      </div>
-      {{#if this.showTemperature}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.temperature"}}</label>
-          <Input
-            @type="number"
-            class="ai-persona-editor__temperature"
-            step="any"
-            lang="en"
-            @value={{this.editingModel.temperature}}
-            disabled={{this.editingModel.system}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.temperature_help"}}
-          />
-        </div>
-      {{/if}}
-      {{#if this.showTopP}}
-        <div class="control-group">
-          <label>{{i18n "discourse_ai.ai_persona.top_p"}}</label>
-          <Input
-            @type="number"
-            step="any"
-            lang="en"
-            class="ai-persona-editor__top_p"
-            @value={{this.editingModel.top_p}}
-            disabled={{this.editingModel.system}}
-          />
-          <DTooltip
-            @icon="circle-question"
-            @content={{i18n "discourse_ai.ai_persona.top_p_help"}}
-          />
-        </div>
-      {{/if}}
-      {{#if this.siteSettings.ai_embeddings_enabled}}
-        <div class="control-group">
-          <RagUploader
-            @target={{this.editingModel}}
-            @updateUploads={{this.updateUploads}}
-            @onRemove={{this.removeUpload}}
-            @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
-          />
-        </div>
-        <RagOptions
-          @model={{this.editingModel}}
-          @llms={{@personas.resultSetMeta.llms}}
-          @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
-        >
-          <div class="control-group">
-            <label>{{i18n
-                "discourse_ai.ai_persona.rag_conversation_chunks"
-              }}</label>
-            <Input
-              @type="number"
-              step="any"
-              lang="en"
-              class="ai-persona-editor__rag_conversation_chunks"
-              @value={{this.editingModel.rag_conversation_chunks}}
-            />
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.rag_conversation_chunks_help"
-              }}
-            />
-          </div>
-          <div class="control-group">
-            <label>{{i18n
-                "discourse_ai.ai_persona.question_consolidator_llm"
-              }}</label>
-            <AiLlmSelector
-              class="ai-persona-editor__llms"
-              @value={{this.mappedQuestionConsolidatorLlm}}
-              @llms={{@personas.resultSetMeta.llms}}
-            />
+        </form.Section>
 
-            <DTooltip
-              @icon="circle-question"
-              @content={{i18n
-                "discourse_ai.ai_persona.question_consolidator_llm_help"
-              }}
-            />
-          </div>
-        </RagOptions>
-      {{/if}}
-      <div class="control-group ai-persona-editor__action_panel">
-        <DButton
-          class="btn-primary ai-persona-editor__save"
-          @action={{this.save}}
-          @disabled={{this.isSaving}}
-        >{{i18n "discourse_ai.ai_persona.save"}}</DButton>
-        {{#if this.showDelete}}
-          <DButton
-            @action={{this.delete}}
-            class="btn-danger ai-persona-editor__delete"
-          >
-            {{i18n "discourse_ai.ai_persona.delete"}}
-          </DButton>
+        {{#if this.siteSettings.ai_embeddings_enabled}}
+          <form.Section @title={{i18n "discourse_ai.rag.title"}}>
+            <form.Field
+              @name="rag_uploads"
+              @title={{i18n "discourse_ai.rag.uploads.title"}}
+              as |field|
+            >
+              <field.Custom>
+                <RagUploader
+                  @target={{data}}
+                  @targetName="AiPersona"
+                  @updateUploads={{fn this.updateUploads form}}
+                  @onRemove={{fn this.removeUpload form field.value}}
+                  @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
+                />
+              </field.Custom>
+            </form.Field>
+
+            <RagOptionsFk
+              @form={{form}}
+              @data={{data}}
+              @llms={{@personas.resultSetMeta.llms}}
+              @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
+            >
+              <form.Field
+                @name="rag_conversation_chunks"
+                @title={{i18n
+                  "discourse_ai.ai_persona.rag_conversation_chunks"
+                }}
+                @tooltip={{i18n
+                  "discourse_ai.ai_persona.rag_conversation_chunks_help"
+                }}
+                @format="large"
+                as |field|
+              >
+                <field.Input @type="number" step="any" lang="en" />
+              </form.Field>
+
+              <form.Field
+                @name="question_consolidator_llm_id"
+                @title={{i18n
+                  "discourse_ai.ai_persona.question_consolidator_llm"
+                }}
+                @tooltip={{i18n
+                  "discourse_ai.ai_persona.question_consolidator_llm_help"
+                }}
+                @format="large"
+                as |field|
+              >
+                <field.Custom>
+                  <AiLlmSelector
+                    @value={{field.value}}
+                    @llms={{@personas.resultSetMeta.llms}}
+                    @onChange={{field.set}}
+                    @class="ai-persona-editor__llms"
+                  />
+                </field.Custom>
+              </form.Field>
+            </RagOptionsFk>
+          </form.Section>
         {{/if}}
-      </div>
-    </form>
+
+        <form.Section @title={{i18n "discourse_ai.ai_persona.ai_bot.title"}}>
+          {{#if @model.isNew}}
+            <div>{{i18n "discourse_ai.ai_persona.ai_bot.save_first"}}</div>
+          {{else}}
+            {{#if data.default_llm_id}}
+              <form.Field
+                @name="force_default_llm"
+                @title={{i18n "discourse_ai.ai_persona.force_default_llm"}}
+                @format="large"
+                as |field|
+              >
+                <field.Checkbox />
+              </form.Field>
+            {{/if}}
+
+            <form.Container
+              @title={{i18n "discourse_ai.ai_persona.user"}}
+              @tooltip={{unless
+                data.user
+                (i18n "discourse_ai.ai_persona.create_user_help")
+              }}
+              class="ai-persona-editor__ai_bot_user"
+            >
+              {{#if data.user}}
+                <a
+                  class="avatar"
+                  href={{data.user.path}}
+                  data-user-card={{data.user.username}}
+                >
+                  {{Avatar data.user.avatar_template "small"}}
+                </a>
+                <LinkTo @route="adminUser" @model={{this.adminUser}}>
+                  {{data.user.username}}
+                </LinkTo>
+              {{else}}
+                <form.Button
+                  @action={{fn this.createUser form}}
+                  @label="discourse_ai.ai_persona.create_user"
+                  class="ai-persona-editor__create-user"
+                />
+              {{/if}}
+            </form.Container>
+
+            {{#if data.user}}
+              <form.Field
+                @name="allow_personal_messages"
+                @title={{i18n
+                  "discourse_ai.ai_persona.allow_personal_messages"
+                }}
+                @tooltip={{i18n
+                  "discourse_ai.ai_persona.allow_personal_messages_help"
+                }}
+                @format="large"
+                as |field|
+              >
+                <field.Checkbox />
+              </form.Field>
+
+              <form.Field
+                @name="allow_topic_mentions"
+                @title={{i18n "discourse_ai.ai_persona.allow_topic_mentions"}}
+                @tooltip={{i18n
+                  "discourse_ai.ai_persona.allow_topic_mentions_help"
+                }}
+                @format="large"
+                as |field|
+              >
+                <field.Checkbox />
+              </form.Field>
+
+              {{#if this.chatPluginEnabled}}
+                <form.Field
+                  @name="allow_chat_direct_messages"
+                  @title={{i18n
+                    "discourse_ai.ai_persona.allow_chat_direct_messages"
+                  }}
+                  @tooltip={{i18n
+                    "discourse_ai.ai_persona.allow_chat_direct_messages_help"
+                  }}
+                  @format="large"
+                  as |field|
+                >
+                  <field.Checkbox />
+                </form.Field>
+
+                <form.Field
+                  @name="allow_chat_channel_mentions"
+                  @title={{i18n
+                    "discourse_ai.ai_persona.allow_chat_channel_mentions"
+                  }}
+                  @tooltip={{i18n
+                    "discourse_ai.ai_persona.allow_chat_channel_mentions_help"
+                  }}
+                  @format="large"
+                  as |field|
+                >
+                  <field.Checkbox />
+                </form.Field>
+              {{/if}}
+            {{/if}}
+          {{/if}}
+        </form.Section>
+
+        <form.Actions>
+          <form.Submit />
+
+          {{#unless (or @model.isNew @model.system)}}
+            <form.Button
+              @action={{this.delete}}
+              @label="discourse_ai.ai_persona.delete"
+              class="btn-danger"
+            />
+          {{/unless}}
+        </form.Actions>
+      </Form>
+    </div>
   </template>
 }

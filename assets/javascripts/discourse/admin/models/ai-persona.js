@@ -1,4 +1,3 @@
-import { tracked } from "@glimmer/tracking";
 import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
@@ -63,40 +62,7 @@ const SYSTEM_ATTRIBUTES = [
   "allow_chat_direct_messages",
 ];
 
-class ToolOption {
-  @tracked value = null;
-}
-
 export default class AiPersona extends RestModel {
-  // this code is here to convert the wire schema to easier to work with object
-  // on the wire we pass in/out tools as an Array.
-  // [[ToolName, {option1: value, option2: value}, force], ToolName2, ToolName3]
-  // So we rework this into a "tools" property and nested toolOptions
-  init(properties) {
-    this.forcedTools = [];
-    if (properties.tools) {
-      properties.tools = properties.tools.map((tool) => {
-        if (typeof tool === "string") {
-          return tool;
-        } else {
-          let [toolId, options, force] = tool;
-          for (let optionId in options) {
-            if (!options.hasOwnProperty(optionId)) {
-              continue;
-            }
-            this.getToolOption(toolId, optionId).value = options[optionId];
-          }
-          if (force) {
-            this.forcedTools.push(toolId);
-          }
-          return toolId;
-        }
-      });
-    }
-    super.init(properties);
-    this.tools = properties.tools;
-  }
-
   async createUser() {
     const result = await ajax(
       `/admin/plugins/discourse-ai/ai-personas/${this.id}/create-user.json`,
@@ -109,63 +75,79 @@ export default class AiPersona extends RestModel {
     return this.user;
   }
 
-  getToolOption(toolId, optionId) {
-    this.toolOptions ||= {};
-    this.toolOptions[toolId] ||= {};
-    return (this.toolOptions[toolId][optionId] ||= new ToolOption());
+  flattenedToolStructure(data) {
+    return data.tools.map((tName) => {
+      return [tName, data.toolOptions[tName], data.forcedTools.includes(tName)];
+    });
   }
 
-  populateToolOptions(attrs) {
-    if (!attrs.tools) {
-      return;
-    }
-    let toolsWithOptions = [];
-    attrs.tools.forEach((toolId) => {
-      if (typeof toolId !== "string") {
-        toolId = toolId[0];
-      }
+  // this code is here to convert the wire schema to easier to work with object
+  // on the wire we pass in/out tools as an Array.
+  // [[ToolName, {option1: value, option2: value}, force], ToolName2, ToolName3]
+  // We split it into tools, options and a list of forced ones.
+  populateTools(attrs) {
+    const forcedTools = [];
+    const toolOptions = {};
 
-      let force = this.forcedTools.includes(toolId);
-      if (this.toolOptions && this.toolOptions[toolId]) {
-        let options = this.toolOptions[toolId];
-        let optionsWithValues = {};
-        for (let optionId in options) {
+    const flatTools = attrs.tools?.map((tool) => {
+      if (typeof tool === "string") {
+        return tool;
+      } else {
+        let [toolId, options, force] = tool;
+        const mappedOptions = {};
+
+        for (const optionId in options) {
           if (!options.hasOwnProperty(optionId)) {
             continue;
           }
-          let option = options[optionId];
-          optionsWithValues[optionId] = option.value;
+
+          mappedOptions[optionId] = options[optionId];
         }
-        toolsWithOptions.push([toolId, optionsWithValues, force]);
-      } else {
-        toolsWithOptions.push([toolId, {}, force]);
+
+        if (Object.keys(mappedOptions).length > 0) {
+          toolOptions[toolId] = mappedOptions;
+        }
+
+        if (force) {
+          forcedTools.push(toolId);
+        }
+
+        return toolId;
       }
     });
-    attrs.tools = toolsWithOptions;
+
+    attrs.tools = flatTools;
+    attrs.forcedTools = forcedTools;
+    attrs.toolOptions = toolOptions;
   }
 
   updateProperties() {
-    let attrs = this.system
+    const attrs = this.system
       ? this.getProperties(SYSTEM_ATTRIBUTES)
       : this.getProperties(CREATE_ATTRIBUTES);
     attrs.id = this.id;
-    this.populateToolOptions(attrs);
+
     return attrs;
   }
 
   createProperties() {
-    let attrs = this.getProperties(CREATE_ATTRIBUTES);
-    this.populateToolOptions(attrs);
-    return attrs;
+    return this.getProperties(CREATE_ATTRIBUTES);
   }
 
-  workingCopy() {
-    let attrs = this.getProperties(CREATE_ATTRIBUTES);
-    this.populateToolOptions(attrs);
+  fromPOJO(data) {
+    const dataClone = JSON.parse(JSON.stringify(data));
 
-    const persona = AiPersona.create(attrs);
-    persona.forcedTools = (this.forcedTools || []).slice();
-    persona.forced_tool_count = this.forced_tool_count || -1;
+    const persona = AiPersona.create(dataClone);
+    persona.tools = this.flattenedToolStructure(dataClone);
+
     return persona;
+  }
+
+  toPOJO() {
+    const attrs = this.getProperties(CREATE_ATTRIBUTES);
+    this.populateTools(attrs);
+    attrs.forced_tool_count = this.forced_tool_count || -1;
+
+    return attrs;
   }
 }

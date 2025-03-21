@@ -241,6 +241,7 @@ en:
           custom: "Custom..."
 
       ai_persona:
+        ai_tools: "Tools"
         tool_strategies:
           all: "Apply to all replies"
           replies:
@@ -306,7 +307,12 @@ en:
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         persona_description: "Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience."
 
+        ai_bot:
+          title: "AI bot options"
+          save_first: "AI bot options will become available once you save the persona."
+
       rag:
+        title: "RAG"
         options:
           rag_chunk_tokens: "Upload chunk tokens"
           rag_chunk_tokens_help: "The number of tokens to use for each chunk in the RAG model. Increase to increase the amount of context the AI can use. (changing will re-index all uploads)"
