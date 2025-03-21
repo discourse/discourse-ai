@@ -36,21 +36,18 @@ describe "AI Tool Management", type: :system do
 
   it "allows admin to create a new AI tool from preset" do
     visit "/admin/plugins/discourse-ai/ai-tools"
-
-    expect(page_header).to be_visible
     expect(page).to have_content("Tools")
 
     find(".ai-tool-list-editor__new-button").click
-    expect(page_header).to be_hidden
 
-    select_kit = PageObjects::Components::SelectKit.new(".ai-tool-editor__presets")
-    select_kit.expand
-    select_kit.select_row_by_value("exchange_rate")
+    tool_presets = PageObjects::Components::DMenu.new(find(".ai-tool-list-editor__new-button"))
+    tool_presets.option(".btn[data-option='exchange_rate'").click
 
-    find(".ai-tool-editor__next").click
+    required_toggle_css = "#control-parameters-0-required .form-kit__control-checkbox"
+    enum_toggle_css = "#control-parameters-0-enum .form-kit__control-checkbox"
 
-    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
-    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
+    expect(page.find(required_toggle_css).checked?).to eq(true)
+    expect(page.find(enum_toggle_css).checked?).to eq(false)
 
     # not allowed to test yet
     expect(page).not_to have_button(".ai-tool-editor__test-button")
@@ -65,8 +62,8 @@ describe "AI Tool Management", type: :system do
 
     ensure_can_run_test
 
-    expect(page.first(".parameter-row__required-toggle").checked?).to eq(true)
-    expect(page.first(".parameter-row__enum-toggle").checked?).to eq(false)
+    expect(page.first(required_toggle_css).checked?).to eq(true)
+    expect(page.first(enum_toggle_css).checked?).to eq(false)
 
     visit "/admin/plugins/discourse-ai/ai-personas/new"
 
