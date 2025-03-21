@@ -8,6 +8,7 @@ RSpec.describe DiscourseAi::Sentiment::EmotionFilterOrder do
   let(:post_1) { Fabricate(:post) }
   let(:post_2) { Fabricate(:post) }
   let(:post_3) { Fabricate(:post) }
+  let(:guardian) { Guardian.new }
   let(:classification_1) do
     {
       love: 0.9444406,
@@ -179,7 +180,7 @@ RSpec.describe DiscourseAi::Sentiment::EmotionFilterOrder do
         .find { _1.keys.include? "order:emotion_#{emotion}" }
         .values
         .first
-    result = filter.call(scope, order_direction)
+    result = filter.call(scope, order_direction, guardian)
 
     expect(result.to_sql).to include("classification_results")
     expect(result.to_sql).to include(
@@ -190,18 +191,12 @@ RSpec.describe DiscourseAi::Sentiment::EmotionFilterOrder do
 
   it "sorts emotion in ascending order" do
     expect(
-      TopicsFilter
-        .new(guardian: Guardian.new)
-        .filter_from_query_string("order:emotion_love-asc")
-        .pluck(:id),
+      TopicsFilter.new(guardian:).filter_from_query_string("order:emotion_love-asc").pluck(:id),
     ).to contain_exactly(post_2.topic.id, post_1.topic.id)
   end
   it "sorts emotion in default descending order" do
     expect(
-      TopicsFilter
-        .new(guardian: Guardian.new)
-        .filter_from_query_string("order:emotion_love")
-        .pluck(:id),
+      TopicsFilter.new(guardian:).filter_from_query_string("order:emotion_love").pluck(:id),
     ).to contain_exactly(post_1.topic.id, post_2.topic.id)
   end
 end
