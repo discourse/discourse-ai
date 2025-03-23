@@ -315,7 +315,7 @@ export default class PersonaEditor extends Component {
         <form.Field
           @name="system_prompt"
           @title={{i18n "discourse_ai.ai_persona.system_prompt"}}
-          @validation="required|length:1,300"
+          @validation="required|length:1,100000"
           @disabled={{data.system}}
           @format="large"
           as |field|
