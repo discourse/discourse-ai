@@ -66,6 +66,11 @@ module DiscourseAi
           prompt.tool_choice
         end
 
+        def no_more_tool_calls_text
+          # note, Anthropic must never prefill with an ending whitespace
+          "Since you explicitly asked me not to use tools any more I will not call tools any more.\nHere is the best, complete, answer I can come up with given the information I know:"
+        end
+
         def translate
           messages = prompt.messages
 
