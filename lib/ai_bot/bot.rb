@@ -208,8 +208,6 @@ module DiscourseAi
 
           # do not allow tools when we are at the end of a chain (total_completions == MAX_COMPLETIONS - 1)
           prompt.tool_choice = :none if total_completions == MAX_COMPLETIONS - 1
-          puts total_completions
-          puts prompt.tool_choice
         end
 
         embed_thinking(raw_context)
