@@ -216,10 +216,15 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
 
     const currentQueryParams = this.router.currentRoute.queryParams;
+
+    const currentFilters = currentQueryParams?.filters
+      ? JSON.parse(currentQueryParams.filters)
+      : {};
+
     this.router.transitionTo(this.router.currentRoute.name, {
       queryParams: {
         ...currentQueryParams,
-        filters: JSON.parse(currentQueryParams.filters), // avoids a double escaping
+        filters: currentFilters, // avoids a double escaping
         selectedChart: data.title,
       },
     });
@@ -265,10 +270,13 @@ export default class AdminReportSentimentAnalysis extends Component {
     this.posts = [];
 
     const currentQueryParams = this.router.currentRoute.queryParams;
+    const currentFilters = currentQueryParams?.filters
+      ? JSON.parse(currentQueryParams.filters)
+      : {};
     this.router.transitionTo(this.router.currentRoute.name, {
       queryParams: {
         ...currentQueryParams,
-        filters: JSON.parse(currentQueryParams.filters), // avoids a double escaping
+        filters: currentFilters, // avoids a double escaping
         selectedChart: null,
       },
     });
