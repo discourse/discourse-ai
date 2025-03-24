@@ -54,6 +54,9 @@ module DiscourseAi
             end
         end
 
+        DONE_MESSAGE =
+          "Regardless of what you think, REPLY IMMEDIATELY, WITHOUT MAKING ANY FURTHER TOOL CALLS, YOU ARE OUT OF TOOL CALL QUOTA!"
+
         def from_raw_tool(raw_message)
           result = (<<~TEXT).strip
             <function_results>
@@ -67,8 +70,7 @@ module DiscourseAi
           TEXT
 
           if @injecting_done
-            result +
-              "\n\nRegardless of what you think, REPLY IMMEDIATELY, WITHOUT MAKING ANY FURTHER TOOL CALLS, YOU ARE OUT OF TOOL CALL QUOTA!"
+            "#{result}\n\n#{DONE_MESSAGE}"
           else
             result
           end
