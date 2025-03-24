@@ -45,10 +45,7 @@ module DiscourseAi
 
         if defined?(::DiscourseSolved)
           it "will correctly denote solved topics" do
-            topic_with_likes.custom_fields[
-              ::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD
-            ] = post_with_likes2.id
-            topic_with_likes.save_custom_fields
+            Fabricate(:solved_topic, topic: topic_with_likes, answer_post: post_with_likes2)
 
             context = ReportContextGenerator.generate(start_date: 1.day.ago, duration: 2.day)
 
