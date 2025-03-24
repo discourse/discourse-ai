@@ -484,4 +484,66 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       expect(request_body["max_tokens"]).to eq(500)
     end
   end
+
+  describe "disabled tool use" do
+    it "handles tool_choice: :none by adding a prefill message instead of using tool_choice param" do
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      request = nil
+
+      # Create a prompt with tool_choice: :none
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a helpful assistant",
+          messages: [{ type: :user, content: "don't use any tools please" }],
+          tools: [
+            {
+              name: "echo",
+              description: "echo something",
+              parameters: [
+                { name: "text", type: "string", description: "text to echo", required: true },
+              ],
+            },
+          ],
+          tool_choice: :none,
+        )
+
+      # Mock response from Bedrock
+      content = {
+        content: [text: "I won't use any tools. Here's a direct response instead."],
+        usage: {
+          input_tokens: 25,
+          output_tokens: 15,
+        },
+      }.to_json
+
+      stub_request(
+        :post,
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+      )
+        .with do |inner_request|
+          request = inner_request
+          true
+        end
+        .to_return(status: 200, body: content)
+
+      proxy.generate(prompt, user: user)
+
+      # Parse the request body
+      request_body = JSON.parse(request.body)
+
+      # Verify that tool_choice is NOT present (not supported in Bedrock)
+      expect(request_body).not_to have_key("tool_choice")
+
+      # Verify that an assistant message was added with no_more_tool_calls_text
+      messages = request_body["messages"]
+      expect(messages.length).to eq(2) # user message + added assistant message
+
+      last_message = messages.last
+      expect(last_message["role"]).to eq("assistant")
+
+      expect(last_message["content"]).to eq(
+        DiscourseAi::Completions::Dialects::Dialect.no_more_tool_calls_text,
+      )
+    end
+  end
 end

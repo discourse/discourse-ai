@@ -66,9 +66,13 @@ module DiscourseAi
           prompt.tool_choice
         end
 
-        def no_more_tool_calls_text
+        def self.no_more_tool_calls_text
           # note, Anthropic must never prefill with an ending whitespace
-          "Since you explicitly asked me not to use tools any more I will not call tools any more.\nHere is the best, complete, answer I can come up with given the information I know:"
+          "I WILL NOT USE TOOLS IN THIS REPLY, user expressed they wanted to stop using tool calls.\nHere is the best, complete, answer I can come up with given the information I have."
+        end
+
+        def no_more_tool_calls_text
+          self.class.no_more_tool_calls_text
         end
 
         def translate
@@ -80,7 +84,23 @@ module DiscourseAi
             messages.pop
           end
 
-          trim_messages(messages).map { |msg| send("#{msg[:type]}_msg", msg) }.compact
+          translated = trim_messages(messages).map { |msg| send("#{msg[:type]}_msg", msg) }.compact
+
+          if !native_tool_support?
+            if prompt.tools.present? && prompt.tool_choice.present?
+              if prompt.tool_choice == :none
+                translated << model_msg(role: "assistant", content: no_more_tool_calls_text)
+              else
+                translated << model_msg(
+                  role: "assistant",
+                  content:
+                    "User required I call the tool: #{prompt.tool_choice} I will makes sure I use it now:",
+                )
+              end
+            end
+          end
+
+          translated
         end
 
         def conversation_context

@@ -377,4 +377,60 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     expect(output.join).to eq("Hello World Sam")
   end
+
+  it "can properly disable tool use with :none" do
+    prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool], tool_choice: :none)
+
+    response = gemini_mock.response("I won't use any tools").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate(prompt, user: user)
+
+    expect(response).to eq("I won't use any tools")
+
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    # Verify that function_calling_config mode is set to "NONE"
+    expect(parsed[:tool_config]).to eq({ function_calling_config: { mode: "NONE" } })
+  end
+
+  it "can properly force specific tool use" do
+    prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool], tool_choice: "echo")
+
+    response = gemini_mock.response("World").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate(prompt, user: user)
+
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    # Verify that function_calling_config is correctly set to ANY mode with the specified tool
+    expect(parsed[:tool_config]).to eq(
+      { function_calling_config: { mode: "ANY", allowed_function_names: ["echo"] } },
+    )
+  end
 end
