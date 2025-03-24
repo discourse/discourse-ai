@@ -110,7 +110,6 @@ module DiscourseAi
             end
           end
 
-          puts "tool_choice: #{payload[:tool_choice]} - #{dialect.tool_choice}"
           payload
         end
 
