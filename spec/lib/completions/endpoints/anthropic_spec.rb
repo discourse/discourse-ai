@@ -714,4 +714,59 @@ data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_
       expect(parsed_body[:max_tokens]).to eq(500)
     end
   end
+
+  describe "disabled tool use" do
+    it "can properly disable tool use with :none" do
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "don't use any tools please"],
+          tools: [echo_tool],
+          tool_choice: :none,
+        )
+
+      response_body = {
+        id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
+        type: "message",
+        role: "assistant",
+        model: "claude-3-haiku-20240307",
+        content: [
+          { type: "text", text: "I won't use any tools. Here's a direct response instead." },
+        ],
+        stop_reason: "end_turn",
+        stop_sequence: nil,
+        usage: {
+          input_tokens: 345,
+          output_tokens: 65,
+        },
+      }.to_json
+
+      parsed_body = nil
+      stub_request(:post, url).with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(status: 200, body: response_body)
+
+      result = llm.generate(prompt, user: Discourse.system_user)
+
+      # Verify that tool_choice is set to { type: "none" }
+      expect(parsed_body[:tool_choice]).to eq({ type: "none" })
+
+      # Verify that an assistant message with no_more_tool_calls_text was added
+      messages = parsed_body[:messages]
+      expect(messages.length).to eq(2) # user message + added assistant message
+
+      last_message = messages.last
+      expect(last_message[:role]).to eq("assistant")
+
+      expect(last_message[:content]).to eq(
+        DiscourseAi::Completions::Dialects::Dialect.no_more_tool_calls_text,
+      )
+
+      expect(result).to eq("I won't use any tools. Here's a direct response instead.")
+    end
+  end
 end
