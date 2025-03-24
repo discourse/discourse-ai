@@ -94,7 +94,7 @@ module DiscourseAi
                 translated << model_msg(
                   role: "assistant",
                   content:
-                    "User required I call the tool: #{prompt.tool_choice} I will makes sure I use it now:",
+                    "User required I call the tool: #{prompt.tool_choice} I will make sure I use it now:",
                 )
               end
             end
