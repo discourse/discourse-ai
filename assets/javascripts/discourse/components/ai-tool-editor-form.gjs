@@ -1,8 +1,9 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn, hash } from "@ember/helper";
+import { array, fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { gt } from "truth-helpers";
 import Form from "discourse/components/form";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
@@ -28,12 +29,15 @@ export default class AiToolEditorForm extends Component {
   ];
 
   get formData() {
+    // TODO: add enumData only if parameters.enum is true
     return {
       name: this.args.editingModel.name || "",
       tool_name: this.args.editingModel.tool_name || "",
       description: this.args.editingModel.description || "",
       summary: this.args.editingModel.summary || "",
-      parameters: this.args.editingModel.parameters || [],
+      parameters: this.args.editingModel.parameters || [
+        { enumData: ["foo", "bar"] },
+      ],
       script: this.args.editingModel.script || "",
       rag_uploads: this.args.editingModel.rag_uploads || [],
     };
@@ -237,7 +241,38 @@ export default class AiToolEditorForm extends Component {
             </row.Col>
 
             {{#if collectionData.enum}}
-              HANDLE IS ENUM
+              <row.Col @size={{8}}>
+                <collection.Collection @name="enumData" as |child childIndex|>
+                  <form.Container class="ai-tool-parameter__enum-values">
+                    <child.Field
+                      @name="enumValue"
+                      @title={{i18n "discourse_ai.tools.enum_value"}}
+                      as |field|
+                    >
+                      <field.Input />
+                    </child.Field>
+
+                    {{#if (gt collectionData.enumData.length 1)}}
+                      <form.Button
+                        class="btn-danger"
+                        @icon="trash-can"
+                        @action={{fn child.remove childIndex}}
+                      />
+                    {{/if}}
+
+                    <form.Button
+                      @icon="plus"
+                      @label="discourse_ai.tools.add_enum_value"
+                      @action={{fn
+                        form.addItemToCollection
+                        "enumData"
+                        (array "")
+                      }}
+                    />
+                  </form.Container>
+
+                </collection.Collection>
+              </row.Col>
             {{/if}}
           </form.Row>
           <form.Row as |row|>

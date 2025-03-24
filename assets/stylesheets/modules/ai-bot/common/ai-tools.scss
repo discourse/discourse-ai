@@ -11,6 +11,23 @@
   }
 }
 
+.ai-tool-parameter__enum-values {
+  .form-kit__container-content {
+    display: grid;
+    grid-template-columns: 1fr auto;
+
+    .form-kit__button.btn-icon-text {
+      justify-self: start;
+      grid-column: 1 / -1;
+    }
+  }
+
+  &:last-child {
+    border-bottom: 1px solid var(--primary-low);
+    padding-bottom: 2rem;
+  }
+}
+
 .ai-tool-editor {
   max-width: 80%;
   position: relative;
