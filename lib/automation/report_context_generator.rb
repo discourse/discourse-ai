@@ -65,17 +65,11 @@ module DiscourseAi
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
 
-        @solutions = {}
-        if defined?(::DiscourseSolved)
-          TopicCustomField
-            .where(name: ::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD)
+        @solutions =
+          DiscourseSolved::SolvedTopic
             .where(topic_id: @posts.select(:topic_id))
-            .pluck(:topic_id, :value)
-            .each do |topic_id, post_id|
-              @solutions[topic_id] ||= Set.new
-              @solutions[topic_id] << post_id.to_i
-            end
-        end
+            .pluck(:topic_id, :answer_post_id)
+            .to_h
       end
 
       def format_topic(topic)
@@ -97,9 +91,7 @@ module DiscourseAi
         buffer = []
         buffer << ""
         buffer << "post_number: #{post.post_number}"
-        if @solutions.key?(post.topic_id) && @solutions[post.topic_id].include?(post.id)
-          buffer << "solution: true"
-        end
+        buffer << "solution: true" if @solutions[post.topic_id] == post.id
         buffer << post.created_at.strftime("%Y-%m-%d %H:%M")
         buffer << "user: #{post.user&.username}"
         buffer << "likes: #{post.like_count}"
