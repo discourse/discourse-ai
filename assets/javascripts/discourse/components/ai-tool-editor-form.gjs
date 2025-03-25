@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { array, concat, fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { gt } from "truth-helpers";
+import { and, gt } from "truth-helpers";
 import Form from "discourse/components/form";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
@@ -29,13 +29,14 @@ export default class AiToolEditorForm extends Component {
   ];
 
   get formData() {
-    const parameters = this.args.editingModel.parameters ?? [];
-    parameters.forEach((parameter) => {
-      parameter.isEnum = !!parameter.enum?.length;
-      parameter.enum ??= [];
-    });
+    const parameters = (this.args.editingModel.parameters ?? []).map(
+      (parameter) => ({
+        ...parameter,
+        isEnum: !!parameter.enum?.length,
+        enum: (parameter.enum ??= []),
+      })
+    );
 
-    // TODO: add enum only if parameters.enum is true
     return {
       name: this.args.editingModel.name || "",
       tool_name: this.args.editingModel.tool_name || "",
@@ -262,6 +263,32 @@ export default class AiToolEditorForm extends Component {
 
             {{#if collectionData.isEnum}}
               <row.Col @size={{8}}>
+                <collection.Collection @name="enum" as |child childIndex|>
+                  <form.Container class="ai-tool-parameter__enum-values">
+                    <child.Field
+                      @title={{i18n "discourse_ai.tools.enum_value"}}
+                      @validation="required"
+                      as |field|
+                    >
+                      <field.Input />
+
+                      {{#if
+                        (and
+                          (gt collectionData.enum.length 1) (gt childIndex 0)
+                        )
+                      }}
+                        <form.Button
+                          class="btn-danger"
+                          @icon="trash-can"
+                          @action={{fn child.remove childIndex}}
+                        />
+                      {{/if}}
+                    </child.Field>
+                  </form.Container>
+                </collection.Collection>
+              </row.Col>
+
+              <row.Col @size={{8}}>
                 <form.Button
                   @icon="plus"
                   @label="discourse_ai.tools.add_enum_value"
@@ -271,26 +298,6 @@ export default class AiToolEditorForm extends Component {
                     ""
                   }}
                 />
-
-                <collection.Collection @name="enum" as |child childIndex|>
-                  <form.Container class="ai-tool-parameter__enum-values">
-                    <child.Field
-                      @title={{i18n "discourse_ai.tools.enum_value"}}
-                      as |field|
-                    >
-                      <field.Input />
-                    </child.Field>
-
-                    {{#if (gt collectionData.enum.length 0)}}
-                      <form.Button
-                        class="btn-danger"
-                        @icon="trash-can"
-                        @action={{fn child.remove childIndex}}
-                      />
-                    {{/if}}
-
-                  </form.Container>
-                </collection.Collection>
               </row.Col>
             {{/if}}
           </form.Row>
@@ -314,12 +321,7 @@ export default class AiToolEditorForm extends Component {
           form.addItemToCollection
           "parameters"
           (hash
-            name=""
-            type="string"
-            description=""
-            required=false
-            enum=true
-            enum=(array)
+            name="" type="string" description="" required=false isEnum=false
           )
         }}
       />
