@@ -95,7 +95,18 @@ module DiscourseAi
           if prompt.has_tools?
             payload[:tools] = prompt.tools
             if dialect.tool_choice.present?
-              payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+              if dialect.tool_choice == :none
+                payload[:tool_choice] = { type: "none" }
+
+                # prefill prompt to nudge LLM to generate a response that is useful.
+                # without this LLM (even 3.7) can get confused and start text preambles for a tool calls.
+                payload[:messages] << {
+                  role: "assistant",
+                  content: dialect.no_more_tool_calls_text,
+                }
+              else
+                payload[:tool_choice] = { type: "tool", name: prompt.tool_choice }
+              end
             end
           end
 

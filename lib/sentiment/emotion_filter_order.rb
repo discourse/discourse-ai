@@ -5,7 +5,7 @@ module DiscourseAi
     class EmotionFilterOrder
       def self.register!(plugin)
         Emotions::LIST.each do |emotion|
-          filter_order_emotion = ->(scope, order_direction) do
+          filter_order_emotion = ->(scope, order_direction, _guardian) do
             scope_period =
               scope
                 .arel

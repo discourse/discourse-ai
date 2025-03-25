@@ -288,6 +288,11 @@ export default class AiEmbeddingEditor extends Component {
     });
   }
 
+  @action
+  providerKeys(providerParams) {
+    return Object.keys(providerParams);
+  }
+
   <template>
     {{#if this.showPresets}}
       <BackButton
@@ -493,8 +498,8 @@ export default class AiEmbeddingEditor extends Component {
 
         {{! provider-specific content }}
         {{#if this.currentProvider}}
-          {{#if data.provider_params}}
-            <form.Object @name="provider_params" as |object name|>
+          <form.Object @name="provider_params" as |object providerData|>
+            {{#each (this.providerKeys providerData) as |name|}}
               {{#let (get this.providerParams name) as |params|}}
                 {{#if params}}
                   <object.Field
@@ -523,8 +528,8 @@ export default class AiEmbeddingEditor extends Component {
                   </object.Field>
                 {{/if}}
               {{/let}}
-            </form.Object>
-          {{/if}}
+            {{/each}}
+          </form.Object>
         {{/if}}
 
         <form.Actions class="ai-embedding-editor__action_panel">
@@ -550,33 +555,24 @@ export default class AiEmbeddingEditor extends Component {
         </form.Actions>
 
         {{#if this.displayTestResult}}
-          <form.Field
-            @showTitle={{false}}
-            @name="test_results"
-            @title="test_results"
-            @format="full"
-            class="ai-embedding-editor-tests"
-            as |field|
-          >
-            <field.Custom>
-              <ConditionalLoadingSpinner
-                @size="small"
-                @condition={{this.testRunning}}
-              >
-                {{#if this.testResult}}
-                  <div class="ai-embedding-editor-tests__success">
-                    {{icon "check"}}
-                    {{i18n "discourse_ai.embeddings.tests.success"}}
-                  </div>
-                {{else}}
-                  <div class="ai-embedding-editor-tests__failure">
-                    {{icon "xmark"}}
-                    {{this.testErrorMessage}}
-                  </div>
-                {{/if}}
-              </ConditionalLoadingSpinner>
-            </field.Custom>
-          </form.Field>
+          <form.Container @format="full" class="ai-embedding-editor-tests">
+            <ConditionalLoadingSpinner
+              @size="small"
+              @condition={{this.testRunning}}
+            >
+              {{#if this.testResult}}
+                <div class="ai-embedding-editor-tests__success">
+                  {{icon "check"}}
+                  {{i18n "discourse_ai.embeddings.tests.success"}}
+                </div>
+              {{else}}
+                <div class="ai-embedding-editor-tests__failure">
+                  {{icon "xmark"}}
+                  {{this.testErrorMessage}}
+                </div>
+              {{/if}}
+            </ConditionalLoadingSpinner>
+          </form.Container>
         {{/if}}
       </Form>
     {{/if}}

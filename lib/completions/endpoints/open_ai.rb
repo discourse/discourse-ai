@@ -92,12 +92,16 @@ module DiscourseAi
             if dialect.tools.present?
               payload[:tools] = dialect.tools
               if dialect.tool_choice.present?
-                payload[:tool_choice] = {
-                  type: "function",
-                  function: {
-                    name: dialect.tool_choice,
-                  },
-                }
+                if dialect.tool_choice == :none
+                  payload[:tool_choice] = "none"
+                else
+                  payload[:tool_choice] = {
+                    type: "function",
+                    function: {
+                      name: dialect.tool_choice,
+                    },
+                  }
+                end
               end
             end
           end

@@ -54,8 +54,11 @@ module DiscourseAi
             end
         end
 
+        DONE_MESSAGE =
+          "Regardless of what you think, REPLY IMMEDIATELY, WITHOUT MAKING ANY FURTHER TOOL CALLS, YOU ARE OUT OF TOOL CALL QUOTA!"
+
         def from_raw_tool(raw_message)
-          (<<~TEXT).strip
+          result = (<<~TEXT).strip
             <function_results>
             <result>
             <tool_name>#{raw_message[:name] || raw_message[:id]}</tool_name>
@@ -65,6 +68,12 @@ module DiscourseAi
             </result>
             </function_results>
           TEXT
+
+          if @injecting_done
+            "#{result}\n\n#{DONE_MESSAGE}"
+          else
+            result
+          end
         end
 
         def from_raw_tool_call(raw_message)
@@ -84,6 +93,13 @@ module DiscourseAi
             #{parameters}</invoke>
             </function_calls>
           TEXT
+        end
+
+        def inject_done(&blk)
+          @injecting_done = true
+          blk.call
+        ensure
+          @injecting_done = false
         end
 
         private

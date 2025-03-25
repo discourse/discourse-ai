@@ -72,10 +72,14 @@ module DiscourseAi
 
             function_calling_config = { mode: "AUTO" }
             if dialect.tool_choice.present?
-              function_calling_config = {
-                mode: "ANY",
-                allowed_function_names: [dialect.tool_choice],
-              }
+              if dialect.tool_choice == :none
+                function_calling_config = { mode: "NONE" }
+              else
+                function_calling_config = {
+                  mode: "ANY",
+                  allowed_function_names: [dialect.tool_choice],
+                }
+              end
             end
 
             payload[:tool_config] = { function_calling_config: function_calling_config }

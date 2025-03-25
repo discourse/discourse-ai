@@ -46,10 +46,6 @@ module DiscourseAi
 
         VALID_ID_REGEX = /\A[a-zA-Z0-9_]+\z/
 
-        def can_end_with_assistant_msg?
-          false
-        end
-
         def native_tool_support?
           false
         end
@@ -66,16 +62,58 @@ module DiscourseAi
           prompt.tool_choice
         end
 
-        def translate
-          messages = prompt.messages
+        def self.no_more_tool_calls_text
+          # note, Anthropic must never prefill with an ending whitespace
+          "I WILL NOT USE TOOLS IN THIS REPLY, user expressed they wanted to stop using tool calls.\nHere is the best, complete, answer I can come up with given the information I have."
+        end
 
-          # Some models use an assistant msg to improve long-context responses.
-          if messages.last[:type] == :model && can_end_with_assistant_msg?
-            messages = messages.dup
-            messages.pop
+        def self.no_more_tool_calls_text_user
+          "DO NOT USE TOOLS IN YOUR REPLY. Return the best answer you can given the information I supplied you."
+        end
+
+        def no_more_tool_calls_text
+          self.class.no_more_tool_calls_text
+        end
+
+        def no_more_tool_calls_text_user
+          self.class.no_more_tool_calls_text_user
+        end
+
+        def translate
+          messages = trim_messages(prompt.messages)
+          last_message = messages.last
+          inject_done_on_last_tool_call = false
+
+          if !native_tool_support? && last_message && last_message[:type].to_sym == :tool &&
+               prompt.tool_choice == :none
+            inject_done_on_last_tool_call = true
           end
 
-          trim_messages(messages).map { |msg| send("#{msg[:type]}_msg", msg) }.compact
+          translated =
+            messages
+              .map do |msg|
+                case msg[:type].to_sym
+                when :system
+                  system_msg(msg)
+                when :user
+                  user_msg(msg)
+                when :model
+                  model_msg(msg)
+                when :tool
+                  if inject_done_on_last_tool_call && msg == last_message
+                    tools_dialect.inject_done { tool_msg(msg) }
+                  else
+                    tool_msg(msg)
+                  end
+                when :tool_call
+                  tool_call_msg(msg)
+                else
+                  raise ArgumentError, "Unknown message type: #{msg[:type]}"
+                end
+              end
+              .compact
+
+          translated
         end
 
         def conversation_context

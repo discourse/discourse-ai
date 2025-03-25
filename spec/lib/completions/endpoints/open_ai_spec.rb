@@ -395,6 +395,65 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     end
   end
 
+  describe "disabled tool use" do
+    it "can properly disable tool use with :none" do
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+
+      tools = [
+        {
+          name: "echo",
+          description: "echo something",
+          parameters: [
+            { name: "text", type: "string", description: "text to echo", required: true },
+          ],
+        },
+      ]
+
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "don't use any tools please"],
+          tools: tools,
+          tool_choice: :none,
+        )
+
+      response = {
+        id: "chatcmpl-9JxkAzzaeO4DSV3omWvok9TKhCjBH",
+        object: "chat.completion",
+        created: 1_714_544_914,
+        model: "gpt-4-turbo-2024-04-09",
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: "assistant",
+              content: "I won't use any tools. Here's a direct response instead.",
+            },
+            logprobs: nil,
+            finish_reason: "stop",
+          },
+        ],
+        usage: {
+          prompt_tokens: 55,
+          completion_tokens: 13,
+          total_tokens: 68,
+        },
+        system_fingerprint: "fp_ea6eb70039",
+      }.to_json
+
+      body_json = nil
+      stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
+        body: proc { |body| body_json = JSON.parse(body, symbolize_names: true) },
+      ).to_return(body: response)
+
+      result = llm.generate(prompt, user: user)
+
+      # Verify that tool_choice is set to "none" in the request
+      expect(body_json[:tool_choice]).to eq("none")
+      expect(result).to eq("I won't use any tools. Here's a direct response instead.")
+    end
+  end
+
   describe "parameter disabling" do
     it "excludes disabled parameters from the request" do
       model.update!(provider_params: { disable_top_p: true, disable_temperature: true })

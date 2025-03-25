@@ -122,7 +122,19 @@ module DiscourseAi
             if prompt.has_tools?
               payload[:tools] = prompt.tools
               if dialect.tool_choice.present?
-                payload[:tool_choice] = { type: "tool", name: dialect.tool_choice }
+                if dialect.tool_choice == :none
+                  # not supported on bedrock as of 2025-03-24
+                  # retest in 6 months
+                  # payload[:tool_choice] = { type: "none" }
+
+                  # prefill prompt to nudge LLM to generate a response that is useful, instead of trying to call a tool
+                  payload[:messages] << {
+                    role: "assistant",
+                    content: dialect.no_more_tool_calls_text,
+                  }
+                else
+                  payload[:tool_choice] = { type: "tool", name: prompt.tool_choice }
+                end
               end
             end
           elsif dialect.is_a?(DiscourseAi::Completions::Dialects::Nova)

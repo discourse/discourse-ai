@@ -320,7 +320,7 @@ tr_TR:
         presets: "Ön ayar seçin..."
         confirm_delete: "Bu aracı silmek istediğinizden emin misiniz?"
         next:
-          title: "İleri"
+          title: "Sonraki"
         test_modal:
           title: "YZ aracını test edin"
           run: "Testi çalıştır"

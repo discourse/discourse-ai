@@ -49,7 +49,7 @@ module DiscourseAi
           .zip(*promised_embeddings)
           .value!
           .each { |e| schema.store(e[:target], e[:embedding], e[:digest]) }
-
+      ensure
         pool.shutdown
         pool.wait_for_termination
       end

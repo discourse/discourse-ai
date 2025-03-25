@@ -29,7 +29,6 @@ class DiscourseAi::Evals::Eval
     @id = @yaml[:id]
     @description = @yaml[:description]
     @vision = @yaml[:vision]
-    @args = @yaml[:args]&.symbolize_keys
     @type = @yaml[:type]
     @expected_output = @yaml[:expected_output]
     @expected_output_regex = @yaml[:expected_output_regex]
@@ -39,10 +38,14 @@ class DiscourseAi::Evals::Eval
     @expected_tool_call.symbolize_keys! if @expected_tool_call
     @judge = @yaml[:judge]
     @judge.symbolize_keys! if @judge
-
-    @args.each do |key, value|
-      if (key.to_s.include?("_path") || key.to_s == "path") && value.is_a?(String)
-        @args[key] = File.expand_path(File.join(File.dirname(path), value))
+    if @yaml[:args].is_a?(Array)
+      @args = @yaml[:args].map(&:symbolize_keys)
+    else
+      @args = @yaml[:args].symbolize_keys
+      @args.each do |key, value|
+        if (key.to_s.include?("_path") || key.to_s == "path") && value.is_a?(String)
+          @args[key] = File.expand_path(File.join(File.dirname(path), value))
+        end
       end
     end
   end
@@ -57,7 +60,7 @@ class DiscourseAi::Evals::Eval
       when "image_to_text"
         image_to_text(llm, **args)
       when "prompt"
-        DiscourseAi::Evals::PromptEvaluator.new(llm).prompt_call(**args)
+        DiscourseAi::Evals::PromptEvaluator.new(llm).prompt_call(args)
       when "edit_artifact"
         edit_artifact(llm, **args)
       when "summarization"

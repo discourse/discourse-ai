@@ -3,6 +3,7 @@
 RSpec.describe "Admin AI persona configuration", type: :system, js: true do
   fab!(:admin)
   let(:page_header) { PageObjects::Components::DPageHeader.new }
+  let(:form) { PageObjects::Components::FormKit.new("form") }
 
   before do
     SiteSetting.ai_bot_enabled = true
@@ -19,26 +20,23 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
     expect(page_header).to be_hidden
 
-    find(".ai-persona-editor__name").set("Test Persona")
-    find(".ai-persona-editor__description").fill_in(with: "I am a test persona")
-    find(".ai-persona-editor__system_prompt").fill_in(with: "You are a helpful bot")
+    form.field("name").fill_in("Test Persona")
+    form.field("description").fill_in("I am a test persona")
+    form.field("system_prompt").fill_in("You are a helpful bot")
 
-    tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__tools")
+    tool_selector = PageObjects::Components::SelectKit.new("#control-tools .select-kit")
     tool_selector.expand
     tool_selector.select_row_by_value("Read")
     tool_selector.collapse
 
-    tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tools")
+    tool_selector = PageObjects::Components::SelectKit.new("#control-forcedTools .select-kit")
     tool_selector.expand
     tool_selector.select_row_by_value("Read")
     tool_selector.collapse
 
-    strategy_selector =
-      PageObjects::Components::SelectKit.new(".ai-persona-editor__forced_tool_strategy")
-    strategy_selector.expand
-    strategy_selector.select_row_by_value(1)
+    form.field("forced_tool_count").select(1)
 
-    find(".ai-persona-editor__save").click()
+    form.submit
 
     expect(page).not_to have_current_path("/admin/plugins/discourse-ai/ai-personas/new")
 
@@ -55,7 +53,7 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
   it "will not allow deletion or editing of system personas" do
     visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}/edit"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
-    expect(find(".ai-persona-editor__system_prompt")).to be_disabled
+    expect(form.field("system_prompt")).to be_disabled
   end
 
   it "will enable persona right away when you click on enable but does not save side effects" do
@@ -63,8 +61,8 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
     visit "/admin/plugins/discourse-ai/ai-personas/#{persona.id}/edit"
 
-    find(".ai-persona-editor__name").set("Test Persona 1")
-    PageObjects::Components::DToggleSwitch.new(".ai-persona-editor__enabled").toggle
+    form.field("name").fill_in("Test Persona 1")
+    form.field("enabled").toggle
 
     try_until_success { expect(persona.reload.enabled).to eq(true) }
 

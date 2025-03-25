@@ -68,7 +68,7 @@ describe "AI Tool Management", type: :system do
     visit "/admin/plugins/discourse-ai/ai-personas/new"
 
     tool_id = AiTool.order("id desc").limit(1).pluck(:id).first
-    tool_selector = PageObjects::Components::SelectKit.new(".ai-persona-editor__tools")
+    tool_selector = PageObjects::Components::SelectKit.new("#control-tools .select-kit")
     tool_selector.expand
 
     tool_selector.select_row_by_value("custom-#{tool_id}")
