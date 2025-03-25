@@ -212,6 +212,7 @@ fi:
           last_month: "Viime kuukausi"
           custom: "Mukautettu..."
       ai_persona:
+        ai_tools: "Työkalut"
         tool_strategies:
           all: "Käytä kaikkiin vastauksiin"
           replies:

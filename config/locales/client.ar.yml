@@ -212,6 +212,7 @@ ar:
           last_month: "الشهر الماضي"
           custom: "مُخصَّص..."
       ai_persona:
+        ai_tools: "الأدوات"
         tool_strategies:
           all: "التطبيق على كل الردود"
           replies:

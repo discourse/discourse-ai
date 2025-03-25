@@ -238,6 +238,7 @@ de:
           last_month: "Letzter Monat"
           custom: "Benutzerdefiniert …"
       ai_persona:
+        ai_tools: "Tools"
         tool_strategies:
           all: "Auf alle Antworten anwenden"
           replies:
@@ -302,7 +303,11 @@ de:
         rag_conversation_chunks: "Unterhaltungs-Chunks durchsuchen"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         persona_description: "Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Erlebnis für Benutzer zu schaffen."
+        ai_bot:
+          title: "KI-Bot-Optionen"
+          save_first: "Die KI-Bot-Optionen werden verfügbar, sobald du die Persona gespeichert hast."
       rag:
+        title: "RAG"
         options:
           rag_chunk_tokens: "Chunk-Token hochladen"
           rag_chunk_tokens_help: "Die Anzahl der Token, die für jeden Chunk im RAG-Modell verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann. (Eine Änderung führt zu einer Neuindizierung aller Uploads.)"

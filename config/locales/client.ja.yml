@@ -211,6 +211,7 @@ ja:
           last_month: "先月"
           custom: "カスタム..."
       ai_persona:
+        ai_tools: "ツール"
         tool_strategies:
           all: "すべての返信に適用"
           replies:
