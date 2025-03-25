@@ -23,6 +23,7 @@ import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
+import AiSentimentHorizontalBar from "../components/ai-sentiment-horizontal-bar";
 
 export default class AdminReportSentimentAnalysis extends Component {
   @service router;
@@ -82,6 +83,15 @@ export default class AdminReportSentimentAnalysis extends Component {
     }
   }
 
+  get groupingType() {
+    const dataSample = this.args.model.data[0];
+    const localePrefix =
+      "discourse_ai.sentiments.sentiment_analysis.group_types";
+    return dataSample.category_name
+      ? i18n(`${localePrefix}.category`)
+      : i18n(`${localePrefix}.tag`);
+  }
+
   get colors() {
     return ["#2ecc71", "#95a5a6", "#e74c3c"];
   }
@@ -107,7 +117,17 @@ export default class AdminReportSentimentAnalysis extends Component {
           this.calculateNeutralScore(data),
           data.negative_count,
         ],
+        score_map: {
+          positive: data.positive_count,
+          neutral: this.calculateNeutralScore(data),
+          negative: data.negative_count,
+        },
         total_score: data.total_count,
+        widths: {
+          positive: (data.positive_count / data.total_count) * 100,
+          neutral: (this.calculateNeutralScore(data) / data.total_count) * 100,
+          negative: (data.negative_count / data.total_count) * 100,
+        },
       };
     });
   }
@@ -302,29 +322,56 @@ export default class AdminReportSentimentAnalysis extends Component {
 
     {{#unless this.showingSelectedChart}}
       <div class="admin-report-sentiment-analysis">
-        {{#each this.transformedData as |data|}}
-          <div
-            class="admin-report-sentiment-analysis__chart-wrapper"
-            role="button"
-            {{on "click" (fn this.showDetails data)}}
-            {{closeOnClickOutside
-              (fn (mut this.selectedChart) null)
-              (hash
-                targetSelector=".admin-report-sentiment-analysis-details"
-                secondaryTargetSelector=".admin-report-sentiment-analysis"
-              )
-            }}
-          >
-            <DoughnutChart
-              @labels={{@model.labels}}
-              @colors={{this.colors}}
-              @data={{data.scores}}
-              @totalScore={{data.total_score}}
-              @doughnutTitle={{data.title}}
-              @displayLegend={{true}}
-            />
-          </div>
-        {{/each}}
+        <table class="sentiment-analysis-table md-table">
+          <thead>
+            <th>{{this.groupingType}}</th>
+            <th>{{i18n
+                "discourse_ai.sentiments.sentiment_analysis.table.total_count"
+              }}</th>
+            <th>{{i18n
+                "discourse_ai.sentiments.sentiment_analysis.table.sentiment"
+              }}</th>
+          </thead>
+
+          <tbody>
+            {{#each this.transformedData as |data|}}
+              <tr
+                class="sentiment-analysis-table__row"
+                role="button"
+                {{on "click" (fn this.showDetails data)}}
+                {{closeOnClickOutside
+                  (fn (mut this.selectedChart) null)
+                  (hash
+                    targetSelector=".admin-report-sentiment-analysis-details"
+                    secondaryTargetSelector=".admin-report-sentiment-analysis"
+                  )
+                }}
+              >
+                <td class="sentiment-analysis-table__title">{{data.title}}</td>
+                <td
+                  class="sentiment-analysis-table__total-score"
+                >{{data.total_score}}</td>
+                <td class="sentiment-horizontal-bar">
+                  <AiSentimentHorizontalBar
+                    @type="positive"
+                    @score={{data.score_map.positive}}
+                    @width={{data.widths.positive}}
+                  />
+                  <AiSentimentHorizontalBar
+                    @type="negative"
+                    @score={{data.score_map.negative}}
+                    @width={{data.widths.negative}}
+                  />
+                  <AiSentimentHorizontalBar
+                    @type="neutral"
+                    @score={{data.score_map.neutral}}
+                    @width={{data.widths.neutral}}
+                  />
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
       </div>
     {{/unless}}
 

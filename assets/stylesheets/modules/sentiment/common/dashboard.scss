@@ -248,3 +248,54 @@
     display: none;
   }
 }
+
+.sentiment-analysis-table {
+  margin: 1rem;
+
+  &__total-score {
+    font-weight: bold;
+    font-size: var(--font-up-1);
+  }
+
+  &__row {
+    cursor: pointer;
+  }
+}
+
+.sentiment-horizontal-bar {
+  display: flex;
+
+  &__count {
+    font-weight: bold;
+    font-size: var(--font-down-1);
+    color: var(--secondary);
+  }
+
+  &__positive,
+  &__neutral,
+  &__negative {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0.75rem;
+    border-left: 2px solid var(--secondary);
+    border-right: 2px solid var(--secondary);
+  }
+
+  &__positive {
+    background: rgb(var(--d-sentiment-report-positive-rgb));
+    border-top-left-radius: var(--d-border-radius);
+    border-bottom-left-radius: var(--d-border-radius);
+  }
+
+  &__negative {
+    background: rgb(var(--d-sentiment-report-negative-rgb));
+  }
+
+  &__neutral {
+    background: rgb(var(--d-sentiment-report-neutral-rgb));
+    border-top-right-radius: var(--d-border-radius);
+    border-bottom-right-radius: var(--d-border-radius);
+  }
+}
