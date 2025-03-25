@@ -30,7 +30,7 @@ export default class AiPersonaToolOptions extends Component {
 
   @action
   formObjectKeys(toolOptions) {
-    return Object.keys(toolOptions);
+    return toolOptions ? Object.keys(toolOptions) : [];
   }
 
   <template>

@@ -252,7 +252,7 @@ export default class AiLlmEditorForm extends Component {
 
   @action
   providerParamsKeys(providerParams) {
-    return Object.keys(providerParams);
+    return providerParams ? Object.keys(providerParams) : [];
   }
 
   <template>

@@ -290,7 +290,7 @@ export default class AiEmbeddingEditor extends Component {
 
   @action
   providerKeys(providerParams) {
-    return Object.keys(providerParams);
+    return providerParams ? Object.keys(providerParams) : [];
   }
 
   <template>
