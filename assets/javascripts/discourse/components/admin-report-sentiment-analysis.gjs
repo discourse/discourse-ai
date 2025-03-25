@@ -347,8 +347,6 @@ export default class AdminReportSentimentAnalysis extends Component {
                   )
                 }}
               >
-
-                {{log data}}
                 <td class="sentiment-analysis-table__title">{{data.title}}</td>
                 <td
                   class="sentiment-analysis-table__total-score"
