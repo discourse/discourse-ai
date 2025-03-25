@@ -700,6 +700,12 @@ en:
             positive: "Positive"
             neutral: "Neutral"
             negative: "Negative"
+          group_types:
+            category: "Category"
+            tag: "Tag"
+          table:
+            sentiment: "Sentiment"
+            total_count: "Total"
 
       summarization:
         chat:
