@@ -75,9 +75,9 @@ module DiscourseAi
       def force_tool_if_needed(prompt, context)
         return if prompt.tool_choice == :none
 
-        context[:chosen_tools] ||= []
+        context.chosen_tools ||= []
         forced_tools = persona.force_tool_use.map { |tool| tool.name }
-        force_tool = forced_tools.find { |name| !context[:chosen_tools].include?(name) }
+        force_tool = forced_tools.find { |name| !context.chosen_tools.include?(name) }
 
         if force_tool && persona.forced_tool_count > 0
           user_turns = prompt.messages.select { |m| m[:type] == :user }.length
@@ -85,7 +85,7 @@ module DiscourseAi
         end
 
         if force_tool
-          context[:chosen_tools] << force_tool
+          context.chosen_tools << force_tool
           prompt.tool_choice = force_tool
         else
           prompt.tool_choice = nil
@@ -100,7 +100,7 @@ module DiscourseAi
         ongoing_chain = true
         raw_context = []
 
-        user = context[:user]
+        user = context.user
 
         llm_kwargs = { user: user }
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
@@ -297,7 +297,7 @@ module DiscourseAi
       end
 
       def invoke_tool(tool, llm, cancel, context, &update_blk)
-        show_placeholder = !context[:skip_tool_details] && !tool.class.allow_partial_tool_calls?
+        show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
 
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 

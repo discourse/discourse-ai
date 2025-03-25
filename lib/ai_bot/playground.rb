@@ -227,7 +227,7 @@ module DiscourseAi
         schedule_bot_reply(post) if can_attach?(post)
       end
 
-      def conversation_context(post, style: nil)
+      def post_prompt_messages(post, style: nil)
         # Pay attention to the `post_number <= ?` here.
         # We want to inject the last post as context because they are translated differently.
 
@@ -307,10 +307,10 @@ module DiscourseAi
       end
 
       def title_playground(post, user)
-        context = conversation_context(post)
+        messages = post_prompt_messages(post)
 
         bot
-          .get_updated_title(context, post, user)
+          .get_updated_title(messages, post, user)
           .tap do |new_title|
             PostRevisor.new(post.topic.first_post, post.topic).revise!(
               bot.bot_user,
@@ -326,7 +326,7 @@ module DiscourseAi
         )
       end
 
-      def chat_context(message, channel, persona_user, context_post_ids)
+      def chat_prompt_messages(message, channel, persona_user, context_post_ids)
         has_vision = bot.persona.class.vision_enabled
         include_thread_titles = !channel.direct_message_channel? && !message.thread_id
 
@@ -411,9 +411,9 @@ module DiscourseAi
         context_post_ids = nil if !channel.direct_message_channel?
 
         context =
-          get_context(
-            participants: participants.join(", "),
-            conversation_context: chat_context(message, channel, persona_user, context_post_ids),
+          BotContext.new(
+            participants: participants,
+            messages: chat_prompt_messages(message, channel, persona_user, context_post_ids),
             user: message.user,
             skip_tool_details: true,
           )
@@ -460,22 +460,6 @@ module DiscourseAi
         reply
       end
 
-      def get_context(participants:, conversation_context:, user:, skip_tool_details: nil)
-        result = {
-          site_url: Discourse.base_url,
-          site_title: SiteSetting.title,
-          site_description: SiteSetting.site_description,
-          time: Time.zone.now,
-          participants: participants,
-          conversation_context: conversation_context,
-          user: user,
-        }
-
-        result[:skip_tool_details] = true if skip_tool_details
-
-        result
-      end
-
       def reply_to(
         post,
         custom_instructions: nil,
@@ -510,15 +494,11 @@ module DiscourseAi
           )
 
         context =
-          get_context(
-            participants: post.topic.allowed_users.map(&:username).join(", "),
-            conversation_context: conversation_context(post, style: context_style),
-            user: post.user,
+          BotContext.new(
+            post: post,
+            custom_instructions: custom_instructions,
+            messages: post_prompt_messages(post, style: context_style),
           )
-        context[:post_id] = post.id
-        context[:topic_id] = post.topic_id
-        context[:private_message] = post.topic.private_message?
-        context[:custom_instructions] = custom_instructions
 
         reply_user = bot.bot_user
         if bot.persona.class.respond_to?(:user_id)
@@ -562,7 +542,7 @@ module DiscourseAi
           Discourse.redis.setex(redis_stream_key, 60, 1)
         end
 
-        context[:skip_tool_details] ||= !bot.persona.class.tool_details
+        context.skip_tool_details ||= !bot.persona.class.tool_details
 
         post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
 

@@ -1155,7 +1155,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
-  describe "#conversation_context" do
+  describe "#post_prompt_messages" do
     context "with limited context" do
       before do
         @old_persona = playground.bot.persona
@@ -1166,7 +1166,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       after { playground.bot.persona = @old_persona }
 
       it "respects max_context_post" do
-        context = playground.conversation_context(third_post)
+        context = playground.post_prompt_messages(third_post)
 
         expect(context).to contain_exactly(
           *[{ type: :user, id: user.username, content: third_post.raw }],
@@ -1215,7 +1215,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
         PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
 
-        context = playground.conversation_context(third_post)
+        context = playground.post_prompt_messages(third_post)
 
         expect(context).to contain_exactly(
           *[

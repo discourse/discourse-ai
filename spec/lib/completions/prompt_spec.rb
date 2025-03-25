@@ -25,6 +25,23 @@ RSpec.describe DiscourseAi::Completions::Prompt do
   end
 
   describe "image support" do
+    it "allows adding uploads inline in messages" do
+      upload = UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+
+      prompt.max_pixels = 300
+      prompt.push(
+        type: :user,
+        content: ["this is an image", { upload_id: upload.id }, "this was an image"],
+      )
+
+      encoded = prompt.content_with_encoded_uploads(prompt.messages.last[:content])
+
+      expect(encoded.length).to eq(3)
+      expect(encoded[0]).to eq("this is an image")
+      expect(encoded[1][:mime_type]).to eq("image/jpeg")
+      expect(encoded[2]).to eq("this was an image")
+    end
+
     it "allows adding uploads to messages" do
       upload = UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
 
