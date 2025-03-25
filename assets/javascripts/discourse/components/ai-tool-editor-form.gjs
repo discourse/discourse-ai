@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { array, fn, hash } from "@ember/helper";
+import { array, concat, fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { gt } from "truth-helpers";
@@ -29,18 +29,33 @@ export default class AiToolEditorForm extends Component {
   ];
 
   get formData() {
-    // TODO: add enumData only if parameters.enum is true
+    const parameters = this.args.editingModel.parameters ?? [];
+    parameters.forEach((parameter) => {
+      parameter.isEnum = !!parameter.enum?.length;
+      parameter.enum ??= [];
+    });
+
+    // TODO: add enum only if parameters.enum is true
     return {
       name: this.args.editingModel.name || "",
       tool_name: this.args.editingModel.tool_name || "",
       description: this.args.editingModel.description || "",
       summary: this.args.editingModel.summary || "",
-      parameters: this.args.editingModel.parameters || [
-        { enumData: ["foo", "bar"] },
-      ],
+      parameters,
       script: this.args.editingModel.script || "",
       rag_uploads: this.args.editingModel.rag_uploads || [],
     };
+  }
+
+  @action
+  toggleIsEnum(value, { name, parentName, set }) {
+    if (value) {
+      set(`${parentName}.enum`, [""]);
+    } else {
+      set(`${parentName}.enum`, []);
+    }
+
+    set(name, value);
   }
 
   @action
@@ -235,24 +250,38 @@ export default class AiToolEditorForm extends Component {
             </row.Col>
 
             <row.Col>
-              <collection.Field @name="enum" @title="Enum" as |field|>
+              <collection.Field
+                @name="isEnum"
+                @title="Enum"
+                @onSet={{this.toggleIsEnum}}
+                as |field|
+              >
                 <field.Checkbox />
               </collection.Field>
             </row.Col>
 
-            {{#if collectionData.enum}}
+            {{#if collectionData.isEnum}}
               <row.Col @size={{8}}>
-                <collection.Collection @name="enumData" as |child childIndex|>
+                <form.Button
+                  @icon="plus"
+                  @label="discourse_ai.tools.add_enum_value"
+                  @action={{fn
+                    form.addItemToCollection
+                    (concat "parameters." index ".enum")
+                    ""
+                  }}
+                />
+
+                <collection.Collection @name="enum" as |child childIndex|>
                   <form.Container class="ai-tool-parameter__enum-values">
                     <child.Field
-                      @name="enumValue"
                       @title={{i18n "discourse_ai.tools.enum_value"}}
                       as |field|
                     >
                       <field.Input />
                     </child.Field>
 
-                    {{#if (gt collectionData.enumData.length 1)}}
+                    {{#if (gt collectionData.enum.length 0)}}
                       <form.Button
                         class="btn-danger"
                         @icon="trash-can"
@@ -260,17 +289,7 @@ export default class AiToolEditorForm extends Component {
                       />
                     {{/if}}
 
-                    <form.Button
-                      @icon="plus"
-                      @label="discourse_ai.tools.add_enum_value"
-                      @action={{fn
-                        form.addItemToCollection
-                        "enumData"
-                        (array "")
-                      }}
-                    />
                   </form.Container>
-
                 </collection.Collection>
               </row.Col>
             {{/if}}
@@ -294,7 +313,14 @@ export default class AiToolEditorForm extends Component {
         @action={{fn
           form.addItemToCollection
           "parameters"
-          (hash name="" type="string" description="" required=false enum=false)
+          (hash
+            name=""
+            type="string"
+            description=""
+            required=false
+            enum=true
+            enum=(array)
+          )
         }}
       />
 
