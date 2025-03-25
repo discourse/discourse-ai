@@ -457,7 +457,7 @@ module DiscourseAi
                     UploadCreator.new(
                       file,
                       filename,
-                      for_private_message: @context[:private_message],
+                      for_private_message: @context.private_message,
                     ).create_for(@bot_user.id)
 
                   { id: upload.id, short_url: upload.short_url, url: upload.url }

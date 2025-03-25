@@ -115,11 +115,26 @@ module DiscourseAi
         tools.present?
       end
 
-      # helper method to get base64 encoded uploads
-      # at the correct dimentions
+      # TODO migrate to new API
       def encoded_uploads(message)
         return [] if message[:upload_ids].blank?
         UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
+      end
+
+      def encode_upload(upload_id)
+        UploadEncoder.encode(upload_ids: [upload_id], max_pixels: max_pixels).first
+      end
+
+      def content_with_encoded_uploads(content)
+        return [content] unless content.is_a?(Array)
+
+        content.map do |c|
+          if c.is_a?(Hash) && c.key?(:upload_id)
+            encode_upload(c[:upload_id])
+          else
+            c
+          end
+        end
       end
 
       def ==(other)
@@ -166,8 +181,17 @@ module DiscourseAi
         if message[:upload_ids].present? && message[:type] != :user
           raise ArgumentError, "upload_ids are only supported for users"
         end
-
-        raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
+        if message[:content].is_a?(Array)
+          message[:content].each do |content|
+            if !content.is_a?(String) && !(content.is_a?(Hash) && content.keys == [:upload_id])
+              raise ArgumentError, "Array message content must be a string or {upload_id: ...} "
+            end
+          end
+        else
+          if !message[:content].is_a?(String)
+            raise ArgumentError, "Message content must be a string or an array"
+          end
+        end
       end
 
       def validate_turn(last_turn, new_turn)
