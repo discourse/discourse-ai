@@ -1,13 +1,12 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { concat, fn, hash } from "@ember/helper";
+import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { service } from "@ember/service";
-import { htmlSafe } from "@ember/template";
 import { modifier } from "ember-modifier";
-import { and, gt } from "truth-helpers";
+import { and } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
@@ -324,7 +323,6 @@ export default class AdminReportSentimentAnalysis extends Component {
     {{#unless this.showingSelectedChart}}
       <div class="admin-report-sentiment-analysis">
         <table class="sentiment-analysis-table md-table">
-          {{log @model.data}}
           <thead>
             <th>{{this.groupingType}}</th>
             <th>{{i18n
