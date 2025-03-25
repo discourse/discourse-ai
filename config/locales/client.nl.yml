@@ -212,6 +212,7 @@ nl:
           last_month: "Vorige maand"
           custom: "Aangepast..."
       ai_persona:
+        ai_tools: "Tools"
         tool_strategies:
           all: "Toepassen op alle antwoorden"
           replies:

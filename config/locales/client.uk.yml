@@ -138,6 +138,7 @@ uk:
           last_day: "Останні 24 години"
           custom: "Власний…"
       ai_persona:
+        ai_tools: "Інструменти"
         tool_strategies:
           all: "Застосувати до всіх відповідей"
           replies:

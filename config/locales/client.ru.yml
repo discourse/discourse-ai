@@ -212,6 +212,7 @@ ru:
           last_month: "В прошлом месяце"
           custom: "Другое…"
       ai_persona:
+        ai_tools: "Инструменты"
         tool_strategies:
           all: "Применить ко всем ответам"
           replies:

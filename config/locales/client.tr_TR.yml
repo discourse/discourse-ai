@@ -212,6 +212,7 @@ tr_TR:
           last_month: "Geçen ay"
           custom: "Özel..."
       ai_persona:
+        ai_tools: "Araçlar"
         tool_strategies:
           all: "Tüm yanıtlara uygula"
           replies:

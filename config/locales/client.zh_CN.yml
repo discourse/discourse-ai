@@ -211,6 +211,7 @@ zh_CN:
           last_month: "上个月"
           custom: "自定义…"
       ai_persona:
+        ai_tools: "工具"
         tool_strategies:
           all: "应用于所有回复"
           replies:

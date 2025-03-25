@@ -212,6 +212,7 @@ pt_BR:
           last_month: "Mês passado"
           custom: "Personalizado..."
       ai_persona:
+        ai_tools: "Ferramentas"
         tool_strategies:
           all: "Aplicar a todas as respostas"
           replies:
