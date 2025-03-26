@@ -76,7 +76,7 @@ export default class AiPersona extends RestModel {
   }
 
   flattenedToolStructure(data) {
-    return data.tools.map((tName) => {
+    return (data.tools || []).map((tName) => {
       return [tName, data.toolOptions[tName], data.forcedTools.includes(tName)];
     });
   }
