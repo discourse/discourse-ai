@@ -71,6 +71,34 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     expect(persona.name).not_to eq("Test Persona 1")
   end
 
+  it "enabling a persona doesn't reset other fields" do
+    persona = Fabricate(:ai_persona, enabled: false)
+    updated_name = "Update persona 1"
+
+    visit "/admin/plugins/discourse-ai/ai-personas/#{persona.id}/edit"
+
+    form.field("name").fill_in(updated_name)
+    form.field("enabled").toggle
+
+    try_until_success { expect(persona.reload.enabled).to eq(true) }
+
+    expect(form.field("name").value).to eq(updated_name)
+  end
+
+  it "toggling a persona's priority doesn't reset other fields" do
+    persona = Fabricate(:ai_persona, priority: false)
+    updated_name = "Update persona 1"
+
+    visit "/admin/plugins/discourse-ai/ai-personas/#{persona.id}/edit"
+
+    form.field("name").fill_in(updated_name)
+    form.field("priority").toggle
+
+    try_until_success { expect(persona.reload.priority).to eq(true) }
+
+    expect(form.field("name").value).to eq(updated_name)
+  end
+
   it "can navigate the AI plugin with breadcrumbs" do
     visit "/admin/plugins/discourse-ai/ai-personas"
     expect(page).to have_css(".d-breadcrumbs")

@@ -32,15 +32,25 @@ export default class PersonaEditor extends Component {
   @tracked isSaving = false;
   @tracked availableForcedTools = [];
 
+  dirtyFormData = null;
+
   @cached
   get formData() {
-    const data = this.args.model.toPOJO();
+    // This is to recover a dirty state after persisting a single form field.
+    // It's meant to be consumed only once.
+    if (this.dirtyFormData) {
+      const data = this.dirtyFormData;
+      this.dirtyFormData = null;
+      return data;
+    } else {
+      const data = this.args.model.toPOJO();
 
-    if (data.tools) {
-      data.toolOptions = this.mapToolOptions(data.toolOptions, data.tools);
+      if (data.tools) {
+        data.toolOptions = this.mapToolOptions(data.toolOptions, data.tools);
+      }
+
+      return data;
     }
-
-    return data;
   }
 
   get chatPluginEnabled() {
@@ -144,15 +154,15 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  async toggleEnabled(value, { set }) {
+  async toggleEnabled(dirtyData, value, { set }) {
     set("enabled", value);
-    await this.persistField("enabled", value);
+    await this.persistField(dirtyData, "enabled", value);
   }
 
   @action
-  async togglePriority(value, { set }) {
+  async togglePriority(dirtyData, value, { set }) {
     set("priority", value);
-    await this.persistField("priority", value, true);
+    await this.persistField(dirtyData, "priority", value, true);
   }
 
   @action
@@ -172,7 +182,7 @@ export default class PersonaEditor extends Component {
   }
 
   @action
-  async removeUpload(form, currentUploads, upload) {
+  async removeUpload(form, dirtyData, currentUploads, upload) {
     const updatedUploads = currentUploads.filter(
       (file) => file.id !== upload.id
     );
@@ -180,7 +190,7 @@ export default class PersonaEditor extends Component {
     form.set("rag_uploads", updatedUploads);
 
     if (!this.args.model.isNew) {
-      await this.persistField("rag_uploads", updatedUploads);
+      await this.persistField(dirtyData, "rag_uploads", updatedUploads);
     }
   }
 
@@ -232,14 +242,16 @@ export default class PersonaEditor extends Component {
     return updatedOptions;
   }
 
-  async persistField(field, newValue, sortPersonas) {
-    this.args.model.set(field, newValue);
-
+  async persistField(dirtyData, field, newValue, sortPersonas) {
     if (!this.args.model.isNew) {
+      const updatedDirtyData = Object.assign({}, dirtyData);
+      updatedDirtyData[field] = newValue;
+
       try {
         const args = {};
         args[field] = newValue;
 
+        this.dirtyFormData = updatedDirtyData;
         await this.args.model.update(args);
         if (sortPersonas) {
           this.#sortPersonas();
@@ -274,7 +286,7 @@ export default class PersonaEditor extends Component {
         <form.Field
           @name="enabled"
           @title={{i18n "discourse_ai.ai_persona.enabled"}}
-          @onSet={{this.toggleEnabled}}
+          @onSet={{fn this.toggleEnabled data}}
           as |field|
         >
           <field.Toggle />
@@ -283,7 +295,7 @@ export default class PersonaEditor extends Component {
         <form.Field
           @name="priority"
           @title={{i18n "discourse_ai.ai_persona.priority"}}
-          @onSet={{this.togglePriority}}
+          @onSet={{fn this.togglePriority data}}
           @tooltip={{i18n "discourse_ai.ai_persona.priority_help"}}
           as |field|
         >
@@ -499,7 +511,7 @@ export default class PersonaEditor extends Component {
                   @target={{data}}
                   @targetName="AiPersona"
                   @updateUploads={{fn this.updateUploads form}}
-                  @onRemove={{fn this.removeUpload form field.value}}
+                  @onRemove={{fn this.removeUpload form data field.value}}
                   @allowImages={{@personas.resultSetMeta.settings.rag_images_enabled}}
                 />
               </field.Custom>
