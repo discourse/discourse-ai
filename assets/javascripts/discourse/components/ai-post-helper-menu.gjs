@@ -13,6 +13,7 @@ import FastEditModal from "discourse/components/modal/fast-edit";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import { sanitize } from "discourse/lib/text";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
@@ -68,6 +69,23 @@ export default class AiPostHelperMenu extends Component {
   });
 
   @tracked _activeAiRequest = null;
+
+  constructor() {
+    super(...arguments);
+
+    withPluginApi((api) => {
+      api.registerValueTransformer(
+        "post-text-selection-prevent-close",
+        ({ value }) => {
+          if (this.menuState === this.MENU_STATES.result) {
+            return true;
+          }
+
+          return value;
+        }
+      );
+    });
+  }
 
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
