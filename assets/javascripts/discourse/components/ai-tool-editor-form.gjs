@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { array, concat, fn, hash } from "@ember/helper";
+import { concat, fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { and, gt } from "truth-helpers";
@@ -8,7 +8,7 @@ import Form from "discourse/components/form";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
-import RagOptions from "./rag-options";
+import RagOptionsFk from "./rag-options-fk";
 import RagUploader from "./rag-uploader";
 
 export default class AiToolEditorForm extends Component {
@@ -140,7 +140,7 @@ export default class AiToolEditorForm extends Component {
       @onSubmit={{this.save}}
       @data={{this.formData}}
       class="ai-tool-editor"
-      as |form|
+      as |form data|
     >
       {{! NAME }}
       <form.Field
@@ -352,8 +352,9 @@ export default class AiToolEditorForm extends Component {
               @onRemove={{fn this.removeUpload form}}
               @allowImages={{@settings.rag_images_enabled}}
             />
-            <RagOptions
-              @model={{@editingModel}}
+            <RagOptionsFk
+              @form={{form}}
+              @data={{data}}
               @llms={{@llms}}
               @allowImages={{@settings.rag_images_enabled}}
             />
