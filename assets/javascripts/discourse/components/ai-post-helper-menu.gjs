@@ -3,7 +3,6 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
@@ -22,8 +21,7 @@ import { i18n } from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
-
-const STREAMED_TEXT_SPEED = 15;
+import SmoothStreamer from "../lib/smooth-streamer";
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -47,10 +45,11 @@ export default class AiPostHelperMenu extends Component {
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
 
-  @tracked isStreaming = false;
-  @tracked streamedText = "";
-  typingTimer = null;
-  streamedTextLength = 0;
+  @tracked
+  smoothStreamer = new SmoothStreamer(
+    () => this.suggestion,
+    (newValue) => (this.suggestion = newValue)
+  );
 
   MENU_STATES = {
     options: "OPTIONS",
@@ -166,34 +165,6 @@ export default class AiPostHelperMenu extends Component {
     return sanitize(text);
   }
 
-  typeCharacter() {
-    if (this.streamedTextLength < this.suggestion.length) {
-      this.streamedText += this.suggestion.charAt(this.streamedTextLength);
-      this.streamedTextLength++;
-
-      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
-    } else {
-      this.typingTimer = null;
-    }
-  }
-
-  onTextUpdate() {
-    this.cancelTypingTimer();
-    this.typeCharacter();
-  }
-
-  cancelTypingTimer() {
-    if (this.typingTimer) {
-      cancel(this.typingTimer);
-    }
-  }
-
-  resetStreaming() {
-    this.cancelTypingTimer();
-    this.streamedText = "";
-    this.streamedTextLength = 0;
-  }
-
   @bind
   subscribe() {
     const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
@@ -211,20 +182,7 @@ export default class AiPostHelperMenu extends Component {
   @bind
   async _updateResult(result) {
     this.streaming = !result.done;
-    const newText = result.result;
-
-    if (result.done) {
-      this.streamedText = newText;
-      this.isStreaming = false;
-      this.suggestion = newText;
-
-      // Clear pending animations
-      this.cancelTypingTimer();
-    } else if (newText.length > this.suggestion.length) {
-      this.suggestion = newText;
-      this.isStreaming = true;
-      await this.onTextUpdate();
-    }
+    await this.smoothStreamer.updateResult(result, "result");
   }
 
   @action
@@ -373,10 +331,6 @@ export default class AiPostHelperMenu extends Component {
     }
   }
 
-  get renderedText() {
-    return this.isStreaming ? this.streamedText : this.suggestion;
-  }
-
   <template>
     {{#if
       (and this.site.mobileView (eq this.menuState this.MENU_STATES.options))
@@ -406,13 +360,16 @@ export default class AiPostHelperMenu extends Component {
             {{#if this.suggestion}}
               <div
                 class={{concatClass
-                  (if this.isStreaming "streaming")
+                  (if this.smoothStreamer.isStreaming "streaming")
                   "streamable-content"
                   "ai-post-helper__suggestion__text"
                 }}
                 dir="auto"
               >
-                <CookText @rawText={{this.renderedText}} class="cooked" />
+                <CookText
+                  @rawText={{this.smoothStreamer.renderedText}}
+                  class="cooked"
+                />
               </div>
               <div class="ai-post-helper__suggestion__buttons">
                 <DButton
