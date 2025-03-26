@@ -3,6 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
+import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
 import { and } from "truth-helpers";
@@ -10,6 +11,7 @@ import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import FastEdit from "discourse/components/fast-edit";
 import FastEditModal from "discourse/components/modal/fast-edit";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
@@ -20,6 +22,8 @@ import { i18n } from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
+
+const STREAMED_TEXT_SPEED = 15;
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -42,6 +46,11 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
+
+  @tracked isStreaming = false;
+  @tracked streamedText = "";
+  typingTimer = null;
+  streamedTextLength = 0;
 
   MENU_STATES = {
     options: "OPTIONS",
@@ -157,6 +166,34 @@ export default class AiPostHelperMenu extends Component {
     return sanitize(text);
   }
 
+  typeCharacter() {
+    if (this.streamedTextLength < this.suggestion.length) {
+      this.streamedText += this.suggestion.charAt(this.streamedTextLength);
+      this.streamedTextLength++;
+
+      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
+    } else {
+      this.typingTimer = null;
+    }
+  }
+
+  onTextUpdate() {
+    this.cancelTypingTimer();
+    this.typeCharacter();
+  }
+
+  cancelTypingTimer() {
+    if (this.typingTimer) {
+      cancel(this.typingTimer);
+    }
+  }
+
+  resetStreaming() {
+    this.cancelTypingTimer();
+    this.streamedText = "";
+    this.streamedTextLength = 0;
+  }
+
   @bind
   subscribe() {
     const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
@@ -172,9 +209,22 @@ export default class AiPostHelperMenu extends Component {
   }
 
   @bind
-  _updateResult(result) {
+  async _updateResult(result) {
     this.streaming = !result.done;
-    this.suggestion = result.result;
+    const newText = result.result;
+
+    if (result.done) {
+      this.streamedText = newText;
+      this.isStreaming = false;
+      this.suggestion = newText;
+
+      // Clear pending animations
+      this.cancelTypingTimer();
+    } else if (newText.length > this.suggestion.length) {
+      this.suggestion = newText;
+      this.isStreaming = true;
+      await this.onTextUpdate();
+    }
   }
 
   @action
@@ -323,6 +373,10 @@ export default class AiPostHelperMenu extends Component {
     }
   }
 
+  get renderedText() {
+    return this.isStreaming ? this.streamedText : this.suggestion;
+  }
+
   <template>
     {{#if
       (and this.site.mobileView (eq this.menuState this.MENU_STATES.options))
@@ -350,8 +404,15 @@ export default class AiPostHelperMenu extends Component {
             {{willDestroy this.unsubscribe}}
           >
             {{#if this.suggestion}}
-              <div class="ai-post-helper__suggestion__text" dir="auto">
-                <CookText @rawText={{this.suggestion}} />
+              <div
+                class={{concatClass
+                  (if this.isStreaming "streaming")
+                  "streamable-content"
+                  "ai-post-helper__suggestion__text"
+                }}
+                dir="auto"
+              >
+                <CookText @rawText={{this.renderedText}} class="cooked" />
               </div>
               <div class="ai-post-helper__suggestion__buttons">
                 <DButton
