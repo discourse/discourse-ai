@@ -9,6 +9,154 @@ module DiscourseAi
       attr_reader :chat_context_post_upload_ids
       attr_accessor :topic
 
+      def self.messages_from_chat(
+        message,
+        channel:,
+        context_post_ids:,
+        max_messages:,
+        include_uploads:,
+        bot_user_ids:,
+        instruction_message: nil
+      )
+        include_thread_titles = !channel.direct_message_channel? && !message.thread_id
+
+        current_id = message.id
+        messages = nil
+
+        if !message.thread_id && channel.direct_message_channel?
+          messages = [message]
+        elsif !channel.direct_message_channel? && !message.thread_id
+          messages =
+            Chat::Message
+              .joins("left join chat_threads on chat_threads.id = chat_messages.thread_id")
+              .where(chat_channel_id: channel.id)
+              .where(
+                "chat_messages.thread_id IS NULL OR chat_threads.original_message_id = chat_messages.id",
+              )
+              .order(id: :desc)
+              .limit(max_messages)
+              .to_a
+              .reverse
+        end
+
+        messages ||=
+          ChatSDK::Thread.last_messages(
+            thread_id: message.thread_id,
+            guardian: Discourse.system_user.guardian,
+            page_size: max_messages,
+          )
+
+        builder = new
+
+        guardian = Guardian.new(message.user)
+        if context_post_ids
+          builder.set_chat_context_posts(
+            context_post_ids,
+            guardian,
+            include_uploads: include_uploads,
+          )
+        end
+
+        messages.each do |m|
+          # restore stripped message
+          m.message = instruction_message if m.id == current_id && instruction_message
+
+          if bot_user_ids.include?(m.user_id)
+            builder.push(type: :model, content: m.message)
+          else
+            upload_ids = nil
+            upload_ids = m.uploads.map(&:id) if include_uploads && m.uploads.present?
+            mapped_message = m.message
+
+            thread_title = nil
+            thread_title = m.thread&.title if include_thread_titles && m.thread_id
+            mapped_message = "(#{thread_title})\n#{m.message}" if thread_title
+
+            builder.push(
+              type: :user,
+              content: mapped_message,
+              name: m.user.username,
+              upload_ids: upload_ids,
+            )
+          end
+        end
+
+        builder.to_a(
+          limit: max_messages,
+          style: channel.direct_message_channel? ? :chat_with_context : :chat,
+        )
+      end
+
+      def self.messages_from_post(post, style: nil, max_posts:, bot_usernames:, include_uploads:)
+        # Pay attention to the `post_number <= ?` here.
+        # We want to inject the last post as context because they are translated differently.
+
+        post_types = [Post.types[:regular]]
+        post_types << Post.types[:whisper] if post.post_type == Post.types[:whisper]
+
+        context =
+          post
+            .topic
+            .posts
+            .joins(:user)
+            .joins("LEFT JOIN post_custom_prompts ON post_custom_prompts.post_id = posts.id")
+            .where("post_number <= ?", post.post_number)
+            .order("post_number desc")
+            .where("post_type in (?)", post_types)
+            .limit(max_posts)
+            .pluck(
+              "posts.raw",
+              "users.username",
+              "post_custom_prompts.custom_prompt",
+              "(
+                  SELECT array_agg(ref.upload_id)
+                  FROM upload_references ref
+                  WHERE ref.target_type = 'Post' AND ref.target_id = posts.id
+               ) as upload_ids",
+            )
+
+        builder = new
+        builder.topic = post.topic
+
+        context.reverse_each do |raw, username, custom_prompt, upload_ids|
+          custom_prompt_translation =
+            Proc.new do |message|
+              # We can't keep backwards-compatibility for stored functions.
+              # Tool syntax requires a tool_call_id which we don't have.
+              if message[2] != "function"
+                custom_context = {
+                  content: message[0],
+                  type: message[2].present? ? message[2].to_sym : :model,
+                }
+
+                custom_context[:id] = message[1] if custom_context[:type] != :model
+                custom_context[:name] = message[3] if message[3]
+
+                thinking = message[4]
+                custom_context[:thinking] = thinking if thinking
+
+                builder.push(**custom_context)
+              end
+            end
+
+          if custom_prompt.present?
+            custom_prompt.each(&custom_prompt_translation)
+          else
+            context = { content: raw, type: (bot_usernames.include?(username) ? :model : :user) }
+
+            context[:id] = username if context[:type] == :user
+
+            if upload_ids.present? && context[:type] == :user && include_uploads
+              context[:upload_ids] = upload_ids.compact
+            end
+
+            builder.push(**context)
+          end
+        end
+
+        builder.to_a(style: style || (post.topic.private_message? ? :bot : :topic))
+      end
+
       def initialize
         @raw_messages = []
       end
