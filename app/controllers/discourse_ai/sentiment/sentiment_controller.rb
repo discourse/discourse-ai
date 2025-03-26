@@ -46,10 +46,6 @@ module DiscourseAi
             u.name,
             u.uploaded_avatar_id,
             c.id AS category_id,
-            c.name AS category_name,
-            c.color AS category_color,
-            c.slug AS category_slug,
-            c.description AS category_description,
             (CASE 
               WHEN (cr.classification::jsonb->'positive')::float > :threshold THEN 'positive'
               WHEN (cr.classification::jsonb->'negative')::float > :threshold THEN 'negative'

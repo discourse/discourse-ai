@@ -11,6 +11,7 @@ import DButton from "discourse/components/d-button";
 import HorizontalOverflowNav from "discourse/components/horizontal-overflow-nav";
 import PostList from "discourse/components/post-list";
 import bodyClass from "discourse/helpers/body-class";
+import categoryBadge from "discourse/helpers/category-badge";
 import dIcon from "discourse/helpers/d-icon";
 import replaceEmoji from "discourse/helpers/replace-emoji";
 import { ajax } from "discourse/lib/ajax";
@@ -18,6 +19,7 @@ import { popupAjaxError } from "discourse/lib/ajax-error";
 import { getAbsoluteURL } from "discourse/lib/get-url";
 import discourseLater from "discourse/lib/later";
 import { clipboardCopy } from "discourse/lib/utilities";
+import Category from "discourse/models/category";
 import Post from "discourse/models/post";
 import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
@@ -111,6 +113,7 @@ export default class AdminReportSentimentAnalysis extends Component {
   get transformedData() {
     return this.args.model.data.map((data) => {
       return {
+        category: Category.findById(data.category_id),
         title: data.category_name || data.tag_name,
         scores: [
           data.positive_count,
@@ -139,6 +142,7 @@ export default class AdminReportSentimentAnalysis extends Component {
 
     return this.posts.filter((post) => {
       post.topic_title = replaceEmoji(post.topic_title);
+      post.category = Category.findById(post.category_id);
 
       if (this.activeFilter === "all") {
         return true;
@@ -347,7 +351,13 @@ export default class AdminReportSentimentAnalysis extends Component {
                   )
                 }}
               >
-                <td class="sentiment-analysis-table__title">{{data.title}}</td>
+                <td class="sentiment-analysis-table__title">
+                  {{#if data.category}}
+                    {{categoryBadge data.category}}
+                  {{else}}
+                    {{data.title}}
+                  {{/if}}
+                </td>
                 <td
                   class="sentiment-analysis-table__total-score"
                 >{{data.total_score}}</td>

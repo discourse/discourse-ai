@@ -11,7 +11,7 @@ class AiSentimentPostSerializer < ApplicationSerializer
              :excerpt,
              :sentiment,
              :truncated,
-             :category,
+             :category_id,
              :created_at
 
   def avatar_template
@@ -24,15 +24,5 @@ class AiSentimentPostSerializer < ApplicationSerializer
 
   def truncated
     object.post_cooked.length > SiteSetting.post_excerpt_maxlength
-  end
-
-  def category
-    {
-      id: object.category_id,
-      name: object.category_name,
-      color: object.category_color,
-      slug: object.category_slug,
-      description: object.category_description,
-    }
   end
 end
