@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
-import { fn, hash } from "@ember/helper";
+import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
@@ -21,7 +21,6 @@ import discourseLater from "discourse/lib/later";
 import { clipboardCopy } from "discourse/lib/utilities";
 import Category from "discourse/models/category";
 import Post from "discourse/models/post";
-import closeOnClickOutside from "discourse/modifiers/close-on-click-outside";
 import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import DoughnutChart from "discourse/plugins/discourse-ai/discourse/components/doughnut-chart";
@@ -343,13 +342,6 @@ export default class AdminReportSentimentAnalysis extends Component {
                 class="sentiment-analysis-table__row"
                 role="button"
                 {{on "click" (fn this.showDetails data)}}
-                {{closeOnClickOutside
-                  (fn (mut this.selectedChart) null)
-                  (hash
-                    targetSelector=".admin-report-sentiment-analysis-details"
-                    secondaryTargetSelector=".admin-report-sentiment-analysis"
-                  )
-                }}
               >
                 <td class="sentiment-analysis-table__title">
                   {{#if data.category}}
