@@ -80,12 +80,23 @@ module DiscourseAi
           case grouping
           when :category
             <<~SQL
+                c.id AS category_id,
                 c.name AS category_name,
               SQL
           when :tag
             <<~SQL
                   tags.name AS tag_name,
               SQL
+          else
+            raise Discourse::InvalidParameters
+          end
+
+        group_by_clause =
+          case grouping
+          when :category
+            "GROUP BY c.id, c.name"
+          when :tag
+            "GROUP BY tags.name"
           else
             raise Discourse::InvalidParameters
           end
@@ -154,7 +165,7 @@ module DiscourseAi
                 cr.model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest' AND
                 (p.created_at > :report_start AND p.created_at < :report_end)
                 #{where_clause}
-              GROUP BY 1
+              #{group_by_clause}
               #{order_by_clause}
             SQL
             report_start: report.start_date,
