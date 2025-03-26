@@ -44,7 +44,7 @@ describe "AI Tool Management", type: :system do
     tool_presets.option(".btn[data-option='exchange_rate'").click
 
     required_toggle_css = "#control-parameters-0-required .form-kit__control-checkbox"
-    enum_toggle_css = "#control-parameters-0-enum .form-kit__control-checkbox"
+    enum_toggle_css = "#control-parameters-0-isEnum .form-kit__control-checkbox"
 
     expect(page.find(required_toggle_css).checked?).to eq(true)
     expect(page.find(enum_toggle_css).checked?).to eq(false)

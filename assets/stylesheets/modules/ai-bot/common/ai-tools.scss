@@ -13,10 +13,12 @@
 
 .ai-tool-parameter__enum-values {
   margin-block: 1rem;
+
   .form-kit__container-content {
     display: grid;
     grid-template-columns: 1fr auto;
     position: relative;
+
     .form-kit__button.btn-icon-text {
       justify-self: start;
       grid-column: 1 / -1;
