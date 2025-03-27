@@ -259,9 +259,9 @@ module DiscourseAi
         end
         raise ArgumentError, "upload_ids must be an array" if upload_ids && !upload_ids.is_a?(Array)
 
+        content = [content, *upload_ids.map { |upload_id| { upload_id: upload_id } }] if upload_ids
         message = { type: type, content: content }
         message[:name] = name.to_s if name
-        message[:upload_ids] = upload_ids if upload_ids
         message[:id] = id.to_s if id
         if thinking
           message[:thinking] = thinking["thinking"] if thinking["thinking"]
@@ -331,15 +331,12 @@ module DiscourseAi
 
       def chat_array(limit:)
         if @raw_messages.length > 1
-          buffer =
-            +"You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:\n{{{"
-
-          upload_ids = []
+          buffer = [
+            +"You are replying inside a Discourse chat channel. Here is a summary of the conversation so far:\n{{{",
+          ]
 
           @raw_messages[0..-2].each do |message|
             buffer << "\n"
-
-            upload_ids.concat(message[:upload_ids]) if message[:upload_ids].present?
 
             if message[:type] == :user
               buffer << "#{message[:name] || "User"}: "
@@ -357,15 +354,41 @@ module DiscourseAi
         end
 
         last_message = @raw_messages[-1]
-        buffer << "#{last_message[:name] || "User"}: #{last_message[:content]} "
+        buffer << "#{last_message[:name] || "User"}: "
+        buffer << last_message[:content]
+
+        buffer = compress_messages_buffer(buffer.flatten, max_uploads: MAX_CHAT_UPLOADS)
 
         message = { type: :user, content: buffer }
-        upload_ids.concat(last_message[:upload_ids]) if last_message[:upload_ids].present?
-
-        message[:upload_ids] = upload_ids[-MAX_CHAT_UPLOADS..-1] ||
-          upload_ids if upload_ids.present?
-
         [message]
+      end
+
+      # caps uploads to maximum uploads allowed in message stream
+      # and concats string elements
+      def compress_messages_buffer(buffer, max_uploads:)
+        compressed = []
+        current_text = +""
+        upload_count = 0
+
+        buffer.each do |item|
+          if item.is_a?(String)
+            current_text << item
+          elsif item.is_a?(Hash)
+            compressed << current_text if current_text.present?
+            compressed << item
+            current_text = +""
+            upload_count += 1
+          end
+        end
+
+        compressed << current_text if current_text.present?
+
+        if upload_count > max_uploads
+          counter = max_uploads - upload_count
+          compressed.delete_if { |item| item.is_a?(Hash) && (counter += 1) > 0 }
+        end
+
+        compressed
       end
     end
   end
