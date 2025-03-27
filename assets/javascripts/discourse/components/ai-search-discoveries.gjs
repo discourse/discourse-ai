@@ -11,6 +11,7 @@ import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import SmoothStreamer from "../lib/smooth-streamer";
 import AiBlinkingAnimation from "./ai-blinking-animation";
@@ -24,6 +25,7 @@ export default class AiSearchDiscoveries extends Component {
   @service appEvents;
 
   @tracked loadingDiscoveries = false;
+  @tracked searching = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
@@ -34,8 +36,6 @@ export default class AiSearchDiscoveries extends Component {
   );
 
   discoveryTimeout = null;
-  typingTimer = null;
-  streamedTextLength = 0;
 
   constructor() {
     super(...arguments);
@@ -53,6 +53,26 @@ export default class AiSearchDiscoveries extends Component {
       this,
       this.triggerDiscovery
     );
+  }
+
+  @bind
+  detectSearch() {
+    withPluginApi((api) => {
+      api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
+        if (!searchMenu || this.searching) {
+          return;
+        }
+
+        if (this.discobotDiscoveries.lastQuery === this.query) {
+          return false;
+        }
+
+        if (event.key === "Enter" && this.query) {
+          this.triggerDiscovery();
+        }
+        return true;
+      });
+    });
   }
 
   @bind
@@ -139,11 +159,14 @@ export default class AiSearchDiscoveries extends Component {
 
     try {
       this.discobotDiscoveries.lastQuery = this.query;
+      this.searching = true;
       await ajax("/discourse-ai/ai-bot/discover", {
         data: { query: this.query },
       });
     } catch {
       this.hideDiscoveries = true;
+    } finally {
+      this.searching = false;
     }
   }
 
@@ -162,8 +185,9 @@ export default class AiSearchDiscoveries extends Component {
   <template>
     <div
       class="ai-search-discoveries"
-      {{didInsert this.subscribe @searchTerm}}
-      {{didUpdate this.subscribe @searchTerm}}
+      {{didInsert this.subscribe this.query}}
+      {{didUpdate this.subscribe this.query}}
+      {{didUpdate this.detectSearch this.query}}
       {{didInsert this.triggerDiscovery this.query}}
       {{willDestroy this.unsubscribe}}
     >

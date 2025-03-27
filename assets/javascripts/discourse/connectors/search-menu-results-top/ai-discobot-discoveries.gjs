@@ -8,7 +8,6 @@ import AiSearchDiscoveriesTooltip from "../../components/ai-search-discoveries-t
 export default class AiDiscobotDiscoveries extends Component {
   static shouldRender(args, { siteSettings, currentUser }) {
     return (
-      args.resultType.type === "topic" &&
       siteSettings.ai_bot_discover_persona &&
       currentUser?.can_use_ai_bot_discover_persona &&
       currentUser?.user_option?.ai_search_discoveries
@@ -28,7 +27,10 @@ export default class AiDiscobotDiscoveries extends Component {
         <AiSearchDiscoveriesTooltip />
       </h3>
 
-      <AiSearchDiscoveries @discoveryPreviewLength={{50}} />
+      <AiSearchDiscoveries
+        @searchTerm={{@outletArgs.searchTerm}}
+        @discoveryPreviewLength={{50}}
+      />
 
       <h3 class="ai-search-discoveries__regular-results-title">
         {{icon "bars-staggered"}}
