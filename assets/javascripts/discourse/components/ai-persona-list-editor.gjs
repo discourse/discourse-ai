@@ -61,7 +61,7 @@ export default class AiPersonaListEditor extends Component {
             <thead>
               <tr>
                 <th>{{i18n "discourse_ai.ai_persona.name"}}</th>
-                <th>{{i18n "discourse_ai.ai_persona.enabled"}}</th>
+                <th>{{i18n "discourse_ai.ai_persona.list.enabled"}}</th>
                 <th></th>
               </tr>
             </thead>
