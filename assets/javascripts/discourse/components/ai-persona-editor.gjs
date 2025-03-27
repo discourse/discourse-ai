@@ -284,25 +284,6 @@ export default class PersonaEditor extends Component {
     <div class="ai-persona-editor" {{didInsert this.updateAllGroups @model.id}}>
       <Form @onSubmit={{this.save}} @data={{this.formData}} as |form data|>
         <form.Field
-          @name="enabled"
-          @title={{i18n "discourse_ai.ai_persona.enabled"}}
-          @onSet={{fn this.toggleEnabled data}}
-          as |field|
-        >
-          <field.Toggle />
-        </form.Field>
-
-        <form.Field
-          @name="priority"
-          @title={{i18n "discourse_ai.ai_persona.priority"}}
-          @onSet={{fn this.togglePriority data}}
-          @tooltip={{i18n "discourse_ai.ai_persona.priority_help"}}
-          as |field|
-        >
-          <field.Toggle />
-        </form.Field>
-
-        <form.Field
           @name="name"
           @title={{i18n "discourse_ai.ai_persona.name"}}
           @validation="required|length:1,100"
@@ -562,6 +543,25 @@ export default class PersonaEditor extends Component {
         {{/if}}
 
         <form.Section @title={{i18n "discourse_ai.ai_persona.ai_bot.title"}}>
+          <form.Field
+            @name="enabled"
+            @title={{i18n "discourse_ai.ai_persona.enabled"}}
+            @onSet={{fn this.toggleEnabled data}}
+            as |field|
+          >
+            <field.Toggle />
+          </form.Field>
+
+          <form.Field
+            @name="priority"
+            @title={{i18n "discourse_ai.ai_persona.priority"}}
+            @onSet={{fn this.togglePriority data}}
+            @tooltip={{i18n "discourse_ai.ai_persona.priority_help"}}
+            as |field|
+          >
+            <field.Toggle />
+          </form.Field>
+
           {{#if @model.isNew}}
             <div>{{i18n "discourse_ai.ai_persona.ai_bot.save_first"}}</div>
           {{else}}
