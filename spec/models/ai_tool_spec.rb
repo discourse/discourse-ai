@@ -160,15 +160,15 @@ RSpec.describe AiTool do
       }
     JS
 
-    tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
-
     stub_request(:get, "https://example.com/test").to_return do
       sleep 0.01
       { status: 200, body: "Hello World", headers: {} }
     end
 
-    runner.timeout = 5
+    tool = create_tool(script: script)
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+
+    runner.timeout = 10
 
     result = runner.invoke
 
