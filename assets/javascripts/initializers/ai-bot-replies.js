@@ -83,7 +83,7 @@ function initializePersonaDecorator(api) {
 }
 
 function initializePauseButton(api) {
-  const transformerRegistered = api.registerValueTransformer(
+  api.registerValueTransformer(
     "post-menu-buttons",
     ({ value: dag, context: { post, firstButtonKey } }) => {
       if (isGPTBot(post.user)) {
@@ -94,29 +94,6 @@ function initializePauseButton(api) {
       }
     }
   );
-
-  const silencedKey =
-    transformerRegistered && "discourse.post-menu-widget-overrides";
-
-  withSilencedDeprecations(silencedKey, () => initializePauseWidgetButton(api));
-}
-
-function initializePauseWidgetButton(api) {
-  api.addPostMenuButton("cancel-gpt", (post) => {
-    if (isGPTBot(post.user)) {
-      return {
-        icon: "pause",
-        action: "cancelStreaming",
-        title: "discourse_ai.ai_bot.cancel_streaming",
-        className: "btn btn-default cancel-streaming",
-        position: "first",
-      };
-    }
-  });
-
-  api.attachWidgetAction("post", "cancelStreaming", function () {
-    AiCancelStreamingButton.cancelStreaming(this.model);
-  });
 }
 
 function initializeDebugButton(api) {
@@ -125,7 +102,7 @@ function initializeDebugButton(api) {
     return;
   }
 
-  const transformerRegistered = api.registerValueTransformer(
+  api.registerValueTransformer(
     "post-menu-buttons",
     ({ value: dag, context: { post, firstButtonKey } }) => {
       if (post.topic?.archetype === "private_message") {
@@ -136,38 +113,6 @@ function initializeDebugButton(api) {
       }
     }
   );
-
-  const silencedKey =
-    transformerRegistered && "discourse.post-menu-widget-overrides";
-
-  withSilencedDeprecations(silencedKey, () => initializeDebugWidgetButton(api));
-}
-
-function initializeDebugWidgetButton(api) {
-  const currentUser = api.getCurrentUser();
-
-  let debugAiResponse = async function ({ post }) {
-    const modal = api.container.lookup("service:modal");
-    AiDebugButton.debugAiResponse(post, modal);
-  };
-
-  api.addPostMenuButton("debugAi", (post) => {
-    if (post.topic?.archetype !== "private_message") {
-      return;
-    }
-
-    if (!isPostFromAiBot(post, currentUser)) {
-      return;
-    }
-
-    return {
-      action: debugAiResponse,
-      icon: "info",
-      className: "post-action-menu__debug-ai",
-      title: "discourse_ai.ai_bot.debug_ai",
-      position: "first",
-    };
-  });
 }
 
 function initializeShareButton(api) {
@@ -176,7 +121,7 @@ function initializeShareButton(api) {
     return;
   }
 
-  const transformerRegistered = api.registerValueTransformer(
+  api.registerValueTransformer(
     "post-menu-buttons",
     ({ value: dag, context: { post, firstButtonKey } }) => {
       if (post.topic?.archetype === "private_message") {
@@ -186,39 +131,6 @@ function initializeShareButton(api) {
       }
     }
   );
-
-  const silencedKey =
-    transformerRegistered && "discourse.post-menu-widget-overrides";
-
-  withSilencedDeprecations(silencedKey, () => initializeShareWidgetButton(api));
-}
-
-function initializeShareWidgetButton(api) {
-  const currentUser = api.getCurrentUser();
-
-  let shareAiResponse = async function ({ post, showFeedback }) {
-    const modal = api.container.lookup("service:modal");
-    AiShareButton.shareAiResponse(post, modal, showFeedback);
-  };
-
-  api.addPostMenuButton("share", (post) => {
-    // for backwards compat so we don't break if topic is undefined
-    if (post.topic?.archetype !== "private_message") {
-      return;
-    }
-
-    if (!isPostFromAiBot(post, currentUser)) {
-      return;
-    }
-
-    return {
-      action: shareAiResponse,
-      icon: "far-copy",
-      className: "post-action-menu__share-ai",
-      title: "discourse_ai.ai_bot.share",
-      position: "first",
-    };
-  });
 }
 
 function initializeShareTopicButton(api) {
