@@ -55,8 +55,8 @@ module DiscourseAi
         unless context.is_a?(BotContext)
           raise ArgumentError, "context must be an instance of BotContext"
         end
-        llm = DiscourseAi::Completions::Llm.proxy(model)
-        prompt = persona.craft_prompt(context, llm: llm)
+        current_llm = llm
+        prompt = persona.craft_prompt(context, llm: current_llm)
 
         total_completions = 0
         ongoing_chain = true
@@ -82,7 +82,7 @@ module DiscourseAi
           current_thinking = []
 
           result =
-            llm.generate(
+            current_llm.generate(
               prompt,
               feature_name: "bot",
               partial_tool_calls: allow_partial_tool_calls,
@@ -93,7 +93,7 @@ module DiscourseAi
                 persona.find_tool(
                   partial,
                   bot_user: user,
-                  llm: llm,
+                  llm: current_llm,
                   context: context,
                   existing_tools: existing_tools,
                 )
@@ -120,7 +120,7 @@ module DiscourseAi
                 process_tool(
                   tool: tool,
                   raw_context: raw_context,
-                  llm: llm,
+                  current_llm: current_llm,
                   cancel: cancel,
                   update_blk: update_blk,
                   prompt: prompt,
@@ -204,7 +204,7 @@ module DiscourseAi
       def process_tool(
         tool:,
         raw_context:,
-        llm:,
+        current_llm:,
         cancel:,
         update_blk:,
         prompt:,
@@ -212,7 +212,7 @@ module DiscourseAi
         current_thinking:
       )
         tool_call_id = tool.tool_call_id
-        invocation_result_json = invoke_tool(tool, llm, cancel, context, &update_blk).to_json
+        invocation_result_json = invoke_tool(tool, cancel, context, &update_blk).to_json
 
         tool_call_message = {
           type: :tool_call,
@@ -246,8 +246,13 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
+<<<<<<< HEAD
       def invoke_tool(tool, llm, cancel, context, &update_blk)
         show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
+=======
+      def invoke_tool(tool, cancel, context, &update_blk)
+        show_placeholder = !context[:skip_tool_details] && !tool.class.allow_partial_tool_calls?
+>>>>>>> 5bfe2314 (REFACTOR: Move personas into it's own module.)
 
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 

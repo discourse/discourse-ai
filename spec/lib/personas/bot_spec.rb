@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Personas::Bot do
-  subject(:bot) { described_class.as(bot_user) }
+  subject(:bot) { described_class.as(bot_user, persona: DiscourseAi::Personas::General.new) }
 
   fab!(:admin)
   fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
