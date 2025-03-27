@@ -3,8 +3,16 @@
 describe DiscourseAi::Completions::PromptMessagesBuilder do
   let(:builder) { DiscourseAi::Completions::PromptMessagesBuilder.new }
   fab!(:user)
+  fab!(:admin)
   fab!(:bot_user) { Fabricate(:user) }
   fab!(:other_user) { Fabricate(:user) }
+
+  fab!(:image_upload1) do
+    Fabricate(:upload, user: user, original_filename: "image.png", extension: "png")
+  end
+  fab!(:image_upload2) do
+    Fabricate(:upload, user: user, original_filename: "image.png", extension: "png")
+  end
 
   it "should allow merging user messages" do
     builder.push(type: :user, content: "Hello", name: "Alice")
@@ -237,6 +245,60 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
         post_number: 3,
         raw: "This is a second reply by the user",
       )
+    end
+
+    it "handles uploads correctly in topic style messages" do
+      # Use Discourse's upload format in the post raw content
+      upload_markdown = "![test|658x372](#{image_upload1.short_url})"
+
+      post_with_upload =
+        Fabricate(
+          :post,
+          topic: pm,
+          user: admin,
+          raw: "This is the original #{upload_markdown} I just added",
+        )
+
+      UploadReference.create!(target: post_with_upload, upload: image_upload1)
+
+      upload2_markdown = "![test|658x372](#{image_upload2.short_url})"
+
+      post2_with_upload =
+        Fabricate(
+          :post,
+          topic: pm,
+          user: admin,
+          raw: "This post has a different image #{upload2_markdown} I just added",
+        )
+
+      UploadReference.create!(target: post2_with_upload, upload: image_upload2)
+
+      messages =
+        described_class.messages_from_post(
+          post2_with_upload,
+          style: :topic,
+          max_posts: 3,
+          bot_usernames: [bot_user.username],
+          include_uploads: true,
+        )
+
+      # this is not quite ideal yet, images are attached at the end of the post
+      # long term we may want to extract them out using a regex and create N parts
+      # so people can talk about multiple images in a single post
+      # this is the initial ground work though
+
+      expect(messages.length).to eq(1)
+      content = messages[0][:content]
+
+      # first part
+      # first image
+      # second part
+      # second image
+      expect(content.length).to eq(4)
+      expect(content[0]).to include("This is the original")
+      expect(content[1]).to eq({ upload_id: image_upload1.id })
+      expect(content[2]).to include("different image")
+      expect(content[3]).to eq({ upload_id: image_upload2.id })
     end
 
     context "with limited context" do

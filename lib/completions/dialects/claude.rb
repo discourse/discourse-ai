@@ -126,29 +126,38 @@ module DiscourseAi
         def user_msg(msg)
           content = +""
           content << "#{msg[:id]}: " if msg[:id]
-          content << msg[:content]
-          content = inline_images(content, msg) if vision_support?
+          message_content = msg[:content]
+          message_content = [message_content] if !message_content.is_a?(Array)
 
-          { role: "user", content: content }
+          content_array = []
+
+          message_content.each do |content_part|
+            if content_part.is_a?(String)
+              content << content_part
+            elsif content_part.is_a?(Hash) && vision_support?
+              content_array << { type: "text", text: content } if content.present?
+              image = image_node(content_part[:upload_id])
+              content_array << image if image
+              content = +""
+            end
+          end
+
+          content_array << { type: "text", text: content } if content.present?
+
+          { role: "user", content: content_array }
         end
 
-        def inline_images(content, message)
-          encoded_uploads = prompt.encoded_uploads(message)
-          return content if encoded_uploads.blank?
-
-          content_w_imgs =
-            encoded_uploads.reduce([]) do |memo, details|
-              memo << {
-                source: {
-                  type: "base64",
-                  data: details[:base64],
-                  media_type: details[:mime_type],
-                },
-                type: "image",
-              }
-            end
-
-          content_w_imgs << { type: "text", text: content }
+        def image_node(upload_id)
+          details = prompt.encode_upload(upload_id)
+          return nil if details.blank?
+          {
+            source: {
+              type: "base64",
+              data: details[:base64],
+              media_type: details[:mime_type],
+            },
+            type: "image",
+          }
         end
       end
     end
