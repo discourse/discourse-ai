@@ -10,16 +10,11 @@ export default class AiDebugButton extends Component {
     return isPostFromAiBot(args.post, args.state.currentUser);
   }
 
-  // TODO (glimmer-post-menu): Remove this static function and move the code into the button action after the widget code is removed
-  static debugAiResponse(post, modal) {
-    modal.show(DebugAiModal, { model: post });
-  }
-
   @service modal;
 
   @action
   debugAiResponse() {
-    this.constructor.debugAiResponse(this.args.post, this.modal);
+    this.modal.show(DebugAiModal, { model: this.args.post });
   }
 
   <template>

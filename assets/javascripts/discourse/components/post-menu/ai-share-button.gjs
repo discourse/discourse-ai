@@ -13,25 +13,18 @@ export default class AiDebugButton extends Component {
     return isPostFromAiBot(args.post, args.state.currentUser);
   }
 
-  // TODO (glimmer-post-menu): Remove this static function and move the code into the button action after the widget code is removed
-  static async shareAiResponse(post, modal, showFeedback) {
-    if (post.post_number <= AUTO_COPY_THRESHOLD) {
-      await copyConversation(post.topic, 1, post.post_number);
-      showFeedback("discourse_ai.ai_bot.conversation_shared");
-    } else {
-      modal.show(ShareModal, { model: post });
-    }
-  }
-
   @service modal;
 
   @action
-  shareAiResponse() {
-    this.constructor.shareAiResponse(
-      this.args.post,
-      this.modal,
-      this.args.showFeedback
-    );
+  async shareAiResponse() {
+    const post = this.args.post;
+
+    if (post.post_number <= AUTO_COPY_THRESHOLD) {
+      await copyConversation(post.topic, 1, post.post_number);
+      this.args.showFeedback("discourse_ai.ai_bot.conversation_shared");
+    } else {
+      this.modal.show(ShareModal, { model: post });
+    }
   }
 
   <template>
