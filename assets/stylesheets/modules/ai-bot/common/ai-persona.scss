@@ -104,7 +104,9 @@
   }
 
   &__uploads-list {
-    margin-bottom: 20px;
+    &:has(tr) {
+      margin-bottom: 20px;
+    }
 
     tbody {
       border-top: none;
@@ -132,5 +134,10 @@
 
   &__rag-file-icon {
     margin-right: 5px;
+  }
+
+  .hidden-upload-field {
+    visibility: hidden;
+    position: absolute;
   }
 }
