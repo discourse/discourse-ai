@@ -13,7 +13,7 @@ RSpec.describe DiscourseAi::Discord::Bot::PersonaReplier do
 
   before do
     SiteSetting.ai_discord_search_persona = persona.id.to_s
-    allow_any_instance_of(DiscourseAi::AiBot::Bot).to receive(:reply).and_return(
+    allow_any_instance_of(DiscourseAi::Personas::Bot).to receive(:reply).and_return(
       "This is a reply from bot!",
     )
     allow(persona_replier).to receive(:create_reply)

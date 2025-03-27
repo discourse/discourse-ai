@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-DiscourseAi::AiBot::Personas::Persona.system_personas.each do |persona_class, id|
+DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
   persona = AiPersona.find_by(id: id)
   if !persona
     persona = AiPersona.new
     persona.id = id
-    if persona_class == DiscourseAi::AiBot::Personas::WebArtifactCreator
+    if persona_class == DiscourseAi::Personas::WebArtifactCreator
       # this is somewhat sensitive, so we default it to staff
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:staff]]
     else
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
     persona.enabled = true
-    persona.priority = true if persona_class == DiscourseAi::AiBot::Personas::General
+    persona.priority = true if persona_class == DiscourseAi::Personas::General
   end
 
   names = [

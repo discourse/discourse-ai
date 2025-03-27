@@ -10,13 +10,13 @@ module ::Jobs
       persona_id = args[:persona_id]
 
       begin
-        persona = DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id)
-        raise DiscourseAi::AiBot::Bot::BOT_NOT_FOUND if persona.nil?
+        persona = DiscourseAi::Personas::Persona.find_by(user: post.user, id: persona_id)
+        raise DiscourseAi::Personas::Bot::BOT_NOT_FOUND if persona.nil?
 
-        bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
+        bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.new)
 
         DiscourseAi::AiBot::Playground.new(bot).reply_to(post)
-      rescue DiscourseAi::AiBot::Bot::BOT_NOT_FOUND
+      rescue DiscourseAi::Personas::Bot::BOT_NOT_FOUND
         Rails.logger.warn(
           "Bot not found for post #{post.id} - perhaps persona was deleted or bot was disabled",
         )

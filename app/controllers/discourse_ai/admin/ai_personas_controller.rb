@@ -15,7 +15,7 @@ module DiscourseAi
             LocalizedAiPersonaSerializer.new(persona, root: false)
           end
         tools =
-          DiscourseAi::AiBot::Personas::Persona.all_available_tools.map do |tool|
+          DiscourseAi::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
         AiTool

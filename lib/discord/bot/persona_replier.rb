@@ -9,12 +9,7 @@ module DiscourseAi
             .all_personas
             .find { |persona| persona.id == SiteSetting.ai_discord_search_persona.to_i }
             .new
-        @bot =
-          DiscourseAi::AiBot::Bot.as(
-            Discourse.system_user,
-            persona: @persona,
-            model: LlmModel.find(@persona.class.default_llm_id),
-          )
+        @bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: @persona)
         super(body)
       end
 

@@ -4,7 +4,7 @@ module DiscourseAi
   module Discord::Bot
     class Search < Base
       def initialize(body)
-        @search = DiscourseAi::AiBot::Tools::Search
+        @search = DiscourseAi::Personas::Tools::Search
         super(body)
       end
 

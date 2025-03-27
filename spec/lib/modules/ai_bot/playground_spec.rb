@@ -22,14 +22,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   fab!(:bot) do
     persona =
       AiPersona
-        .find(
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::General
-          ],
-        )
+        .find(DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General])
         .class_instance
         .new
-    DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+    DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
   end
 
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
@@ -103,7 +99,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
@@ -173,7 +169,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "uses custom tool in conversation" do
       persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
       responses = [tool_call, "custom tool did stuff (maybe)"]
@@ -213,7 +209,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       custom_tool.update!(enabled: false)
       # so we pick up new cache
       persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
       responses = ["custom tool did stuff (maybe)", tool_call]
@@ -965,7 +961,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "supports disabling tool details" do
       persona = Fabricate(:ai_persona, tool_details: false, tools: ["Search"])
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new)
       playground = described_class.new(bot)
 
       response1 =
@@ -1018,13 +1014,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       let(:persona) do
         AiPersona.find(
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::DallE3
-          ],
+          DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::DallE3],
         )
       end
 
-      let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new) }
+      let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new) }
       let(:data) do
         image =
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="

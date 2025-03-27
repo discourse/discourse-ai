@@ -77,8 +77,8 @@ module DiscourseAi
               io.flush
 
               persona_class =
-                DiscourseAi::AiBot::Personas::Persona.find_by(id: persona.id, user: current_user)
-              bot = DiscourseAi::AiBot::Bot.as(persona.user, persona: persona_class.new)
+                DiscourseAi::Personas::Persona.find_by(id: persona.id, user: current_user)
+              bot = DiscourseAi::Personas::Bot.as(persona.user, persona: persona_class.new)
 
               data =
                 {
