@@ -280,51 +280,49 @@ module DiscourseAi
 
       def topic_array
         raw_messages = @raw_messages.dup
-        user_content = +"You are operating in a Discourse forum.\n\n"
+        content_array = []
+        content_array << "You are operating in a Discourse forum.\n\n"
 
         if @topic
           if @topic.private_message?
-            user_content << "Private message info.\n"
+            content_array << "Private message info.\n"
           else
-            user_content << "Topic information:\n"
+            content_array << "Topic information:\n"
           end
 
-          user_content << "- URL: #{@topic.url}\n"
-          user_content << "- Title: #{@topic.title}\n"
+          content_array << "- URL: #{@topic.url}\n"
+          content_array << "- Title: #{@topic.title}\n"
           if SiteSetting.tagging_enabled
             tags = @topic.tags.pluck(:name)
             tags -= DiscourseTagging.hidden_tag_names if tags.present?
-            user_content << "- Tags: #{tags.join(", ")}\n" if tags.present?
+            content_array << "- Tags: #{tags.join(", ")}\n" if tags.present?
           end
           if !@topic.private_message?
-            user_content << "- Category: #{@topic.category.name}\n" if @topic.category
+            content_array << "- Category: #{@topic.category.name}\n" if @topic.category
           end
-          user_content << "- Number of replies: #{@topic.posts_count - 1}\n\n"
+          content_array << "- Number of replies: #{@topic.posts_count - 1}\n\n"
         end
 
         last_user_message = raw_messages.pop
 
-        upload_ids = []
         if raw_messages.present?
-          user_content << "Here is the conversation so far:\n"
+          content_array << "Here is the conversation so far:\n"
           raw_messages.each do |message|
-            user_content << "#{message[:name] || "User"}: #{message[:content]}\n"
-            upload_ids.concat(message[:upload_ids]) if message[:upload_ids].present?
+            content_array << "#{message[:name] || "User"}: "
+            content_array << message[:content]
+            content_array << "\n\n"
           end
         end
 
         if last_user_message
-          user_content << "You are responding to #{last_user_message[:name] || "User"} who just said:\n #{last_user_message[:content]}"
-          if last_user_message[:upload_ids].present?
-            upload_ids.concat(last_user_message[:upload_ids])
-          end
+          content_array << "You are responding to #{last_user_message[:name] || "User"} who just said:\n"
+          content_array << last_user_message[:content]
         end
 
-        user_message = { type: :user, content: user_content }
+        content_array =
+          compress_messages_buffer(content_array.flatten, max_uploads: MAX_TOPIC_UPLOADS)
 
-        if upload_ids.present?
-          user_message[:upload_ids] = upload_ids[-MAX_TOPIC_UPLOADS..-1] || upload_ids
-        end
+        user_message = { type: :user, content: content_array }
 
         [user_message]
       end
@@ -387,6 +385,8 @@ module DiscourseAi
           counter = max_uploads - upload_count
           compressed.delete_if { |item| item.is_a?(Hash) && (counter += 1) > 0 }
         end
+
+        compressed = compressed[0] if compressed.length == 1 && compressed[0].is_a?(String)
 
         compressed
       end
