@@ -16,25 +16,17 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
 
   @service discobotDiscoveries;
 
-  get hasDiscoveries() {
-    return this.args.outletArgs?.model?.topics?.length > 0;
-  }
-
   <template>
-    {{#if this.hasDiscoveries}}
-      <h3
-        class="ai-search-discoveries__discoveries-title full-page-discoveries"
-      >
-        <span>
-          {{icon "discobot"}}
-          {{i18n "discourse_ai.discobot_discoveries.main_title"}}
-        </span>
+    <h3 class="ai-search-discoveries__discoveries-title full-page-discoveries">
+      <span>
+        {{icon "discobot"}}
+        {{i18n "discourse_ai.discobot_discoveries.main_title"}}
+      </span>
 
-        <AiSearchDiscoveriesTooltip />
-      </h3>
-      <div class="full-page-discoveries">
-        <AiSearchDiscoveries @searchTerm={{@outletArgs.search}} />
-      </div>
-    {{/if}}
+      <AiSearchDiscoveriesTooltip />
+    </h3>
+    <div class="full-page-discoveries">
+      <AiSearchDiscoveries @searchTerm={{@outletArgs.search}} />
+    </div>
   </template>
 }
