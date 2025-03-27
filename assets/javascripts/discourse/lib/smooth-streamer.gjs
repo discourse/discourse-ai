@@ -52,6 +52,7 @@ export default class SmoothStreamer {
    */
   resetStreaming() {
     this.#cancelTypingTimer();
+    this.isStreaming = false;
     this.streamedText = "";
     this.streamedTextLength = 0;
   }
