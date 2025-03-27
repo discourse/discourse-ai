@@ -10,6 +10,7 @@ import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import FastEdit from "discourse/components/fast-edit";
 import FastEditModal from "discourse/components/modal/fast-edit";
+import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
@@ -20,6 +21,7 @@ import { i18n } from "discourse-i18n";
 import eq from "truth-helpers/helpers/eq";
 import AiHelperLoading from "../components/ai-helper-loading";
 import AiHelperOptionsList from "../components/ai-helper-options-list";
+import SmoothStreamer from "../lib/smooth-streamer";
 
 export default class AiPostHelperMenu extends Component {
   @service messageBus;
@@ -42,6 +44,12 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
+
+  @tracked
+  smoothStreamer = new SmoothStreamer(
+    () => this.suggestion,
+    (newValue) => (this.suggestion = newValue)
+  );
 
   MENU_STATES = {
     options: "OPTIONS",
@@ -172,9 +180,9 @@ export default class AiPostHelperMenu extends Component {
   }
 
   @bind
-  _updateResult(result) {
+  async _updateResult(result) {
     this.streaming = !result.done;
-    this.suggestion = result.result;
+    await this.smoothStreamer.updateResult(result, "result");
   }
 
   @action
@@ -350,8 +358,18 @@ export default class AiPostHelperMenu extends Component {
             {{willDestroy this.unsubscribe}}
           >
             {{#if this.suggestion}}
-              <div class="ai-post-helper__suggestion__text" dir="auto">
-                <CookText @rawText={{this.suggestion}} />
+              <div
+                class={{concatClass
+                  (if this.smoothStreamer.isStreaming "streaming")
+                  "streamable-content"
+                  "ai-post-helper__suggestion__text"
+                }}
+                dir="auto"
+              >
+                <CookText
+                  @rawText={{this.smoothStreamer.renderedText}}
+                  class="cooked"
+                />
               </div>
               <div class="ai-post-helper__suggestion__buttons">
                 <DButton

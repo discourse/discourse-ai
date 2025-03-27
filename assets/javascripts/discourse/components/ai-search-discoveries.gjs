@@ -12,10 +12,10 @@ import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
+import SmoothStreamer from "../lib/smooth-streamer";
 import AiBlinkingAnimation from "./ai-blinking-animation";
 
 const DISCOVERY_TIMEOUT_MS = 10000;
-const STREAMED_TEXT_SPEED = 23;
 
 export default class AiSearchDiscoveries extends Component {
   @service search;
@@ -27,9 +27,11 @@ export default class AiSearchDiscoveries extends Component {
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
-
-  @tracked isStreaming = false;
-  @tracked streamedText = "";
+  @tracked
+  smoothStreamer = new SmoothStreamer(
+    () => this.discobotDiscoveries.discovery,
+    (newValue) => (this.discobotDiscoveries.discovery = newValue)
+  );
 
   discoveryTimeout = null;
   typingTimer = null;
@@ -53,36 +55,6 @@ export default class AiSearchDiscoveries extends Component {
     );
   }
 
-  typeCharacter() {
-    if (this.streamedTextLength < this.discobotDiscoveries.discovery.length) {
-      this.streamedText += this.discobotDiscoveries.discovery.charAt(
-        this.streamedTextLength
-      );
-      this.streamedTextLength++;
-
-      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
-    } else {
-      this.typingTimer = null;
-    }
-  }
-
-  onTextUpdate() {
-    this.cancelTypingTimer();
-    this.typeCharacter();
-  }
-
-  cancelTypingTimer() {
-    if (this.typingTimer) {
-      cancel(this.typingTimer);
-    }
-  }
-
-  resetStreaming() {
-    this.cancelTypingTimer();
-    this.streamedText = "";
-    this.streamedTextLength = 0;
-  }
-
   @bind
   async _updateDiscovery(update) {
     if (this.query === update.query) {
@@ -94,23 +66,9 @@ export default class AiSearchDiscoveries extends Component {
         this.discobotDiscoveries.discovery = "";
       }
 
-      const newText = update.ai_discover_reply;
       this.discobotDiscoveries.modelUsed = update.model_used;
       this.loadingDiscoveries = false;
-
-      // Handling short replies.
-      if (update.done) {
-        this.discobotDiscoveries.discovery = newText;
-        this.streamedText = newText;
-        this.isStreaming = false;
-
-        // Clear pending animations
-        this.cancelTypingTimer();
-      } else if (newText.length > this.discobotDiscoveries.discovery.length) {
-        this.discobotDiscoveries.discovery = newText;
-        this.isStreaming = true;
-        await this.onTextUpdate();
-      }
+      this.smoothStreamer.updateResult(update, "ai_discover_reply");
     }
   }
 
@@ -153,14 +111,8 @@ export default class AiSearchDiscoveries extends Component {
   get canShowExpandtoggle() {
     return (
       !this.loadingDiscoveries &&
-      this.renderedDiscovery.length > this.discoveryPreviewLength
+      this.smoothStreamer.renderedText.length > this.discoveryPreviewLength
     );
-  }
-
-  get renderedDiscovery() {
-    return this.isStreaming
-      ? this.streamedText
-      : this.discobotDiscoveries.discovery;
   }
 
   get renderPreviewOnly() {
@@ -173,7 +125,7 @@ export default class AiSearchDiscoveries extends Component {
       this.hideDiscoveries = false;
       return;
     } else {
-      this.resetStreaming();
+      this.smoothStreamer.resetStreaming();
       this.discobotDiscoveries.resetDiscovery();
     }
 
@@ -225,12 +177,12 @@ export default class AiSearchDiscoveries extends Component {
             class={{concatClass
               "ai-search-discoveries__discovery"
               (if this.renderPreviewOnly "preview")
-              (if this.isStreaming "streaming")
+              (if this.smoothStreamer.isStreaming "streaming")
               "streamable-content"
             }}
           >
             <div class="cooked">
-              <CookText @rawText={{this.renderedDiscovery}} />
+              <CookText @rawText={{this.smoothStreamer.renderedText}} />
             </div>
           </article>
 

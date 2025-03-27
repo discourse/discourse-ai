@@ -5,7 +5,6 @@ import { action } from "@ember/object";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
-import { cancel, later } from "@ember/runloop";
 import { service } from "@ember/service";
 import { not } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
@@ -20,8 +19,7 @@ import { shortDateNoYear } from "discourse/lib/formatter";
 import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
 import AiSummarySkeleton from "../../components/ai-summary-skeleton";
-
-const STREAMED_TEXT_SPEED = 15;
+import SmoothStreamer from "../../lib/smooth-streamer";
 
 export default class AiSummaryModal extends Component {
   @service siteSettings;
@@ -37,11 +35,12 @@ export default class AiSummaryModal extends Component {
   @tracked outdated = false;
   @tracked canRegenerate = false;
   @tracked loading = false;
-  @tracked isStreaming = false;
-  @tracked streamedText = "";
   @tracked currentIndex = 0;
-  typingTimer = null;
-  streamedTextLength = 0;
+  @tracked
+  smoothStreamer = new SmoothStreamer(
+    () => this.text,
+    (newValue) => (this.text = newValue)
+  );
 
   get outdatedSummaryWarningText() {
     let outdatedText = i18n("summary.outdated");
@@ -57,7 +56,7 @@ export default class AiSummaryModal extends Component {
   }
 
   resetSummary() {
-    this.streamedText = "";
+    this.smoothStreamer.resetStreaming();
     this.currentIndex = 0;
     this.text = "";
     this.summarizedOn = null;
@@ -142,26 +141,6 @@ export default class AiSummaryModal extends Component {
     });
   }
 
-  typeCharacter() {
-    if (this.streamedTextLength < this.text.length) {
-      this.streamedText += this.text.charAt(this.streamedTextLength);
-      this.streamedTextLength++;
-
-      this.typingTimer = later(this, this.typeCharacter, STREAMED_TEXT_SPEED);
-    } else {
-      this.typingTimer = null;
-    }
-  }
-
-  onTextUpdate() {
-    // Reset only if there’s a new summary to process
-    if (this.typingTimer) {
-      cancel(this.typingTimer);
-    }
-
-    this.typeCharacter();
-  }
-
   @bind
   async _updateSummary(update) {
     const topicSummary = {
@@ -169,14 +148,11 @@ export default class AiSummaryModal extends Component {
       raw: update.ai_topic_summary?.summarized_text,
       ...update.ai_topic_summary,
     };
-    const newText = topicSummary.raw || "";
+
     this.loading = false;
+    this.smoothStreamer.updateResult(topicSummary, "raw");
 
     if (update.done) {
-      this.text = newText;
-      this.streamedText = newText;
-      this.displayedTextLength = newText.length;
-      this.isStreaming = false;
       this.summarizedOn = shortDateNoYear(
         moment(topicSummary.updated_at, "YYYY-MM-DD HH:mm:ss Z")
       );
@@ -184,16 +160,6 @@ export default class AiSummaryModal extends Component {
       this.newPostsSinceSummary = topicSummary.new_posts_since_summary;
       this.outdated = topicSummary.outdated;
       this.canRegenerate = topicSummary.outdated && topicSummary.can_regenerate;
-
-      // Clear pending animations
-      if (this.typingTimer) {
-        cancel(this.typingTimer);
-        this.typingTimer = null;
-      }
-    } else if (newText.length > this.text.length) {
-      this.text = newText;
-      this.isStreaming = true;
-      this.onTextUpdate();
     }
   }
 
@@ -226,14 +192,14 @@ export default class AiSummaryModal extends Component {
             class={{concatClass
               "ai-summary-box"
               "streamable-content"
-              (if this.isStreaming "streaming")
+              (if this.smoothStreamer.isStreaming "streaming")
             }}
           >
             {{#if this.loading}}
               <AiSummarySkeleton />
             {{else}}
               <div class="generated-summary cooked">
-                <CookText @rawText={{this.streamedText}} />
+                <CookText @rawText={{this.smoothStreamer.renderedText}} />
               </div>
             {{/if}}
           </article>
