@@ -150,13 +150,11 @@ module DiscourseAi
           persona = nil
 
           if persona_id
-            persona =
-              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
+            persona = DiscourseAi::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
           end
 
           if !persona && persona_name = post.topic.custom_fields["ai_persona"]
-            persona =
-              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+            persona = DiscourseAi::Personas::Persona.find_by(user: post.user, name: persona_name)
           end
 
           # edge case, llm was mentioned in an ai persona conversation
@@ -172,11 +170,11 @@ module DiscourseAi
             end
           end
 
-          persona ||= DiscourseAi::AiBot::Personas::General
+          persona ||= DiscourseAi::Personas::General
 
           bot_user = User.find(persona.user_id) if persona && persona.force_default_llm
 
-          bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
+          bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.new)
           new(bot).update_playground_with(post)
         end
       end
@@ -198,7 +196,7 @@ module DiscourseAi
 
         bot_user = user || ai_persona.user
         raise Discourse::InvalidParameters.new(:user) if bot_user.nil?
-        bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+        bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
         playground = DiscourseAi::AiBot::Playground.new(bot)
 
         playground.reply_to(
@@ -307,16 +305,52 @@ module DiscourseAi
       end
 
       def title_playground(post, user)
-        context = conversation_context(post)
+        conversation =
+          conversation_context(post).reduce(+"") do |memo, c|
+            if c[:type] == :user || c[:type] == :model
+              memo << "#{c[:type].to_s.humanize} said:\n#{c[:content]}\n\n"
+            end
 
-        bot
-          .get_updated_title(context, post, user)
-          .tap do |new_title|
-            PostRevisor.new(post.topic.first_post, post.topic).revise!(
-              bot.bot_user,
-              title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
-            )
+            memo
           end
+
+        system_insts = <<~TEXT.strip
+          You are titlebot. Given a conversation, you will suggest a title.
+  
+          - You will never respond with anything but the suggested title.
+          - You will always match the conversation language in your title suggestion.
+          - Title will capture the essence of the conversation.
+          TEXT
+
+        instruction = <<~TEXT.strip
+          Given the following conversation:
+  
+          {{{
+          #{conversation}
+          }}}
+  
+          Reply only with a title that is 7 words or less.
+          TEXT
+
+        title_prompt =
+          DiscourseAi::Completions::Prompt.new(
+            system_insts,
+            messages: [type: :user, content: instruction],
+            topic_id: post.topic_id,
+          )
+
+        title =
+          bot
+            .llm
+            .generate(title_prompt, user: user, feature_name: "bot_title")
+            .strip
+            .split("\n")
+            .last
+
+        PostRevisor.new(post.topic.first_post, post.topic).revise!(
+          bot.bot_user,
+          title: title.sub(/\A"/, "").sub(/"\Z/, ""),
+        )
 
         allowed_users = post.topic.topic_allowed_users.pluck(:user_id)
         MessageBus.publish(
@@ -710,8 +744,7 @@ module DiscourseAi
 
       def schedule_bot_reply(post)
         persona_id =
-          DiscourseAi::AiBot::Personas::Persona.system_personas[bot.persona.class] ||
-            bot.persona.class.id
+          DiscourseAi::Personas::Persona.system_personas[bot.persona.class] || bot.persona.class.id
         ::Jobs.enqueue(
           :create_ai_reply,
           post_id: post.id,

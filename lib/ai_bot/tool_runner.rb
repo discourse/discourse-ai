@@ -333,7 +333,7 @@ module DiscourseAi
               return { error: "Persona not found" } if persona_class.nil?
 
               persona = persona_class.new
-              bot = DiscourseAi::AiBot::Bot.as(@bot_user || persona.user, persona: persona)
+              bot = DiscourseAi::Personas::Bot.as(@bot_user || persona.user, persona: persona)
               playground = DiscourseAi::AiBot::Playground.new(bot)
 
               if @context[:post_id]
@@ -482,7 +482,7 @@ module DiscourseAi
                 headers = (options && options["headers"]) || {}
 
                 result = {}
-                DiscourseAi::AiBot::Tools::Tool.send_http_request(
+                DiscourseAi::Personas::Tools::Tool.send_http_request(
                   url,
                   headers: headers,
                 ) do |response|
@@ -511,7 +511,7 @@ module DiscourseAi
                   body = options && options["body"]
 
                   result = {}
-                  DiscourseAi::AiBot::Tools::Tool.send_http_request(
+                  DiscourseAi::Personas::Tools::Tool.send_http_request(
                     url,
                     method: method,
                     headers: headers,
