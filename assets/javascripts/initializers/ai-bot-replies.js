@@ -1,15 +1,11 @@
 import { hbs } from "ember-cli-htmlbars";
-import { withSilencedDeprecations } from "discourse/lib/deprecated";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
 import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
 import AiShareButton from "../discourse/components/post-menu/ai-share-button";
-import {
-  isPostFromAiBot,
-  showShareConversationModal,
-} from "../discourse/lib/ai-bot-helper";
+import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
 import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
 
 let enabledChatBotIds = [];
