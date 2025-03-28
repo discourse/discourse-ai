@@ -25,9 +25,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ReadArtifact do
           { url: "#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/#{artifact.id}" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post2.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(post: post),
         )
 
       result = tool.invoke {}
@@ -46,9 +44,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ReadArtifact do
           { url: "invalid-url" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(post: post),
         )
 
       result = tool.invoke {}
@@ -62,9 +58,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ReadArtifact do
           { url: "#{Discourse.base_url}/discourse-ai/ai-bot/artifacts/99999" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(post: post),
         )
 
       result = tool.invoke {}
@@ -97,9 +91,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ReadArtifact do
           { url: "https://example.com" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(post: post),
         )
 
       result = tool.invoke {}
@@ -128,9 +120,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::ReadArtifact do
           { url: "https://example.com" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(post: post),
         )
 
       result = tool.invoke {}

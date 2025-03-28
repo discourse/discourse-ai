@@ -59,7 +59,7 @@ module DiscourseAi
         end
 
         def post
-          @post ||= Post.find_by(id: context[:post_id])
+          @post ||= Post.find_by(id: context.post_id)
         end
 
         def handle_discourse_artifact(uri)
