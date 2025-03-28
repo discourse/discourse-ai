@@ -24,8 +24,6 @@ export default class AiSearchDiscoveries extends Component {
   @service discobotDiscoveries;
   @service appEvents;
 
-  @tracked loadingDiscoveries = false;
-  @tracked searching = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
@@ -57,9 +55,17 @@ export default class AiSearchDiscoveries extends Component {
 
   @bind
   detectSearch() {
+    if (
+      this.query?.length === 0 &&
+      this.discobotDiscoveries.discovery?.length > 0
+    ) {
+      this.discobotDiscoveries.resetDiscovery();
+      this.smoothStreamer.resetStreaming();
+    }
+
     withPluginApi((api) => {
       api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
-        if (!searchMenu || this.searching) {
+        if (!searchMenu || this.discobotDiscoveries.loadingDiscoveries) {
           return;
         }
 
@@ -87,7 +93,7 @@ export default class AiSearchDiscoveries extends Component {
       }
 
       this.discobotDiscoveries.modelUsed = update.model_used;
-      this.loadingDiscoveries = false;
+      this.discobotDiscoveries.loadingDiscoveries = false;
       this.smoothStreamer.updateResult(update, "ai_discover_reply");
     }
   }
@@ -130,7 +136,7 @@ export default class AiSearchDiscoveries extends Component {
 
   get canShowExpandtoggle() {
     return (
-      !this.loadingDiscoveries &&
+      !this.discobotDiscoveries.loadingDiscoveries &&
       this.smoothStreamer.renderedText.length > this.discoveryPreviewLength
     );
   }
@@ -150,7 +156,8 @@ export default class AiSearchDiscoveries extends Component {
     }
 
     this.hideDiscoveries = false;
-    this.loadingDiscoveries = true;
+    this.discobotDiscoveries.loadingDiscoveries = true;
+
     this.discoveryTimeout = later(
       this,
       this.timeoutDiscovery,
@@ -159,14 +166,12 @@ export default class AiSearchDiscoveries extends Component {
 
     try {
       this.discobotDiscoveries.lastQuery = this.query;
-      this.searching = true;
+
       await ajax("/discourse-ai/ai-bot/discover", {
         data: { query: this.query },
       });
     } catch {
       this.hideDiscoveries = true;
-    } finally {
-      this.searching = false;
     }
   }
 
@@ -176,7 +181,7 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   timeoutDiscovery() {
-    this.loadingDiscoveries = false;
+    this.discobotDiscoveries.loadingDiscoveries = false;
     this.discobotDiscoveries.discovery = "";
 
     this.discobotDiscoveries.discoveryTimedOut = true;
@@ -192,7 +197,7 @@ export default class AiSearchDiscoveries extends Component {
       {{willDestroy this.unsubscribe}}
     >
       <div class="ai-search-discoveries__completion">
-        {{#if this.loadingDiscoveries}}
+        {{#if this.discobotDiscoveries.loadingDiscoveries}}
           <AiBlinkingAnimation />
         {{else if this.discobotDiscoveries.discoveryTimedOut}}
           {{i18n "discourse_ai.discobot_discoveries.timed_out"}}
