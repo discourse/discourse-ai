@@ -102,35 +102,46 @@ module DiscourseAi
         end
 
         def user_msg(msg)
-          user_message = { role: "user", content: msg[:content] }
+          content_array = []
+
+          user_message = { role: "user" }
 
           if msg[:id]
             if @embed_user_ids
-              user_message[:content] = "#{msg[:id]}: #{msg[:content]}"
+              content_array << "#{msg[:id]}: "
             else
               user_message[:name] = msg[:id]
             end
           end
 
-          user_message[:content] = inline_images(user_message[:content], msg) if vision_support?
+          content_array << msg[:content]
+
+          content_array =
+            to_encoded_content_array(
+              content: content_array.flatten,
+              image_encoder: ->(details) { image_node(details) },
+              text_encoder: ->(text) { { type: "text", text: text } },
+              allow_vision: vision_support?,
+            )
+
+          user_message[:content] = no_array_if_only_text(content_array)
           user_message
         end
 
-        def inline_images(content, message)
-          encoded_uploads = prompt.encoded_uploads(message)
-          return content if encoded_uploads.blank?
+        def no_array_if_only_text(content_array)
+          if content_array.size == 1 && content_array.first[:type] == "text"
+            return content_array.first[:text]
+          end
+          content_array
+        end
 
-          content_w_imgs =
-            encoded_uploads.reduce([]) do |memo, details|
-              memo << {
-                type: "image_url",
-                image_url: {
-                  url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-                },
-              }
-            end
-
-          content_w_imgs << { type: "text", text: message[:content] }
+        def image_node(details)
+          {
+            type: "image_url",
+            image_url: {
+              url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
+            },
+          }
         end
 
         def per_message_overhead

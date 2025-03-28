@@ -14,6 +14,25 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     Fabricate(:upload, user: user, original_filename: "image.png", extension: "png")
   end
 
+  it "correctly merges user messages with uploads" do
+    builder.push(type: :user, content: "Hello", name: "Alice", upload_ids: [1])
+    builder.push(type: :user, content: "World", name: "Bob", upload_ids: [2])
+
+    messages = builder.to_a
+
+    # Check the structure of the merged message
+    expect(messages.length).to eq(1)
+    expect(messages[0][:type]).to eq(:user)
+
+    # The content should contain the text and both uploads
+    content = messages[0][:content]
+    expect(content).to be_an(Array)
+    expect(content[0]).to eq("Alice: Hello")
+    expect(content[1]).to eq({ upload_id: 1 })
+    expect(content[2]).to eq("\nBob: World")
+    expect(content[3]).to eq({ upload_id: 2 })
+  end
+
   it "should allow merging user messages" do
     builder.push(type: :user, content: "Hello", name: "Alice")
     builder.push(type: :user, content: "World", name: "Bob")
