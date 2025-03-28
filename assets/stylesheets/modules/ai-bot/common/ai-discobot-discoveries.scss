@@ -93,10 +93,6 @@
   }
 }
 
-.ai-discobot-discoveries {
-  padding: 0.5em;
-}
-
 .full-page-discoveries {
   padding: 1em 10%;
 }
@@ -115,22 +111,30 @@
 
     .results {
       display: grid;
-      grid-template-areas: "regular-results" "discovery-results";
       grid-template-columns: 58% 38%;
+      grid-template-rows: auto auto 1fr;
       gap: 0 4%;
 
-      .ai-search-discoveries {
-        grid-area: discovery-results;
+      * {
+        // covers all non-discovery content
+        grid-column-start: 1;
       }
 
-      .search-result-topic {
-        grid-area: regular-results;
+      .ai-discobot-discoveries {
+        // always in the second column, always spans all rows
+        grid-column-start: 2;
+        grid-row: 1 / -1;
       }
     }
 
     .ai-search-discoveries {
       font-size: var(--font-0);
       color: var(--primary-high);
+      padding-right: 0.5em;
+    }
+
+    .ai-search-discoveries__discoveries-title {
+      margin-top: 0.5em;
     }
 
     .ai-search-discoveries__regular-results-title {
