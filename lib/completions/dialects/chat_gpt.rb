@@ -130,9 +130,10 @@ module DiscourseAi
 
         def no_array_if_only_text(content_array)
           if content_array.size == 1 && content_array.first[:type] == "text"
-            return content_array.first[:text]
+            content_array.first[:text]
+          else
+            content_array
           end
-          content_array
         end
 
         def image_node(details)
