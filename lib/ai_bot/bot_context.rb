@@ -19,7 +19,11 @@ module DiscourseAi
         user: nil,
         skip_tool_details: nil,
         messages: [],
-        custom_instructions: nil
+        custom_instructions: nil,
+        site_url: nil,
+        site_title: nil,
+        site_description: nil,
+        time: nil
       )
         @participants = participants
         @user = user
@@ -27,17 +31,22 @@ module DiscourseAi
         @messages = messages
         @custom_instructions = custom_instructions
 
+        @site_url = site_url
+        @site_title = site_title
+        @site_description = site_description
+        @time = time
+
         if post
           @post_id = post.id
           @topic_id = post.topic_id
           @private_message = post.topic.private_message?
-          @participants = post.topic.allowed_users.map(&:username).join(", ") if @private_message
+          @participants ||= post.topic.allowed_users.map(&:username).join(", ") if @private_message
           @user = post.user
         end
       end
 
       # these are strings that can be safely interpolated into templates
-      TEMPLATE_PARAMS = %w[time site_url site_title site_description]
+      TEMPLATE_PARAMS = %w[time site_url site_title site_description participants]
 
       def lookup_template_param(key)
         public_send(key.to_sym) if TEMPLATE_PARAMS.include?(key)
@@ -48,15 +57,15 @@ module DiscourseAi
       end
 
       def site_url
-        Discourse.base_url
+        @site_url ||= Discourse.base_url
       end
 
       def site_title
-        SiteSetting.title
+        @site_title ||= SiteSetting.title
       end
 
       def site_description
-        SiteSetting.site_description
+        @site_description ||= SiteSetting.site_description
       end
 
       def private_message?
