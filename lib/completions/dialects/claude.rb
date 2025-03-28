@@ -109,9 +109,9 @@ module DiscourseAi
           content_array =
             to_encoded_content_array(
               content: [content_array, msg[:content]].flatten,
-              image_encoder: ->(details) { image_node(details) },
+              image_encoder: ->(details) {},
               text_encoder: ->(text) { { type: "text", text: text } },
-              allow_vision: vision_support?,
+              allow_vision: false,
             )
 
           { role: "assistant", content: no_array_if_only_text(content_array) }
