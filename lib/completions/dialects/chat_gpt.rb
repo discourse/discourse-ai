@@ -17,13 +17,13 @@ module DiscourseAi
           llm_model.provider == "open_ai" || llm_model.provider == "azure"
         end
 
-        def translate
+        def embed_user_ids?
+          return @embed_user_ids if defined?(@embed_user_ids)
+
           @embed_user_ids =
             prompt.messages.any? do |m|
               m[:id] && m[:type] == :user && !m[:id].to_s.match?(VALID_ID_REGEX)
             end
-
-          super
         end
 
         def max_prompt_tokens
@@ -107,7 +107,7 @@ module DiscourseAi
           user_message = { role: "user" }
 
           if msg[:id]
-            if @embed_user_ids
+            if embed_user_ids?
               content_array << "#{msg[:id]}: "
             else
               user_message[:name] = msg[:id]
