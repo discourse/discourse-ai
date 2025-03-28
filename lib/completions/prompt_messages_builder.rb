@@ -216,12 +216,19 @@ module DiscourseAi
 
             if message[:type] == :user
               old_name = last_message.delete(:name)
-              last_message[:content] = "#{old_name}: #{last_message[:content]}" if old_name
+              last_message[:content] = ["#{old_name}: ", last_message[:content]].flatten if old_name
 
               new_content = message[:content]
-              new_content = "#{message[:name]}: #{new_content}" if message[:name]
+              new_content = ["#{message[:name]}: ", new_content].flatten if message[:name]
 
-              last_message[:content] += "\n#{new_content}"
+              if !last_message[:content].is_a?(Array)
+                last_message[:content] = [last_message[:content]]
+              end
+              last_message[:content].concat(["\n", new_content].flatten)
+
+              compressed =
+                compress_messages_buffer(last_message[:content], max_uploads: MAX_TOPIC_UPLOADS)
+              last_message[:content] = compressed
             else
               last_message[:content] = message[:content]
             end

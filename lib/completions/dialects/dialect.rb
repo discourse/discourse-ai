@@ -227,6 +227,29 @@ module DiscourseAi
           msg = msg.merge(content: new_content)
           user_msg(msg)
         end
+
+        def to_encoded_content_array(content:, image_encoder:, text_encoder:, allow_vision:)
+          content = [content] if !content.is_a?(Array)
+
+          current_string = +""
+          result = []
+
+          content.each do |c|
+            if c.is_a?(String)
+              current_string << c
+            elsif c.is_a?(Hash) && c.key?(:upload_id) && allow_vision
+              if !current_string.empty?
+                result << text_encoder.call(current_string)
+                current_string = +""
+              end
+              encoded = prompt.encode_upload(c[:upload_id])
+              result << image_encoder.call(encoded) if encoded
+            end
+          end
+
+          result << text_encoder.call(current_string) if !current_string.empty?
+          result
+        end
       end
     end
   end
