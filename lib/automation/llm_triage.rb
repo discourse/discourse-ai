@@ -42,7 +42,12 @@ module DiscourseAi
 
         content = llm.tokenizer.truncate(content, max_post_tokens) if max_post_tokens.present?
 
-        prompt.push(type: :user, content: content, upload_ids: post.upload_ids)
+        if post.upload_ids.present?
+          content = [content]
+          content.concat(post.upload_ids.map { |upload_id| { upload_id: upload_id } })
+        end
+
+        prompt.push(type: :user, content: content)
 
         result = nil
 

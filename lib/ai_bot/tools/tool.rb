@@ -56,14 +56,17 @@ module DiscourseAi
           persona_options: {},
           bot_user:,
           llm:,
-          context: {}
+          context: nil
         )
           @parameters = parameters
           @tool_call_id = tool_call_id
           @persona_options = persona_options
           @bot_user = bot_user
           @llm = llm
-          @context = context
+          @context = context.nil? ? DiscourseAi::AiBot::BotContext.new(messages: []) : context
+          if !@context.is_a?(DiscourseAi::AiBot::BotContext)
+            raise ArgumentError, "context must be a DiscourseAi::AiBot::Context"
+          end
         end
 
         def name
