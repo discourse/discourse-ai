@@ -7,7 +7,6 @@
     opacity: 1;
   }
 }
-
 .ai-search-discoveries {
   &__regular-results-title {
     margin-bottom: 0;
@@ -108,23 +107,23 @@
 }
 
 @include breakpoint("medium", min-width) {
-  .search-menu .menu-panel:has(.ai-discobot-discoveries) {
+  .search-menu .menu-panel:has(.ai-search-discoveries__discoveries-title) {
     width: 80vw;
     max-width: 800px;
     transition: width 0.5s;
 
-    .search-result-topic {
+    .results {
       display: grid;
-      grid-template-areas: "results-title ai-title" "results ai";
+      grid-template-areas: "regular-results" "discovery-results";
       grid-template-columns: 58% 38%;
       gap: 0 4%;
 
-      .list {
-        grid-area: results;
+      .ai-search-discoveries {
+        grid-area: discovery-results;
       }
 
-      .ai-discobot-discoveries {
-        grid-area: ai;
+      .search-result-topic {
+        grid-area: regular-results;
       }
     }
 

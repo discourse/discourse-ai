@@ -210,9 +210,10 @@ export default class AiSearchDiscoveries extends Component {
               "streamable-content"
             }}
           >
-            <div class="cooked">
-              <CookText @rawText={{this.smoothStreamer.renderedText}} />
-            </div>
+            <CookText
+              @rawText={{this.smoothStreamer.renderedText}}
+              class="cooked"
+            />
           </article>
 
           {{#if this.canShowExpandtoggle}}
