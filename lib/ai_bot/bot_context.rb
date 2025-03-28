@@ -18,7 +18,7 @@ module DiscourseAi
         participants: nil,
         user: nil,
         skip_tool_details: nil,
-        messages:,
+        messages: [],
         custom_instructions: nil
       )
         @participants = participants
