@@ -255,11 +255,12 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
         prompt = _prompts.first
       end
 
-      content = prompt.messages[1][:content]
+      # its an array so lets just stringify it to make testing easier
+      content = prompt.messages[1][:content][0]
       expect(content).to include(post.topic.title)
       expect(content).to include(post.raw)
 
-      upload_ids = prompt.messages[1][:upload_ids]
+      upload_ids = prompt.messages[1][:content].map { |m| m[:upload_id] if m.is_a?(Hash) }.compact
       expect(upload_ids).to be_present
       expect(upload_ids).to eq(post.upload_ids)
 

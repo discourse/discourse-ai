@@ -187,7 +187,10 @@ module DiscourseAi
         prompt = DiscourseAi::Completions::Prompt.new(system_prompt)
         args = { type: :user, content: context }
         upload_ids = post.upload_ids
-        args[:upload_ids] = upload_ids.take(3) if upload_ids.present?
+        if upload_ids.present?
+          args[:content] = [args[:content]]
+          upload_ids.take(3).each { |upload_id| args[:content] << { upload_id: upload_id } }
+        end
         prompt.push(**args)
         prompt
       end
