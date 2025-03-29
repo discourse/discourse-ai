@@ -93,6 +93,9 @@ module DiscourseAi
       end
 
       def reply(context, &update_blk)
+        unless context.is_a?(BotContext)
+          raise ArgumentError, "context must be an instance of BotContext"
+        end
         llm = DiscourseAi::Completions::Llm.proxy(model)
         prompt = persona.craft_prompt(context, llm: llm)
 

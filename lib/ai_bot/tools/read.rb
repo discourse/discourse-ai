@@ -48,7 +48,7 @@ module DiscourseAi
 
         def invoke
           not_found = { topic_id: topic_id, description: "Topic not found" }
-          guardian = Guardian.new(context[:user]) if options[:read_private] && context[:user]
+          guardian = Guardian.new(context.user) if options[:read_private] && context.user
           guardian ||= Guardian.new
 
           @title = ""

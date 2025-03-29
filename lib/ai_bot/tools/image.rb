@@ -131,7 +131,7 @@ module DiscourseAi
                     UploadCreator.new(
                       file,
                       "image.png",
-                      for_private_message: context[:private_message],
+                      for_private_message: context.private_message,
                     ).create_for(bot_user.id),
                   seed: image[:seed],
                 }

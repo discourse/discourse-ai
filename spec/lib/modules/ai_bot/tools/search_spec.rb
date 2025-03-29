@@ -60,9 +60,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Search do
           persona_options: persona_options,
           bot_user: bot_user,
           llm: llm,
-          context: {
-            user: user,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(user: user),
         )
 
       expect(search.options[:base_query]).to eq("#funny")
