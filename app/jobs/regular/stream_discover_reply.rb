@@ -30,9 +30,13 @@ module Jobs
 
       base = { query: query, model_used: llm_model.display_name }
 
-      bot.reply(
-        { conversation_context: [{ type: :user, content: query }], skip_tool_details: true },
-      ) do |partial|
+      context =
+        DiscourseAi::AiBot::BotContext.new(
+          messages: [{ type: :user, content: query }],
+          skip_tool_details: true,
+        )
+
+      bot.reply(context) do |partial|
         streamed_reply << partial
 
         # Throttle updates.

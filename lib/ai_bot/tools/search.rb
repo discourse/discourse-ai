@@ -130,7 +130,7 @@ module DiscourseAi
               after: parameters[:after],
               status: parameters[:status],
               max_results: max_results,
-              current_user: options[:search_private] ? context[:user] : nil,
+              current_user: options[:search_private] ? context.user : nil,
             )
 
           @last_num_results = results[:rows]&.length || 0

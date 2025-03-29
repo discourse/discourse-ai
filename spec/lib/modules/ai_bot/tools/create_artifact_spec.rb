@@ -34,9 +34,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::CreateArtifact do
             { html_body: "hello" },
             bot_user: Fabricate(:user),
             llm: llm,
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(post: post),
           )
 
         tool.parameters = { name: "hello", specification: "hello spec" }

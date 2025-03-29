@@ -56,9 +56,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
           persona_options: {
             "read_private" => true,
           },
-          context: {
-            user: admin,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(user: admin),
         )
       results = tool.invoke
       expect(results[:content]).to include("hello there")
@@ -68,9 +66,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Read do
           { topic_id: topic_with_tags.id, post_numbers: [post1.post_number] },
           bot_user: bot_user,
           llm: llm,
-          context: {
-            user: admin,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(user: admin),
         )
 
       results = tool.invoke

@@ -52,7 +52,7 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
       bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: personaClass.new)
       bot.reply(
-        { conversation_context: [{ type: :user, content: "test" }] },
+        DiscourseAi::AiBot::BotContext.new(messages: [{ type: :user, content: "test" }]),
       ) do |_partial, _cancel, _placeholder|
         # we just need the block so bot has something to call with results
       end
@@ -74,7 +74,10 @@ RSpec.describe DiscourseAi::AiBot::Bot do
 
         HTML
 
-        context = { conversation_context: [{ type: :user, content: "Does my site has tags?" }] }
+        context =
+          DiscourseAi::AiBot::BotContext.new(
+            messages: [{ type: :user, content: "Does my site has tags?" }],
+          )
 
         DiscourseAi::Completions::Llm.with_prepared_responses(llm_responses) do
           bot.reply(context) do |_bot_reply_post, cancel, placeholder|

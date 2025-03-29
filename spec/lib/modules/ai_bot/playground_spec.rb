@@ -267,7 +267,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         prompts = inner_prompts
       end
 
-      expect(prompts[0].messages[1][:upload_ids]).to eq([upload.id])
+      content = prompts[0].messages[1][:content]
+
+      expect(content).to include({ upload_id: upload.id })
+
       expect(prompts[0].max_pixels).to eq(1000)
 
       post.topic.reload
@@ -1152,81 +1155,6 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       persona.create_user!
 
       expect(playground.available_bot_usernames).to include(persona.user.username)
-    end
-  end
-
-  describe "#conversation_context" do
-    context "with limited context" do
-      before do
-        @old_persona = playground.bot.persona
-        persona = Fabricate(:ai_persona, max_context_posts: 1)
-        playground.bot.persona = persona.class_instance.new
-      end
-
-      after { playground.bot.persona = @old_persona }
-
-      it "respects max_context_post" do
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[{ type: :user, id: user.username, content: third_post.raw }],
-        )
-      end
-    end
-
-    xit "includes previous posts ordered by post_number" do
-      context = playground.conversation_context(third_post)
-
-      expect(context).to contain_exactly(
-        *[
-          { type: :user, id: user.username, content: third_post.raw },
-          { type: :model, content: second_post.raw },
-          { type: :user, id: user.username, content: first_post.raw },
-        ],
-      )
-    end
-
-    xit "only include regular posts" do
-      first_post.update!(post_type: Post.types[:whisper])
-
-      context = playground.conversation_context(third_post)
-
-      # skips leading model reply which makes no sense cause first post was whisper
-      expect(context).to contain_exactly(
-        *[{ type: :user, id: user.username, content: third_post.raw }],
-      )
-    end
-
-    context "with custom prompts" do
-      it "When post custom prompt is present, we use that instead of the post content" do
-        custom_prompt = [
-          [
-            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
-            "time",
-            "tool_call",
-          ],
-          [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          ["I replied to the time command", bot_user.username],
-        ]
-
-        PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
-
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[
-            { type: :user, id: user.username, content: first_post.raw },
-            { type: :tool_call, content: custom_prompt.first.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.second.first },
-            { type: :model, content: custom_prompt.third.first },
-            { type: :user, id: user.username, content: third_post.raw },
-          ],
-        )
-      end
     end
   end
 end

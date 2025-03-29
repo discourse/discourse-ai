@@ -9,8 +9,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::Image do
       { prompts: prompts, seeds: [99, 32] },
       bot_user: bot_user,
       llm: llm,
-      context: {
-      },
+      context: DiscourseAi::AiBot::BotContext.new,
     )
   end
 

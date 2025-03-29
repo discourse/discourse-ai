@@ -39,7 +39,7 @@ module DiscourseAi
         def self.inject_prompt(prompt:, context:, persona:)
           return if persona.options["do_not_echo_artifact"].to_s == "true"
           # we inject the current artifact content into the last user message
-          if topic_id = context[:topic_id]
+          if topic_id = context.topic_id
             posts = Post.where(topic_id: topic_id)
             artifact = AiArtifact.order("id desc").where(post: posts).first
             if artifact
@@ -113,7 +113,7 @@ module DiscourseAi
         end
 
         def invoke
-          post = Post.find_by(id: context[:post_id])
+          post = Post.find_by(id: context.post_id)
           return error_response("No post context found") unless post
 
           artifact = AiArtifact.find_by(id: parameters[:artifact_id])

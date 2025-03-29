@@ -15,9 +15,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{gpt_35_turbo.id}") }
   let(:progress_blk) { Proc.new {} }
 
-  let(:dall_e) do
-    described_class.new({ prompts: prompts }, llm: llm, bot_user: bot_user, context: {})
-  end
+  let(:dall_e) { described_class.new({ prompts: prompts }, llm: llm, bot_user: bot_user) }
 
   let(:base64_image) do
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -30,8 +28,6 @@ RSpec.describe DiscourseAi::AiBot::Tools::DallE do
           { prompts: ["a cat"], aspect_ratio: "tall" },
           llm: llm,
           bot_user: bot_user,
-          context: {
-          },
         )
 
       data = [{ b64_json: base64_image, revised_prompt: "a tall cat" }]

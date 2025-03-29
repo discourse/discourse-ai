@@ -3,7 +3,7 @@
 module DiscourseAi
   module Completions
     module Dialects
-      class OpenAiCompatible < Dialect
+      class OpenAiCompatible < ChatGpt
         class << self
           def can_translate?(_llm_model)
             # fallback dialect
@@ -42,58 +42,6 @@ module DiscourseAi
           end
 
           translated.unshift(user_msg)
-        end
-
-        private
-
-        def system_msg(msg)
-          msg = { role: "system", content: msg[:content] }
-
-          if tools_dialect.instructions.present?
-            msg[:content] = msg[:content].dup << "\n\n#{tools_dialect.instructions}"
-          end
-
-          msg
-        end
-
-        def model_msg(msg)
-          { role: "assistant", content: msg[:content] }
-        end
-
-        def tool_call_msg(msg)
-          translated = tools_dialect.from_raw_tool_call(msg)
-          { role: "assistant", content: translated }
-        end
-
-        def tool_msg(msg)
-          translated = tools_dialect.from_raw_tool(msg)
-          { role: "user", content: translated }
-        end
-
-        def user_msg(msg)
-          content = +""
-          content << "#{msg[:id]}: " if msg[:id]
-          content << msg[:content]
-
-          message = { role: "user", content: content }
-
-          message[:content] = inline_images(message[:content], msg) if vision_support?
-
-          message
-        end
-
-        def inline_images(content, message)
-          encoded_uploads = prompt.encoded_uploads(message)
-          return content if encoded_uploads.blank?
-
-          encoded_uploads.reduce([{ type: "text", text: message[:content] }]) do |memo, details|
-            memo << {
-              type: "image_url",
-              image_url: {
-                url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-              },
-            }
-          end
         end
       end
     end

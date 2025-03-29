@@ -199,7 +199,7 @@ describe DiscourseAi::Automation::LlmTriage do
 
       triage_prompt = DiscourseAi::Completions::Llm.prompts.last
 
-      expect(triage_prompt.messages.last[:upload_ids]).to contain_exactly(post_upload.id)
+      expect(triage_prompt.messages.last[:content].last).to eq({ upload_id: post_upload.id })
     end
   end
 
