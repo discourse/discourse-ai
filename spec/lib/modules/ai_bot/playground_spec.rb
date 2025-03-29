@@ -267,7 +267,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         prompts = inner_prompts
       end
 
-      expect(prompts[0].messages[1][:upload_ids]).to eq([upload.id])
+      content = prompts[0].messages[1][:content]
+
+      expect(content).to include({ upload_id: upload.id })
+
       expect(prompts[0].max_pixels).to eq(1000)
 
       post.topic.reload
