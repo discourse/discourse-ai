@@ -36,7 +36,7 @@ RSpec.describe AiTool do
       },
     )
 
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     expect(runner.invoke).to eq("query" => "test")
   end
@@ -57,7 +57,7 @@ RSpec.describe AiTool do
     JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil)
 
       stub_request(verb, "https://example.com/api").with(
         body: "{\"data\":\"test data\"}",
@@ -83,7 +83,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/test").with(
       headers: {
@@ -110,7 +110,7 @@ RSpec.describe AiTool do
       JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({}, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({}, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/").to_return(
       status: 200,
@@ -134,7 +134,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/test").with(
       headers: {
@@ -160,6 +160,9 @@ RSpec.describe AiTool do
       }
     JS
 
+    tool = create_tool(script: script)
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
+
     stub_request(:get, "https://example.com/test").to_return do
       sleep 0.01
       { status: 200, body: "Hello World", headers: {} }
@@ -184,7 +187,7 @@ RSpec.describe AiTool do
 
     tool = create_tool(script: script)
 
-    runner = tool.runner({}, llm: llm, bot_user: nil, context: {})
+    runner = tool.runner({}, llm: llm, bot_user: nil)
     result = runner.invoke
 
     expect(result).to eq("Hello")
@@ -209,7 +212,7 @@ RSpec.describe AiTool do
     responses = ["Hello ", "World"]
 
     DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
-      runner = tool.runner({}, llm: llm, bot_user: nil, context: {})
+      runner = tool.runner({}, llm: llm, bot_user: nil)
       result = runner.invoke
       prompts = _prompts
     end
@@ -232,7 +235,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     runner.timeout = 5
 
@@ -295,7 +298,7 @@ RSpec.describe AiTool do
 
       RagDocumentFragment.link_target_and_uploads(tool, [upload1.id, upload2.id])
 
-      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+      result = tool.runner({}, llm: nil, bot_user: nil).invoke
 
       expected = [
         [{ "fragment" => "44 45 46 47 48 49 50", "metadata" => nil }],
@@ -316,7 +319,7 @@ RSpec.describe AiTool do
       # this part of the API is a bit awkward, maybe we should do it
       # automatically
       RagDocumentFragment.update_target_uploads(tool, [upload1.id, upload2.id])
-      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+      result = tool.runner({}, llm: nil, bot_user: nil).invoke
 
       expected = [
         [{ "fragment" => "48 49 50", "metadata" => nil }],
@@ -340,7 +343,7 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "topic_id" => topic.id }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "topic_id" => topic.id }, llm: nil, bot_user: nil)
 
       result = runner.invoke
 
@@ -364,7 +367,7 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "post_id" => post.id }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "post_id" => post.id }, llm: nil, bot_user: nil)
 
       result = runner.invoke
       post_hash = result["post"]
@@ -393,7 +396,7 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil)
 
       result = runner.invoke
 

@@ -273,6 +273,9 @@ module DiscourseAi
         context =
           BotContext.new(
             participants: participants,
+            message_id: message.id,
+            channel_id: channel.id,
+            context_post_ids: context_post_ids,
             messages:
               DiscourseAi::Completions::PromptMessagesBuilder.messages_from_chat(
                 message,

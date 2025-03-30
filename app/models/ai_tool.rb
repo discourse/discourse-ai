@@ -35,7 +35,7 @@ class AiTool < ActiveRecord::Base
     tool_name.presence || name
   end
 
-  def runner(parameters, llm:, bot_user:, context: {})
+  def runner(parameters, llm:, bot_user:, context: nil)
     DiscourseAi::AiBot::ToolRunner.new(
       parameters: parameters,
       llm: llm,

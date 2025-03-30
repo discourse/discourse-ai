@@ -11,7 +11,10 @@ module DiscourseAi
                     :user,
                     :skip_tool_details,
                     :participants,
-                    :chosen_tools
+                    :chosen_tools,
+                    :message_id,
+                    :channel_id,
+                    :context_post_ids
 
       def initialize(
         post: nil,
@@ -23,13 +26,20 @@ module DiscourseAi
         site_url: nil,
         site_title: nil,
         site_description: nil,
-        time: nil
+        time: nil,
+        message_id: nil,
+        channel_id: nil,
+        context_post_ids: nil
       )
         @participants = participants
         @user = user
         @skip_tool_details = skip_tool_details
         @messages = messages
         @custom_instructions = custom_instructions
+
+        @message_id = message_id
+        @channel_id = channel_id
+        @context_post_ids = context_post_ids
 
         @site_url = site_url
         @site_title = site_title
