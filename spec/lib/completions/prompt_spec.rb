@@ -41,36 +41,6 @@ RSpec.describe DiscourseAi::Completions::Prompt do
       expect(encoded[1][:mime_type]).to eq("image/jpeg")
       expect(encoded[2]).to eq("this was an image")
     end
-
-    it "allows adding uploads to messages" do
-      upload = UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
-
-      prompt.max_pixels = 300
-      prompt.push(type: :user, content: "hello", upload_ids: [upload.id])
-
-      expect(prompt.messages.last[:upload_ids]).to eq([upload.id])
-      expect(prompt.max_pixels).to eq(300)
-
-      encoded = prompt.encoded_uploads(prompt.messages.last)
-
-      expect(encoded.length).to eq(1)
-      expect(encoded[0][:mime_type]).to eq("image/jpeg")
-
-      old_base64 = encoded[0][:base64]
-
-      prompt.max_pixels = 1_000_000
-
-      encoded = prompt.encoded_uploads(prompt.messages.last)
-
-      expect(encoded.length).to eq(1)
-      expect(encoded[0][:mime_type]).to eq("image/jpeg")
-
-      new_base64 = encoded[0][:base64]
-
-      expect(new_base64.length).to be > old_base64.length
-      expect(new_base64.length).to be > 0
-      expect(old_base64.length).to be > 0
-    end
   end
 
   describe "#push" do

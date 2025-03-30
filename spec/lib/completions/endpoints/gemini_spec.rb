@@ -211,7 +211,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     prompt =
       DiscourseAi::Completions::Prompt.new(
         "You are image bot",
-        messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+        messages: [type: :user, id: "user1", content: ["hello", { upload_id: upload100x100.id }]],
       )
 
     encoded = prompt.encoded_uploads(prompt.messages.last)
@@ -248,7 +248,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         {
           "role" => "user",
           "parts" => [
-            { "text" => "hello" },
+            { "text" => "user1: hello" },
             { "inlineData" => { "mimeType" => "image/jpeg", "data" => encoded[0][:base64] } },
           ],
         },

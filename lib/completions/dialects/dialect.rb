@@ -228,7 +228,13 @@ module DiscourseAi
           user_msg(msg)
         end
 
-        def to_encoded_content_array(content:, image_encoder:, text_encoder:, allow_vision:)
+        def to_encoded_content_array(
+          content:,
+          image_encoder:,
+          text_encoder:,
+          other_encoder: nil,
+          allow_vision:
+        )
           content = [content] if !content.is_a?(Array)
 
           current_string = +""
@@ -244,6 +250,9 @@ module DiscourseAi
               end
               encoded = prompt.encode_upload(c[:upload_id])
               result << image_encoder.call(encoded) if encoded
+            elsif other_encoder
+              encoded = other_encoder.call(c)
+              result << encoded if encoded
             end
           end
 

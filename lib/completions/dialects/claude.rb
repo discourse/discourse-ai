@@ -106,11 +106,13 @@ module DiscourseAi
             end
           end
 
+          # other encoder is used to pass through thinking
           content_array =
             to_encoded_content_array(
               content: [content_array, msg[:content]].flatten,
               image_encoder: ->(details) {},
               text_encoder: ->(text) { { type: "text", text: text } },
+              other_encoder: ->(details) { details },
               allow_vision: false,
             )
 
