@@ -16,12 +16,8 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
 
   @service discobotDiscoveries;
 
-  get hasDiscoveries() {
-    return this.args.outletArgs?.model?.topics?.length > 0;
-  }
-
   <template>
-    {{#if this.hasDiscoveries}}
+    {{#if this.discobotDiscoveries.showDiscoveryTitle}}
       <h3
         class="ai-search-discoveries__discoveries-title full-page-discoveries"
       >
@@ -32,9 +28,10 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
 
         <AiSearchDiscoveriesTooltip />
       </h3>
-      <div class="full-page-discoveries">
-        <AiSearchDiscoveries @searchTerm={{@outletArgs.search}} />
-      </div>
     {{/if}}
+
+    <div class="full-page-discoveries">
+      <AiSearchDiscoveries @searchTerm={{@outletArgs.search}} />
+    </div>
   </template>
 }

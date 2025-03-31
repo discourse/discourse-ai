@@ -11,6 +11,7 @@ import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
+import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import SmoothStreamer from "../lib/smooth-streamer";
 import AiBlinkingAnimation from "./ai-blinking-animation";
@@ -23,7 +24,6 @@ export default class AiSearchDiscoveries extends Component {
   @service discobotDiscoveries;
   @service appEvents;
 
-  @tracked loadingDiscoveries = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
@@ -34,8 +34,6 @@ export default class AiSearchDiscoveries extends Component {
   );
 
   discoveryTimeout = null;
-  typingTimer = null;
-  streamedTextLength = 0;
 
   constructor() {
     super(...arguments);
@@ -56,6 +54,34 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   @bind
+  detectSearch() {
+    if (
+      this.query?.length === 0 &&
+      this.discobotDiscoveries.discovery?.length > 0
+    ) {
+      this.discobotDiscoveries.resetDiscovery();
+      this.smoothStreamer.resetStreaming();
+    }
+
+    withPluginApi((api) => {
+      api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
+        if (!searchMenu || this.discobotDiscoveries.loadingDiscoveries) {
+          return;
+        }
+
+        if (this.discobotDiscoveries.lastQuery === this.query) {
+          return false;
+        }
+
+        if (event.key === "Enter" && this.query) {
+          this.triggerDiscovery();
+        }
+        return true;
+      });
+    });
+  }
+
+  @bind
   async _updateDiscovery(update) {
     if (this.query === update.query) {
       if (this.discoveryTimeout) {
@@ -67,7 +93,7 @@ export default class AiSearchDiscoveries extends Component {
       }
 
       this.discobotDiscoveries.modelUsed = update.model_used;
-      this.loadingDiscoveries = false;
+      this.discobotDiscoveries.loadingDiscoveries = false;
       this.smoothStreamer.updateResult(update, "ai_discover_reply");
     }
   }
@@ -110,7 +136,7 @@ export default class AiSearchDiscoveries extends Component {
 
   get canShowExpandtoggle() {
     return (
-      !this.loadingDiscoveries &&
+      !this.discobotDiscoveries.loadingDiscoveries &&
       this.smoothStreamer.renderedText.length > this.discoveryPreviewLength
     );
   }
@@ -130,7 +156,8 @@ export default class AiSearchDiscoveries extends Component {
     }
 
     this.hideDiscoveries = false;
-    this.loadingDiscoveries = true;
+    this.discobotDiscoveries.loadingDiscoveries = true;
+
     this.discoveryTimeout = later(
       this,
       this.timeoutDiscovery,
@@ -139,6 +166,7 @@ export default class AiSearchDiscoveries extends Component {
 
     try {
       this.discobotDiscoveries.lastQuery = this.query;
+
       await ajax("/discourse-ai/ai-bot/discover", {
         data: { query: this.query },
       });
@@ -153,7 +181,7 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   timeoutDiscovery() {
-    this.loadingDiscoveries = false;
+    this.discobotDiscoveries.loadingDiscoveries = false;
     this.discobotDiscoveries.discovery = "";
 
     this.discobotDiscoveries.discoveryTimedOut = true;
@@ -162,13 +190,14 @@ export default class AiSearchDiscoveries extends Component {
   <template>
     <div
       class="ai-search-discoveries"
-      {{didInsert this.subscribe @searchTerm}}
-      {{didUpdate this.subscribe @searchTerm}}
+      {{didInsert this.subscribe this.query}}
+      {{didUpdate this.subscribe this.query}}
+      {{didUpdate this.detectSearch this.query}}
       {{didInsert this.triggerDiscovery this.query}}
       {{willDestroy this.unsubscribe}}
     >
       <div class="ai-search-discoveries__completion">
-        {{#if this.loadingDiscoveries}}
+        {{#if this.discobotDiscoveries.loadingDiscoveries}}
           <AiBlinkingAnimation />
         {{else if this.discobotDiscoveries.discoveryTimedOut}}
           {{i18n "discourse_ai.discobot_discoveries.timed_out"}}
@@ -181,9 +210,10 @@ export default class AiSearchDiscoveries extends Component {
               "streamable-content"
             }}
           >
-            <div class="cooked">
-              <CookText @rawText={{this.smoothStreamer.renderedText}} />
-            </div>
+            <CookText
+              @rawText={{this.smoothStreamer.renderedText}}
+              class="cooked"
+            />
           </article>
 
           {{#if this.canShowExpandtoggle}}
