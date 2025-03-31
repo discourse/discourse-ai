@@ -30,7 +30,6 @@ export default class PersonaEditor extends Component {
 
   @tracked allGroups = [];
   @tracked isSaving = false;
-  @tracked availableForcedTools = [];
 
   dirtyFormData = null;
 
@@ -208,16 +207,17 @@ export default class PersonaEditor extends Component {
       toolOptions: updatedOptions,
     });
 
-    this.availableForcedTools = this.allTools.filter((tool) =>
-      updatedTools.includes(tool.id)
-    );
-
     if (currentData.forcedTools?.length > 0) {
       const updatedForcedTools = currentData.forcedTools.filter(
         (fct) => !removedTools.includes(fct)
       );
       form.set("forcedTools", updatedForcedTools);
     }
+  }
+
+  @action
+  availableForcedTools(tools) {
+    return this.allTools.filter((tool) => tools.includes(tool.id));
   }
 
   mapToolOptions(currentOptions, toolNames) {
@@ -439,7 +439,7 @@ export default class PersonaEditor extends Component {
                   @value={{field.value}}
                   @disabled={{data.system}}
                   @onChange={{field.set}}
-                  @content={{this.availableForcedTools}}
+                  @content={{this.availableForcedTools data.tools}}
                 />
               </field.Custom>
             </form.Field>
