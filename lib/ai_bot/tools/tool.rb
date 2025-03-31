@@ -111,10 +111,6 @@ module DiscourseAi
           true
         end
 
-        def standalone?
-          false
-        end
-
         protected
 
         def fetch_default_branch(repo)

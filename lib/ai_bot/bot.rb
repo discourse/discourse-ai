@@ -280,20 +280,8 @@ module DiscourseAi
           name: tool.name,
         }
 
-        if tool.standalone?
-          standalone_context =
-            context.dup.merge(
-              conversation_context: [
-                context[:conversation_context].last,
-                tool_call_message,
-                tool_message,
-              ],
-            )
-          prompt = persona.craft_prompt(standalone_context)
-        else
-          prompt.push(**tool_call_message)
-          prompt.push(**tool_message)
-        end
+        prompt.push(**tool_call_message)
+        prompt.push(**tool_message)
 
         raw_context << [tool_call_message[:content], tool_call_id, "tool_call", tool.name]
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
