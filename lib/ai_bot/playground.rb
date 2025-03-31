@@ -150,13 +150,11 @@ module DiscourseAi
           persona = nil
 
           if persona_id
-            persona =
-              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
+            persona = DiscourseAi::Personas::Persona.find_by(user: post.user, id: persona_id.to_i)
           end
 
           if !persona && persona_name = post.topic.custom_fields["ai_persona"]
-            persona =
-              DiscourseAi::AiBot::Personas::Persona.find_by(user: post.user, name: persona_name)
+            persona = DiscourseAi::Personas::Persona.find_by(user: post.user, name: persona_name)
           end
 
           # edge case, llm was mentioned in an ai persona conversation
@@ -172,11 +170,11 @@ module DiscourseAi
             end
           end
 
-          persona ||= DiscourseAi::AiBot::Personas::General
+          persona ||= DiscourseAi::Personas::General
 
           bot_user = User.find(persona.user_id) if persona && persona.force_default_llm
 
-          bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.new)
+          bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.new)
           new(bot).update_playground_with(post)
         end
       end
@@ -198,8 +196,8 @@ module DiscourseAi
 
         bot_user = user || ai_persona.user
         raise Discourse::InvalidParameters.new(:user) if bot_user.nil?
-        bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
-        playground = DiscourseAi::AiBot::Playground.new(bot)
+        bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
+        playground = new(bot)
 
         playground.reply_to(
           post,
@@ -236,14 +234,54 @@ module DiscourseAi
             include_uploads: bot.persona.class.vision_enabled,
           )
 
-        bot
-          .get_updated_title(messages, post, user)
-          .tap do |new_title|
-            PostRevisor.new(post.topic.first_post, post.topic).revise!(
-              bot.bot_user,
-              title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
-            )
+        # conversation context may contain tool calls, and confusing user names
+        # clean it up
+        conversation = +""
+        messages.each do |context|
+          if context[:type] == :user
+            conversation << "User said:\n#{context[:content]}\n\n"
+          elsif context[:type] == :model
+            conversation << "Model said:\n#{context[:content]}\n\n"
           end
+        end
+
+        system_insts = <<~TEXT.strip
+          You are titlebot. Given a conversation, you will suggest a title.
+  
+          - You will never respond with anything but the suggested title.
+          - You will always match the conversation language in your title suggestion.
+          - Title will capture the essence of the conversation.
+        TEXT
+
+        instruction = <<~TEXT.strip
+          Given the following conversation:
+  
+          {{{
+          #{conversation}
+          }}}
+  
+          Reply only with a title that is 7 words or less.
+        TEXT
+
+        title_prompt =
+          DiscourseAi::Completions::Prompt.new(
+            system_insts,
+            messages: [type: :user, content: instruction],
+            topic_id: post.topic_id,
+          )
+
+        new_title =
+          bot
+            .llm
+            .generate(title_prompt, user: user, feature_name: "bot_title")
+            .strip
+            .split("\n")
+            .last
+
+        PostRevisor.new(post.topic.first_post, post.topic).revise!(
+          bot.bot_user,
+          title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
+        )
 
         allowed_users = post.topic.topic_allowed_users.pluck(:user_id)
         MessageBus.publish(
@@ -271,7 +309,7 @@ module DiscourseAi
         end
 
         context =
-          BotContext.new(
+          DiscourseAi::Personas::BotContext.new(
             participants: participants,
             message_id: message.id,
             channel_id: channel.id,
@@ -372,7 +410,7 @@ module DiscourseAi
         end
 
         context =
-          BotContext.new(
+          DiscourseAi::Personas::BotContext.new(
             post: post,
             custom_instructions: custom_instructions,
             messages:
@@ -575,8 +613,7 @@ module DiscourseAi
 
       def schedule_bot_reply(post)
         persona_id =
-          DiscourseAi::AiBot::Personas::Persona.system_personas[bot.persona.class] ||
-            bot.persona.class.id
+          DiscourseAi::Personas::Persona.system_personas[bot.persona.class] || bot.persona.class.id
         ::Jobs.enqueue(
           :create_ai_reply,
           post_id: post.id,

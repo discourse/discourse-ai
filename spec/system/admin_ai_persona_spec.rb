@@ -55,7 +55,7 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
   end
 
   it "will not allow deletion or editing of system personas" do
-    visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}/edit"
+    visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}/edit"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
     expect(form.field("system_prompt")).to be_disabled
   end
