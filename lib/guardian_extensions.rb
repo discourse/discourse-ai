@@ -24,24 +24,26 @@ module DiscourseAi
     def can_see_gists?
       return false if !SiteSetting.ai_summarization_enabled
       return false if !SiteSetting.ai_summary_gists_enabled
-      if SiteSetting.ai_summary_gists_allowed_groups.to_s == Group::AUTO_GROUPS[:everyone].to_s
-        return true
-      end
-      return false if anonymous?
-      return false if SiteSetting.ai_summary_gists_allowed_groups_map.empty?
 
-      SiteSetting.ai_summary_gists_allowed_groups_map.any? do |group_id|
-        user.group_ids.include?(group_id)
+      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona)).blank?
+        return false
       end
+      persona_groups = ai_persona.allowed_group_ids.to_a
+      return true if persona_groups.empty?
+      return false if anonymous?
+
+      ai_persona.allowed_group_ids.to_a.any? { |group_id| user.group_ids.include?(group_id) }
     end
 
     def can_request_summary?
       return false if anonymous?
 
       user_group_ids = user.group_ids
-      SiteSetting.ai_custom_summarization_allowed_groups_map.any? do |group_id|
-        user_group_ids.include?(group_id)
+      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
+        return false
       end
+
+      ai_persona.allowed_group_ids.to_a.any? { |group_id| user.group_ids.include?(group_id) }
     end
 
     def can_debug_ai_bot_conversation?(target)

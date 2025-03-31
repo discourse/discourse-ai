@@ -46,13 +46,18 @@ class AiPersona < ActiveRecord::Base
 
   scope :ordered, -> { order("priority DESC, lower(name) ASC") }
 
-  def self.all_personas
+  def self.all_personas(enabled_only: true)
     persona_cache[:value] ||= AiPersona
       .ordered
-      .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
       .map(&:class_instance)
+
+    if enabled_only
+      persona_cache[:value].select { |p| p.enabled }
+    else
+      persona_cache[:value]
+    end
   end
 
   def self.persona_users(user: nil)
@@ -176,6 +181,7 @@ class AiPersona < ActiveRecord::Base
       description
       allowed_group_ids
       tool_details
+      enabled
     ]
 
     instance_attributes = {}

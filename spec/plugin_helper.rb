@@ -15,6 +15,12 @@ module DiscourseAi::ChatBotHelper
       SiteSetting.public_send("#{setting_name}=", "custom:#{fake_llm.id}")
     end
   end
+
+  def assign_persona_to(setting_name, allowed_group_ids)
+    Fabricate(:ai_persona, allowed_group_ids: allowed_group_ids).tap do |p|
+      SiteSetting.public_send("#{setting_name}=", p.id)
+    end
+  end
 end
 
 RSpec.configure { |config| config.include DiscourseAi::ChatBotHelper }

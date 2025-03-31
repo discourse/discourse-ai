@@ -303,6 +303,12 @@ en:
         web_artifact_creator:
           name: "Web Artifact Creator"
           description: "AI Bot specialized in creating interactive web artifacts"
+        summarizer:
+          name: "Summarizer"
+          description: "Default persona used to power AI summaries."
+        short_summarizer:
+          name: "Summarizer (short form)"
+          description: "Default persona used to power AI short summaries for topic lists' items."
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"

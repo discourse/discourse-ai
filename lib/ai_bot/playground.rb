@@ -283,44 +283,6 @@ module DiscourseAi
           title: new_title.sub(/\A"/, "").sub(/"\Z/, ""),
         )
 
-        system_insts = <<~TEXT.strip
-          You are titlebot. Given a conversation, you will suggest a title.
-  
-          - You will never respond with anything but the suggested title.
-          - You will always match the conversation language in your title suggestion.
-          - Title will capture the essence of the conversation.
-          TEXT
-
-        instruction = <<~TEXT.strip
-          Given the following conversation:
-  
-          {{{
-          #{conversation}
-          }}}
-  
-          Reply only with a title that is 7 words or less.
-          TEXT
-
-        title_prompt =
-          DiscourseAi::Completions::Prompt.new(
-            system_insts,
-            messages: [type: :user, content: instruction],
-            topic_id: post.topic_id,
-          )
-
-        title =
-          bot
-            .llm
-            .generate(title_prompt, user: user, feature_name: "bot_title")
-            .strip
-            .split("\n")
-            .last
-
-        PostRevisor.new(post.topic.first_post, post.topic).revise!(
-          bot.bot_user,
-          title: title.sub(/\A"/, "").sub(/"\Z/, ""),
-        )
-
         allowed_users = post.topic.topic_allowed_users.pluck(:user_id)
         MessageBus.publish(
           "/discourse-ai/ai-bot/topic/#{post.topic.id}",

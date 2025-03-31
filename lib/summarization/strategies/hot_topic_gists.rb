@@ -62,30 +62,14 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_prompt(summary, contents)
+        def summary_extension_messages(summary, contents)
           statements =
             contents
               .to_a
               .map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
               .join("\n")
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
-            You are an advanced summarization bot. Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
-            Analyze the most recent messages to identify key updates or shifts in the main topic and reflect these in the updated summary.
-            Emphasize new significant information or developments within the context of the initial conversation theme.
-
-            ### Guidelines:
-
-            - Ensure the revised summary remains concise and objective, maintaining a focus on the central theme or issue.
-            - Omit extraneous details or subjective opinions.
-            - Use the original language of the text.
-            - Begin directly with the main topic or issue, avoiding introductory phrases.
-            - Limit the updated summary to a maximum of 40 words.
-            - Return the 40-word summary inside <ai></ai> tags.
-
-          TEXT
-
-          prompt.push(type: :user, content: <<~TEXT.strip)
+          [{ type: :user, content: <<~TEXT.strip }]
             ### Context:
 
             This is the existing single-sentence summary:
@@ -99,31 +83,12 @@ module DiscourseAi
             Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
             Return the 40-word summary inside <ai></ai> tags.
           TEXT
-
-          prompt
         end
 
-        def first_summary_prompt(contents)
+        def first_summary_messages(contents)
           content_title = target.title
           statements =
             contents.to_a.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
-
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
-            You are an advanced summarization bot. Analyze a given conversation and produce a concise,
-            single-sentence summary that conveys the main topic and current developments to someone with no prior context.
-
-            ### Guidelines:
-
-            - Emphasize the most recent updates while considering their significance within the original post.
-            - Focus on the central theme or issue being addressed, maintaining an objective and neutral tone.
-            - Exclude extraneous details or subjective opinions.
-            - Use the original language of the text.
-            - Begin directly with the main topic or issue, avoiding introductory phrases.
-            - Limit the summary to a maximum of 40 words.
-            - Do *NOT* repeat the discussion title in the summary.
-
-            Return the summary inside <ai></ai> tags.\n
-          TEXT
 
           context = +<<~TEXT
             ### Context:
@@ -147,11 +112,9 @@ module DiscourseAi
             context << "Your task is to capture the meaning of the initial statement."
           end
 
-          prompt.push(type: :user, content: <<~TEXT.strip)
+          [{ type: :user, content: <<~TEXT.strip }]
             #{context} Return the 40-word summary inside <ai></ai> tags.
           TEXT
-
-          prompt
         end
       end
     end

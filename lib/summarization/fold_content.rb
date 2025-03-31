@@ -9,13 +9,13 @@ module DiscourseAi
     # into a final version.
     #
     class FoldContent
-      def initialize(llm, strategy, persist_summaries: true)
-        @llm = llm
+      def initialize(bot, strategy, persist_summaries: true)
+        @bot = bot
         @strategy = strategy
         @persist_summaries = persist_summaries
       end
 
-      attr_reader :llm, :strategy
+      attr_reader :bot, :strategy
 
       # @param user { User } - User object used for auditing usage.
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
@@ -76,7 +76,7 @@ module DiscourseAi
       attr_reader :persist_summaries
 
       def llm_model
-        llm.llm_model
+        bot.llm.llm_model
       end
 
       def content_to_summarize
@@ -118,20 +118,40 @@ module DiscourseAi
           end
         end
 
-        prompt =
+        context =
+          DiscourseAi::Personas::BotContext.new(
+            user: user,
+            skip_tool_details: true,
+            feature_name: strategy.feature,
+            resource_url: "#{Discourse.base_path}/t/-/#{strategy.target.id}",
+          )
+
+        context.messages =
           (
             if summary.blank?
-              strategy.first_summary_prompt(iteration_content)
+              strategy.first_summary_messages(iteration_content)
             else
-              strategy.summary_extension_prompt(summary, iteration_content)
+              strategy.summary_extension_messages(summary, iteration_content)
             end
           )
 
+        latest_summary = +""
+        buffer_blk =
+          Proc.new do |partial, cancel, placeholder, type|
+            if type.blank?
+              latest_summary << partial
+              on_partial_blk.call(partial, cancel) if on_partial_blk
+            end
+          end
+
         if cursor == items.length
-          llm.generate(prompt, user: user, feature_name: strategy.feature, &on_partial_blk)
+          bot.reply(context, &buffer_blk)
+
+          latest_summary
         else
-          latest_summary =
-            llm.generate(prompt, user: user, max_tokens: 600, feature_name: strategy.feature)
+          bot.reply(context, llm_args: { max_tokens: 600 }, &buffer_blk)
+
+          # Send original blk here for expansion.
           fold(items, latest_summary, cursor, user, &on_partial_blk)
         end
       end
@@ -158,6 +178,12 @@ module DiscourseAi
         ].join(" ")
 
         item
+      end
+
+      def text_only_update(&on_partial_blk)
+        Proc.new do |partial, cancel, placeholder, type|
+          on_partial_blk.call(partial, cancel) if type.blank?
+        end
       end
     end
   end

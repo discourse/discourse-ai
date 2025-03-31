@@ -28,7 +28,7 @@ module DiscourseAi
       attr_accessor :persona
 
       def llm
-        @llm ||= DiscourseAi::Completions::Llm.proxy(model)
+        DiscourseAi::Completions::Llm.proxy(model)
       end
 
       def force_tool_if_needed(prompt, context)
@@ -51,7 +51,7 @@ module DiscourseAi
         end
       end
 
-      def reply(context, &update_blk)
+      def reply(context, llm_args: {}, &update_blk)
         unless context.is_a?(BotContext)
           raise ArgumentError, "context must be an instance of BotContext"
         end
@@ -67,6 +67,7 @@ module DiscourseAi
         llm_kwargs = { user: user }
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
+        llm_kwargs[:max_tokens] = llm_args[:max_tokens] if llm_args[:max_tokens].present?
 
         needs_newlines = false
         tools_ran = 0
@@ -84,7 +85,7 @@ module DiscourseAi
           result =
             current_llm.generate(
               prompt,
-              feature_name: "bot",
+              feature_name: context.feature_name,
               partial_tool_calls: allow_partial_tool_calls,
               output_thinking: true,
               **llm_kwargs,
@@ -246,13 +247,8 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
-<<<<<<< HEAD
-      def invoke_tool(tool, llm, cancel, context, &update_blk)
-        show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
-=======
       def invoke_tool(tool, cancel, context, &update_blk)
-        show_placeholder = !context[:skip_tool_details] && !tool.class.allow_partial_tool_calls?
->>>>>>> 5bfe2314 (REFACTOR: Move personas into it's own module.)
+        show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
 
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 

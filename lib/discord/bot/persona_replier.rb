@@ -6,7 +6,7 @@ module DiscourseAi
       def initialize(body)
         @persona =
           AiPersona
-            .all_personas
+            .all_personas(enabled_only: false)
             .find { |persona| persona.id == SiteSetting.ai_discord_search_persona.to_i }
             .new
         @bot =

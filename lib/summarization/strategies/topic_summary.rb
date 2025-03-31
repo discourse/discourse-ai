@@ -38,29 +38,13 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_prompt(summary, contents)
+        def summary_extension_messages(summary, contents)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT, topic_id: target.id)
-            You are an advanced summarization bot tasked with enhancing an existing summary by incorporating additional posts.
-
-            ### Guidelines:
-            - Only include the enhanced summary, without any additional commentary.
-            - Understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
-            - Maintain the original language of the text being summarized.
-            - Aim for summaries to be 400 words or less.
-            - Each new post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-            - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
-              - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
-              - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-              - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
-            - When formatting usernames either use @USERNAME or [USERNAME](#{resource_path}/POST_NUMBER)
-          TEXT
-
-          prompt.push(type: :user, content: <<~TEXT.strip)
+          [{ type: :user, content: <<~TEXT.strip }]
             ### Context:
 
             #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
@@ -77,43 +61,28 @@ module DiscourseAi
 
             Integrate the new information to generate an enhanced concise and coherent summary.
           TEXT
-
-          prompt
         end
 
-        def first_summary_prompt(contents)
+        def first_summary_messages(contents)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip, topic_id: target.id)
-            You are an advanced summarization bot that generates concise, coherent summaries of provided text.
-
-            - Only include the summary, without any additional commentary.
-            - You understand and generate Discourse forum Markdown; including links, _italics_, **bold**.
-            - Maintain the original language of the text being summarized.
-            - Aim for summaries to be 400 words or less.
-            - Each post is formatted as "<POST_NUMBER>) <USERNAME> <MESSAGE>"
-            - Cite specific noteworthy posts using the format [DESCRIPTION](#{resource_path}/POST_NUMBER)
-              - Example: links to the 3rd and 6th posts by sam: sam ([#3](#{resource_path}/3), [#6](#{resource_path}/6))
-              - Example: link to the 6th post by jane: [agreed with](#{resource_path}/6)
-              - Example: link to the 13th post by joe: [joe](#{resource_path}/13)
-            - When formatting usernames either use @USERNMAE OR [USERNAME](#{resource_path}/POST_NUMBER)
-          TEXT
-
-          prompt.push(
+          messages = []
+          messages << {
             type: :user,
             content:
               "Here are the posts inside <input></input> XML tags:\n\n<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>\n\nGenerate a concise, coherent summary of the text above maintaining the original language.",
-          )
-          prompt.push(
+          }
+
+          messages << {
             type: :model,
             content:
               "Two users are sharing their feelings toward Mondays. [user1](#{resource_path}/1) hates them, while [user2](#{resource_path}/2) loves them.",
-          )
+          }
 
-          prompt.push(type: :user, content: <<~TEXT.strip)
+          messages << { type: :user, content: <<~TEXT.strip }
             #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
             Here are the posts, inside <input></input> XML tags:
 
@@ -124,7 +93,7 @@ module DiscourseAi
             Generate a concise, coherent summary of the text above maintaining the original language.
           TEXT
 
-          prompt
+          messages
         end
 
         private
