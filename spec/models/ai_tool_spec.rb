@@ -169,7 +169,7 @@ RSpec.describe AiTool do
     end
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     runner.timeout = 10
 
