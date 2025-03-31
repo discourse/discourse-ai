@@ -83,6 +83,8 @@ after_initialize do
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
 
+  register_seedfu_fixtures(Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "personas"))
+
   [
     DiscourseAi::Embeddings::EntryPoint.new,
     DiscourseAi::Sentiment::EntryPoint.new,

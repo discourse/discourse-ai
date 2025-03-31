@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
       expect(response.parsed_body["meta"]["tools"].length).to eq(
-        DiscourseAi::AiBot::Personas::Persona.all_available_tools.length,
+        DiscourseAi::Personas::Persona.all_available_tools.length,
       )
     end
 
@@ -136,10 +136,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       it "returns localized persona names and descriptions" do
         get "/admin/plugins/discourse-ai/ai-personas.json"
 
-        id =
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::General
-          ]
+        id = DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General]
         persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
 
         expect(persona["name"]).to eq("Général")
@@ -301,7 +298,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "does not allow temperature and top p changes on stock personas" do
-      put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+      put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
           params: {
             ai_persona: {
               top_p: 0.5,
@@ -335,7 +332,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with system personas" do
       it "does not allow editing of system prompts" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 system_prompt: "you are not a helpful bot",
@@ -348,7 +345,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of tools" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 tools: %w[SearchCommand ImageCommand],
@@ -361,7 +358,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of name and description cause it is localized" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 name: "bob",
@@ -375,7 +372,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does allow some actions" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
@@ -413,7 +410,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "is not allowed to delete system personas" do
       expect {
-        delete "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json"
+        delete "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json"
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"].join).not_to be_blank
         # let's make sure this is translated

@@ -121,7 +121,7 @@ RSpec.describe AiTool do
       },
     )
 
-    expect { runner.invoke }.to raise_error(DiscourseAi::AiBot::ToolRunner::TooManyRequestsError)
+    expect { runner.invoke }.to raise_error(DiscourseAi::Personas::ToolRunner::TooManyRequestsError)
   end
 
   it "can perform GET HTTP requests" do

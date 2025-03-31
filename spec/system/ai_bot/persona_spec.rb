@@ -16,7 +16,7 @@ RSpec.describe "AI personas", type: :system, js: true do
     persona_selector =
       PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
 
-    id = DiscourseAi::AiBot::Personas::Persona.all(user: admin).first.id
+    id = DiscourseAi::Personas::Persona.all(user: admin).first.id
 
     expect(persona_selector).to have_selected_value(id)
 
