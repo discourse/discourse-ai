@@ -105,7 +105,7 @@ module DiscourseAi
           },
         };
 
-        const context = #{JSON.generate(@context)};
+        const context = #{JSON.generate(@context.to_json)};
 
         function details() { return ""; };
       JS

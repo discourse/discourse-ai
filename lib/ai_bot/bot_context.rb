@@ -81,6 +81,27 @@ module DiscourseAi
       def private_message?
         @private_message
       end
+
+      def to_json
+        {
+          messages: @messages,
+          topic_id: @topic_id,
+          post_id: @post_id,
+          private_message: @private_message,
+          custom_instructions: @custom_instructions,
+          username: @user&.username,
+          user_id: @user&.id,
+          participants: @participants,
+          chosen_tools: @chosen_tools,
+          message_id: @message_id,
+          channel_id: @channel_id,
+          context_post_ids: @context_post_ids,
+          site_url: @site_url,
+          site_title: @site_title,
+          site_description: @site_description,
+          skip_tool_details: @skip_tool_details,
+        }
+      end
     end
   end
 end
