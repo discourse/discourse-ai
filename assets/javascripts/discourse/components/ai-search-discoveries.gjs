@@ -10,11 +10,15 @@ import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
+import DiscourseURL from "discourse/lib/url";
+import Topic from "discourse/models/topic";
 import { i18n } from "discourse-i18n";
 import SmoothStreamer from "../lib/smooth-streamer";
 import AiBlinkingAnimation from "./ai-blinking-animation";
+import AiIndicatorWave from "./ai-indicator-wave";
 
 const DISCOVERY_TIMEOUT_MS = 10000;
 
@@ -23,7 +27,10 @@ export default class AiSearchDiscoveries extends Component {
   @service messageBus;
   @service discobotDiscoveries;
   @service appEvents;
+  @service currentUser;
+  @service composer;
 
+  @tracked loadingConversationTopic = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
@@ -145,6 +152,21 @@ export default class AiSearchDiscoveries extends Component {
     return !this.fullDiscoveryToggled && this.canShowExpandtoggle;
   }
 
+  get canContinueConversation() {
+    return (
+      this.discobotDiscoveries.discovery?.length > 0 &&
+      !this.smoothStreamer.isStreaming
+    );
+  }
+
+  get continueConvoBtnLabel() {
+    if (this.loadingConversationTopic) {
+      return "discourse_ai.discobot_discoveries.loading_convo";
+    }
+
+    return "discourse_ai.discobot_discoveries.continue_convo";
+  }
+
   @action
   async triggerDiscovery() {
     if (this.discobotDiscoveries.lastQuery === this.query) {
@@ -178,6 +200,43 @@ export default class AiSearchDiscoveries extends Component {
   @action
   toggleDiscovery() {
     this.fullDiscoveryToggled = !this.fullDiscoveryToggled;
+  }
+
+  @action
+  async continueConversation() {
+    const data = {
+      user_id: this.currentUser.id,
+      query: this.query,
+      context: this.discobotDiscoveries.discovery,
+    };
+    try {
+      this.loadingConversationTopic = true;
+      const continueRequest = await ajax(
+        `/discourse-ai/ai-bot/discover/continue-convo`,
+        {
+          type: "POST",
+          data,
+        }
+      );
+      const topicJSON = await Topic.find(continueRequest.topic_id, {});
+      const topic = Topic.create(topicJSON);
+
+      DiscourseURL.routeTo(`/t/${continueRequest.topic_id}`, {
+        afterRouteComplete: () => {
+          if (this.args.closeSearchMenu) {
+            this.args.closeSearchMenu();
+          }
+
+          this.composer.focusComposer({
+            topic,
+          });
+        },
+      });
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      this.loadingConversationTopic = false;
+    }
   }
 
   timeoutDiscovery() {
@@ -226,6 +285,18 @@ export default class AiSearchDiscoveries extends Component {
           {{/if}}
         {{/if}}
       </div>
+
+      {{#if this.canContinueConversation}}
+        <div class="ai-search-discoveries__continue-conversation">
+          <DButton
+            @action={{this.continueConversation}}
+            @label={{this.continueConvoBtnLabel}}
+            class="btn-small"
+          >
+            <AiIndicatorWave @loading={{this.loadingConversationTopic}} />
+          </DButton>
+        </div>
+      {{/if}}
     </div>
   </template>
 }
