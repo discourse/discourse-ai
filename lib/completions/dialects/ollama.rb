@@ -69,7 +69,7 @@ module DiscourseAi
         end
 
         def user_msg(msg)
-          user_message = { role: "user", content: msg[:content] }
+          user_message = { role: "user", content: prompt.text_only(msg) }
 
           encoded_uploads = prompt.encoded_uploads(msg)
           if encoded_uploads.present?

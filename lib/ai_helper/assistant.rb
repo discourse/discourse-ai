@@ -188,9 +188,10 @@ module DiscourseAi
             messages: [
               {
                 type: :user,
-                content:
+                content: [
                   "Describe this image in a single sentence#{custom_locale_instructions(user)}",
-                upload_ids: [upload.id],
+                  { upload_id: upload.id },
+                ],
               },
             ],
           )

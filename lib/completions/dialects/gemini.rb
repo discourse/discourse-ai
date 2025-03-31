@@ -106,28 +106,29 @@ module DiscourseAi
         end
 
         def user_msg(msg)
-          if beta_api?
-            # support new format with multiple parts
-            result = { role: "user", parts: [{ text: msg[:content] }] }
-            return result unless vision_support?
+          content_array = []
+          content_array << "#{msg[:id]}: " if msg[:id]
 
-            upload_parts = uploaded_parts(msg)
-            result[:parts].concat(upload_parts) if upload_parts.present?
-            result
+          content_array << msg[:content]
+          content_array.flatten!
+
+          content_array =
+            to_encoded_content_array(
+              content: content_array,
+              image_encoder: ->(details) { image_node(details) },
+              text_encoder: ->(text) { { text: text } },
+              allow_vision: vision_support? && beta_api?,
+            )
+
+          if beta_api?
+            { role: "user", parts: content_array }
           else
-            { role: "user", parts: { text: msg[:content] } }
+            { role: "user", parts: content_array.first }
           end
         end
 
-        def uploaded_parts(message)
-          encoded_uploads = prompt.encoded_uploads(message)
-          result = []
-          if encoded_uploads.present?
-            encoded_uploads.each do |details|
-              result << { inlineData: { mimeType: details[:mime_type], data: details[:base64] } }
-            end
-          end
-          result
+        def image_node(details)
+          { inlineData: { mimeType: details[:mime_type], data: details[:base64] } }
         end
 
         def tool_call_msg(msg)

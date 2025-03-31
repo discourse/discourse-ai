@@ -36,13 +36,13 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
   end
 
   let(:context) do
-    {
+    DiscourseAi::AiBot::BotContext.new(
       site_url: Discourse.base_url,
       site_title: "test site title",
       site_description: "test site description",
       time: Time.zone.now,
       participants: topic_with_users.allowed_users.map(&:username).join(", "),
-    }
+    )
   end
 
   fab!(:admin)
@@ -307,7 +307,8 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
     let(:ai_persona) { DiscourseAi::AiBot::Personas::Persona.all(user: user).first.new }
 
     let(:with_cc) do
-      context.merge(conversation_context: [{ content: "Tell me the time", type: :user }])
+      context.messages = [{ content: "Tell me the time", type: :user }]
+      context
     end
 
     context "when a persona has no uploads" do
@@ -345,17 +346,14 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
           DiscourseAi::AiBot::Personas::Persona.find_by(id: custom_ai_persona.id, user: user).new
 
         # this means that we will consolidate
-        ctx =
-          with_cc.merge(
-            conversation_context: [
-              { content: "Tell me the time", type: :user },
-              { content: "the time is 1", type: :model },
-              { content: "in france?", type: :user },
-            ],
-          )
+        context.messages = [
+          { content: "Tell me the time", type: :user },
+          { content: "the time is 1", type: :model },
+          { content: "in france?", type: :user },
+        ]
 
         DiscourseAi::Completions::Endpoints::Fake.with_fake_content(consolidated_question) do
-          custom_persona.craft_prompt(ctx).messages.first[:content]
+          custom_persona.craft_prompt(context).messages.first[:content]
         end
 
         message =
@@ -397,7 +395,7 @@ RSpec.describe DiscourseAi::AiBot::Personas::Persona do
         UploadReference.ensure_exist!(target: stored_ai_persona, upload_ids: [upload.id])
 
         EmbeddingsGenerationStubs.hugging_face_service(
-          with_cc.dig(:conversation_context, 0, :content),
+          with_cc.messages.dig(0, :content),
           prompt_cc_embeddings,
         )
       end

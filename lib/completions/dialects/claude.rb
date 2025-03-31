@@ -87,9 +87,9 @@ module DiscourseAi
         end
 
         def model_msg(msg)
-          if msg[:thinking] || msg[:redacted_thinking_signature]
-            content_array = []
+          content_array = []
 
+          if msg[:thinking] || msg[:redacted_thinking_signature]
             if msg[:thinking]
               content_array << {
                 type: "thinking",
@@ -104,13 +104,19 @@ module DiscourseAi
                 data: msg[:redacted_thinking_signature],
               }
             end
-
-            content_array << { type: "text", text: msg[:content] }
-
-            { role: "assistant", content: content_array }
-          else
-            { role: "assistant", content: msg[:content] }
           end
+
+          # other encoder is used to pass through thinking
+          content_array =
+            to_encoded_content_array(
+              content: [content_array, msg[:content]].flatten,
+              image_encoder: ->(details) {},
+              text_encoder: ->(text) { { type: "text", text: text } },
+              other_encoder: ->(details) { details },
+              allow_vision: false,
+            )
+
+          { role: "assistant", content: no_array_if_only_text(content_array) }
         end
 
         def system_msg(msg)
@@ -124,31 +130,39 @@ module DiscourseAi
         end
 
         def user_msg(msg)
-          content = +""
-          content << "#{msg[:id]}: " if msg[:id]
-          content << msg[:content]
-          content = inline_images(content, msg) if vision_support?
+          content_array = []
+          content_array << "#{msg[:id]}: " if msg[:id]
+          content_array.concat([msg[:content]].flatten)
 
-          { role: "user", content: content }
+          content_array =
+            to_encoded_content_array(
+              content: content_array,
+              image_encoder: ->(details) { image_node(details) },
+              text_encoder: ->(text) { { type: "text", text: text } },
+              allow_vision: vision_support?,
+            )
+
+          { role: "user", content: no_array_if_only_text(content_array) }
         end
 
-        def inline_images(content, message)
-          encoded_uploads = prompt.encoded_uploads(message)
-          return content if encoded_uploads.blank?
+        # keeping our payload as backward compatible as possible
+        def no_array_if_only_text(content_array)
+          if content_array.length == 1 && content_array.first[:type] == "text"
+            content_array.first[:text]
+          else
+            content_array
+          end
+        end
 
-          content_w_imgs =
-            encoded_uploads.reduce([]) do |memo, details|
-              memo << {
-                source: {
-                  type: "base64",
-                  data: details[:base64],
-                  media_type: details[:mime_type],
-                },
-                type: "image",
-              }
-            end
-
-          content_w_imgs << { type: "text", text: content }
+        def image_node(details)
+          {
+            source: {
+              type: "base64",
+              data: details[:base64],
+              media_type: details[:mime_type],
+            },
+            type: "image",
+          }
         end
       end
     end

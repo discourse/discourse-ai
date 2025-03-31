@@ -75,9 +75,9 @@ module DiscourseAi
       def force_tool_if_needed(prompt, context)
         return if prompt.tool_choice == :none
 
-        context[:chosen_tools] ||= []
+        context.chosen_tools ||= []
         forced_tools = persona.force_tool_use.map { |tool| tool.name }
-        force_tool = forced_tools.find { |name| !context[:chosen_tools].include?(name) }
+        force_tool = forced_tools.find { |name| !context.chosen_tools.include?(name) }
 
         if force_tool && persona.forced_tool_count > 0
           user_turns = prompt.messages.select { |m| m[:type] == :user }.length
@@ -85,7 +85,7 @@ module DiscourseAi
         end
 
         if force_tool
-          context[:chosen_tools] << force_tool
+          context.chosen_tools << force_tool
           prompt.tool_choice = force_tool
         else
           prompt.tool_choice = nil
@@ -93,6 +93,9 @@ module DiscourseAi
       end
 
       def reply(context, &update_blk)
+        unless context.is_a?(BotContext)
+          raise ArgumentError, "context must be an instance of BotContext"
+        end
         llm = DiscourseAi::Completions::Llm.proxy(model)
         prompt = persona.craft_prompt(context, llm: llm)
 
@@ -100,7 +103,7 @@ module DiscourseAi
         ongoing_chain = true
         raw_context = []
 
-        user = context[:user]
+        user = context.user
 
         llm_kwargs = { user: user }
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
@@ -277,27 +280,15 @@ module DiscourseAi
           name: tool.name,
         }
 
-        if tool.standalone?
-          standalone_context =
-            context.dup.merge(
-              conversation_context: [
-                context[:conversation_context].last,
-                tool_call_message,
-                tool_message,
-              ],
-            )
-          prompt = persona.craft_prompt(standalone_context)
-        else
-          prompt.push(**tool_call_message)
-          prompt.push(**tool_message)
-        end
+        prompt.push(**tool_call_message)
+        prompt.push(**tool_message)
 
         raw_context << [tool_call_message[:content], tool_call_id, "tool_call", tool.name]
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
       def invoke_tool(tool, llm, cancel, context, &update_blk)
-        show_placeholder = !context[:skip_tool_details] && !tool.class.allow_partial_tool_calls?
+        show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
 
         update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
 

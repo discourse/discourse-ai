@@ -13,7 +13,13 @@ module DiscourseAi
       MARSHAL_STACK_DEPTH = 20
       MAX_HTTP_REQUESTS = 20
 
-      def initialize(parameters:, llm:, bot_user:, context: {}, tool:, timeout: nil)
+      def initialize(parameters:, llm:, bot_user:, context: nil, tool:, timeout: nil)
+        if context && !context.is_a?(DiscourseAi::AiBot::BotContext)
+          raise ArgumentError, "context must be a BotContext object"
+        end
+
+        context ||= DiscourseAi::AiBot::BotContext.new
+
         @parameters = parameters
         @llm = llm
         @bot_user = bot_user
@@ -99,7 +105,7 @@ module DiscourseAi
           },
         };
 
-        const context = #{JSON.generate(@context)};
+        const context = #{JSON.generate(@context.to_json)};
 
         function details() { return ""; };
       JS
@@ -240,13 +246,13 @@ module DiscourseAi
       def llm_user
         @llm_user ||=
           begin
-            @context[:llm_user] || post&.user || @bot_user
+            post&.user || @bot_user
           end
       end
 
       def post
         return @post if defined?(@post)
-        post_id = @context[:post_id]
+        post_id = @context.post_id
         @post = post_id && Post.find_by(id: post_id)
       end
 
@@ -336,8 +342,8 @@ module DiscourseAi
               bot = DiscourseAi::AiBot::Bot.as(@bot_user || persona.user, persona: persona)
               playground = DiscourseAi::AiBot::Playground.new(bot)
 
-              if @context[:post_id]
-                post = Post.find_by(id: @context[:post_id])
+              if @context.post_id
+                post = Post.find_by(id: @context.post_id)
                 return { error: "Post not found" } if post.nil?
 
                 reply_post =
@@ -354,13 +360,13 @@ module DiscourseAi
                 else
                   return { error: "Failed to create reply" }
                 end
-              elsif @context[:message_id] && @context[:channel_id]
-                message = Chat::Message.find_by(id: @context[:message_id])
-                channel = Chat::Channel.find_by(id: @context[:channel_id])
+              elsif @context.message_id && @context.channel_id
+                message = Chat::Message.find_by(id: @context.message_id)
+                channel = Chat::Channel.find_by(id: @context.channel_id)
                 return { error: "Message or channel not found" } if message.nil? || channel.nil?
 
                 reply =
-                  playground.reply_to_chat_message(message, channel, @context[:context_post_ids])
+                  playground.reply_to_chat_message(message, channel, @context.context_post_ids)
 
                 if reply
                   return { success: true, message_id: reply.id }
@@ -457,7 +463,7 @@ module DiscourseAi
                     UploadCreator.new(
                       file,
                       filename,
-                      for_private_message: @context[:private_message],
+                      for_private_message: @context.private_message,
                     ).create_for(@bot_user.id)
 
                   { id: upload.id, short_url: upload.short_url, url: upload.url }

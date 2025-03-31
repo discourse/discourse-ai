@@ -108,7 +108,7 @@ module DiscourseAi
         end
 
         def invoke
-          post = Post.find_by(id: context[:post_id])
+          post = Post.find_by(id: context.post_id)
           return error_response("No post context found") unless post
 
           partial_response = +""

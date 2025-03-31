@@ -55,7 +55,7 @@ module DiscourseAi
         # we need an llm so we have a tokenizer
         # but will do without if none is available
         llm = LlmModel.first&.to_llm
-        runner = @ai_tool.runner(parameters, llm: llm, bot_user: current_user, context: {})
+        runner = @ai_tool.runner(parameters, llm: llm, bot_user: current_user)
         result = runner.invoke
 
         if result.is_a?(Hash) && result[:error]

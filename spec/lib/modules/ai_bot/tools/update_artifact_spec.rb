@@ -47,9 +47,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             persona_options: {
               "update_algorithm" => "full",
             },
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
 
         result = tool.invoke {}
@@ -93,9 +91,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             persona_options: {
               "update_algorithm" => "full",
             },
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
 
         result = tool.invoke {}
@@ -119,9 +115,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             { artifact_id: artifact.id, instructions: "Invalid update" },
             bot_user: bot_user,
             llm: llm_model.to_llm,
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
 
         result = tool.invoke {}
@@ -135,9 +129,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           { artifact_id: -1, instructions: "Update something" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
         )
 
       result = tool.invoke {}
@@ -163,9 +155,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             persona_options: {
               "update_algorithm" => "full",
             },
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
 
         tool.invoke {}
@@ -196,9 +186,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             persona_options: {
               "update_algorithm" => "full",
             },
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
           .invoke {}
       end
@@ -224,9 +212,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
             persona_options: {
               "update_algorithm" => "full",
             },
-            context: {
-              post_id: post.id,
-            },
+            context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           )
 
         result = tool.invoke {}
@@ -276,9 +262,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           { artifact_id: artifact.id, instructions: "Change the text to Updated and color to red" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           persona_options: {
             "update_algorithm" => "diff",
           },
@@ -346,9 +330,7 @@ RSpec.describe DiscourseAi::AiBot::Tools::UpdateArtifact do
           { artifact_id: artifact.id, instructions: "Change the text to Updated and color to red" },
           bot_user: bot_user,
           llm: llm_model.to_llm,
-          context: {
-            post_id: post.id,
-          },
+          context: DiscourseAi::AiBot::BotContext.new(messages: [], post: post),
           persona_options: {
             "update_algorithm" => "diff",
           },

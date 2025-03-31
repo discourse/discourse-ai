@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
       expect(context.image_generation_scenario).to eq(
         {
           messages: [
-            { role: "user", parts: [{ text: "draw a cat" }] },
+            { role: "user", parts: [{ text: "user1: draw a cat" }] },
             {
               role: "model",
               parts: [{ functionCall: { name: "draw", args: { picture: "Cat" } } }],
@@ -41,7 +41,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
               ],
             },
             { role: "model", parts: { text: "Ok." } },
-            { role: "user", parts: [{ text: "draw another cat" }] },
+            { role: "user", parts: [{ text: "user1: draw another cat" }] },
           ],
           system_instruction: context.system_insts,
         },
@@ -52,12 +52,12 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
       expect(context.multi_turn_scenario).to eq(
         {
           messages: [
-            { role: "user", parts: [{ text: "This is a message by a user" }] },
+            { role: "user", parts: [{ text: "user1: This is a message by a user" }] },
             {
               role: "model",
               parts: [{ text: "I'm a previous bot reply, that's why there's no user" }],
             },
-            { role: "user", parts: [{ text: "This is a new message by a user" }] },
+            { role: "user", parts: [{ text: "user1: This is a new message by a user" }] },
             {
               role: "model",
               parts: [

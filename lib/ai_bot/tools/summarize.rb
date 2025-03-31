@@ -40,10 +40,6 @@ module DiscourseAi
           false
         end
 
-        def standalone?
-          true
-        end
-
         def custom_raw
           @last_summary || I18n.t("discourse_ai.ai_bot.topic_not_found")
         end

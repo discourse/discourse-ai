@@ -163,7 +163,7 @@ module DiscourseAi
         def craft_prompt(context, llm: nil)
           system_insts =
             system_prompt.gsub(/\{(\w+)\}/) do |match|
-              found = context[match[1..-2].to_sym]
+              found = context.lookup_template_param(match[1..-2])
               found.nil? ? match : found.to_s
             end
 
@@ -180,16 +180,16 @@ module DiscourseAi
               )
           end
 
-          if context[:custom_instructions].present?
+          if context.custom_instructions.present?
             prompt_insts << "\n"
-            prompt_insts << context[:custom_instructions]
+            prompt_insts << context.custom_instructions
           end
 
           fragments_guidance =
             rag_fragments_prompt(
-              context[:conversation_context].to_a,
+              context.messages,
               llm: question_consolidator_llm,
-              user: context[:user],
+              user: context.user,
             )&.strip
 
           prompt_insts << fragments_guidance if fragments_guidance.present?
@@ -197,9 +197,9 @@ module DiscourseAi
           prompt =
             DiscourseAi::Completions::Prompt.new(
               prompt_insts,
-              messages: context[:conversation_context].to_a,
-              topic_id: context[:topic_id],
-              post_id: context[:post_id],
+              messages: context.messages,
+              topic_id: context.topic_id,
+              post_id: context.post_id,
             )
 
           prompt.max_pixels = self.class.vision_max_pixels if self.class.vision_enabled

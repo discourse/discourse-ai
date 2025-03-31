@@ -5,6 +5,7 @@ RSpec.describe AiTool do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   fab!(:topic)
   fab!(:post) { Fabricate(:post, topic: topic, raw: "bananas are a tasty fruit") }
+  fab!(:bot_user) { Discourse.system_user }
 
   def create_tool(
     parameters: nil,
@@ -16,7 +17,8 @@ RSpec.describe AiTool do
       name: "test #{SecureRandom.uuid}",
       tool_name: "test_#{SecureRandom.uuid.underscore}",
       description: "test",
-      parameters: parameters || [{ name: "query", type: "string", desciption: "perform a search" }],
+      parameters:
+        parameters || [{ name: "query", type: "string", description: "perform a search" }],
       script: script || "function invoke(params) { return params; }",
       created_by_id: 1,
       summary: "Test tool summary",
@@ -32,11 +34,11 @@ RSpec.describe AiTool do
       {
         name: tool.tool_name,
         description: "test",
-        parameters: [{ name: "query", type: "string", desciption: "perform a search" }],
+        parameters: [{ name: "query", type: "string", description: "perform a search" }],
       },
     )
 
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     expect(runner.invoke).to eq("query" => "test")
   end
@@ -57,7 +59,7 @@ RSpec.describe AiTool do
     JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "data" => "test data" }, llm: nil, bot_user: nil)
 
       stub_request(verb, "https://example.com/api").with(
         body: "{\"data\":\"test data\"}",
@@ -83,7 +85,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/test").with(
       headers: {
@@ -110,7 +112,7 @@ RSpec.describe AiTool do
       JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({}, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({}, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/").to_return(
       status: 200,
@@ -134,7 +136,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     stub_request(:get, "https://example.com/test").with(
       headers: {
@@ -160,13 +162,16 @@ RSpec.describe AiTool do
       }
     JS
 
+    tool = create_tool(script: script)
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
+
     stub_request(:get, "https://example.com/test").to_return do
       sleep 0.01
       { status: 200, body: "Hello World", headers: {} }
     end
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     runner.timeout = 10
 
@@ -184,7 +189,7 @@ RSpec.describe AiTool do
 
     tool = create_tool(script: script)
 
-    runner = tool.runner({}, llm: llm, bot_user: nil, context: {})
+    runner = tool.runner({}, llm: llm, bot_user: nil)
     result = runner.invoke
 
     expect(result).to eq("Hello")
@@ -209,7 +214,7 @@ RSpec.describe AiTool do
     responses = ["Hello ", "World"]
 
     DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
-      runner = tool.runner({}, llm: llm, bot_user: nil, context: {})
+      runner = tool.runner({}, llm: llm, bot_user: nil)
       result = runner.invoke
       prompts = _prompts
     end
@@ -232,7 +237,7 @@ RSpec.describe AiTool do
     JS
 
     tool = create_tool(script: script)
-    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil, context: {})
+    runner = tool.runner({ "query" => "test" }, llm: nil, bot_user: nil)
 
     runner.timeout = 5
 
@@ -295,7 +300,7 @@ RSpec.describe AiTool do
 
       RagDocumentFragment.link_target_and_uploads(tool, [upload1.id, upload2.id])
 
-      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+      result = tool.runner({}, llm: nil, bot_user: nil).invoke
 
       expected = [
         [{ "fragment" => "44 45 46 47 48 49 50", "metadata" => nil }],
@@ -316,7 +321,7 @@ RSpec.describe AiTool do
       # this part of the API is a bit awkward, maybe we should do it
       # automatically
       RagDocumentFragment.update_target_uploads(tool, [upload1.id, upload2.id])
-      result = tool.runner({}, llm: nil, bot_user: nil, context: {}).invoke
+      result = tool.runner({}, llm: nil, bot_user: nil).invoke
 
       expected = [
         [{ "fragment" => "48 49 50", "metadata" => nil }],
@@ -340,7 +345,7 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "topic_id" => topic.id }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "topic_id" => topic.id }, llm: nil, bot_user: nil)
 
       result = runner.invoke
 
@@ -364,7 +369,7 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "post_id" => post.id }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "post_id" => post.id }, llm: nil, bot_user: nil)
 
       result = runner.invoke
       post_hash = result["post"]
@@ -393,12 +398,166 @@ RSpec.describe AiTool do
       JS
 
       tool = create_tool(script: script)
-      runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil, context: {})
+      runner = tool.runner({ "query" => "banana" }, llm: nil, bot_user: nil)
 
       result = runner.invoke
 
       expect(result["rows"].length).to be > 0
       expect(result["rows"].first["title"]).to eq(topic.title)
+    end
+  end
+
+  context "when using the chat API" do
+    before(:each) do
+      skip "Chat plugin tests skipped because Chat module is not defined." unless defined?(Chat)
+      SiteSetting.chat_enabled = true
+    end
+
+    fab!(:chat_user) { Fabricate(:user) }
+    fab!(:chat_channel) do
+      Fabricate(:chat_channel).tap do |channel|
+        Fabricate(
+          :user_chat_channel_membership,
+          user: chat_user,
+          chat_channel: channel,
+          following: true,
+        )
+      end
+    end
+
+    it "can create a chat message" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createChatMessage({
+            channel_name: params.channel_name,
+            username: params.username,
+            message: params.message
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          {
+            "channel_name" => chat_channel.name,
+            "username" => chat_user.username,
+            "message" => "Hello from the tool!",
+          },
+          llm: nil,
+          bot_user: bot_user, # The user *running* the tool doesn't affect sender
+        )
+
+      initial_message_count = Chat::Message.count
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true), "Tool invocation failed: #{result["error"]}"
+      expect(result["message"]).to eq("Hello from the tool!")
+      expect(result["created_at"]).to be_present
+      expect(result).not_to have_key("error")
+
+      # Verify message was actually created in the database
+      expect(Chat::Message.count).to eq(initial_message_count + 1)
+      created_message = Chat::Message.find_by(id: result["message_id"])
+
+      expect(created_message).not_to be_nil
+      expect(created_message.message).to eq("Hello from the tool!")
+      expect(created_message.user_id).to eq(chat_user.id) # Message is sent AS the specified user
+      expect(created_message.chat_channel_id).to eq(chat_channel.id)
+    end
+
+    it "can create a chat message using channel slug" do
+      chat_channel.update!(name: "My Test Channel", slug: "my-test-channel")
+      expect(chat_channel.slug).to eq("my-test-channel")
+
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createChatMessage({
+            channel_name: params.channel_slug, // Using slug here
+            username: params.username,
+            message: params.message
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          {
+            "channel_slug" => chat_channel.slug,
+            "username" => chat_user.username,
+            "message" => "Hello via slug!",
+          },
+          llm: nil,
+          bot_user: bot_user,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true), "Tool invocation failed: #{result["error"]}"
+      # see: https://github.com/rubyjs/mini_racer/issues/348
+      # expect(result["message_id"]).to be_a(Integer)
+
+      created_message = Chat::Message.find_by(id: result["message_id"])
+      expect(created_message).not_to be_nil
+      expect(created_message.message).to eq("Hello via slug!")
+      expect(created_message.chat_channel_id).to eq(chat_channel.id)
+    end
+
+    it "returns an error if the channel is not found" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createChatMessage({
+            channel_name: "non_existent_channel",
+            username: params.username,
+            message: params.message
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { "username" => chat_user.username, "message" => "Test" },
+          llm: nil,
+          bot_user: bot_user,
+        )
+
+      initial_message_count = Chat::Message.count
+      expect { runner.invoke }.to raise_error(
+        MiniRacer::RuntimeError,
+        /Channel not found: non_existent_channel/,
+      )
+
+      expect(Chat::Message.count).to eq(initial_message_count) # Verify no message created
+    end
+
+    it "returns an error if the user is not found" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createChatMessage({
+            channel_name: params.channel_name,
+            username: "non_existent_user",
+            message: params.message
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { "channel_name" => chat_channel.name, "message" => "Test" },
+          llm: nil,
+          bot_user: bot_user,
+        )
+
+      initial_message_count = Chat::Message.count
+      expect { runner.invoke }.to raise_error(
+        MiniRacer::RuntimeError,
+        /User not found: non_existent_user/,
+      )
+
+      expect(Chat::Message.count).to eq(initial_message_count) # Verify no message created
     end
   end
 end
