@@ -10,6 +10,7 @@
 
 .ai-search-discoveries {
   &__regular-results-title {
+    margin-top: 0.5em;
     margin-bottom: 0;
   }
 
@@ -103,6 +104,10 @@
   width: 1.15em;
 }
 
+.ai-discobot-discoveries {
+  padding-top: 0.5em;
+}
+
 @include breakpoint("medium", min-width) {
   .search-menu .menu-panel:has(.ai-search-discoveries__discoveries-title) {
     width: 80vw;
@@ -124,6 +129,7 @@
         // always in the second column, always spans all rows
         grid-column-start: 2;
         grid-row: 1 / -1;
+        padding-top: 0;
       }
     }
 
