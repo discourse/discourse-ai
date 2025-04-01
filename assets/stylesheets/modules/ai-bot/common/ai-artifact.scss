@@ -1,22 +1,30 @@
-@keyframes slideUp {
+@keyframes remove {
   to {
-    transform: translateY(-100%);
+    height: 0;
+    overflow: hidden;
   }
 }
 
-@keyframes vanishing {
+@keyframes fade {
   to {
-    display: none;
+    opacity: 0;
   }
 }
 
 .ai-artifact__wrapper {
+  height: 500px;
+  padding-bottom: 2em;
+
   iframe {
     width: 100%;
     height: calc(100% - 2em);
   }
-  height: 500px;
-  padding-bottom: 2em;
+
+  &:not(.ai-artifact__expanded) {
+    iframe {
+      box-shadow: var(--shadow-card);
+    }
+  }
 }
 
 .ai-artifact__click-to-run {
@@ -24,6 +32,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  background: var(--primary-very-low);
 }
 
 .ai-artifact__panel {
@@ -41,43 +50,68 @@ html.ai-artifact-expanded {
 
   .ai-artifact__expand-button {
     margin-left: auto;
+    padding-right: 0;
+
+    .d-icon {
+      font-size: var(--font-down-1);
+    }
   }
 }
 
+.ai-artifact__panel--wrapper {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
 .ai-artifact__expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: z("fullscreen");
+  background-color: var(--secondary);
+
   .ai-artifact__footer {
     display: none;
   }
 
   .ai-artifact__panel--wrapper {
-    position: fixed;
-    top: 0;
+    position: absolute;
+    top: 2em;
     left: 2em;
     right: 2em;
     height: 2em;
     z-index: 1000000;
-    animation: vanishing 0.5s 3s forwards;
+    display: flex;
+    justify-content: center;
+    opacity: 1;
   }
 
   .ai-artifact__panel {
     display: block;
-    position: fixed;
-    top: 0;
-    left: 2em;
-    right: 2em;
-    height: 2em;
-    transition: transform 0.5s ease-in-out;
-    animation: slideUp 0.5s 3s forwards;
-    background-color: var(--secondary-low);
+    position: absolute;
+    animation:
+      fade 0.75s forwards,
+      remove 1s forwards;
+    animation-delay: 4s;
+    background-color: var(--primary);
     opacity: 0.9;
+    border-radius: var(--d-button-border-radius);
     transform: translateY(0);
+    box-shadow: var(--shadow-card);
+    font-size: var(--font-up-1);
+
+    &:hover {
+      animation-play-state: paused;
+      opacity: 1;
+    }
 
     button {
-      width: 100%;
-      text-align: left;
       box-sizing: border-box;
-      justify-content: flex-start;
+      justify-content: center;
       color: var(--secondary-very-high);
+      margin: 0 auto;
 
       &:hover {
         color: var(--secondary-very-high);
@@ -99,11 +133,4 @@ html.ai-artifact-expanded {
     bottom: 0;
     z-index: z("fullscreen");
   }
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  z-index: z("fullscreen");
-  background-color: var(--secondary);
 }
