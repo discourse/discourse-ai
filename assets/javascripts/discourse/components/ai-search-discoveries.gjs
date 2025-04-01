@@ -156,7 +156,8 @@ export default class AiSearchDiscoveries extends Component {
   get canContinueConversation() {
     const personas = this.currentUser?.ai_enabled_personas;
     const discoverPersona = personas.find(
-      (persona) => persona.id === this.siteSettings?.ai_bot_discover_persona
+      (persona) =>
+        persona.id === parseInt(this.siteSettings?.ai_bot_discover_persona, 10)
     );
     const discoverPersonaHasBot = discoverPersona?.username;
 
