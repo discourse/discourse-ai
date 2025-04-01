@@ -28,6 +28,7 @@ export default class AiSearchDiscoveries extends Component {
   @service discobotDiscoveries;
   @service appEvents;
   @service currentUser;
+  @service siteSettings;
   @service composer;
 
   @tracked loadingConversationTopic = false;
@@ -153,9 +154,16 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   get canContinueConversation() {
+    const personas = this.currentUser?.ai_enabled_personas;
+    const discoverPersona = personas.find(
+      (persona) => persona.id === this.siteSettings?.ai_bot_discover_persona
+    );
+    const discoverPersonaHasBot = discoverPersona?.username;
+
     return (
       this.discobotDiscoveries.discovery?.length > 0 &&
-      !this.smoothStreamer.isStreaming
+      !this.smoothStreamer.isStreaming &&
+      discoverPersonaHasBot
     );
   }
 
