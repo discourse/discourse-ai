@@ -614,6 +614,12 @@ zh_CN:
             positive: "积极"
             neutral: "中性"
             negative: "消极"
+          group_types:
+            category: "类别"
+            tag: "标签"
+          table:
+            sentiment: "情绪"
+            total_count: "总计"
       summarization:
         chat:
           title: "总结消息"

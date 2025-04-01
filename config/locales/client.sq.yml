@@ -123,6 +123,10 @@ sq:
         sentiment_analysis:
           filter_types:
             all: "Të Gjithë"
+          group_types:
+            category: "Kategori"
+          table:
+            total_count: "Total"
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Zvogëloni"

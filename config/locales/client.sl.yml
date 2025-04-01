@@ -135,6 +135,10 @@ sl:
         sentiment_analysis:
           filter_types:
             all: "Vse"
+          group_types:
+            category: "Kategorija"
+          table:
+            total_count: "Skupaj"
       discobot_discoveries:
         regular_results: "Tem"
         collapse: "Skrči"

@@ -147,6 +147,11 @@ hu:
           filter_types:
             all: "Összes"
             neutral: "Semleges"
+          group_types:
+            category: "Kategória"
+            tag: "Címke"
+          table:
+            total_count: "Összes"
       summarization:
         chat:
           summarize: "Összefoglalás"

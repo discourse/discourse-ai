@@ -186,6 +186,11 @@ lt:
           filter_types:
             all: "Visos"
             neutral: "Neutrali"
+          group_types:
+            category: "Kategorija"
+            tag: "Žymėti"
+          table:
+            total_count: "Viso"
       summarization:
         chat:
           summarize: "Apibendrinti"

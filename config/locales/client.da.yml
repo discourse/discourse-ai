@@ -144,6 +144,11 @@ da:
           filter_types:
             all: "Alle"
             neutral: "Neutral"
+          group_types:
+            category: "Kategori"
+            tag: "Mærke"
+          table:
+            total_count: "Total"
       discobot_discoveries:
         regular_results: "Emner"
         collapse: "Fold sammen"

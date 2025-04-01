@@ -240,6 +240,10 @@ id:
         sentiment_analysis:
           filter_types:
             all: "Semua"
+          group_types:
+            category: "Kategori"
+          table:
+            total_count: "Total"
       summarization:
         chat:
           title: "Meringkas pesan"

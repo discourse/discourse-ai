@@ -224,6 +224,12 @@ cs:
         sentiment_analysis:
           filter_types:
             all: "Vše"
+          group_types:
+            category: "Kategorie"
+            tag: "Štítek"
+          table:
+            sentiment: "Sentiment"
+            total_count: "Celkem"
       summarization:
         chat:
           title: "Shrnout zprávy"

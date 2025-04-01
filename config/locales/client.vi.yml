@@ -140,6 +140,10 @@ vi:
         sentiment_analysis:
           filter_types:
             all: "All"
+          group_types:
+            category: "Danh mục"
+          table:
+            total_count: "Tổng số"
       summarization:
         chat:
           summarize: "Tóm tắt"

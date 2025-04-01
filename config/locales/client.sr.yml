@@ -115,6 +115,10 @@ sr:
         sentiment_analysis:
           filter_types:
             all: "sve"
+          group_types:
+            category: "Kategorija"
+          table:
+            total_count: "Ukupno"
       discobot_discoveries:
         regular_results: "Teme"
         collapse: "Spusti"

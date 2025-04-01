@@ -130,6 +130,10 @@ ca:
           filter_types:
             all: "Tot"
             neutral: "Neutre"
+          group_types:
+            category: "Categoria"
+          table:
+            total_count: "Total"
       discobot_discoveries:
         regular_results: "Temes"
         collapse: "Redueix"

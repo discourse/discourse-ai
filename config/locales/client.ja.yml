@@ -614,6 +614,12 @@ ja:
             positive: "ポジティブ"
             neutral: "ニュートラル"
             negative: "ネガティブ"
+          group_types:
+            category: "カテゴリ"
+            tag: "タグ"
+          table:
+            sentiment: "センチメント"
+            total_count: "総合"
       summarization:
         chat:
           title: "メッセージを要約する"

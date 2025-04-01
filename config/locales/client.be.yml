@@ -115,6 +115,10 @@ be:
           filter_types:
             all: "Усё"
             neutral: "нейтральны"
+          group_types:
+            category: "катэгорыя"
+          table:
+            total_count: "агульны"
       discobot_discoveries:
         regular_results: "тэмы"
         tooltip:

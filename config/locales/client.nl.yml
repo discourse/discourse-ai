@@ -619,6 +619,12 @@ nl:
             positive: "Positief"
             neutral: "Neutraal"
             negative: "Negatief"
+          group_types:
+            category: "Categorie"
+            tag: "Taggen"
+          table:
+            sentiment: "Sentiment"
+            total_count: "Totaal"
       summarization:
         chat:
           title: "Berichten samenvatten"
