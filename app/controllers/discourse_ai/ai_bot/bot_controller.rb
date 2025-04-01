@@ -86,9 +86,14 @@ module DiscourseAi
         post =
           PostCreator.create!(
             user,
-            title: "Discovery Conversation continued: Search for #{query}",
+            title:
+              I18n.t("discourse_ai.ai_bot.discoveries.continue_conversation.title", query: query),
             raw:
-              "In my search for #{query}, you showed me the following information:\n\n#{context}\n\n Let's continue the conversation.",
+              I18n.t(
+                "discourse_ai.ai_bot.discoveries.continue_conversation.raw",
+                query: query,
+                context: context,
+              ),
             archetype: Archetype.private_message,
             target_usernames: bot_username,
             skip_validations: true,
