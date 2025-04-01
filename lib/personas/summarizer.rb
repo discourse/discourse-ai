@@ -17,7 +17,7 @@ module DiscourseAi
           - Example: links to the 3rd and 6th posts by sam: sam ([#3]({resource_url}/3), [#6]({resource_url}/6))
           - Example: link to the 6th post by jane: [agreed with]({resource_url}/6)
           - Example: link to the 13th post by joe: [joe]({resource_url}/13)
-          - When formatting usernames either use @USERNMAE OR [USERNAME]({resource_url}/POST_NUMBER)
+          - When formatting usernames either use @USERNAME OR [USERNAME]({resource_url}/POST_NUMBER)
         PROMPT
       end
     end

@@ -2,6 +2,13 @@
 
 summarization_personas = [DiscourseAi::Personas::Summarizer, DiscourseAi::Personas::ShortSummarizer]
 
+def from_setting(setting_name)
+  DB.query_single(
+    "SELECT value FROM site_settings WHERE name = :setting_name",
+    setting_name: setting_name,
+  )
+end
+
 DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
   persona = AiPersona.find_by(id: id)
   if !persona
@@ -21,14 +28,7 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
         default_groups = [] # Blank == everyone
       end
 
-      persona.allowed_group_ids =
-        DB
-          .query_single(
-            "SELECT value FROM site_settings WHERE name = :setting_name",
-            setting_name: setting_name,
-          )
-          .first
-          &.split("|") || default_groups
+      persona.allowed_group_ids = from_setting(setting_name).first&.split("|") || default_groups
     else
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
@@ -68,6 +68,12 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
       name, value = tool
       tools[name] = value if tools.key?(name)
     end
+  end
+
+  if summarization_personas.include?(persona_class)
+    model = from_setting("ai_summarization_model").first&.split(":")&.last # Remove legacy custom provider.
+
+    persona.default_llm_id = model if model.present?
   end
 
   persona.tools = tools.map { |name, value| [name, value] }

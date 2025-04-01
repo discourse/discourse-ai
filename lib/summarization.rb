@@ -2,58 +2,72 @@
 
 module DiscourseAi
   module Summarization
-    def self.topic_summary(topic)
-      return nil if !SiteSetting.ai_summarization_enabled
-      return nil if (model = SiteSetting.ai_summarization_model).blank?
-      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
-        return nil
-      end
+    class << self
+      def topic_summary(topic)
+        return nil if !SiteSetting.ai_summarization_enabled
+        if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
+          return nil
+        end
 
-      DiscourseAi::Summarization::FoldContent.new(
-        build_bot(ai_persona, model),
-        DiscourseAi::Summarization::Strategies::TopicSummary.new(topic),
-      )
-    end
+        persona_klass = ai_persona.class_instance
+        llm_model = find_summarization_model(persona_klass)
+        return nil if llm_model.blank?
 
-    def self.topic_gist(topic)
-      return nil if !SiteSetting.ai_summarization_enabled
-      return nil if (model = SiteSetting.ai_summarization_model).blank?
-      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona)).blank?
-        return nil
-      end
-
-      if SiteSetting.ai_summarization_model.present? && SiteSetting.ai_summarization_enabled
         DiscourseAi::Summarization::FoldContent.new(
-          build_bot(ai_persona, model),
+          build_bot(persona_klass, llm_model),
+          DiscourseAi::Summarization::Strategies::TopicSummary.new(topic),
+        )
+      end
+
+      def topic_gist(topic)
+        return nil if !SiteSetting.ai_summarization_enabled
+        if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona)).blank?
+          return nil
+        end
+
+        persona_klass = ai_persona.class_instance
+        llm_model = find_summarization_model(persona_klass)
+        return nil if llm_model.blank?
+
+        DiscourseAi::Summarization::FoldContent.new(
+          build_bot(persona_klass, llm_model),
           DiscourseAi::Summarization::Strategies::HotTopicGists.new(topic),
         )
-      else
-        nil
-      end
-    end
-
-    def self.chat_channel_summary(channel, time_window_in_hours)
-      return nil if !SiteSetting.ai_summarization_enabled
-      return nil if (model = SiteSetting.ai_summarization_model).blank?
-      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
-        return nil
       end
 
-      DiscourseAi::Summarization::FoldContent.new(
-        build_bot(ai_persona, model),
-        DiscourseAi::Summarization::Strategies::ChatMessages.new(channel, time_window_in_hours),
-        persist_summaries: false,
-      )
-    end
+      def chat_channel_summary(channel, time_window_in_hours)
+        return nil if !SiteSetting.ai_summarization_enabled
+        if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
+          return nil
+        end
 
-    ### Private
+        persona_klass = ai_persona.class_instance
+        llm_model = find_summarization_model(persona_klass)
+        return nil if llm_model.blank?
 
-    def self.build_bot(ai_persona, default_model)
-      persona_class = ai_persona.class_instance
-      persona = persona_class.new
-      user = User.find_by(id: persona_class.user_id) || Discourse.system_user
+        DiscourseAi::Summarization::FoldContent.new(
+          build_bot(persona_klass, llm_model),
+          DiscourseAi::Summarization::Strategies::ChatMessages.new(channel, time_window_in_hours),
+          persist_summaries: false,
+        )
+      end
 
-      bot = DiscourseAi::Personas::Bot.as(user, persona: persona, model: default_model)
+      ### Private
+
+      def find_summarization_model(persona_klass)
+        if persona_klass.default_llm_id.present?
+          LlmModel.find_by(id: persona_klass.default_llm_id)
+        else
+          LlmModel.last
+        end
+      end
+
+      def build_bot(persona_klass, llm_model)
+        persona = persona_klass.new
+        user = User.find_by(id: persona_klass.user_id) || Discourse.system_user
+
+        bot = DiscourseAi::Personas::Bot.as(user, persona: persona, model: llm_model)
+      end
     end
   end
 end
