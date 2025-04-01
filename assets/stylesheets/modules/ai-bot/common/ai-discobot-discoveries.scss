@@ -111,7 +111,7 @@
 @include breakpoint("medium", min-width) {
   .search-menu .menu-panel:has(.ai-search-discoveries__discoveries-title) {
     width: 80vw;
-    max-width: 800px;
+    max-width: 900px;
     transition: width 0.5s;
 
     .results {
@@ -129,7 +129,14 @@
         // always in the second column, always spans all rows
         grid-column-start: 2;
         grid-row: 1 / -1;
-        padding-top: 0;
+        box-sizing: border-box;
+        padding: 0 0.5em 0 2em;
+        margin: 0.75em 0 0 0;
+        border-left: 1px solid var(--primary-low);
+
+        .cooked {
+          font-size: var(--font-down-1);
+        }
       }
     }
 
@@ -137,10 +144,6 @@
       font-size: var(--font-0);
       color: var(--primary-high);
       padding-right: 0.5em;
-    }
-
-    .ai-search-discoveries__discoveries-title {
-      margin-top: 0.5em;
     }
 
     .ai-search-discoveries__regular-results-title {
