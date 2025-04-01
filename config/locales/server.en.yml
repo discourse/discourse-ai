@@ -422,6 +422,10 @@ en:
         search_settings:
           one: "Found %{count} result for '%{query}'"
           other: "Found %{count} results for '%{query}'"
+      discoveries:
+        continue_conversation:
+          title: "Discovery conversation: Search for %{query}"
+          raw: "In my search for %{query}, you showed me the following information:\n\n%{context}\n\nLet's continue the conversation."
 
     summarization:
       configuration_hint:

@@ -62,6 +62,10 @@
   .cooked p:first-child {
     margin-top: 0;
   }
+
+  &__continue-conversation {
+    margin-block: 1rem;
+  }
 }
 
 .ai-search-discoveries-tooltip {

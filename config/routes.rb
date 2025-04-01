@@ -26,6 +26,7 @@ DiscourseAi::Engine.routes.draw do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
 
     get "discover" => "bot#discover"
+    post "discover/continue-convo" => "bot#discover_continue_convo"
   end
 
   scope module: :ai_bot, path: "/ai-bot/shared-ai-conversations" do

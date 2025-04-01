@@ -731,6 +731,8 @@ en:
         main_title: "Discobot discoveries"
         regular_results: "Topics"
         tell_me_more: "Tell me more..."
+        continue_convo: "Continue conversation..."
+        loading_convo: "Loading conversation"
         collapse: "Collapse"
         timed_out: "Discobot couldn't find any discoveries. Something went wrong."
         user_setting: "Enable search discoveries"

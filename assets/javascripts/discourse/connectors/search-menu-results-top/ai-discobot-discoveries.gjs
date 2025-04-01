@@ -33,6 +33,7 @@ export default class AiDiscobotDiscoveries extends Component {
       <AiSearchDiscoveries
         @searchTerm={{@outletArgs.searchTerm}}
         @discoveryPreviewLength={{50}}
+        @closeSearchMenu={{@outletArgs.closeSearchMenu}}
       />
 
       {{#if this.search.results.topics.length}}
