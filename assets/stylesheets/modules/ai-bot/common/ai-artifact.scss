@@ -1,11 +1,11 @@
-@keyframes remove {
+@keyframes artifact-remove {
   to {
     height: 0;
     overflow: hidden;
   }
 }
 
-@keyframes fade {
+@keyframes artifact-fade {
   to {
     opacity: 0;
   }
@@ -92,8 +92,8 @@ html.ai-artifact-expanded {
     display: block;
     position: absolute;
     animation:
-      fade 0.75s forwards,
-      remove 1s forwards;
+      artifact-fade 0.75s forwards,
+      artifact-remove 1s forwards;
     animation-delay: 4s;
     background-color: var(--primary);
     opacity: 0.9;
