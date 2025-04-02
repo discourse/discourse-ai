@@ -164,6 +164,10 @@ en:
     discourse_ai:
       title: "AI"
 
+      features:
+        short_title: "Features"
+        description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
+
       modals:
         select_option: "Select an option..."
 
