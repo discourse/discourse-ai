@@ -25,15 +25,11 @@ module DiscourseAi
       #
       # @returns { AiSummary } - Resulting summary.
       def summarize(user, &on_partial_blk)
-        base_summary = ""
-        initial_pos = 0
-
         truncated_content = content_to_summarize.map { |cts| truncate(cts) }
 
-        folded_summary = fold(truncated_content, base_summary, initial_pos, user, &on_partial_blk)
+        summary = fold(truncated_content, user, &on_partial_blk)
 
-        clean_summary =
-          Nokogiri::HTML5.fragment(folded_summary).css("ai")&.first&.text || folded_summary
+        clean_summary = Nokogiri::HTML5.fragment(summary).css("ai")&.first&.text || summary
 
         if persist_summaries
           AiSummary.store!(
@@ -88,31 +84,25 @@ module DiscourseAi
       end
 
       # @param items { Array<Hash> } - Content to summarize. Structure will be: { poster: who wrote the content, id: a way to order content, text: content }
-      # @param summary { String } - Intermediate summaries that we'll keep extending as part of our "folding" algorithm.
-      # @param cursor { Integer } - Idx to know how much we already summarized.
       # @param user { User } - User object used for auditing usage.
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
       # The summarization algorithm.
-      # The idea is to build an initial summary packing as much content as we can. Once we have the initial summary, we'll keep extending using the leftover
-      # content until there is nothing left.
+      # It will summarize as much content summarize given the model's context window. If will prioriotize newer content in case it doesn't fit.
       #
       # @returns { String } - Resulting summary.
-      def fold(items, summary, cursor, user, &on_partial_blk)
+      def fold(items, user, &on_partial_blk)
         tokenizer = llm_model.tokenizer_class
-        tokens_left = available_tokens - tokenizer.size(summary)
-        iteration_content = []
+        tokens_left = available_tokens
+        content_in_window = []
 
         items.each_with_index do |item, idx|
-          next if idx < cursor
-
           as_text = "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
 
           if tokenizer.below_limit?(as_text, tokens_left)
-            iteration_content << item
+            content_in_window << item
             tokens_left -= tokenizer.size(as_text)
-            cursor += 1
           else
             break
           end
@@ -124,36 +114,21 @@ module DiscourseAi
             skip_tool_details: true,
             feature_name: strategy.feature,
             resource_url: "#{Discourse.base_path}/t/-/#{strategy.target.id}",
+            messages: strategy.as_llm_messages(content_in_window),
           )
 
-        context.messages =
-          (
-            if summary.blank?
-              strategy.first_summary_messages(iteration_content)
-            else
-              strategy.summary_extension_messages(summary, iteration_content)
-            end
-          )
-
-        latest_summary = +""
+        summary = +""
         buffer_blk =
           Proc.new do |partial, cancel, placeholder, type|
             if type.blank?
-              latest_summary << partial
+              summary << partial
               on_partial_blk.call(partial, cancel) if on_partial_blk
             end
           end
 
-        if cursor == items.length
-          bot.reply(context, &buffer_blk)
+        bot.reply(context, &buffer_blk)
 
-          latest_summary
-        else
-          bot.reply(context, llm_args: { max_tokens: 600 }, &buffer_blk)
-
-          # Send original blk here for expansion.
-          fold(items, latest_summary, cursor, user, &on_partial_blk)
-        end
+        summary
       end
 
       def available_tokens

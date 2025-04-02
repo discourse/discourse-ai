@@ -38,32 +38,7 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_messages(summary, contents)
-          resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
-          content_title = target.title
-          input =
-            contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]})" }.join
-
-          [{ type: :user, content: <<~TEXT.strip }]
-            ### Context:
-
-            #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
-
-            Here is the existing summary:
-
-            #{summary}
-
-            Here are the new posts, inside <input></input> XML tags:
-
-            <input>
-            #{input}
-            </input>
-
-            Integrate the new information to generate an enhanced concise and coherent summary.
-          TEXT
-        end
-
-        def first_summary_messages(contents)
+        def as_llm_messages(contents)
           resource_path = "#{Discourse.base_path}/t/-/#{target.id}"
           content_title = target.title
           input =

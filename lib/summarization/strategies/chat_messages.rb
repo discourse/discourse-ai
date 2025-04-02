@@ -27,28 +27,7 @@ module DiscourseAi
             .map { { id: _1, poster: _2, text: _3, last_version_at: _4 } }
         end
 
-        def summary_extension_messages(summary, contents)
-          input =
-            contents
-              .map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
-              .join("\n")
-
-          [{ type: :user, content: <<~TEXT.strip }]
-            ### Context:
-
-            This is the existing summary from a chat channel:
-
-            #{summary}
-
-            These are the new chat messages:
-
-            #{input}
-
-            Intengrate the new messages into the existing summary.
-          TEXT
-        end
-
-        def first_summary_messages(contents)
+        def as_llm_messages(contents)
           content_title = target.name
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join

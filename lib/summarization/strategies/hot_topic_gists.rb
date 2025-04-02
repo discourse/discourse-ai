@@ -62,30 +62,7 @@ module DiscourseAi
           end
         end
 
-        def summary_extension_messages(summary, contents)
-          statements =
-            contents
-              .to_a
-              .map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
-              .join("\n")
-
-          [{ type: :user, content: <<~TEXT.strip }]
-            ### Context:
-
-            This is the existing single-sentence summary:
-
-            #{summary}
-
-            And these are the new developments in the conversation:
-
-            #{statements}
-
-            Your task is to update an existing single-sentence summary by integrating new developments from a conversation.
-            Return the 40-word summary inside <ai></ai> tags.
-          TEXT
-        end
-
-        def first_summary_messages(contents)
+        def as_llm_messages(contents)
           content_title = target.title
           statements =
             contents.to_a.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }
