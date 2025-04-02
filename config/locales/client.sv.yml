@@ -145,6 +145,11 @@ sv:
           filter_types:
             all: "Alla"
             neutral: "Neutralt"
+          group_types:
+            category: "Kategori"
+            tag: "Tagg"
+          table:
+            total_count: "Totalt"
       summarization:
         chat:
           title: "Sammanfatta meddelanden"

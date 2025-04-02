@@ -139,6 +139,11 @@ zh_TW:
           filter_types:
             all: "全部"
             neutral: "中性"
+          group_types:
+            category: "分類"
+            tag: "標記"
+          table:
+            total_count: "總數"
       summarization:
         chat:
           title: "摘要訊息"

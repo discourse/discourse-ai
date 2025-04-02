@@ -273,6 +273,12 @@ pl_PL:
             positive: "Pozytywne"
             neutral: "Neutralne"
             negative: "Negatywne"
+          group_types:
+            category: "Kategoria"
+            tag: "Tag"
+          table:
+            sentiment: "Sentiment"
+            total_count: "Łącznie"
       summarization:
         chat:
           title: "Podsumuj wiadomości"

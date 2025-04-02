@@ -121,6 +121,10 @@ sw:
         sentiment_analysis:
           filter_types:
             all: "Vyote"
+          group_types:
+            category: "Kategoria"
+          table:
+            total_count: "Jumla"
       discobot_discoveries:
         regular_results: "Mada"
         collapse: "Kunja"

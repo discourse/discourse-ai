@@ -132,6 +132,11 @@ te:
           filter_types:
             all: "అన్ని"
             neutral: "తటస్థ"
+          group_types:
+            category: "వర్గం"
+            tag: "ట్యాగ్"
+          table:
+            total_count: "మొత్తం"
       discobot_discoveries:
         regular_results: "విషయాలు"
         collapse: "కుదించండి"

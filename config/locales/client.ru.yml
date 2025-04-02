@@ -625,6 +625,12 @@ ru:
             positive: "Позитивное"
             neutral: "Нейтральность"
             negative: "Негативное"
+          group_types:
+            category: "Категория"
+            tag: "Теги"
+          table:
+            sentiment: "Настроение"
+            total_count: "Всего"
       summarization:
         chat:
           title: "Делать сводку сообщений"

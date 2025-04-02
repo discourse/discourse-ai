@@ -124,6 +124,10 @@ bs_BA:
         sentiment_analysis:
           filter_types:
             all: "All"
+          group_types:
+            category: "Kategorija"
+          table:
+            total_count: "Suma"
       discobot_discoveries:
         regular_results: "Topics"
         collapse: "Spusti"

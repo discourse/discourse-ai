@@ -619,6 +619,12 @@ fr:
             positive: "Positif"
             neutral: "Neutre"
             negative: "Négatif"
+          group_types:
+            category: "Catégorie"
+            tag: "Étiqueter"
+          table:
+            sentiment: "Sentiment"
+            total_count: "Total"
       summarization:
         chat:
           title: "Résumer les messages"

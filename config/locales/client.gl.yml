@@ -137,6 +137,11 @@ gl:
           filter_types:
             all: "Todas"
             neutral: "Neutro"
+          group_types:
+            category: "Categoría"
+            tag: "Etiqueta"
+          table:
+            total_count: "Total"
       discobot_discoveries:
         regular_results: "Temas"
         collapse: "Pregar"

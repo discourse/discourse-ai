@@ -130,6 +130,10 @@ hy:
           filter_types:
             all: "Բոլորը"
             neutral: "Նեյտրալ"
+          group_types:
+            category: "Կատեգորիա"
+          table:
+            total_count: "Ամբողջը"
       discobot_discoveries:
         regular_results: "Թեմաներ"
         collapse: "Կրճատել"

@@ -138,6 +138,11 @@ ro:
         sentiment_analysis:
           filter_types:
             all: "Toate"
+          group_types:
+            category: "Categorie"
+            tag: "Etichetă"
+          table:
+            total_count: "Total"
       summarization:
         chat:
           title: "Rezumați mesajele"

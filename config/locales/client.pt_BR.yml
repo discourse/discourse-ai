@@ -619,6 +619,12 @@ pt_BR:
             positive: "Positivo"
             neutral: "Neutro"
             negative: "Negativo"
+          group_types:
+            category: "Categoria"
+            tag: "Etiqueta"
+          table:
+            sentiment: "Sentimento"
+            total_count: "Total"
       summarization:
         chat:
           title: "Resumir mensagens"

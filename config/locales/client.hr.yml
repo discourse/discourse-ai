@@ -143,6 +143,11 @@ hr:
         sentiment_analysis:
           filter_types:
             all: "Sve"
+          group_types:
+            category: "Kategorija"
+            tag: "Označiti"
+          table:
+            total_count: "Ukupno"
       summarization:
         chat:
           title: "Sažmi poruke"
