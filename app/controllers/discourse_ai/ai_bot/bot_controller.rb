@@ -47,9 +47,9 @@ module DiscourseAi
 
       def discover
         ai_persona =
-          AiPersona.all_personas.find do |persona|
-            persona.id == SiteSetting.ai_bot_discover_persona.to_i
-          end
+          AiPersona
+            .all_personas(enabled_only: false)
+            .find { |persona| persona.id == SiteSetting.ai_bot_discover_persona.to_i }
 
         if ai_persona.nil? || !current_user.in_any_groups?(ai_persona.allowed_group_ids.to_a)
           raise Discourse::InvalidAccess.new

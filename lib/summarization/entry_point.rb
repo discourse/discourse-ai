@@ -6,7 +6,11 @@ module DiscourseAi
       def inject_into(plugin)
         plugin.add_to_serializer(:current_user, :can_summarize) do
           return false if !SiteSetting.ai_summarization_enabled
-          scope.user.in_any_groups?(SiteSetting.ai_custom_summarization_allowed_groups_map)
+
+          if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
+            return false
+          end
+          scope.user.in_any_groups?(ai_persona.allowed_group_ids.to_a)
         end
 
         plugin.add_to_serializer(:topic_view, :summarizable) do

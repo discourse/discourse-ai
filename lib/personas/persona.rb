@@ -44,6 +44,8 @@ module DiscourseAi
             DiscourseHelper => -8,
             GithubHelper => -9,
             WebArtifactCreator => -10,
+            Summarizer => -11,
+            ShortSummarizer => -12,
           }
         end
 

@@ -63,7 +63,7 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
 
           before do
             group.add(user)
-            SiteSetting.ai_summary_gists_allowed_groups = group.id
+            assign_persona_to(:ai_summary_gists_persona, [group.id])
             SiteSetting.ai_summary_gists_enabled = true
           end
 
@@ -82,14 +82,14 @@ RSpec.describe DiscourseAi::Summarization::EntryPoint do
           end
 
           it "doesn't include the summary when the user is not a member of the opt-in group" do
-            SiteSetting.ai_summary_gists_allowed_groups = ""
+            non_member_user = Fabricate(:user)
 
             gist_topic = topic_query.list_hot.topics.find { |t| t.id == topic_ai_gist.target_id }
 
             serialized =
               TopicListItemSerializer.new(
                 gist_topic,
-                scope: Guardian.new(user),
+                scope: Guardian.new(non_member_user),
                 root: false,
                 filter: :hot,
               ).as_json

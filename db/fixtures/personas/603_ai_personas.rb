@@ -1,17 +1,39 @@
 # frozen_string_literal: true
 
+summarization_personas = [DiscourseAi::Personas::Summarizer, DiscourseAi::Personas::ShortSummarizer]
+
+def from_setting(setting_name)
+  DB.query_single(
+    "SELECT value FROM site_settings WHERE name = :setting_name",
+    setting_name: setting_name,
+  )
+end
+
 DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
   persona = AiPersona.find_by(id: id)
   if !persona
     persona = AiPersona.new
     persona.id = id
+
     if persona_class == DiscourseAi::Personas::WebArtifactCreator
       # this is somewhat sensitive, so we default it to staff
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:staff]]
+    elsif summarization_personas.include?(persona_class)
+      # Copy group permissions from site settings.
+      default_groups = [Group::AUTO_GROUPS[:staff], Group::AUTO_GROUPS[:trust_level_3]]
+
+      setting_name = "ai_custom_summarization_allowed_groups"
+      if persona_class == DiscourseAi::Personas::ShortSummarizer
+        setting_name = "ai_summary_gists_allowed_groups"
+        default_groups = [] # Blank == everyone
+      end
+
+      persona.allowed_group_ids = from_setting(setting_name).first&.split("|") || default_groups
     else
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
-    persona.enabled = true
+
+    persona.enabled = !summarization_personas.include?(persona_class)
     persona.priority = true if persona_class == DiscourseAi::Personas::General
   end
 
@@ -22,16 +44,16 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
     persona_class.name + SecureRandom.hex,
   ]
   persona.name = DB.query_single(<<~SQL, names, id).first
-        SELECT guess_name
-        FROM (
-          SELECT unnest(Array[?]) AS guess_name
-          FROM (SELECT 1) as t
-        ) x
-        LEFT JOIN ai_personas ON ai_personas.name = x.guess_name AND ai_personas.id <> ?
-        WHERE ai_personas.id IS NULL
-        ORDER BY x.guess_name ASC
-        LIMIT 1
-      SQL
+    SELECT guess_name
+    FROM (
+      SELECT unnest(Array[?]) AS guess_name
+      FROM (SELECT 1) as t
+    ) x
+    LEFT JOIN ai_personas ON ai_personas.name = x.guess_name AND ai_personas.id <> ?
+    WHERE ai_personas.id IS NULL
+    ORDER BY x.guess_name ASC
+    LIMIT 1
+  SQL
 
   persona.description = persona_class.description
 

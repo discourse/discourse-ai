@@ -240,18 +240,30 @@ discourse_ai:
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+    hidden: true
+  ai_summarization_persona:
+    default: "-11"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+
   ai_pm_summarization_allowed_groups:
     type: group_list
     list_type: compact
     default: ""
-  ai_custom_summarization_allowed_groups:
+  ai_custom_summarization_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
     default: "3|13" # 3: @staff, 13: @trust_level_3
+    hidden: true
   ai_summary_gists_enabled:
     default: false
     hidden: true
-  ai_summary_gists_allowed_groups:
+  ai_summary_gists_persona:
+    default: "-12"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    hidden: true
+  ai_summary_gists_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
     default: "0" #everyone

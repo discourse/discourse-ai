@@ -26,7 +26,9 @@ module DiscourseAi
         end
 
         if SiteSetting.ai_summarization_enabled
-          model_id = SiteSetting.ai_summarization_model.split(":").last.to_i
+          summarization_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)
+          model_id = summarization_persona.default_llm_id || LlmModel.last&.id
+
           rval[model_id] << { type: :ai_summarization }
         end
 
