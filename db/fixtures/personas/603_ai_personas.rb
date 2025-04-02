@@ -70,12 +70,6 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
     end
   end
 
-  if summarization_personas.include?(persona_class)
-    model = from_setting("ai_summarization_model").first&.split(":")&.last # Remove legacy custom provider.
-
-    persona.default_llm_id = model if model.present?
-  end
-
   persona.tools = tools.map { |name, value| [name, value] }
 
   persona.system_prompt = instance.system_prompt

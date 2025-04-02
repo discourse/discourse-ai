@@ -234,7 +234,7 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
-  ai_summarization_model: # Deprecated. TODO(roman): Remove 2025-09-01
+  ai_summarization_model:
     default: ""
     allow_any: false
     type: enum

@@ -52,15 +52,22 @@ module DiscourseAi
         )
       end
 
-      ### Private
-
+      # Priorities are:
+      #   1. Persona's default LLM
+      #   2. Hidden `ai_summarization_model` setting
+      #   3. Newest LLM config
       def find_summarization_model(persona_klass)
-        if persona_klass.default_llm_id.present?
-          LlmModel.find_by(id: persona_klass.default_llm_id)
+        model_id =
+          persona_klass.default_llm_id || SiteSetting.ai_summarization_model&.split(":")&.last # Remove legacy custom provider.
+
+        if model_id.present?
+          LlmModel.find_by(id: model_id)
         else
           LlmModel.last
         end
       end
+
+      ### Private
 
       def build_bot(persona_klass, llm_model)
         persona = persona_klass.new
