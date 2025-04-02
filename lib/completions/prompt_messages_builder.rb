@@ -389,8 +389,9 @@ module DiscourseAi
         compressed << current_text if current_text.present?
 
         if upload_count > max_uploads
-          counter = max_uploads - upload_count
-          compressed.delete_if { |item| item.is_a?(Hash) && (counter += 1) > 0 }
+          to_remove = upload_count - max_uploads
+          removed = 0
+          compressed.delete_if { |item| item.is_a?(Hash) && (removed += 1) <= to_remove }
         end
 
         compressed = compressed[0] if compressed.length == 1 && compressed[0].is_a?(String)

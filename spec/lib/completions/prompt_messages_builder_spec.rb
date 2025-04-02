@@ -238,6 +238,70 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     end
   end
 
+  describe "upload limits in messages_from_chat" do
+    fab!(:test_channel) { Fabricate(:category_channel) }
+    fab!(:test_user) { Fabricate(:user) }
+
+    # Create MAX_CHAT_UPLOADS + 1 uploads
+    fab!(:uploads) do
+      (described_class::MAX_CHAT_UPLOADS + 1).times.map do |i|
+        Fabricate(:upload, user: test_user, original_filename: "image#{i}.png", extension: "png")
+      end
+    end
+
+    # Create MAX_CHAT_UPLOADS + 1 messages with those uploads
+    fab!(:messages_with_uploads) do
+      uploads.map do |upload|
+        Fabricate(
+          :chat_message,
+          chat_channel: test_channel,
+          user: test_user,
+          message: "Message with upload #{upload.id}",
+        ).tap do |msg|
+          UploadReference.create!(target: msg, upload: upload)
+          msg.update!(upload_ids: [upload.id])
+        end
+      end
+    end
+
+    let(:max_uploads) { described_class::MAX_CHAT_UPLOADS }
+
+    it "limits uploads to MAX_CHAT_UPLOADS in the final result" do
+      last_message = messages_with_uploads.last
+
+      # Make sure uploads are properly associated
+      messages_with_uploads.each_with_index do |msg, i|
+        expect(msg.uploads.first.id).to eq(uploads[i].id)
+      end
+
+      context =
+        described_class.messages_from_chat(
+          last_message,
+          channel: test_channel,
+          context_post_ids: nil,
+          max_messages: messages_with_uploads.size,
+          include_uploads: true,
+          bot_user_ids: [],
+          instruction_message: nil,
+        )
+
+      # We should have one message containing all message content
+      expect(context.length).to eq(1)
+      content = context.first[:content]
+
+      # Count the upload hashes in the content
+      upload_hashes = content.select { |item| item.is_a?(Hash) && item[:upload_id] }
+
+      # Should have exactly MAX_CHAT_UPLOADS upload references
+      expect(upload_hashes.size).to eq(max_uploads)
+
+      # The most recent uploads should be preserved (not the oldest)
+      expected_upload_ids = uploads.last(max_uploads).map(&:id)
+      actual_upload_ids = upload_hashes.map { |h| h[:upload_id] }
+      expect(actual_upload_ids).to match_array(expected_upload_ids)
+    end
+  end
+
   describe ".messages_from_post" do
     fab!(:pm) do
       Fabricate(
