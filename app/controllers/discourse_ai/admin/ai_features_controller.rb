@@ -10,6 +10,8 @@ module DiscourseAi
       end
 
       def edit
+        raise Discourse::InvalidParameters.new(:id) if params[:id].blank?
+        render json: find_feature_by_id(params[:id].to_i)
       end
 
       def update
@@ -22,38 +24,78 @@ module DiscourseAi
 
       # Eventually we may move this to an active record model
       def persona_backed_features
-        # TODO: WIP just getting data rn, will cleanup AiPersona call later...
         [
           {
+            id: 1,
             name: "Summaries",
             description:
               "Makes a summarization button available that allows visitors to summarize topics.",
-            # persona: AiPersona.find_by(id: SiteSetting.ai_summarization_persona),
-            persona: "Foo",
+            persona:
+              serialize_data(
+                AiPersona.find_by(id: SiteSetting.ai_summarization_persona),
+                AiFeaturesPersonaSerializer,
+                root: false,
+              ),
             enabled: SiteSetting.ai_summarization_enabled,
+            enable_setting: {
+              type: SiteSetting.ai_summarization_enabled.class,
+              value: "ai_summarization_enabled",
+            },
           },
           {
+            id: 2,
             name: "Short Summaries",
             description: "Adds the ability to view short summaries of topics on the topic list.",
-            # persona: AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona),
-            persona: "Bar",
+            persona:
+              serialize_data(
+                AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona),
+                AiFeaturesPersonaSerializer,
+                root: false,
+              ),
             enabled: SiteSetting.ai_summary_gists_enabled,
+            enable_setting: {
+              type: SiteSetting.ai_summary_gists_enabled.class,
+              value: "ai_summary_gists_enabled",
+            },
           },
           {
+            id: 3,
             name: "Discobot Discoveries",
-            description: "",
-            # persona: AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona),
-            persona: "Baz",
+            description: "Enhances search experience by providing AI-generated answers to queries.",
+            persona:
+              serialize_data(
+                AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona),
+                AiFeaturesPersonaSerializer,
+                root: false,
+              ),
             enabled: SiteSetting.ai_bot_enabled,
+            enable_setting: {
+              type: SiteSetting.ai_bot_enabled.class,
+              value: "ai_bot_enabled",
+            },
           },
           {
+            id: 4,
             name: "Discord Search",
             description: "Adds the ability to search Discord channels.",
-            # persona: AiPersona.find_by(id: SiteSetting.ai_discord_search_persona),
-            persona: "Qux",
-            enabled: "",
+            persona:
+              serialize_data(
+                AiPersona.find_by(id: SiteSetting.ai_discord_search_persona),
+                AiFeaturesPersonaSerializer,
+                root: false,
+              ),
+            enabled: SiteSetting.ai_discord_app_id.present?,
+            enable_setting: {
+              type: SiteSetting.ai_discord_app_id.class,
+              value: "ai_discord_app_id",
+            },
           },
         ]
+      end
+
+      def find_feature_by_id(id)
+        lookup = persona_backed_features.index_by { |feature| feature[:id] }
+        lookup[id]
       end
     end
   end

@@ -1,6 +1,8 @@
 import Component from "@glimmer/component";
+import { get } from "@ember/helper";
 import { service } from "@ember/service";
 import RouteTemplate from "ember-route-template";
+import { gt } from "truth-helpers";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
@@ -9,55 +11,123 @@ import { i18n } from "discourse-i18n";
 export default RouteTemplate(
   class extends Component {
     @service adminPluginNavManager;
+    @service currentUser;
+
+    get tableHeaders() {
+      const prefix = "discourse_ai.features.list.header";
+      return [
+        i18n(`${prefix}.name`),
+        i18n(`${prefix}.persona`),
+        i18n(`${prefix}.groups`),
+        "",
+      ];
+    }
 
     <template>
       <DBreadcrumbsItem
         @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-features"
         @label={{i18n "discourse_ai.features.short_title"}}
       />
-      <section class="ai-feature-list-editor admin-detail">
+      <section class="ai-feature-list admin-detail">
         <DPageSubheader
           @titleLabel={{i18n "discourse_ai.features.short_title"}}
           @descriptionLabel={{i18n "discourse_ai.features.description"}}
           @learnMoreUrl="todo"
         />
 
-        <div class="ai-feature-list-editor__configured-features">
-          <h3>Configured Features</h3>
+        <div class="ai-feature-list__configured-features">
+          <h3>{{i18n "discourse_ai.features.list.configured_features"}}</h3>
+
           <table class="d-admin-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Persona</th>
-                <th>Groups</th>
+                {{#each this.tableHeaders as |header|}}
+                  <th>{{header}}</th>
+                {{/each}}
+              </tr>
+            </thead>
+
+            <tbody>
+              {{#each @model as |feature|}}
+                {{#if feature.enabled}}
+                  <tr class="ai-feature-list__row d-admin-row__content">
+                    <td class="d-admin-row__overview ai-feature-list__row-item">
+                      <span class="ai-feature-list__row-item-name">
+                        <strong>
+                          {{feature.name}}
+                        </strong>
+                      </span>
+                      <span class="ai-feature-list__row-item-description">
+                        {{feature.description}}
+                      </span>
+                    </td>
+                    <td class="d-admin-row__detail ai-feature-list__row-item">
+                      {{feature.persona.name}}
+                    </td>
+                    <td class="d-admin-row__detail ai-feature-list__row-item">
+                      {{#if (gt feature.persona.allowed_groups.length 0)}}
+                        <ul class="ai-feature-list__row-item-groups">
+                          {{#each feature.persona.allowed_groups as |group|}}
+                            <li>{{group.name}}</li>
+                          {{/each}}
+                        </ul>
+                      {{/if}}
+                    </td>
+                    <td class="d-admin-row_controls">
+                      <DButton
+                        class="btn-small"
+                        @translatedLabel="Edit"
+                        @route="adminPlugins.show.discourse-ai-features.edit"
+                        @routeModels={{feature.id}}
+                      />
+                    </td>
+                  </tr>
+                {{/if}}
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ai-feature-list-editor__unconfigured-features">
+          <h3>{{i18n "discourse_ai.features.list.unconfigured_features"}}</h3>
+
+          <table class="d-admin-table">
+            <thead>
+              <tr>
+                <th>{{i18n "discourse_ai.features.list.header.name"}}</th>
                 <th></th>
               </tr>
             </thead>
 
             <tbody>
               {{#each @model as |feature|}}
-                {{!-- {{log feature}} --}}
-                <tr class="ai-features-list__row d-admin-row__content">
-                  <td class="d-admin-row__overview">
-                    <strong>{{feature.name}}</strong><br />
-                    {{feature.description}}
-                  </td>
-                  <td class="d-admin-row__detail">
-                    {{feature.persona}}
-                  </td>
-                  <td></td>
-                  <td class="d-admin-row_controls">
-                    <DButton @translatedLabel="Edit" />
-                  </td>
-                </tr>
+                {{#unless feature.enabled}}
+                  <tr class="ai-feature-list__row d-admin-row__content">
+                    <td class="d-admin-row__overview ai-feature-list__row-item">
+                      <span class="ai-feature-list__row-item-name">
+                        <strong>
+                          {{feature.name}}
+                        </strong>
+                      </span>
+                      <span class="ai-feature-list__row-item-description">
+                        {{feature.description}}
+                      </span>
+                    </td>
+
+                    <td class="d-admin-row_controls">
+                      <DButton
+                        class="btn-small"
+                        @translatedLabel="Set up"
+                        @route="adminPlugins.show.discourse-ai-features.edit"
+                        @routeModels={{feature.id}}
+                      />
+                    </td>
+                  </tr>
+                {{/unless}}
               {{/each}}
             </tbody>
           </table>
         </div>
-
-        {{! <div class="ai-feature-list-editor__unconfigured-features">
-          <h3>Unconfigured Features</h3>
-        </div> }}
       </section>
     </template>
   }

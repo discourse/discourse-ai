@@ -1,7 +1,8 @@
 import RouteTemplate from "ember-route-template";
+import AiFeatureEditor from "discourse/plugins/discourse-ai/discourse/components/ai-feature-editor";
 
 export default RouteTemplate(
-  <template>
-    <h1>AI Features EDIT</h1>
-  </template>
+    <template>
+      <AiFeatureEditor @model={{@model}} />
+    </template>
 );

@@ -1,11 +1,10 @@
-import { ajax } from "discourse/lib/ajax";
+import { service } from "@ember/service";
 import DiscourseRoute from "discourse/routes/discourse";
 
 export default class AdminPluginsShowDiscourseAiFeatures extends DiscourseRoute {
+  @service store;
+
   async model() {
-    const { ai_features } = await ajax(
-      `/admin/plugins/discourse-ai/ai-features.json`
-    );
-    return ai_features;
+    return this.store.findAll("ai-feature");
   }
 }

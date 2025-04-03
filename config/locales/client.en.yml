@@ -167,6 +167,23 @@ en:
       features:
         short_title: "Features"
         description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
+        back: "Back"
+        list:
+          header:
+            name: "Name"
+            persona: "Persona"
+            groups: "Groups"
+          edit: "Edit"
+          set_up: "Set up"
+          configured_features: "Configured features"
+          unconfigured_features: "Unconfigured features"
+        editor:
+          enable_setting: "Enable"
+          enable_setting_help: "Toggles '%{setting}' setting"
+          persona: "Persona"
+          persona_help: "To create/edit personas go to the <a href='%{config_url}'>persona configuration page</a>"
+          save: "Save"
+          saved: "%{feature_name} feature saved"
 
       modals:
         select_option: "Select an option..."
