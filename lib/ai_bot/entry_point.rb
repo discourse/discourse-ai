@@ -105,10 +105,7 @@ module DiscourseAi
         plugin.add_to_serializer(
           :current_user,
           :ai_enabled_personas,
-          include_condition: -> do
-            SiteSetting.ai_bot_enabled && scope.authenticated? &&
-              scope.user.in_any_groups?(SiteSetting.ai_bot_allowed_groups_map)
-          end,
+          include_condition: -> { scope.authenticated? },
         ) do
           DiscourseAi::Personas::Persona
             .all(user: scope.user)
