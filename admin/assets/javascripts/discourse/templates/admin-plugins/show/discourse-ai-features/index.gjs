@@ -73,7 +73,12 @@ export default RouteTemplate(
                       </span>
                     </td>
                     <td class="d-admin-row__detail ai-feature-list__row-item">
-                      {{feature.persona.name}}
+                      <DButton
+                        class="btn-flat btn-small ai-feature-list__row-item-persona"
+                        @translatedLabel={{feature.persona.name}}
+                        @route="adminPlugins.show.discourse-ai-personas.edit"
+                        @routeModels={{feature.persona.id}}
+                      />
                     </td>
                     <td class="d-admin-row__detail ai-feature-list__row-item">
                       {{#if (gt feature.persona.allowed_groups.length 0)}}

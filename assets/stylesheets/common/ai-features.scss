@@ -8,6 +8,10 @@
     display: block;
   }
 
+  &__row-item-persona {
+    padding: 0;
+  }
+
   &__row-item-groups {
     list-style: none;
     margin: 0.5em 0 0 0;
@@ -15,7 +19,7 @@
 
     li {
       font-size: var(--font-down-2);
-      border-radius: 0.25em;
+      border-radius: var(--d-border-radius);
       background: var(--primary-very-low);
       border: 1px solid var(--primary-low);
       padding: 1px 3px;
