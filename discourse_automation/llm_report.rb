@@ -9,7 +9,7 @@ if defined?(DiscourseAutomation)
     triggerables %i[recurring]
 
     field :sender, component: :user, required: true
-    field :receivers, component: :users
+    field :receivers, component: :email_group_user
     field :topic_id, component: :text
     field :title, component: :text
     field :days, component: :text, required: true, default_value: 7
