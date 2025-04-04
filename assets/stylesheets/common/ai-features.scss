@@ -10,6 +10,9 @@
 
   &__row-item-persona {
     padding: 0;
+    text-align: left;
+
+    @include ellipsis;
   }
 
   &__row-item-groups {
