@@ -1,5 +1,4 @@
 import Component from "@glimmer/component";
-import { get } from "@ember/helper";
 import { service } from "@ember/service";
 import RouteTemplate from "ember-route-template";
 import { gt } from "truth-helpers";
@@ -23,6 +22,18 @@ export default RouteTemplate(
       ];
     }
 
+    get configuredFeatures() {
+      return this.args.model.filter(
+        (feature) => feature.enable_setting.value === true
+      );
+    }
+
+    get unconfiguredFeatures() {
+      return this.args.model.filter(
+        (feature) => feature.enable_setting.value === false
+      );
+    }
+
     <template>
       <DBreadcrumbsItem
         @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-features"
@@ -35,21 +46,21 @@ export default RouteTemplate(
           @learnMoreUrl="todo"
         />
 
-        <div class="ai-feature-list__configured-features">
-          <h3>{{i18n "discourse_ai.features.list.configured_features"}}</h3>
+        {{#if (gt this.configuredFeatures.length 0)}}
+          <div class="ai-feature-list__configured-features">
+            <h3>{{i18n "discourse_ai.features.list.configured_features"}}</h3>
 
-          <table class="d-admin-table">
-            <thead>
-              <tr>
-                {{#each this.tableHeaders as |header|}}
-                  <th>{{header}}</th>
-                {{/each}}
-              </tr>
-            </thead>
+            <table class="d-admin-table">
+              <thead>
+                <tr>
+                  {{#each this.tableHeaders as |header|}}
+                    <th>{{header}}</th>
+                  {{/each}}
+                </tr>
+              </thead>
 
-            <tbody>
-              {{#each @model as |feature|}}
-                {{#if feature.enabled}}
+              <tbody>
+                {{#each this.configuredFeatures as |feature|}}
                   <tr class="ai-feature-list__row d-admin-row__content">
                     <td class="d-admin-row__overview ai-feature-list__row-item">
                       <span class="ai-feature-list__row-item-name">
@@ -82,26 +93,26 @@ export default RouteTemplate(
                       />
                     </td>
                   </tr>
-                {{/if}}
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{/if}}
 
-        <div class="ai-feature-list-editor__unconfigured-features">
-          <h3>{{i18n "discourse_ai.features.list.unconfigured_features"}}</h3>
+        {{#if (gt this.unconfiguredFeatures.length 0)}}
+          <div class="ai-feature-list-editor__unconfigured-features">
+            <h3>{{i18n "discourse_ai.features.list.unconfigured_features"}}</h3>
 
-          <table class="d-admin-table">
-            <thead>
-              <tr>
-                <th>{{i18n "discourse_ai.features.list.header.name"}}</th>
-                <th></th>
-              </tr>
-            </thead>
+            <table class="d-admin-table">
+              <thead>
+                <tr>
+                  <th>{{i18n "discourse_ai.features.list.header.name"}}</th>
+                  <th></th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {{#each @model as |feature|}}
-                {{#unless feature.enabled}}
+              <tbody>
+                {{#each this.unconfiguredFeatures as |feature|}}
                   <tr class="ai-feature-list__row d-admin-row__content">
                     <td class="d-admin-row__overview ai-feature-list__row-item">
                       <span class="ai-feature-list__row-item-name">
@@ -117,17 +128,17 @@ export default RouteTemplate(
                     <td class="d-admin-row_controls">
                       <DButton
                         class="btn-small"
-                        @translatedLabel="Set up"
+                        @label="discourse_ai.features.list.set_up"
                         @route="adminPlugins.show.discourse-ai-features.edit"
                         @routeModels={{feature.id}}
                       />
                     </td>
                   </tr>
-                {{/unless}}
-              {{/each}}
-            </tbody>
-          </table>
-        </div>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        {{/if}}
       </section>
     </template>
   }

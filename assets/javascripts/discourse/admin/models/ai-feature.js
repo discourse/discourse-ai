@@ -1,4 +1,3 @@
-import { TrackedArray, TrackedObject } from "@ember-compat/tracked-built-ins";
 import RestModel from "discourse/models/rest";
 
 export default class AiFeature extends RestModel {
@@ -7,18 +6,9 @@ export default class AiFeature extends RestModel {
       "id",
       "name",
       "description",
-      "enabled",
       "enable_setting",
-      "persona"
+      "persona",
+      "persona_setting"
     );
-  }
-
-  updateProperties() {
-    const attrs = this.createProperties();
-
-    // TODO: add the ones to update
-    // i.e. attrs.id = this.id;
-
-    return attrs;
   }
 }

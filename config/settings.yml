@@ -341,6 +341,10 @@ discourse_ai:
     type: list
     list_type: compact
 
+  ai_discord_search_enabled:
+    default: false
+    client: true
+    hidden: true
   ai_discord_app_id:
     default: ""
     client: false
