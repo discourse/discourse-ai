@@ -92,7 +92,7 @@ export default RouteTemplate(
                     <td class="d-admin-row_controls">
                       <DButton
                         class="btn-small"
-                        @translatedLabel="Edit"
+                        @label="discourse_ai.features.list.edit"
                         @route="adminPlugins.show.discourse-ai-features.edit"
                         @routeModels={{feature.id}}
                       />
