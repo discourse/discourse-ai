@@ -234,6 +234,7 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+    hidden: true
   ai_summarization_model:
     default: ""
     allow_any: false
@@ -245,7 +246,7 @@ discourse_ai:
     default: "-11"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-
+    hidden: true
   ai_pm_summarization_allowed_groups:
     type: group_list
     list_type: compact
@@ -361,6 +362,7 @@ discourse_ai:
     default: ""
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    hidden: true
   ai_discord_allowed_guilds:
     type: list
     list_type: compact
