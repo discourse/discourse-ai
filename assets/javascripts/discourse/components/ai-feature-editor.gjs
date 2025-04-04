@@ -94,7 +94,6 @@ export default class AiFeatureEditor extends Component {
         </form.Field>
       {{/if}}
 
-      {{log this.currentUser}}
       <form.Field
         @name="persona_id"
         @title={{i18n "discourse_ai.features.editor.persona"}}
