@@ -259,7 +259,7 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   timeoutDiscovery() {
-    if (this.discobotDiscoveries.discovery?.length > 0)  {
+    if (this.discobotDiscoveries.discovery?.length > 0) {
       return;
     }
 
