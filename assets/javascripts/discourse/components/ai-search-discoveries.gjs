@@ -73,12 +73,12 @@ export default class AiSearchDiscoveries extends Component {
 
     withPluginApi((api) => {
       api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
-        if (!searchMenu || this.discobotDiscoveries.loadingDiscoveries) {
+        if (!searchMenu) {
           return;
         }
 
         if (this.discobotDiscoveries.lastQuery === this.query) {
-          return false;
+          return true;
         }
 
         if (event.key === "Enter" && this.query) {
@@ -158,6 +158,11 @@ export default class AiSearchDiscoveries extends Component {
     if (!personas) {
       return false;
     }
+
+    if (this.discobotDiscoveries.discoveryTimedOut) {
+      return false;
+    }
+
     const discoverPersona = personas.find(
       (persona) =>
         persona.id === parseInt(this.siteSettings?.ai_bot_discover_persona, 10)
@@ -252,9 +257,12 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   timeoutDiscovery() {
+    if (this.discobotDiscoveries.discovery?.length > 0) {
+      return;
+    }
+
     this.discobotDiscoveries.loadingDiscoveries = false;
     this.discobotDiscoveries.discovery = "";
-
     this.discobotDiscoveries.discoveryTimedOut = true;
   }
 
