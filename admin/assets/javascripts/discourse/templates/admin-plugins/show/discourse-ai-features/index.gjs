@@ -61,7 +61,10 @@ export default RouteTemplate(
 
               <tbody>
                 {{#each this.configuredFeatures as |feature|}}
-                  <tr class="ai-feature-list__row d-admin-row__content">
+                  <tr
+                    class="ai-feature-list__row d-admin-row__content"
+                    data-feature-name={{feature.name}}
+                  >
                     <td class="d-admin-row__overview ai-feature-list__row-item">
                       <span class="ai-feature-list__row-item-name">
                         <strong>
@@ -72,7 +75,9 @@ export default RouteTemplate(
                         {{feature.description}}
                       </span>
                     </td>
-                    <td class="d-admin-row__detail ai-feature-list__row-item">
+                    <td
+                      class="d-admin-row__detail ai-feature-list__row-item ai-feature-list__persona"
+                    >
                       <DButton
                         class="btn-flat btn-small ai-feature-list__row-item-persona"
                         @translatedLabel={{feature.persona.name}}
@@ -80,7 +85,9 @@ export default RouteTemplate(
                         @routeModels={{feature.persona.id}}
                       />
                     </td>
-                    <td class="d-admin-row__detail ai-feature-list__row-item">
+                    <td
+                      class="d-admin-row__detail ai-feature-list__row-item ai-feature-list__groups"
+                    >
                       {{#if (gt feature.persona.allowed_groups.length 0)}}
                         <ul class="ai-feature-list__row-item-groups">
                           {{#each feature.persona.allowed_groups as |group|}}
@@ -91,7 +98,7 @@ export default RouteTemplate(
                     </td>
                     <td class="d-admin-row_controls">
                       <DButton
-                        class="btn-small"
+                        class="btn-small edit"
                         @label="discourse_ai.features.list.edit"
                         @route="adminPlugins.show.discourse-ai-features.edit"
                         @routeModels={{feature.id}}
@@ -105,7 +112,7 @@ export default RouteTemplate(
         {{/if}}
 
         {{#if (gt this.unconfiguredFeatures.length 0)}}
-          <div class="ai-feature-list-editor__unconfigured-features">
+          <div class="ai-feature-list__unconfigured-features">
             <h3>{{i18n "discourse_ai.features.list.unconfigured_features"}}</h3>
 
             <table class="d-admin-table">
