@@ -21,7 +21,7 @@ export default class DiscobotDiscoveries extends Service {
   }
 
   get showDiscoveryTitle() {
-    return this.discovery.length > 0 || this.loadingDiscoveries;
+    return this.discovery.length > 0 || this.loadingDiscoveries || this.discoveryTimedOut;
   }
 
   @action
