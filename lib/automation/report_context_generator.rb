@@ -65,11 +65,15 @@ module DiscourseAi
           @posts = @posts.where(topic_id: topic_ids_with_tags)
         end
 
-        @solutions =
-          DiscourseSolved::SolvedTopic
-            .where(topic_id: @posts.select(:topic_id))
-            .pluck(:topic_id, :answer_post_id)
-            .to_h
+        if defined?(::DiscourseSolved)
+          @solutions =
+            DiscourseSolved::SolvedTopic
+              .where(topic_id: @posts.select(:topic_id))
+              .pluck(:topic_id, :answer_post_id)
+              .to_h
+        else
+          @solutions = {}
+        end
       end
 
       def format_topic(topic)

@@ -57,7 +57,15 @@ module DiscourseAi
         automation: nil
       )
         @sender = User.find_by(username: sender_username)
-        @receivers = User.where(username: receivers)
+        receivers_without_emails = receivers&.reject { |r| r.include? "@" }
+        if receivers_without_emails.present?
+          @group_receivers = Group.where(name: receivers_without_emails)
+          receivers_without_emails -= @group_receivers.pluck(:name)
+          @receivers = User.where(username: receivers_without_emails)
+        else
+          @group_receivers = []
+          @receivers = []
+        end
         @email_receivers = receivers&.filter { |r| r.include? "@" }
         @title =
           if title.present?
@@ -88,7 +96,8 @@ module DiscourseAi
         @temperature = nil if temperature.to_f < 0
         @suppress_notifications = suppress_notifications
 
-        if !@topic_id && !@receivers.present? && !@email_receivers.present?
+        if !@topic_id && !@receivers.present? && !@group_receivers.present? &&
+             !@email_receivers.present?
           raise ArgumentError, "Must specify topic_id or receivers"
         end
         @automation = automation
@@ -165,6 +174,7 @@ Follow the provided writing composition instructions carefully and precisely ste
         end
 
         receiver_usernames = @receivers.map(&:username).join(",")
+        receiver_groupnames = @group_receivers.map(&:name).join(",")
 
         result = suppress_notifications(result) if @suppress_notifications
 
@@ -173,7 +183,7 @@ Follow the provided writing composition instructions carefully and precisely ste
           # no debug mode for topics, it is too noisy
         end
 
-        if receiver_usernames.present?
+        if receiver_usernames.present? || receiver_groupnames.present?
           post =
             PostCreator.create!(
               @sender,
@@ -181,6 +191,7 @@ Follow the provided writing composition instructions carefully and precisely ste
               title: title,
               archetype: Archetype.private_message,
               target_usernames: receiver_usernames,
+              target_group_names: receiver_groupnames,
               skip_validations: true,
             )
 

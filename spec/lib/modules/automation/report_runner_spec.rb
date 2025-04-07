@@ -190,6 +190,38 @@ module DiscourseAi
           expect(debugging).not_to include(post_with_tag.raw)
         end
 
+        it "can send reports to groups only" do
+          group_for_reports = Fabricate(:group)
+          group_member = Fabricate(:user)
+          group_for_reports.add(group_member)
+
+          DiscourseAi::Completions::Llm.with_prepared_responses(["group report"]) do
+            ReportRunner.run!(
+              sender_username: user.username,
+              receivers: [group_for_reports.name],
+              title: "group report",
+              model: "custom:#{llm_model.id}",
+              category_ids: nil,
+              tags: nil,
+              allow_secure_categories: false,
+              debug_mode: false,
+              sample_size: 100,
+              instructions: "make a group report",
+              days: 7,
+              offset: 0,
+              priority_group_id: nil,
+              tokens_per_post: 150,
+            )
+          end
+
+          report_topic =
+            Topic.where(title: "group report", archetype: Archetype.private_message).first
+          expect(report_topic).to be_present
+          expect(report_topic.allowed_groups.map(&:id)).to eq([group_for_reports.id])
+          expect(report_topic.allowed_users.map(&:id)).to eq([user.id])
+          expect(report_topic.ordered_posts.first.raw).to eq("group report")
+        end
+
         it "generates correctly respects the params" do
           DiscourseAi::Completions::Llm.with_prepared_responses(["magical report"]) do
             ReportRunner.run!(
