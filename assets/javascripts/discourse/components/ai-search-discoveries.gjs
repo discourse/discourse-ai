@@ -77,10 +77,8 @@ export default class AiSearchDiscoveries extends Component {
           return;
         }
 
-        this.search.handleArrowUpOrDown(event);
-
         if (this.discobotDiscoveries.lastQuery === this.query) {
-          return false;
+          return true;
         }
 
         if (event.key === "Enter" && this.query) {
