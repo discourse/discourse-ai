@@ -29,10 +29,10 @@ module DiscourseAi
         return false
       end
       persona_groups = ai_persona.allowed_group_ids.to_a
-      return true if persona_groups.empty?
+      return true if persona_groups.include?(Group::AUTO_GROUPS[:everyone])
       return false if anonymous?
 
-      ai_persona.allowed_group_ids.to_a.any? { |group_id| user.group_ids.include?(group_id) }
+      persona_groups.any? { |group_id| user.group_ids.include?(group_id) }
     end
 
     def can_request_summary?

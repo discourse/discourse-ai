@@ -86,7 +86,7 @@ describe DiscourseAi::GuardianExtensions do
     end
 
     context "when access is set to everyone" do
-      before { assign_persona_to(:ai_summary_gists_persona, []) }
+      before { assign_persona_to(:ai_summary_gists_persona, [Group::AUTO_GROUPS[:everyone]]) }
 
       it "returns true" do
         expect(guardian.can_see_gists?).to eq(true)
