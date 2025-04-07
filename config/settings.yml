@@ -278,10 +278,12 @@ discourse_ai:
     default: 30
     min: 1
     max: 10000
+    hidden: true
   ai_summary_backfill_maximum_topics_per_hour:
     default: 0
     min: 0
     max: 10000
+    hidden: true
   ai_summary_backfill_minimum_word_count:
     default: 200
     hidden: true

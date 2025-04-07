@@ -45,6 +45,11 @@ module DiscourseAi
             description_key: "discourse_ai.features.summarization.description",
             persona_setting_name: "ai_summarization_persona",
             enable_setting_name: "ai_summarization_enabled",
+            additional_settings: %w[
+              ai_summary_backfill_topic_max_age_days
+              ai_summary_backfill_maximum_topics_per_hour
+              ai_summary_backfill_minimum_word_count
+            ],
           },
           {
             id: 2,
@@ -92,6 +97,14 @@ module DiscourseAi
               value: SiteSetting.get(feature[:enable_setting_name]),
               type: SiteSetting.type_supervisor.get_type(feature[:enable_setting_name]),
             },
+            additional_settings:
+              (feature[:additional_settings] || []).map do |setting_name|
+                {
+                  name: setting_name,
+                  value: SiteSetting.get(setting_name),
+                  type: SiteSetting.type_supervisor.get_type(setting_name),
+                }
+              end,
           }
         end
       end
