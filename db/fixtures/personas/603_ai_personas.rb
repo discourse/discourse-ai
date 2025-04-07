@@ -25,7 +25,7 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
       setting_name = "ai_custom_summarization_allowed_groups"
       if persona_class == DiscourseAi::Personas::ShortSummarizer
         setting_name = "ai_summary_gists_allowed_groups"
-        default_groups = [] # Blank == everyone
+        default_groups = [Group::AUTO_GROUPS[:everyone]]
       end
 
       persona.allowed_group_ids = from_setting(setting_name).first&.split("|") || default_groups

@@ -92,7 +92,16 @@ export default class PersonaEditor extends Component {
 
   @action
   async updateAllGroups() {
-    this.allGroups = await Group.findAll();
+    const groups = await Group.findAll({ include_everyone: true });
+
+    // Backwards-compatibility code. TODO(roman): Remove 01-09-2025
+    const hasEveryoneGroup = groups.find((g) => g.id === 0);
+    if (!hasEveryoneGroup) {
+      const everyoneGroupName = "everyone";
+      groups.push({ id: 0, name: everyoneGroupName });
+    }
+
+    this.allGroups = groups;
   }
 
   @action
