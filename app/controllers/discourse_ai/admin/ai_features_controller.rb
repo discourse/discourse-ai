@@ -49,6 +49,7 @@ module DiscourseAi
               ai_summary_backfill_topic_max_age_days
               ai_summary_backfill_maximum_topics_per_hour
               ai_summary_backfill_minimum_word_count
+              ai_pm_summarization_allowed_groups
             ],
           },
           {
@@ -71,6 +72,12 @@ module DiscourseAi
             description_key: "discourse_ai.features.discord_search.description",
             persona_setting_name: "ai_discord_search_persona",
             enable_setting_name: "ai_discord_search_enabled",
+            additional_settings: %w[
+              ai_discord_app_id
+              ai_discord_app_public_key
+              ai_discord_search_mode
+              ai_discord_allowed_guilds
+            ],
           },
         ]
       end
