@@ -27,20 +27,14 @@ module DiscourseAi
       def summarize(user, &on_partial_blk)
         truncated_content = content_to_summarize.map { |cts| truncate(cts) }
 
-        summary = fold(truncated_content, user, &on_partial_blk)
-
-        clean_summary = Nokogiri::HTML5.fragment(summary).css("ai")&.first&.text || summary
+        # Done here to cover non-streaming mode.
+        json_reply_end = "\"}"
+        summary = fold(truncated_content, user, &on_partial_blk).chomp(json_reply_end)
 
         if persist_summaries
-          AiSummary.store!(
-            strategy,
-            llm_model,
-            clean_summary,
-            truncated_content,
-            human: user&.human?,
-          )
+          AiSummary.store!(strategy, llm_model, summary, truncated_content, human: user&.human?)
         else
-          AiSummary.new(summarized_text: clean_summary)
+          AiSummary.new(summarized_text: summary)
         end
       end
 
@@ -118,17 +112,40 @@ module DiscourseAi
           )
 
         summary = +""
+        # Auxiliary variables to get the summary content from the JSON response.
+        raw_buffer = +""
+        json_start_found = false
+        json_reply_start_regex = /\{\s*"summary"\s*:\s*"/
+        unescape_regex = %r{\\(["/bfnrt])}
+        json_reply_end = "\"}"
+
         buffer_blk =
-          Proc.new do |partial, cancel, placeholder, type|
+          Proc.new do |partial, cancel, _, type|
             if type.blank?
-              summary << partial
-              on_partial_blk.call(partial, cancel) if on_partial_blk
+              if json_start_found
+                unescaped_partial = partial.gsub(unescape_regex, '\1')
+                summary << unescaped_partial
+
+                on_partial_blk.call(partial, cancel) if on_partial_blk
+              else
+                raw_buffer << partial
+
+                if raw_buffer.match?(json_reply_start_regex)
+                  buffered_start =
+                    raw_buffer.gsub(json_reply_start_regex, "").gsub(unescape_regex, '\1')
+                  summary << buffered_start
+
+                  on_partial_blk.call(buffered_start, cancel) if on_partial_blk
+
+                  json_start_found = true
+                end
+              end
             end
           end
 
-        bot.reply(context, &buffer_blk)
+        bot.reply(context, llm_args: { extra_model_params: response_format }, &buffer_blk)
 
-        summary
+        summary.chomp(json_reply_end)
       end
 
       def available_tokens
@@ -155,10 +172,26 @@ module DiscourseAi
         item
       end
 
-      def text_only_update(&on_partial_blk)
-        Proc.new do |partial, cancel, placeholder, type|
-          on_partial_blk.call(partial, cancel) if type.blank?
-        end
+      def response_format
+        {
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "reply",
+              schema: {
+                type: "object",
+                properties: {
+                  summary: {
+                    type: "string",
+                  },
+                },
+                required: ["summary"],
+                additionalProperties: false,
+              },
+              strict: true,
+            },
+          },
+        }
       end
     end
   end
