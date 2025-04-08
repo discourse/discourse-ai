@@ -93,9 +93,9 @@ module DiscourseAi
           getTopic: _discourse_get_topic,
           getUser: _discourse_get_user,
           getPersona: function(name) {
-            const result = _discourse_get_persona(name);
-            if (result.error) {
-              throw new Error(result.error);
+            const personaDetails = _discourse_get_persona(name);
+            if (personaDetails.error) {
+              throw new Error(personaDetails.error);
             }
 
             // merge result.persona with {}..
@@ -108,13 +108,13 @@ module DiscourseAi
                 return result;
               },
               respondTo: function(params) {
-                result = _discourse_respond_to_persona(name, params);
+                const result = _discourse_respond_to_persona(name, params);
                 if (result.error) {
                   throw new Error(result.error);
                 }
                 return result;
               }
-            }, result.persona);
+            }, personaDetails.persona);
           },
           createChatMessage: function(params) {
             const result = _discourse_create_chat_message(params);
