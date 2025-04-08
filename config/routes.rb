@@ -112,7 +112,7 @@ Discourse::Application.routes.draw do
     end
 
     resources :ai_features,
-              only: %i[index edit update],
+              only: %i[index edit],
               path: "ai-features",
               controller: "discourse_ai/admin/ai_features"
   end

@@ -31,9 +31,10 @@
   }
 }
 
-.ai-feature-editor__advanced-settings {
-  margin-block: 1rem;
-  padding-block: 1rem;
+.ai-feature-editor {
+  &__header {
+    border-bottom: 1px solid var(--primary-low);
+  }
 
   .setting {
     margin-block: 1.5rem;

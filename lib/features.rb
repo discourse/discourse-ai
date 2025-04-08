@@ -57,14 +57,6 @@ module DiscourseAi
             value: SiteSetting.get(feature[:enable_setting_name]),
             type: SiteSetting.type_supervisor.get_type(feature[:enable_setting_name]),
           },
-          additional_settings:
-            (feature[:additional_settings] || []).map do |setting_name|
-              {
-                name: setting_name,
-                value: SiteSetting.get(setting_name),
-                type: SiteSetting.type_supervisor.get_type(setting_name),
-              }
-            end,
         }
       end
     end

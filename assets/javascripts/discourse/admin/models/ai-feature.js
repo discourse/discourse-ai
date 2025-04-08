@@ -10,7 +10,6 @@ export default class AiFeature extends RestModel {
       "enable_setting",
       "persona",
       "persona_setting",
-      "additional_settings"
     );
   }
 }

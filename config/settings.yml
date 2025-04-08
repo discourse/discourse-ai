@@ -234,7 +234,6 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
-    hidden: true
     area: "ai-features/summarization"
   ai_summarization_model:
     default: ""
@@ -260,7 +259,6 @@ discourse_ai:
     hidden: true
   ai_summary_gists_enabled:
     default: false
-    hidden: true
     area: "ai-features/gists"
   ai_summary_gists_persona:
     default: "-12"
@@ -294,6 +292,7 @@ discourse_ai:
   ai_bot_enabled:
     default: false
     client: true
+    area: "ai-features/discoveries"
   ai_bot_enable_chat_warning:
     default: false
     client: true
