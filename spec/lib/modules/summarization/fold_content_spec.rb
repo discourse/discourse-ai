@@ -26,7 +26,8 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
       llm_model.update!(max_prompt_tokens: model_tokens)
     end
 
-    let(:single_summary) { "this is a summary" }
+    let(:single_summary) { "{\"summary\":\"#{clean_summary}\"}" }
+    let(:clean_summary) { "this is a summary" }
 
     fab!(:user)
 
@@ -36,7 +37,7 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
           summarizer.summarize(user).tap { expect(spy.completions).to eq(1) }
         end
 
-      expect(result.summarized_text).to eq(single_summary)
+      expect(result.summarized_text).to eq(clean_summary)
     end
   end
 

@@ -21,11 +21,16 @@ RSpec.describe Jobs::FastTrackTopicGist do
           created_at: 10.minutes.ago,
         )
       end
+
       let(:updated_gist) { "They updated me :(" }
+
+      def in_json_format(summary)
+        "{\"summary\":\"#{summary}\"}"
+      end
 
       context "when it's up to date" do
         it "does nothing" do
-          DiscourseAi::Completions::Llm.with_prepared_responses([updated_gist]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([in_json_format(updated_gist)]) do
             subject.execute(topic_id: topic_1.id)
           end
 
@@ -39,7 +44,7 @@ RSpec.describe Jobs::FastTrackTopicGist do
         before { Fabricate(:post, topic: topic_1, post_number: 3) }
 
         it "regenerates the gist using the latest data" do
-          DiscourseAi::Completions::Llm.with_prepared_responses([updated_gist]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([in_json_format(updated_gist)]) do
             subject.execute(topic_id: topic_1.id)
           end
 
@@ -52,7 +57,7 @@ RSpec.describe Jobs::FastTrackTopicGist do
         it "does nothing if the gist was created less than 5 minutes ago" do
           ai_gist.update!(created_at: 2.minutes.ago)
 
-          DiscourseAi::Completions::Llm.with_prepared_responses([updated_gist]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([in_json_format(updated_gist)]) do
             subject.execute(topic_id: topic_1.id)
           end
 

@@ -50,8 +50,14 @@ RSpec.describe Jobs::StreamTopicAiSummary do
       end
     end
 
+    def in_json_format(summary)
+      "{\"summary\":\"#{summary}\"}"
+    end
+
     it "publishes updates with a partial summary" do
-      with_responses(["dummy"]) do
+      summary = "dummy"
+
+      with_responses([in_json_format(summary)]) do
         messages =
           MessageBus.track_publish("/discourse-ai/summaries/topic/#{topic.id}") do
             job.execute(topic_id: topic.id, user_id: user.id)
@@ -59,12 +65,16 @@ RSpec.describe Jobs::StreamTopicAiSummary do
 
         partial_summary_update = messages.first.data
         expect(partial_summary_update[:done]).to eq(false)
-        expect(partial_summary_update.dig(:ai_topic_summary, :summarized_text)).to eq("dummy")
+        expect(partial_summary_update.dig(:ai_topic_summary, :summarized_text).chomp("\"}")).to eq(
+          summary,
+        )
       end
     end
 
     it "publishes a final update to signal we're done and provide metadata" do
-      with_responses(["dummy"]) do
+      summary = "dummy"
+
+      with_responses([in_json_format(summary)]) do
         messages =
           MessageBus.track_publish("/discourse-ai/summaries/topic/#{topic.id}") do
             job.execute(topic_id: topic.id, user_id: user.id)
@@ -73,6 +83,7 @@ RSpec.describe Jobs::StreamTopicAiSummary do
         final_update = messages.last.data
         expect(final_update[:done]).to eq(true)
 
+        expect(final_update.dig(:ai_topic_summary, :summarized_text)).to eq(summary)
         expect(final_update.dig(:ai_topic_summary, :algorithm)).to eq("fake")
         expect(final_update.dig(:ai_topic_summary, :outdated)).to eq(false)
         expect(final_update.dig(:ai_topic_summary, :can_regenerate)).to eq(true)
