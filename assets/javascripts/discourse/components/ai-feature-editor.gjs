@@ -3,7 +3,7 @@ import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
-import { eq, gt } from "truth-helpers";
+import { eq } from "truth-helpers";
 import BackButton from "discourse/components/back-button";
 import Form from "discourse/components/form";
 import { ajax } from "discourse/lib/ajax";
@@ -89,9 +89,8 @@ export default class AiFeatureEditor extends Component {
       const settingsMap = settings.map((setting) =>
         SiteSetting.create(setting)
       );
-      this.settings = settingsMap;
 
-      console.log(this.settings);
+      this.settings = settingsMap;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn(`Failed to load settings with error: ${error}`);
@@ -110,7 +109,7 @@ export default class AiFeatureEditor extends Component {
       <p>{{@model.description}}</p>
     </section>
 
-    <Form
+    {{!-- <Form
       @onSubmit={{this.save}}
       @data={{this.formData}}
       class="form-horizontal ai-feature-editor"
@@ -149,23 +148,23 @@ export default class AiFeatureEditor extends Component {
         </field.Select>
       </form.Field>
 
-      <form.Section
-        @title={{i18n "discourse_ai.features.editor.advanced_settings"}}
-      />
-
       <form.Actions>
         <form.Submit
           @label="discourse_ai.features.editor.save"
           @disabled={{this.isSaving}}
         />
       </form.Actions>
-    </Form>
-    {{#unless this.isLoading}}
-      {{#each this.settings as |setting|}}
-        {{#if setting}}
-          <SiteSettingComponent @setting={{setting}} />
-        {{/if}}
-      {{/each}}
-    {{/unless}}
+    </Form> --}}
+
+    <section class="ai-feature-editor__advanced-settings">
+      <h3>{{i18n "discourse_ai.features.editor.advanced_settings"}}</h3>
+      {{#unless this.isLoading}}
+        {{#each this.settings as |setting|}}
+          <div>
+            <SiteSettingComponent @setting={{setting}} />
+          </div>
+        {{/each}}
+      {{/unless}}
+    </section>
   </template>
 }

@@ -30,3 +30,35 @@
     }
   }
 }
+
+.ai-feature-editor__advanced-settings {
+  margin-block: 1rem;
+  padding-block: 1rem;
+
+  .setting {
+    margin-block: 1.5rem;
+  }
+
+  .setting-label {
+    font-size: var(--font-down-1-rem);
+    color: var(--primary-high);
+
+    a[title="View change history"],
+    .history-icon {
+      display: none;
+    }
+  }
+
+  .setting-value {
+    .desc {
+      font-size: var(--font-down-1-rem);
+      color: var(--primary-high-or-secondary-low);
+    }
+  }
+
+  .setting-controls,
+  .setting-controls__undo {
+    font-size: var(--font-down-1-rem);
+    margin-top: 0.5rem;
+  }
+}

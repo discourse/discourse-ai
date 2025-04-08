@@ -104,6 +104,12 @@ en:
     ai_google_custom_search_api_key: "API key for the Google Custom Search API see: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX for Google Custom Search API"
 
+    ai_discord_app_id: "The ID of the Discord application you would like to connect Discord search to"
+    ai_discord_app_public_key: "The public key of the Discord application you would like to connect Discord search to"
+    ai_discord_search_mode: "Select the search mode to use for Discord search"
+    ai_discord_search_persona: "The persona to use for Discord search."
+    ai_discord_allowed_guilds: "Discord guilds (servers) where the bot is allowed to search"
+
   reviewables:
     reasons:
       flagged_by_toxicity: The AI plugin flagged this after classifying it as toxic.

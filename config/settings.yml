@@ -235,6 +235,7 @@ discourse_ai:
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
     hidden: true
+    area: "ai-features/summarization"
   ai_summarization_model:
     default: ""
     allow_any: false
@@ -246,11 +247,12 @@ discourse_ai:
     default: "-11"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    hidden: true
+    area: "ai-features/summarization"
   ai_pm_summarization_allowed_groups:
     type: group_list
     list_type: compact
     default: ""
+    area: "ai-features/summarization"
   ai_custom_summarization_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -259,11 +261,12 @@ discourse_ai:
   ai_summary_gists_enabled:
     default: false
     hidden: true
+    area: "ai-features/gists"
   ai_summary_gists_persona:
     default: "-12"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    hidden: true
+    area: "ai-features/gists"
   ai_summary_gists_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -278,15 +281,15 @@ discourse_ai:
     default: 30
     min: 1
     max: 10000
-    hidden: true
+    area: "ai-features/summarization"
   ai_summary_backfill_maximum_topics_per_hour:
     default: 0
     min: 0
     max: 10000
-    hidden: true
+    area: "ai-features/summarization"
   ai_summary_backfill_minimum_word_count:
     default: 200
-    hidden: true
+    area: "ai-features/summarization"
 
   ai_bot_enabled:
     default: false
@@ -329,9 +332,9 @@ discourse_ai:
   ai_bot_discover_persona:
     default: ""
     type: enum
-    hidden: true
     client: true
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/discoveries"
   ai_automation_max_triage_per_minute:
     default: 60
     hidden: true
