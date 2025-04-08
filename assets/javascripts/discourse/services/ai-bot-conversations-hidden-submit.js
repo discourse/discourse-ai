@@ -37,7 +37,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     await this.composer.open({
       action: Composer.PRIVATE_MESSAGE,
       draftKey: "private_message_ai",
-      recipients: "DiscourseHelper", // TODO: Figure out how to grab the right bot
+      recipients: this.currentUser.ai_enabled_personas[0].username,
       topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       topicBody: this.inputValue,
       archetypeId: "private_message",

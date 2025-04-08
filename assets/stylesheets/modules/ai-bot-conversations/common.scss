@@ -8,12 +8,15 @@ body.discourse-ai-bot-conversations-page {
   }
 
   #sidebar-section-content-community,
-  [data-section-name=tags],
+  [data-section-name="tags"],
   [data-section-name="categories"],
   [data-section-name="messages"],
+  [data-section-name="user-threads"],
+  [data-section-name="user-threads"],
+  [data-section-name="chat-dms"],
   .sidebar-sections:not(.admin-panel)
-  .sidebar-section-link
-  .sidebar-section-link-prefix,
+    .sidebar-section-link
+    .sidebar-section-link-prefix,
   .sidebar-footer-wrapper,
   .sidebar__panel-switch-button {
     display: none;
@@ -308,9 +311,9 @@ body.discourse-ai-bot-conversations-page {
           content: "";
           width: 4em;
           background: linear-gradient(
-          to right,
-          rgba(var(--secondary-rgb), 0),
-          rgba(var(--secondary-rgb), 1)
+            to right,
+            rgba(var(--secondary-rgb), 0),
+            rgba(var(--secondary-rgb), 1)
           );
           right: 0;
           height: 2.5em;
@@ -468,7 +471,6 @@ body.discourse-ai-bot-conversations-page {
       }
     }
   }
-
 
   @media screen and (max-width: 600px) {
     .share-ai-conversation-button {

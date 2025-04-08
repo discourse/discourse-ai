@@ -1,12 +1,6 @@
 import Controller from "@ember/controller";
-import { on } from "@ember/modifier";
-import { computed } from "@ember/object";
 import { action } from "@ember/object";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { service } from "@ember/service";
-import DButton from "discourse/components/d-button";
-import bodyClass from "discourse/helpers/body-class";
-import { i18n } from "discourse-i18n";
 import SimpleTextareaInteractor from "../lib/simple-textarea-interactor";
 
 export default class DiscourseAiBotConversations extends Controller {
