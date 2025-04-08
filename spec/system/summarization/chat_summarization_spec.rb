@@ -22,7 +22,8 @@ RSpec.describe "Summarize a channel since your last visit", type: :system do
   end
 
   it "displays a summary of the messages since the selected timeframe" do
-    DiscourseAi::Completions::Llm.with_prepared_responses([summarization_result]) do
+    json_format_response = { summary: summarization_result }.to_json
+    DiscourseAi::Completions::Llm.with_prepared_responses([json_format_response]) do
       chat.visit_channel(channel)
 
       find(".chat-composer-dropdown__trigger-btn").click
