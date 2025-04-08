@@ -293,6 +293,12 @@ de:
         web_artifact_creator:
           name: "Web-Artefakt-Ersteller"
           description: "KI-Bot, spezialisiert auf die Erstellung interaktiver Web-Artefakte"
+        summarizer:
+          name: "Zusammenfasser"
+          description: "Standard-Persona für die KI-Zusammenfassungen"
+        short_summarizer:
+          name: "Zusammenfasser (Kurzform)"
+          description: "Standard-Persona zur Erstellung von KI-Kurzzusammenfassungen für die Elemente der Themenlisten"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
@@ -412,6 +418,10 @@ de:
         search_settings:
           one: "%{count} Ergebnis für „%{query}“ gefunden"
           other: "%{count} Ergebnisse für „%{query}“ gefunden"
+      discoveries:
+        continue_conversation:
+          title: "Entdeckungsunterhaltung: Suche nach %{query}"
+          raw: "Bei meiner Suche nach %{query} hast du mir die folgenden Informationen gezeigt:\n\n%{context}\n\nLass uns die Unterhaltung fortsetzen."
     summarization:
       configuration_hint:
         one: "Konfiguriere zunächst die Einstellung `%{setting}`."
@@ -435,6 +445,7 @@ de:
           neutral: "Neutral"
     llm:
       configuration:
+        create_llm: "Du musst einen LLM einrichten, bevor du diese Funktion aktivierst"
         disable_module_first: "Du musst zuerst %{setting} deaktivieren."
         set_llm_first: "Stelle zuerst %{setting} ein"
         model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."

@@ -6,6 +6,10 @@
 
 pl_PL:
   discourse_automation:
+    ai:
+      flag_types:
+        spam: "Oznacz jako spam i ukryj post"
+        spam_silence: "Oznacz jako spam, ukryj post i wycisz użytkownika"
     scriptables:
       llm_triage:
         title: Oceniaj posty za pomocą sztucznej inteligencji
@@ -55,6 +59,13 @@ pl_PL:
     ai_embeddings_semantic_search_enabled: "Włącz wyszukiwanie semantyczne na całej stronie."
     ai_embeddings_semantic_related_include_closed_topics: "Uwzględnij zamknięte tematy w semantycznych wynikach wyszukiwania"
     ai_embeddings_semantic_search_hyde_model: "Model używany do rozwijania słów kluczowych w celu uzyskania lepszych wyników podczas wyszukiwania semantycznego"
+    ai_summarization_enabled: "Włącz moduł podsumowania tematu."
+    ai_summarization_model: "Model używany do podsumowania."
+    ai_custom_summarization_allowed_groups: "Grupy, które mogą tworzyć nowe podsumowania."
+    ai_pm_summarization_allowed_groups: "Grupy mogą tworzyć i przeglądać podsumowania w wiadomościach prywatnych."
+    ai_summary_gists_enabled: "Automatycznie generuj krótkie podsumowania najnowszych odpowiedzi w tematach."
+    ai_summary_gists_allowed_groups: "Grupy mogą przeglądać sedno dyskusji na liście gorących tematów."
+    ai_summary_backfill_maximum_topics_per_hour: "Liczba podsumowań tematów do uzupełnienia na godzinę."
     ai_bot_enabled: "Włącz moduł bota AI."
     ai_bot_enable_chat_warning: "Wyświetl ostrzeżenie po zainicjowaniu czatu PW. Można je zastąpić, edytując ciąg tłumaczenia: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Gdy bot GPT uzyska dostęp do PW, odpowie członkom tych grup."
@@ -87,12 +98,15 @@ pl_PL:
       title: "\U0001F632 Niespodzianka"
   discourse_ai:
     ai_artifact:
+      view_source: "Zobacz źródło"
       view_changes: "Zobacz zmiany"
+      change_description: "Zmień opis"
     unknown_model: "Nieznany model AI"
     ai_helper:
       errors:
         completion_request_failed: "Coś poszło nie tak podczas próby przedstawienia sugestii. Spróbuj ponownie."
       prompts:
+        translate: Przetłumacz na %{language}
         generate_titles: Zaproponuj tytuły tematu
         proofread: Popraw tekst
         markdown_table: Wygeneruj tabelę Markdown
@@ -101,8 +115,19 @@ pl_PL:
         illustrate_post: "Zilustruj post"
     share_ai:
       read_more: "Przeczytaj pełną transkrypcję"
+      errors:
+        not_allowed: "Nie masz uprawnień do udostępniania tego tematu"
+        failed_to_share: "Nie udało się udostępnić konwersacji"
+        conversation_deleted: "Udostępniona konwersacja została pomyślnie usunięta"
+    spam_detection:
+      flag_reason: "Oznaczono jako spam przez <a href='%{url}'>Discourse AI</a>"
+      silence_reason: "Użytkownik wyciszony automatycznie przez <a href='%{url}'>Discourse AI</a>"
+      invalid_error_type: "Podano nieprawidłowy typ błędu"
+      unexpected: "Wystąpił nieoczekiwany błąd"
+      bot_user_update_failed: "Nie udało się zaktualizować użytkownika bota skanującego spam"
     ai_bot:
       default_pm_prefix: "[PW bota AI bez tytułu]"
+      thinking: "Myślenie..."
       personas:
         cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
         general:
@@ -126,10 +151,15 @@ pl_PL:
         dall_e3:
           name: "DALL-E 3"
           description: "Bot AI specjalizujący się w generowaniu obrazów przy użyciu DALL-E 3"
+        short_summarizer:
+          name: "Podsumowanie (forma krótka)"
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
       tool_options:
+        update_artifact:
+          update_algorithm:
+            description: "Poproś LLM o pełne zastąpienie lub użyj diff do aktualizacji"
         google:
           base_query:
             name: "Podstawowe zapytanie wyszukiwania"
@@ -141,6 +171,7 @@ pl_PL:
             name: "Podstawowe zapytanie wyszukiwania"
             description: "Podstawowe zapytanie używane podczas wyszukiwania. Przykład: '#pilne' spowoduje dodanie '#pilne' do zapytania wyszukiwania i uwzględnienie tylko tematów z kategorią lub tagiem pilne."
       tool_summary:
+        web_browser: "Przeglądaj sieć"
         random_picker: "Losowy selektor"
         categories: "Wymień kategorie"
         search: "Szukaj"
@@ -233,5 +264,17 @@ pl_PL:
         disable_module_first: "Najpierw musisz wyłączyć %{setting}."
         set_llm_first: "Najpierw ustaw %{setting}"
         model_unreachable: "Nie mogliśmy uzyskać odpowiedzi od tego modelu. Sprawdź najpierw swoje ustawienia."
+    embeddings:
+      cannot_edit_builtin: "Nie możesz edytować wbudowanego modelu."
+      configuration:
+        invalid_config: "Wybrałeś nieprawidłową opcję."
+    llm_models:
+      missing_provider_param: "%{param} nie może być pusty"
+      bedrock_invalid_url: "Wypełnij wszystkie pola, aby korzystać z tego modelu."
     errors:
+      quota_exceeded: "Przekroczyłeś limit dla tego modelu. Spróbuj ponownie za %{relative_time}."
+      quota_required: "Musisz określić maksymalną liczbę tokenów lub użyć dla tego modelu"
+      no_query_specified: Parametr zapytania jest wymagany, podaj go.
+      no_user_for_persona: Określona persona nie ma powiązanego użytkownika.
+      persona_not_found: Określona persona nie istnieje. Sprawdź parametry persona_name lub persona_id.
       prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.
