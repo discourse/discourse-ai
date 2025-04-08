@@ -82,19 +82,39 @@ module DiscourseAi
           search: function(params) {
             return _discourse_search(params);
           },
+          updatePersona: function(persona_id_or_name, updates) {
+            const result = _discourse_update_persona(persona_id_or_name, updates);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+            return result;
+          },
           getPost: _discourse_get_post,
           getTopic: _discourse_get_topic,
           getUser: _discourse_get_user,
           getPersona: function(name) {
-            return {
+            const result = _discourse_get_persona(name);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+
+            // merge result.persona with {}..
+            return Object.assign({
+              update: function(updates) {
+                const result = _discourse_update_persona(name, updates);
+                if (result.error) {
+                  throw new Error(result.error);
+                }
+                return result;
+              },
               respondTo: function(params) {
                 result = _discourse_respond_to_persona(name, params);
                 if (result.error) {
                   throw new Error(result.error);
                 }
                 return result;
-              },
-            };
+              }
+            }, result.persona);
           },
           createChatMessage: function(params) {
             const result = _discourse_create_chat_message(params);
@@ -440,6 +460,96 @@ module DiscourseAi
               search_params[:result_style] = :detailed
               results = DiscourseAi::Utils::Search.perform_search(**search_params)
               recursive_as_json(results)
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_get_persona",
+          ->(persona_name) do
+            in_attached_function do
+              persona = AiPersona.find_by(name: persona_name)
+
+              return { error: "Persona not found" } if persona.nil?
+
+              # Return a subset of relevant persona attributes
+              {
+                persona:
+                  persona.attributes.slice(
+                    "id",
+                    "name",
+                    "description",
+                    "enabled",
+                    "system_prompt",
+                    "temperature",
+                    "top_p",
+                    "vision_enabled",
+                    "tools",
+                    "max_context_posts",
+                    "allow_chat_channel_mentions",
+                    "allow_chat_direct_messages",
+                    "allow_topic_mentions",
+                    "allow_personal_messages",
+                  ),
+              }
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_update_persona",
+          ->(persona_id_or_name, updates) do
+            in_attached_function do
+              # Find persona by ID or name
+              persona = nil
+              if persona_id_or_name.is_a?(Integer) ||
+                   persona_id_or_name.to_i.to_s == persona_id_or_name
+                persona = AiPersona.find_by(id: persona_id_or_name.to_i)
+              else
+                persona = AiPersona.find_by(name: persona_id_or_name)
+              end
+
+              return { error: "Persona not found" } if persona.nil?
+
+              allowed_updates = {}
+
+              if updates["system_prompt"].present?
+                allowed_updates[:system_prompt] = updates["system_prompt"]
+              end
+
+              if updates["temperature"].is_a?(Numeric)
+                allowed_updates[:temperature] = updates["temperature"]
+              end
+
+              allowed_updates[:top_p] = updates["top_p"] if updates["top_p"].is_a?(Numeric)
+
+              if updates["description"].present?
+                allowed_updates[:description] = updates["description"]
+              end
+
+              allowed_updates[:enabled] = updates["enabled"] if updates["enabled"].is_a?(
+                TrueClass,
+              ) || updates["enabled"].is_a?(FalseClass)
+
+              if persona.update(allowed_updates)
+                return(
+                  {
+                    success: true,
+                    persona:
+                      persona.attributes.slice(
+                        "id",
+                        "name",
+                        "description",
+                        "enabled",
+                        "system_prompt",
+                        "temperature",
+                        "top_p",
+                      ),
+                  }
+                )
+              else
+                return { error: persona.errors.full_messages.join(", ") }
+              end
             end
           end,
         )

@@ -560,4 +560,114 @@ RSpec.describe AiTool do
       expect(Chat::Message.count).to eq(initial_message_count) # Verify no message created
     end
   end
+
+  context "when updating personas" do
+    fab!(:ai_persona) do
+      Fabricate(:ai_persona, name: "TestPersona", system_prompt: "Original prompt")
+    end
+
+    it "can update a persona with proper permissions" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.updatePersona(params.persona_name, {
+            system_prompt: params.new_prompt,
+            temperature: 0.7,
+            top_p: 0.9
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { persona_name: "TestPersona", new_prompt: "Updated system prompt" },
+          llm: nil,
+          bot_user: bot_user,
+        )
+
+      result = runner.invoke
+      expect(result["success"]).to eq(true)
+      expect(result["persona"]["system_prompt"]).to eq("Updated system prompt")
+      expect(result["persona"]["temperature"]).to eq(0.7)
+
+      ai_persona.reload
+      expect(ai_persona.system_prompt).to eq("Updated system prompt")
+      expect(ai_persona.temperature).to eq(0.7)
+      expect(ai_persona.top_p).to eq(0.9)
+    end
+  end
+
+  context "when fetching persona information" do
+    fab!(:ai_persona) do
+      Fabricate(
+        :ai_persona,
+        name: "TestPersona",
+        description: "Test description",
+        system_prompt: "Test system prompt",
+        temperature: 0.8,
+        top_p: 0.9,
+        vision_enabled: true,
+        tools: ["Search", ["WebSearch", { param: "value" }, true]],
+      )
+    end
+
+    it "can fetch a persona by name" do
+      script = <<~JS
+        function invoke(params) {
+          const persona = discourse.getPersona(params.persona_name);
+          return persona;
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ persona_name: "TestPersona" }, llm: nil, bot_user: bot_user)
+
+      result = runner.invoke
+
+      expect(result["id"]).to eq(ai_persona.id)
+      expect(result["name"]).to eq("TestPersona")
+      expect(result["description"]).to eq("Test description")
+      expect(result["system_prompt"]).to eq("Test system prompt")
+      expect(result["temperature"]).to eq(0.8)
+      expect(result["top_p"]).to eq(0.9)
+      expect(result["vision_enabled"]).to eq(true)
+      expect(result["tools"]).to include("Search")
+      expect(result["tools"][1]).to be_a(Array)
+    end
+
+    it "raises an error when the persona doesn't exist" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.getPersona("NonExistentPersona");
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({}, llm: nil, bot_user: bot_user)
+
+      expect { runner.invoke }.to raise_error(MiniRacer::RuntimeError, /Persona not found/)
+    end
+
+    it "can update a persona after fetching it" do
+      script = <<~JS
+        function invoke(params) {
+          const persona = discourse.getPersona("TestPersona");
+          return persona.update({
+            system_prompt: "Updated through getPersona().update()",
+            temperature: 0.5
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({}, llm: nil, bot_user: bot_user)
+
+      result = runner.invoke
+      expect(result["success"]).to eq(true)
+
+      ai_persona.reload
+      expect(ai_persona.system_prompt).to eq("Updated through getPersona().update()")
+      expect(ai_persona.temperature).to eq(0.5)
+    end
+  end
 end
