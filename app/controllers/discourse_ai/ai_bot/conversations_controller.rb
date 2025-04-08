@@ -13,11 +13,10 @@ module DiscourseAi
         # Step 2: Query for PM topics including current_user and any bot ID
         pms =
           Topic
+            .private_messages_for_user(current_user)
             .joins(:topic_users)
-            .private_messages
-            .where("topic_users.user_id IN (?)", bot_user_ids + [current_user.id])
-            .group("topics.id") # Group by topic to ensure distinct results
-            .having("COUNT(topic_users.user_id) > 1") # Ensure multiple participants in the PM
+            .where(topic_users: { user_id: bot_user_ids })
+            .distinct
 
         # Step 3: Serialize (empty array if no results)
         serialized_pms = serialize_data(pms, BasicTopicSerializer)

@@ -15,27 +15,22 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
     AiPersona.last.update!(user_id: user.id)
     user
   end
-  fab!(:llm_model) do
-    Fabricate(:llm_model, provider: "anthropic", name: "claude-3-opus", enabled_chat_bot: true)
-  end
+  fab!(:llm_model) { Fabricate(:llm_model, enabled_chat_bot: true) }
 
-  fab!(:pm) do
-    Fabricate(
-      :private_message_topic,
-      title: "AI Conversation Test",
-      user: user,
-      topic_allowed_users: [
-        Fabricate.build(:topic_allowed_user, user: user),
-        Fabricate.build(:topic_allowed_user, user: bot_user),
-      ],
-    )
+  fab!(:pm) { Fabricate(:private_message_topic, title: "AI Conversation Test", user: user) }
+  fab!(:reply) do
+    Fabricate(:post, topic: pm, user: user, post_number: 1, raw: "test test test user reply")
   end
-  fab!(:reply) { Fabricate(:post, topic: pm, user: user, raw: "test test test user reply") }
-  fab!(:bot_reply) { Fabricate(:post, topic: pm, user: bot_user, raw: "test test test bot reply") }
+  fab!(:bot_reply) do
+    Fabricate(:post, topic: pm, user: bot_user, post_number: 2, raw: "test test test bot reply")
+  end
+  fab!(:topic_user) { Fabricate(:topic_user, topic: pm, user: user) }
+  fab!(:topic_bot_user) { Fabricate(:topic_user, topic: pm, user: bot_user) }
 
   before do
     SiteSetting.ai_enable_experimental_bot_ux = true
     SiteSetting.ai_bot_enabled = true
+    toggle_enabled_bots(bots: [llm_model])
     SiteSetting.ai_bot_allowed_groups = group.id.to_s
     sign_in(user)
 
