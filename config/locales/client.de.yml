@@ -703,9 +703,11 @@ de:
         main_title: "Discobot Entdeckungen"
         regular_results: "Themen"
         tell_me_more: "Erzähl mir mehr..."
+        continue_convo: "Unterhaltung fortsetzen..."
+        loading_convo: "Unterhaltung wird geladen"
         collapse: "Zuklappen"
         timed_out: "Discobot konnte keine Entdeckungen finden. Irgendetwas ist schief gelaufen."
-        user_setting: "Sucherkennungen ermöglichen"
+        user_setting: "Suchentdeckungen aktivieren"
         tooltip:
           header: "KI-gestützte Suche"
           content: "Natürliche Sprachsuche unterstützt von %{model}"
