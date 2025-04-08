@@ -13,12 +13,12 @@ RSpec.describe "Summarize a topic ", type: :system do
     )
   end
 
-  let(:clean_summary) { "This is a summary" }
+  let(:summarization_result) { "This is a summary" }
 
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:summary_box) { PageObjects::Components::AiSummaryTrigger.new }
 
-  fab!(:ai_summary) { Fabricate(:ai_summary, target: topic, summarized_text: clean_summary) }
+  fab!(:ai_summary) { Fabricate(:ai_summary, target: topic, summarized_text: "This is a summary") }
 
   before do
     group.add(current_user)
