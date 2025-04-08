@@ -64,10 +64,10 @@ module DiscourseAi
 
         user = context.user
 
-        llm_kwargs = { user: user }
+        llm_kwargs = llm_args.dup
+        llm_kwargs[:user] = user
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
-        llm_kwargs[:max_tokens] = llm_args[:max_tokens] if llm_args[:max_tokens].present?
 
         needs_newlines = false
         tools_ran = 0

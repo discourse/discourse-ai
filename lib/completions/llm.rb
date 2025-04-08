@@ -304,6 +304,7 @@ module DiscourseAi
       # @param feature_context { Hash - Optional } - The feature context to use for the completion.
       # @param partial_tool_calls { Boolean - Optional } - If true, the completion will return partial tool calls.
       # @param output_thinking { Boolean - Optional } - If true, the completion will return the thinking output for thinking models.
+      # @param extra_model_params { Hash - Optional } - Other params that are not available accross models. e.g. response_format JSON schema.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
