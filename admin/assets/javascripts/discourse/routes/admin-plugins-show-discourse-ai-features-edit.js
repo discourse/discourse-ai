@@ -15,11 +15,12 @@ export default class AdminPluginsShowDiscourseAiFeaturesEdit extends DiscourseRo
         filter_area: `ai-features/${currentFeature.ref}`,
         plugin: "discourse-ai",
         category: "discourse_ai",
-      }
+      },
     });
 
-
-    currentFeature.feature_settings = site_settings.map((setting) => SiteSetting.create(setting));
+    currentFeature.feature_settings = site_settings.map((setting) =>
+      SiteSetting.create(setting)
+    );
 
     return currentFeature;
   }
