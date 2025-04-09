@@ -239,6 +239,54 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   end
 
   describe "PUT #update" do
+    context "with scoped api key" do
+      it "allows updates with a properly scoped API key" do
+        api_key = Fabricate(:api_key, user: admin, created_by: admin)
+
+        scope =
+          ApiKeyScope.create!(
+            resource: "discourse_ai",
+            action: "update_personas",
+            api_key_id: api_key.id,
+            allowed_parameters: {
+            },
+          )
+
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
+            params: {
+              ai_persona: {
+                name: "UpdatedByAPI",
+                description: "Updated via API key",
+              },
+            },
+            headers: {
+              "Api-Key" => api_key.key,
+              "Api-Username" => admin.username,
+            }
+
+        expect(response).to have_http_status(:ok)
+        ai_persona.reload
+        expect(ai_persona.name).to eq("UpdatedByAPI")
+        expect(ai_persona.description).to eq("Updated via API key")
+
+        scope.update!(action: "fake")
+
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
+            params: {
+              ai_persona: {
+                name: "UpdatedByAPI 2",
+                description: "Updated via API key",
+              },
+            },
+            headers: {
+              "Api-Key" => api_key.key,
+              "Api-Username" => admin.username,
+            }
+
+        expect(response).not_to have_http_status(:ok)
+      end
+    end
+
     it "allows us to trivially clear top_p and temperature" do
       persona = Fabricate(:ai_persona, name: "test_bot2", top_p: 0.5, temperature: 0.1)
       put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",

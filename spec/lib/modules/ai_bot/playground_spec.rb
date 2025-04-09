@@ -1151,4 +1151,50 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(playground.available_bot_usernames).to include(persona.user.username)
     end
   end
+
+  describe "custom tool context injection" do
+    let!(:custom_tool) do
+      AiTool.create!(
+        name: "context_tool",
+        tool_name: "context_tool",
+        summary: "tool with custom context",
+        description: "A test custom tool that injects context",
+        parameters: [{ name: "query", type: "string", description: "Input for the custom tool" }],
+        script: <<~JS,
+          function invoke(params) {
+            return 'Custom tool result: ' + params.query;
+          }
+
+          function customContext() {
+            return "This is additional context from the tool";
+          }
+
+          function details() {
+            return 'executed with custom context';
+          }
+        JS
+        created_by: user,
+      )
+    end
+
+    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
+    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
+
+    it "injects custom context into the prompt" do
+      prompts = nil
+      response = "I received the additional context"
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([response]) do |_, _, _prompts|
+        new_post = Fabricate(:post, raw: "Can you use the custom context tool?")
+        playground.reply_to(new_post)
+        prompts = _prompts
+      end
+
+      # The first prompt should have the custom context prepended to the user message
+      user_message = prompts[0].messages.last
+      expect(user_message[:content]).to include("This is additional context from the tool")
+      expect(user_message[:content]).to include("Can you use the custom context tool?")
+    end
+  end
 end

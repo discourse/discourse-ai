@@ -127,6 +127,11 @@ after_initialize do
     end
   end
 
+  add_api_key_scope(
+    :discourse_ai,
+    { update_personas: { actions: %w[discourse_ai/admin/ai_personas#update] } },
+  )
+
   plugin_icons = %w[
     chart-column
     spell-check
