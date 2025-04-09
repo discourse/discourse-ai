@@ -49,9 +49,9 @@ export default class AiSplitTopicSuggester extends Component {
         if (this.args.mode === this.SUGGESTION_TYPES.title) {
           this.suggestions = result.suggestions;
         } else if (this.args.mode === this.SUGGESTION_TYPES.category) {
-          const suggestions = result.assistant.map((s) => s.name);
-          const suggestedCategories = this.site.categories.filter((item) =>
-            suggestions.includes(item.name.toLowerCase())
+          const suggestionIds = result.assistant.map((s) => s.id);
+          const suggestedCategories = this.site.categories.filter((category) =>
+            suggestionIds.includes(category.id)
           );
           this.suggestions = suggestedCategories;
         } else if (this.args.mode === this.SUGGESTION_TYPES.tag) {
@@ -95,7 +95,11 @@ export default class AiSplitTopicSuggester extends Component {
           this.args.updateAction([...new Set(updatedTags)]);
         }
       } else {
-        this.args.updateAction(suggestion);
+        if (Array.isArray(suggestion)) {
+          this.args.updateAction([...suggestion]);
+        } else {
+          this.args.updateAction([suggestion]);
+        }
       }
       return menu.close();
     }
