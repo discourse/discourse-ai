@@ -29,8 +29,36 @@ module DiscourseAi
         # Backwards compatibility: if tool_name is not set (existing custom tools), use name
         def self.name
           name, tool_name = AiTool.where(id: tool_id).pluck(:name, :tool_name).first
-
           tool_name.presence || name
+        end
+
+        def self.has_custom_context?
+          # note on safety, this can be cached safely, we bump the whole persona cache when an ai tool is saved
+          # which will expire this class
+          return @has_custom_context if defined?(@has_custom_context)
+
+          @has_custom_context = false
+          ai_tool = AiTool.find_by(id: tool_id)
+          if ai_tool.script.include?("customContext")
+            runner = ai_tool.runner({}, llm: nil, bot_user: nil, context: nil)
+            @has_custom_context = runner.has_custom_context?
+          end
+
+          @has_custom_context
+        end
+
+        def self.inject_prompt(prompt:, context:, persona:)
+          if has_custom_context?
+            ai_tool = AiTool.find_by(id: tool_id)
+            if ai_tool
+              runner = ai_tool.runner({}, llm: nil, bot_user: nil, context: context)
+              custom_context = runner.custom_context
+              if custom_context.present?
+                last_message = prompt.messages.last
+                last_message[:content] = "#{custom_context}\n\n#{last_message[:content]}"
+              end
+            end
+          end
         end
 
         def initialize(*args, **kwargs)

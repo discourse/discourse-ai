@@ -180,6 +180,20 @@ module DiscourseAi
         { error: "Script terminated due to timeout" }
       end
 
+      def has_custom_context?
+        mini_racer_context.eval(tool.script)
+        mini_racer_context.eval("typeof customContext === 'function'")
+      rescue StandardError
+        false
+      end
+
+      def custom_context
+        mini_racer_context.eval(tool.script)
+        mini_racer_context.eval("customContext()")
+      rescue StandardError
+        nil
+      end
+
       private
 
       MAX_FRAGMENTS = 200
