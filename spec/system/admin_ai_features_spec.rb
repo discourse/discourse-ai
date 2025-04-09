@@ -50,7 +50,7 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
     expect(page).to have_current_path("/admin/plugins")
   end
 
-  it "can edit the AI feature" do
+  it "shows edit page with settings" do
     ai_features_page.visit
     ai_features_page.click_edit_feature(I18n.t("discourse_ai.features.summarization.name"))
     expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-features/1/edit")
@@ -59,11 +59,6 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
       text: I18n.t("discourse_ai.features.summarization.name"),
     )
 
-    form.field("persona_id").select(-6)
-    form.submit
-    expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-features")
-    expect(ai_features_page).to have_feature_persona(
-      I18n.t("discourse_ai.ai_bot.personas.creative.name"),
-    )
+    expect(page).to have_css(".setting")
   end
 end

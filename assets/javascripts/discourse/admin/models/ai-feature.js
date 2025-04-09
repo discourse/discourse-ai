@@ -5,6 +5,7 @@ export default class AiFeature extends RestModel {
     return this.getProperties(
       "id",
       "name",
+      "ref",
       "description",
       "enable_setting",
       "persona",

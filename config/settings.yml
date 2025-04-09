@@ -234,7 +234,7 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
-    hidden: true
+    area: "ai-features/summarization"
   ai_summarization_model:
     default: ""
     allow_any: false
@@ -246,11 +246,12 @@ discourse_ai:
     default: "-11"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    hidden: true
+    area: "ai-features/summarization"
   ai_pm_summarization_allowed_groups:
     type: group_list
     list_type: compact
     default: ""
+    area: "ai-features/summarization"
   ai_custom_summarization_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -258,12 +259,12 @@ discourse_ai:
     hidden: true
   ai_summary_gists_enabled:
     default: false
-    hidden: true
+    area: "ai-features/gists"
   ai_summary_gists_persona:
     default: "-12"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    hidden: true
+    area: "ai-features/gists"
   ai_summary_gists_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -278,17 +279,20 @@ discourse_ai:
     default: 30
     min: 1
     max: 10000
+    area: "ai-features/summarization"
   ai_summary_backfill_maximum_topics_per_hour:
     default: 0
     min: 0
     max: 10000
+    area: "ai-features/summarization"
   ai_summary_backfill_minimum_word_count:
     default: 200
-    hidden: true
+    area: "ai-features/summarization"
 
   ai_bot_enabled:
     default: false
     client: true
+    area: "ai-features/discoveries"
   ai_bot_enable_chat_warning:
     default: false
     client: true
@@ -327,9 +331,9 @@ discourse_ai:
   ai_bot_discover_persona:
     default: ""
     type: enum
-    hidden: true
     client: true
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/discoveries"
   ai_automation_max_triage_per_minute:
     default: 60
     hidden: true
@@ -345,28 +349,32 @@ discourse_ai:
   ai_discord_search_enabled:
     default: false
     client: true
-    hidden: true
+    area: "ai-features/discord_search"
   ai_discord_app_id:
     default: ""
     client: false
+    area: "ai-features/discord_search"
   ai_discord_app_public_key:
     default: ""
     client: false
+    area: "ai-features/discord_search"
   ai_discord_search_mode:
     default: "search"
     type: enum
     choices:
       - search
       - persona
+    area: "ai-features/discord_search"
   ai_discord_search_persona:
     default: ""
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    hidden: true
+    area: "ai-features/discord_search"
   ai_discord_allowed_guilds:
     type: list
     list_type: compact
     default: ""
+    area: "ai-features/discord_search"
 
   ai_spam_detection_enabled:
     default: false

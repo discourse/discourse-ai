@@ -29,27 +29,4 @@ RSpec.describe DiscourseAi::Admin::AiFeaturesController do
       expect(response.parsed_body["name"]).to eq(I18n.t "discourse_ai.features.summarization.name")
     end
   end
-
-  describe "#update" do
-    before do
-      SiteSetting.ai_summarization_persona = summarizer_persona.id
-      SiteSetting.ai_summarization_enabled = true
-    end
-
-    it "updates the feature" do
-      expect(SiteSetting.ai_summarization_persona).to eq(summarizer_persona.id.to_s)
-      expect(SiteSetting.ai_summarization_enabled).to eq(true)
-
-      put "/admin/plugins/discourse-ai/ai-features/1.json",
-          params: {
-            ai_feature: {
-              enabled: false,
-              persona_id: alternate_summarizer_persona.id,
-            },
-          }
-
-      expect(SiteSetting.ai_summarization_persona).to eq(alternate_summarizer_persona.id.to_s)
-      expect(SiteSetting.ai_summarization_enabled).to eq(false)
-    end
-  end
 end

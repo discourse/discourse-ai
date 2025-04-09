@@ -182,6 +182,7 @@ en:
           enable_setting_help: "Toggles '%{setting}' setting"
           persona: "Persona"
           persona_help: "To create/edit personas go to the <a href='%{config_url}'>persona configuration page</a>"
+          advanced_settings: "Advanced settings"
           save: "Save"
           saved: "%{feature_name} feature saved"
 

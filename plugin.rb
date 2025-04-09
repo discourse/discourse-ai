@@ -70,6 +70,11 @@ end
 Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
 
 require_relative "lib/engine"
+require_relative "lib/features"
+
+DiscourseAi::Features.feature_config.each do |feature|
+  register_site_setting_area("ai-features/#{feature[:name_ref]}")
+end
 
 after_initialize do
   if defined?(Rack::MiniProfiler)
