@@ -10,7 +10,6 @@ import { i18n } from "discourse-i18n";
 export default RouteTemplate(
   class extends Component {
     @service adminPluginNavManager;
-    @service currentUser;
 
     get tableHeaders() {
       const prefix = "discourse_ai.features.list.header";
