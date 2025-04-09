@@ -1,9 +1,6 @@
 import Component from "@glimmer/component";
-import { action } from "@ember/object";
 import { service } from "@ember/service";
 import BackButton from "discourse/components/back-button";
-import { popupAjaxError } from "discourse/lib/ajax-error";
-import getURL from "discourse/lib/get-url";
 import SiteSettingComponent from "admin/components/site-setting";
 
 export default class AiFeatureEditor extends Component {
