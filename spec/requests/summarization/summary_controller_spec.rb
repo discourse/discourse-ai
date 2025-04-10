@@ -73,8 +73,8 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
       end
 
       it "returns a summary" do
-        clean_summary = "This is a summary"
-        summary_text = "{\"summary\":\"#{clean_summary}\"}"
+        summary_text = "This is a summary"
+
         DiscourseAi::Completions::Llm.with_prepared_responses([summary_text]) do
           get "/discourse-ai/summarization/t/#{topic.id}.json"
 
@@ -82,7 +82,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
           response_summary = response.parsed_body["ai_topic_summary"]
           summary = AiSummary.last
 
-          expect(summary.summarized_text).to eq(clean_summary)
+          expect(summary.summarized_text).to eq(summary_text)
           expect(response_summary["summarized_text"]).to eq(summary.summarized_text)
           expect(response_summary["algorithm"]).to eq("fake")
           expect(response_summary["outdated"]).to eq(false)
