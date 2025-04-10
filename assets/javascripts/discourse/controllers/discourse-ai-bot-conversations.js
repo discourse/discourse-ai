@@ -1,15 +1,15 @@
 import Controller from "@ember/controller";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import SimpleTextareaInteractor from "../lib/simple-textarea-interactor";
 
 export default class DiscourseAiBotConversations extends Controller {
   @service aiBotConversationsHiddenSubmit;
 
-  textareaInteractor = null;
+  textarea = null;
 
   @action
   updateInputValue(event) {
+    this._autoExpandTextarea();
     this.aiBotConversationsHiddenSubmit.inputValue = event.target.value;
   }
 
@@ -21,7 +21,12 @@ export default class DiscourseAiBotConversations extends Controller {
   }
 
   @action
-  initializeTextarea(element) {
-    this.textareaInteractor = new SimpleTextareaInteractor(element);
+  setTextArea(element) {
+    this.textarea = element;
+  }
+
+  _autoExpandTextarea() {
+    this.textarea.style.height = "auto";
+    this.textarea.style.height = this.textarea.scrollHeight + "px";
   }
 }
