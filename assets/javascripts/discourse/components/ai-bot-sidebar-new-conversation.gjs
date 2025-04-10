@@ -6,6 +6,7 @@ export default class AiBotSidebarNewConversation extends Component {
   @service router;
 
   get show() {
+    // don't show the new question button on the conversations home page
     return this.router.currentRouteName !== "discourse-ai-bot-conversations";
   }
 

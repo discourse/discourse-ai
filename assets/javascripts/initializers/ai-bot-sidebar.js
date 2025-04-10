@@ -56,10 +56,7 @@ export default {
                   this.isFetching = false;
                   this.buildSidebarLinks();
                 })
-                .catch((e) => {
-                  debugger;
-                  this.isFetching = false;
-                });
+                .catch(() => (this.isFetching = false));
             }
 
             addNewMessage(newTopic) {

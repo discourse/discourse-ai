@@ -33,10 +33,13 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       });
     }
 
+    // borrowed from ai-bot-helper.js
+    const draftKey = "new_private_message_ai_" + new Date().getTime();
+
     // this is a total hack, the composer is hidden on the homepage with CSS
     await this.composer.open({
       action: Composer.PRIVATE_MESSAGE,
-      draftKey: "private_message_ai",
+      draftKey,
       recipients: this.currentUser.ai_enabled_personas[0].username,
       topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       topicBody: this.inputValue,
