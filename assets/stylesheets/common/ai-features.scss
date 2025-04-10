@@ -1,0 +1,65 @@
+.ai-feature-list {
+  &__configured-features {
+    margin-block: 2rem;
+  }
+
+  &__row-item-name,
+  &__row-item-description {
+    display: block;
+  }
+
+  &__row-item-persona {
+    padding: 0;
+    text-align: left;
+
+    @include ellipsis;
+  }
+
+  &__row-item-groups {
+    list-style: none;
+    margin: 0.5em 0 0 0;
+    display: flex;
+
+    li {
+      font-size: var(--font-down-2);
+      border-radius: var(--d-border-radius);
+      background: var(--primary-very-low);
+      border: 1px solid var(--primary-low);
+      padding: 1px 3px;
+      margin-right: 0.5em;
+    }
+  }
+}
+
+.ai-feature-editor {
+  &__header {
+    border-bottom: 1px solid var(--primary-low);
+  }
+
+  .setting {
+    margin-block: 1.5rem;
+  }
+
+  .setting-label {
+    font-size: var(--font-down-1-rem);
+    color: var(--primary-high);
+
+    a[title="View change history"],
+    .history-icon {
+      display: none;
+    }
+  }
+
+  .setting-value {
+    .desc {
+      font-size: var(--font-down-1-rem);
+      color: var(--primary-high-or-secondary-low);
+    }
+  }
+
+  .setting-controls,
+  .setting-controls__undo {
+    font-size: var(--font-down-1-rem);
+    margin-top: 0.5rem;
+  }
+}

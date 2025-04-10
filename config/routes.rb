@@ -110,6 +110,11 @@ Discourse::Application.routes.draw do
               controller: "discourse_ai/admin/ai_embeddings" do
       collection { get :test }
     end
+
+    resources :ai_features,
+              only: %i[index edit],
+              path: "ai-features",
+              controller: "discourse_ai/admin/ai_features"
   end
 end
 
