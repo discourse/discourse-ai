@@ -7,9 +7,7 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
   let(:sidebar) { PageObjects::Components::NavigationMenu::Sidebar.new }
   let(:header_dropdown) { PageObjects::Components::NavigationMenu::HeaderDropdown.new }
 
-
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
-  fab!(:group)
 
   fab!(:claude_2) do
     Fabricate(
@@ -62,14 +60,30 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
   fab!(:topic_user) { Fabricate(:topic_user, topic: pm, user: user) }
   fab!(:topic_bot_user) { Fabricate(:topic_user, topic: pm, user: bot_user) }
 
+  fab!(:persona) do
+    persona =
+      AiPersona.create!(
+        name: "Test Persona",
+        description: "A test persona",
+        allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+        enabled: true,
+        system_prompt: "You are a helpful bot",
+      )
+
+    persona.create_user!
+    persona.update!(
+      default_llm_id: claude_2.id,
+      allow_chat_channel_mentions: true,
+      allow_topic_mentions: true,
+    )
+    persona
+  end
+
   before do
     SiteSetting.ai_enable_experimental_bot_ux = true
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_allowed_groups = group.id.to_s
-
-    group.add(user)
-    group.save
-
+    Jobs.run_immediately!
+    SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
     sign_in(user)
   end
 
@@ -144,6 +158,16 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
       expect(sidebar).to be_visible
       sidebar.find("button.ai-new-question-button").click
       expect(ai_pm_homepage).to have_homepage
+    end
+
+    it "can send a new message to the bot" do
+      topic_page.visit_topic(pm)
+      topic_page.click_reply_button
+      expect(composer).to be_opened
+
+      composer.fill_in(with: "Hello bot replying to you")
+      composer.submit
+      expect(page).to have_content("Hello bot replying to you")
     end
   end
 end
