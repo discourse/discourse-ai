@@ -115,7 +115,7 @@ module DiscourseAi
         # Auxiliary variables to get the summary content from the JSON response.
         raw_buffer = +""
         json_start_found = false
-        json_reply_start_regex = /\{\s*"summary"\s*:\s*"/
+        json_reply_start_regex = /\{?\s*"summary"\s*:\s*"/ # { is optional because Claude uses prefill, so it's not incldued.
         unescape_regex = %r{\\(["/bfnrt])}
         json_reply_end = "\"}"
 
@@ -143,7 +143,7 @@ module DiscourseAi
             end
           end
 
-        bot.reply(context, llm_args: { extra_model_params: response_format }, &buffer_blk)
+        bot.reply(context, llm_args: { response_format: response_format_schema }, &buffer_blk)
 
         summary.chomp(json_reply_end)
       end
@@ -172,24 +172,22 @@ module DiscourseAi
         item
       end
 
-      def response_format
+      def response_format_schema
         {
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "reply",
-              schema: {
-                type: "object",
-                properties: {
-                  summary: {
-                    type: "string",
-                  },
+          type: "json_schema",
+          json_schema: {
+            name: "reply",
+            schema: {
+              type: "object",
+              properties: {
+                summary: {
+                  type: "string",
                 },
-                required: ["summary"],
-                additionalProperties: false,
               },
-              strict: true,
+              required: ["summary"],
+              additionalProperties: false,
             },
+            strict: true,
           },
         }
       end

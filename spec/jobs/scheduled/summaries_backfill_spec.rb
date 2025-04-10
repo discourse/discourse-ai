@@ -84,10 +84,6 @@ RSpec.describe Jobs::SummariesBackfill do
     end
   end
 
-  def in_json_format(summary)
-    "{\"summary\":\"#{summary}\"}"
-  end
-
   describe "#execute" do
     it "backfills a batch" do
       topic_2 =
@@ -102,7 +98,7 @@ RSpec.describe Jobs::SummariesBackfill do
       gist_2 = "Updated gist of topic"
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
-        [gist_1, gist_2, summary_1, summary_2].map { |s| in_json_format(s) },
+        [gist_1, gist_2, summary_1, summary_2],
       ) { subject.execute({}) }
 
       expect(AiSummary.complete.find_by(target: topic_2).summarized_text).to eq(summary_1)

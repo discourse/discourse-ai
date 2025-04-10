@@ -420,7 +420,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
       body:
         proc do |_req_body|
           req_body = _req_body
-          true
+          _req_body
         end,
     ).to_return(status: 200, body: response)
 
@@ -432,5 +432,66 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     expect(parsed[:tool_config]).to eq(
       { function_calling_config: { mode: "ANY", allowed_function_names: ["echo"] } },
     )
+  end
+
+  describe "structured output via JSON Schema" do
+    it "forces the response to be a JSON" do
+      schema = {
+        type: "json_schema",
+        json_schema: {
+          name: "reply",
+          schema: {
+            type: "object",
+            properties: {
+              key: {
+                type: "string",
+              },
+            },
+            required: ["key"],
+            additionalProperties: false,
+          },
+          strict: true,
+        },
+      }
+
+      response = <<~TEXT.strip
+        data: {"candidates": [{"content": {"parts": [{"text": "{\\""}],"role": "model"}}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "key"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "\\":\\""}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "Hello!"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "\\"}"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"finishReason": "MALFORMED_FUNCTION_CALL"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+      TEXT
+
+      req_body = nil
+
+      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
+
+      stub_request(:post, url).with(
+        body:
+          proc do |_req_body|
+            req_body = _req_body
+            true
+          end,
+      ).to_return(status: 200, body: response)
+
+      output = +""
+      llm.generate("Hello", response_format: schema, user: user) { |partial| output << partial }
+
+      expect(output).to eq("{\"key\":\"Hello!\"}")
+
+      parsed = JSON.parse(req_body, symbolize_names: true)
+
+      # Verify that schema is passed following Gemini API specs.
+      expect(parsed.dig(:generationConfig, :responseSchema)).to eq(schema)
+      expect(parsed.dig(:generationConfig, :responseMimeType)).to eq("application/json")
+    end
   end
 end

@@ -590,7 +590,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       data: {"type": "content_block_stop", "index": 0}
 
       event: content_block_start
-data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_thinking","data":"AAA=="} }
+      data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_thinking","data":"AAA=="} }
 
       event: ping
       data: {"type": "ping"}
@@ -767,6 +767,94 @@ data: {"type":"content_block_start","index":0,"content_block":{"type":"redacted_
       )
 
       expect(result).to eq("I won't use any tools. Here's a direct response instead.")
+    end
+  end
+
+  describe "structured output via prefilling" do
+    it "forces the response to be a JSON and using the given JSON schema" do
+      schema = {
+        type: "json_schema",
+        json_schema: {
+          name: "reply",
+          schema: {
+            type: "object",
+            properties: {
+              key: {
+                type: "string",
+              },
+            },
+            required: ["key"],
+            additionalProperties: false,
+          },
+          strict: true,
+        },
+      }
+
+      body = (<<~STRING).strip
+      event: message_start
+      data: {"type": "message_start", "message": {"id": "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY", "type": "message", "role": "assistant", "content": [], "model": "claude-3-opus-20240229", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 25, "output_tokens": 1}}}
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index":0, "content_block": {"type": "text", "text": ""}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "\\""}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "key"}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "\\":\\""}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Hello!"}}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "\\"}"}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 0}
+
+      event: message_delta
+      data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence":null, "usage":{"output_tokens": 15}}}
+
+      event: message_stop
+      data: {"type": "message_stop"}
+    STRING
+
+      parsed_body = nil
+
+      stub_request(:post, url).with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+        headers: {
+          "Content-Type" => "application/json",
+          "X-Api-Key" => "123",
+          "Anthropic-Version" => "2023-06-01",
+        },
+      ).to_return(status: 200, body: body)
+
+      result = +""
+      llm.generate(
+        prompt,
+        user: Discourse.system_user,
+        feature_name: "testing",
+        response_format: schema,
+      ) { |partial, cancel| result << partial }
+
+      expect(result).to eq("\"key\":\"Hello!\"}")
+
+      expected_body = {
+        model: "claude-3-opus-20240229",
+        max_tokens: 4096,
+        messages: [{ role: "user", content: "user1: hello" }, { role: "assistant", content: "{" }],
+        system: "You are hello bot",
+        stream: true,
+      }
+      expect(parsed_body).to eq(expected_body)
     end
   end
 end
