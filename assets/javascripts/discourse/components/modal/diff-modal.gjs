@@ -1,6 +1,8 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import CookText from "discourse/components/cook-text";
@@ -8,11 +10,13 @@ import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
 import AiIndicatorWave from "../ai-indicator-wave";
 
 export default class ModalDiffModal extends Component {
   @service currentUser;
+  @service messageBus;
 
   @tracked loading = false;
   @tracked diff;
@@ -23,14 +27,38 @@ export default class ModalDiffModal extends Component {
     this.suggestChanges();
   }
 
+  @bind
+  subscribe() {
+    console.log("subscribe called");
+    const channel = "/discourse-ai/ai-helper/stream_suggestion";
+    this.messageBus.subscribe(channel, this.updateResult);
+  }
+
+  @bind
+  unsubscribe() {
+    console.log("unsubscribe called");
+    const channel = "/discourse-ai/ai-helper/stream_suggestion";
+    this.messageBus.subscribe(channel, this.updateResult);
+  }
+
+  @action
+  async updateResult(result) {
+    console.log("updateResult called");
+    console.log("result", result);
+
+    this.diff = result.diff;
+    this.suggestion = result.result;
+  }
+
   @action
   async suggestChanges() {
     this.loading = true;
 
     try {
-      const suggestion = await ajax("/discourse-ai/ai-helper/suggest", {
+      return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
         method: "POST",
         data: {
+          location: "composer",
           mode: this.args.model.mode,
           text: this.args.model.selectedText,
           custom_prompt: this.args.model.customPromptValue,
@@ -38,8 +66,8 @@ export default class ModalDiffModal extends Component {
         },
       });
 
-      this.diff = suggestion.diff;
-      this.suggestion = suggestion.suggestions[0];
+      // this.diff = suggestion.diff;
+      // this.suggestion = suggestion.suggestions[0];
     } catch (e) {
       popupAjaxError(e);
     } finally {
@@ -71,17 +99,23 @@ export default class ModalDiffModal extends Component {
             <CookText @rawText={{@model.selectedText}} />
           </div>
         {{else}}
-          {{#if this.diff}}
-            {{htmlSafe this.diff}}
-          {{else}}
-            <div class="composer-ai-helper-modal__old-value">
-              {{@model.selectedText}}
-            </div>
+          <div
+            class="composer-ai-helper-modal__suggestion"
+            {{didInsert this.subscribe}}
+            {{willDestroy this.unsubscribe}}
+          >
+            {{#if this.diff}}
+              {{htmlSafe this.diff}}
+            {{else}}
+              <div class="composer-ai-helper-modal__old-value">
+                {{@model.selectedText}}
+              </div>
 
-            <div class="composer-ai-helper-modal__new-value">
-              {{this.suggestion}}
-            </div>
-          {{/if}}
+              <div class="composer-ai-helper-modal__new-value">
+                {{this.suggestion}}
+              </div>
+            {{/if}}
+          </div>
         {{/if}}
 
       </:body>

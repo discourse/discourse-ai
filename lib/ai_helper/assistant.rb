@@ -161,23 +161,28 @@ module DiscourseAi
       end
 
       def stream_prompt(completion_prompt, input, user, channel)
+        streamed_diff = +""
         streamed_result = +""
         start = Time.now
 
         generate_prompt(completion_prompt, input, user) do |partial_response, cancel_function|
           streamed_result << partial_response
 
+          streamed_diff = parse_diff(input, partial_response) if completion_prompt.diff?
+
           # Throttle the updates
           if (Time.now - start > 0.5) || Rails.env.test?
-            payload = { result: sanitize_result(streamed_result), done: false }
+            payload = { result: sanitize_result(streamed_result), diff: streamed_diff, done: false }
             publish_update(channel, payload, user)
             start = Time.now
           end
         end
 
+        final_diff = parse_diff(input, streamed_result) if completion_prompt.diff?
+
         sanitized_result = sanitize_result(streamed_result)
         if sanitized_result.present?
-          publish_update(channel, { result: sanitized_result, done: true }, user)
+          publish_update(channel, { result: sanitized_result, diff: final_diff, done: true }, user)
         end
       end
 
