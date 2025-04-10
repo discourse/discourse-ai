@@ -186,6 +186,12 @@ export default class AiSearchDiscoveries extends Component {
 
   @action
   async triggerDiscovery() {
+    if (this.query?.length === 0) {
+      this.discobotDiscoveries.resetDiscovery();
+      this.smoothStreamer.resetStreaming();
+      return;
+    }
+
     if (this.discobotDiscoveries.lastQuery === this.query) {
       this.hideDiscoveries = false;
       return;
