@@ -25,9 +25,10 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     this.composer.close();
 
     if (this.inputValue.length < 10) {
-      // TODO: Translate
-      this.dialog.alert({
-        message: "Message must be longer than 10 characters",
+      return this.dialog.alert({
+        message: i18n(
+          "discourse_ai.ai_bot.conversations.min_input_length_message"
+        ),
         didConfirm: () => this.focusInput(),
         didCancel: () => this.focusInput(),
       });

@@ -6,6 +6,7 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
   let(:ai_pm_homepage) { PageObjects::Components::AiPmHomepage.new }
   let(:sidebar) { PageObjects::Components::NavigationMenu::Sidebar.new }
   let(:header_dropdown) { PageObjects::Components::NavigationMenu::HeaderDropdown.new }
+  let(:dialog) { PageObjects::Components::Dialog.new }
 
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
@@ -102,6 +103,17 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
       find(".ai-bot-button").click
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to be_visible
+    end
+
+    it "displays error when message is too short" do
+      visit "/"
+      find(".ai-bot-button").click
+
+      ai_pm_homepage.input.fill_in(with: "a")
+      ai_pm_homepage.submit
+      expect(ai_pm_homepage).to have_too_short_dialog
+      dialog.click_yes
+      expect(composer).to be_closed
     end
 
     it "renders sidebar even when navigation menu is set to header" do
