@@ -50,14 +50,10 @@ RSpec.describe Jobs::StreamTopicAiSummary do
       end
     end
 
-    def in_json_format(summary)
-      "{\"summary\":\"#{summary}\"}"
-    end
-
     it "publishes updates with a partial summary" do
       summary = "dummy"
 
-      with_responses([in_json_format(summary)]) do
+      with_responses([summary]) do
         messages =
           MessageBus.track_publish("/discourse-ai/summaries/topic/#{topic.id}") do
             job.execute(topic_id: topic.id, user_id: user.id)
@@ -74,7 +70,7 @@ RSpec.describe Jobs::StreamTopicAiSummary do
     it "publishes a final update to signal we're done and provide metadata" do
       summary = "dummy"
 
-      with_responses([in_json_format(summary)]) do
+      with_responses([summary]) do
         messages =
           MessageBus.track_publish("/discourse-ai/summaries/topic/#{topic.id}") do
             job.execute(topic_id: topic.id, user_id: user.id)

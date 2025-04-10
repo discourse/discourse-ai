@@ -40,6 +40,8 @@ module DiscourseAi
                   "The number of completions you requested exceed the number of canned responses"
           end
 
+          response = transform_from_schema(response) if model_params[:response_format].present?
+
           raise response if response.is_a?(StandardError)
 
           @completions += 1
@@ -79,6 +81,13 @@ module DiscourseAi
 
         def is_tool?(response)
           response.is_a?(DiscourseAi::Completions::ToolCall)
+        end
+
+        def transform_from_schema(response)
+          key = model_params[:response_format].dig(:json_schema, :schema, :properties)&.keys&.first
+          return response if key.nil?
+
+          { key => response }.to_json
         end
       end
     end

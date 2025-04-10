@@ -84,7 +84,16 @@ module DiscourseAi
 
             payload[:tool_config] = { function_calling_config: function_calling_config }
           end
-          payload[:generationConfig].merge!(model_params) if model_params.present?
+          if model_params.present?
+            payload[:generationConfig].merge!(model_params.except(:response_format))
+
+            if model_params[:response_format].present?
+              # https://ai.google.dev/api/generate-content#generationconfig
+              payload[:generationConfig][:responseSchema] = model_params[:response_format]
+              payload[:generationConfig][:responseMimeType] = "application/json"
+            end
+          end
+
           payload
         end
 

@@ -546,4 +546,69 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       )
     end
   end
+
+  describe "structured output via prefilling" do
+    it "forces the response to be a JSON and using the given JSON schema" do
+      schema = {
+        type: "json_schema",
+        json_schema: {
+          name: "reply",
+          schema: {
+            type: "object",
+            properties: {
+              key: {
+                type: "string",
+              },
+            },
+            required: ["key"],
+            additionalProperties: false,
+          },
+          strict: true,
+        },
+      }
+
+      messages =
+        [
+          { type: "message_start", message: { usage: { input_tokens: 9 } } },
+          { type: "content_block_delta", delta: { text: "\"" } },
+          { type: "content_block_delta", delta: { text: "key" } },
+          { type: "content_block_delta", delta: { text: "\":\"" } },
+          { type: "content_block_delta", delta: { text: "Hello!" } },
+          { type: "content_block_delta", delta: { text: "\"}" } },
+          { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
+        ].map { |message| encode_message(message) }
+
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      request = nil
+      bedrock_mock.with_chunk_array_support do
+        stub_request(
+          :post,
+          "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke-with-response-stream",
+        )
+          .with do |inner_request|
+            request = inner_request
+            true
+          end
+          .to_return(status: 200, body: messages)
+
+        response = +""
+        proxy.generate("hello world", response_format: schema, user: user) do |partial|
+          response << partial
+        end
+
+        expected = {
+          "max_tokens" => 4096,
+          "anthropic_version" => "bedrock-2023-05-31",
+          "messages" => [
+            { "role" => "user", "content" => "hello world" },
+            { "role" => "assistant", "content" => "{" },
+          ],
+          "system" => "You are a helpful bot",
+        }
+        expect(JSON.parse(request.body)).to eq(expected)
+
+        expect(response).to eq("\"key\":\"Hello!\"}")
+      end
+    end
+  end
 end
