@@ -170,8 +170,11 @@ module DiscourseAi
 
           streamed_diff = parse_diff(input, partial_response) if completion_prompt.diff?
 
-          # Throttle the updates
-          if (Time.now - start > 0.5) || Rails.env.test?
+          # Throttle the updates and
+          # checking length prevents partial tags
+          # that aren't sanitized correctly yet (i.e. '<output')
+          #  from being sent in the stream
+          if streamed_result.length > 10 && (Time.now - start > 0.3) || Rails.env.test?
             payload = { result: sanitize_result(streamed_result), diff: streamed_diff, done: false }
             publish_update(channel, payload, user)
             start = Time.now
