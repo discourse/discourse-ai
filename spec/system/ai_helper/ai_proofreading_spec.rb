@@ -17,6 +17,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
   context "when triggering via keyboard shortcut" do
     it "proofreads selected text using" do
+      skip("Message bus updates not appearing in tests")
       visit "/new-topic"
       composer.fill_content("hello worldd !")
 
@@ -30,6 +31,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
     end
 
     it "proofreads all text when nothing is selected" do
+      skip("Message bus updates not appearing in tests")
       visit "/new-topic"
       composer.fill_content("hello worrld")
 

@@ -237,6 +237,7 @@ export default class AiPostHelperMenu extends Component {
     this._activeAiRequest = ajax(fetchUrl, {
       method: "POST",
       data: {
+        location: "post",
         mode: option.id,
         text: this.args.data.selectedText,
         post_id: this.args.data.quoteState.postId,

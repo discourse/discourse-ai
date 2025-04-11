@@ -43,7 +43,7 @@ module DiscourseAi
                      prompt,
                      input,
                      current_user,
-                     force_default_locale,
+                     force_default_locale: force_default_locale,
                    ),
                  status: 200
         end
@@ -110,26 +110,44 @@ module DiscourseAi
       end
 
       def stream_suggestion
-        post_id = get_post_param!
         text = get_text_param!
-        post = Post.includes(:topic).find_by(id: post_id)
+
+        location = params[:location]
+        raise Discourse::InvalidParameters.new(:location) if !location
+
         prompt = CompletionPrompt.find_by(id: params[:mode])
 
         raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-        raise Discourse::InvalidParameters.new(:post_id) unless post
+        return suggest_thumbnails(input) if prompt.id == CompletionPrompt::ILLUSTRATE_POST
 
         if prompt.id == CompletionPrompt::CUSTOM_PROMPT
           raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
         end
 
-        Jobs.enqueue(
-          :stream_post_helper,
-          post_id: post.id,
-          user_id: current_user.id,
-          text: text,
-          prompt: prompt.name,
-          custom_prompt: params[:custom_prompt],
-        )
+        if location == "composer"
+          Jobs.enqueue(
+            :stream_composer_helper,
+            user_id: current_user.id,
+            text: text,
+            prompt: prompt.name,
+            custom_prompt: params[:custom_prompt],
+            force_default_locale: params[:force_default_locale] || false,
+          )
+        else
+          post_id = get_post_param!
+          post = Post.includes(:topic).find_by(id: post_id)
+
+          raise Discourse::InvalidParameters.new(:post_id) unless post
+
+          Jobs.enqueue(
+            :stream_post_helper,
+            post_id: post.id,
+            user_id: current_user.id,
+            text: text,
+            prompt: prompt.name,
+            custom_prompt: params[:custom_prompt],
+          )
+        end
 
         render json: { success: true }, status: 200
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
