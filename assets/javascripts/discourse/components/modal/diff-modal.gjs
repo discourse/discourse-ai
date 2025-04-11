@@ -89,6 +89,8 @@ export default class ModalDiffModal extends Component {
       });
     } catch (e) {
       popupAjaxError(e);
+    } finally {
+      this.loading = false;
     }
   }
 

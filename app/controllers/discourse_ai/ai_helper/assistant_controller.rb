@@ -43,7 +43,7 @@ module DiscourseAi
                      prompt,
                      input,
                      current_user,
-                     force_default_locale,
+                     force_default_locale: force_default_locale,
                    ),
                  status: 200
         end
