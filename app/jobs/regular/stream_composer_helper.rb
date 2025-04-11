@@ -3,7 +3,7 @@
 module Jobs
   class StreamComposerHelper < ::Jobs::Base
     sidekiq_options retry: false
-    # TODO handle force_default_locale stuff
+
     def execute(args)
       return unless args[:prompt]
       return unless user = User.find_by(id: args[:user_id])
@@ -19,7 +19,8 @@ module Jobs
         prompt,
         args[:text],
         user,
-        "/discourse-ai/ai-helper/stream_suggestion",
+        "/discourse-ai/ai-helper/stream_composer_suggestion",
+        force_default_locale: args[:force_default_locale],
       )
     end
   end

@@ -131,6 +131,7 @@ module DiscourseAi
             text: text,
             prompt: prompt.name,
             custom_prompt: params[:custom_prompt],
+            force_default_locale: params[:force_default_locale] || false,
           )
         else
           post_id = get_post_param!

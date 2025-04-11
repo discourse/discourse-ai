@@ -85,7 +85,7 @@ module DiscourseAi
         end
       end
 
-      def localize_prompt!(prompt, user = nil, force_default_locale = false)
+      def localize_prompt!(prompt, user = nil, force_default_locale: false)
         locale_instructions = custom_locale_instructions(user, force_default_locale)
         if locale_instructions
           prompt.messages[0][:content] = prompt.messages[0][:content] + locale_instructions
@@ -128,10 +128,10 @@ module DiscourseAi
         end
       end
 
-      def generate_prompt(completion_prompt, input, user, force_default_locale = false, &block)
+      def generate_prompt(completion_prompt, input, user, force_default_locale: false, &block)
         llm = helper_llm
         prompt = completion_prompt.messages_with_input(input)
-        localize_prompt!(prompt, user, force_default_locale)
+        localize_prompt!(prompt, user, force_default_locale: force_default_locale)
 
         llm.generate(
           prompt,
@@ -143,8 +143,14 @@ module DiscourseAi
         )
       end
 
-      def generate_and_send_prompt(completion_prompt, input, user, force_default_locale = false)
-        completion_result = generate_prompt(completion_prompt, input, user, force_default_locale)
+      def generate_and_send_prompt(completion_prompt, input, user, force_default_locale: false)
+        completion_result =
+          generate_prompt(
+            completion_prompt,
+            input,
+            user,
+            force_default_locale: force_default_locale,
+          )
         result = { type: completion_prompt.prompt_type }
 
         result[:suggestions] = (
@@ -160,12 +166,18 @@ module DiscourseAi
         result
       end
 
-      def stream_prompt(completion_prompt, input, user, channel)
+      def stream_prompt(completion_prompt, input, user, channel, force_default_locale: false)
+        pp "stream prompt_called #{input}, #{channel}, #{completion_prompt}, #{user}"
         streamed_diff = +""
         streamed_result = +""
         start = Time.now
 
-        generate_prompt(completion_prompt, input, user) do |partial_response, cancel_function|
+        generate_prompt(
+          completion_prompt,
+          input,
+          user,
+          force_default_locale: force_default_locale,
+        ) do |partial_response, cancel_function|
           streamed_result << partial_response
 
           streamed_diff = parse_diff(input, partial_response) if completion_prompt.diff?

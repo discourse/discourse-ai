@@ -36,13 +36,13 @@ export default class ModalDiffModal extends Component {
 
   @bind
   subscribe() {
-    const channel = "/discourse-ai/ai-helper/stream_suggestion";
+    const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
     this.messageBus.subscribe(channel, this.updateResult);
   }
 
   @bind
   unsubscribe() {
-    const channel = "/discourse-ai/ai-helper/stream_suggestion";
+    const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
     this.messageBus.subscribe(channel, this.updateResult);
   }
 
@@ -55,6 +55,17 @@ export default class ModalDiffModal extends Component {
 
     if (result.done) {
       this.diff = result.diff;
+    }
+
+    const mdTablePromptId = this.currentUser?.ai_helper_prompts.find(
+      (prompt) => prompt.name === "markdown_table"
+    ).id;
+
+    // Markdown table prompt looks better with
+    // before/after results than diff
+    // despite having `type: diff`
+    if (this.args.model.mode === mdTablePromptId) {
+      this.diff = null;
     }
   }
 
