@@ -21,6 +21,7 @@ RSpec.describe Jobs::FastTrackTopicGist do
           created_at: 10.minutes.ago,
         )
       end
+
       let(:updated_gist) { "They updated me :(" }
 
       context "when it's up to date" do

@@ -18,6 +18,14 @@ module DiscourseAi
           - Example: link to the 6th post by jane: [agreed with]({resource_url}/6)
           - Example: link to the 13th post by joe: [joe]({resource_url}/13)
           - When formatting usernames either use @USERNAME OR [USERNAME]({resource_url}/POST_NUMBER)
+          
+          Format your response as a JSON object with a single key named "summary", which has the summary as the value.
+          Your output should be in the following format:
+            <output>
+              {"summary": "xx"}
+            </output>
+          
+          Where "xx" is replaced by the summary.
         PROMPT
       end
     end

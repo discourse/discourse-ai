@@ -13,6 +13,8 @@ describe DiscourseAi::TopicSummarization do
 
   let(:strategy) { DiscourseAi::Summarization.topic_summary(topic) }
 
+  let(:summary) { "This is the final summary" }
+
   describe "#summarize" do
     subject(:summarization) { described_class.new(strategy, user) }
 
@@ -27,8 +29,6 @@ describe DiscourseAi::TopicSummarization do
     end
 
     context "when the content was summarized in a single chunk" do
-      let(:summary) { "This is the final summary" }
-
       it "caches the summary" do
         DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
           section = summarization.summarize
@@ -54,7 +54,6 @@ describe DiscourseAi::TopicSummarization do
 
     describe "invalidating cached summaries" do
       let(:cached_text) { "This is a cached summary" }
-      let(:updated_summary) { "This is the final summary" }
 
       def cached_summary
         AiSummary.find_by(target: topic, summary_type: AiSummary.summary_types[:complete])
@@ -86,10 +85,10 @@ describe DiscourseAi::TopicSummarization do
           before { cached_summary.update!(original_content_sha: "outdated_sha") }
 
           it "returns a new summary" do
-            DiscourseAi::Completions::Llm.with_prepared_responses([updated_summary]) do
+            DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
               section = summarization.summarize
 
-              expect(section.summarized_text).to eq(updated_summary)
+              expect(section.summarized_text).to eq(summary)
             end
           end
 
@@ -106,10 +105,10 @@ describe DiscourseAi::TopicSummarization do
             end
 
             it "returns a new summary if the skip_age_check flag is passed" do
-              DiscourseAi::Completions::Llm.with_prepared_responses([updated_summary]) do
+              DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do
                 section = summarization.summarize(skip_age_check: true)
 
-                expect(section.summarized_text).to eq(updated_summary)
+                expect(section.summarized_text).to eq(summary)
               end
             end
           end
@@ -118,8 +117,6 @@ describe DiscourseAi::TopicSummarization do
     end
 
     describe "stream partial updates" do
-      let(:summary) { "This is the final summary" }
-
       it "receives a blk that is passed to the underlying strategy and called with partial summaries" do
         partial_result = +""
 
@@ -127,7 +124,8 @@ describe DiscourseAi::TopicSummarization do
           summarization.summarize { |partial_summary| partial_result << partial_summary }
         end
 
-        expect(partial_result).to eq(summary)
+        # In a real world example, this is removed in the returned AiSummary obj.
+        expect(partial_result.chomp("\"}")).to eq(summary)
       end
     end
   end
