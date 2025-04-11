@@ -75,7 +75,7 @@ module DiscourseAi
             builder.push(
               type: :user,
               content: mapped_message,
-              name: m.user.username,
+              id: m.user.username,
               upload_ids: upload_ids,
             )
           end
@@ -215,11 +215,11 @@ module DiscourseAi
             last_message = result[-1]
 
             if message[:type] == :user
-              old_name = last_message.delete(:name)
+              old_name = last_message.delete(:id)
               last_message[:content] = ["#{old_name}: ", last_message[:content]].flatten if old_name
 
               new_content = message[:content]
-              new_content = ["#{message[:name]}: ", new_content].flatten if message[:name]
+              new_content = ["#{message[:id]}: ", new_content].flatten if message[:id]
 
               if !last_message[:content].is_a?(Array)
                 last_message[:content] = [last_message[:content]]
@@ -285,6 +285,44 @@ module DiscourseAi
 
       private
 
+      def format_user_info(user)
+        info = []
+        info << user_role(user)
+        info << "Trust level #{user.trust_level}" if user.trust_level > 0
+        info << "#{account_age(user)}"
+        info << "#{user.user_stat.post_count} posts" if user.user_stat.post_count.to_i > 0
+        "#{user.username} (#{user.name}): #{info.compact.join(", ")}"
+      end
+
+      def user_role(user)
+        return "moderator" if user.moderator?
+        return "admin" if user.admin?
+        nil
+      end
+
+      def account_age(user)
+        years = ((Time.now - user.created_at) / 1.year).round
+        months = ((Time.now - user.created_at) / 1.month).round % 12
+
+        output = []
+        if years > 0
+          output << years.to_s
+          output << "year" if years == 1
+          output << "years" if years > 1
+        end
+        if months > 0
+          output << months.to_s
+          output << "month" if months == 1
+          output << "months" if months > 1
+        end
+
+        if output.empty?
+          "new account"
+        else
+          "account age: " + output.join(" ")
+        end
+      end
+
       def topic_array
         raw_messages = @raw_messages.dup
         content_array = []
@@ -310,19 +348,35 @@ module DiscourseAi
           content_array << "- Number of replies: #{@topic.posts_count - 1}\n\n"
         end
 
+        if raw_messages.present?
+          usernames =
+            raw_messages.filter { |message| message[:type] == :user }.map { |message| message[:id] }
+
+          if usernames.present?
+            users_details =
+              User
+                .where(username: usernames)
+                .includes(:user_stat)
+                .map { |user| format_user_info(user) }
+                .compact
+            content_array << "User information:\n"
+            content_array << "- #{users_details.join("\n- ")}\n\n" if users_details.present?
+          end
+        end
+
         last_user_message = raw_messages.pop
 
         if raw_messages.present?
           content_array << "Here is the conversation so far:\n"
           raw_messages.each do |message|
-            content_array << "#{message[:name] || "User"}: "
+            content_array << "#{message[:id] || "User"}: "
             content_array << message[:content]
             content_array << "\n\n"
           end
         end
 
         if last_user_message
-          content_array << "You are responding to #{last_user_message[:name] || "User"} who just said:\n"
+          content_array << "Latest post is by #{last_user_message[:id] || "User"} who just posted:\n"
           content_array << last_user_message[:content]
         end
 
@@ -344,7 +398,7 @@ module DiscourseAi
             buffer << "\n"
 
             if message[:type] == :user
-              buffer << "#{message[:name] || "User"}: "
+              buffer << "#{message[:id] || "User"}: "
             else
               buffer << "Bot: "
             end
@@ -359,7 +413,7 @@ module DiscourseAi
         end
 
         last_message = @raw_messages[-1]
-        buffer << "#{last_message[:name] || "User"}: "
+        buffer << "#{last_message[:id] || "User"}: "
         buffer << last_message[:content]
 
         buffer = compress_messages_buffer(buffer.flatten, max_uploads: MAX_CHAT_UPLOADS)
