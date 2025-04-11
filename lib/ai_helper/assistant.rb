@@ -167,7 +167,6 @@ module DiscourseAi
       end
 
       def stream_prompt(completion_prompt, input, user, channel, force_default_locale: false)
-        pp "stream prompt_called #{input}, #{channel}, #{completion_prompt}, #{user}"
         streamed_diff = +""
         streamed_result = +""
         start = Time.now
@@ -186,7 +185,7 @@ module DiscourseAi
           # checking length prevents partial tags
           # that aren't sanitized correctly yet (i.e. '<output')
           #  from being sent in the stream
-          if streamed_result.length > 10 && (Time.now - start > 0.3) || Rails.env.test?
+          if (streamed_result.length > 10 && (Time.now - start > 0.3)) || Rails.env.test?
             payload = { result: sanitize_result(streamed_result), diff: streamed_diff, done: false }
             publish_update(channel, payload, user)
             start = Time.now
