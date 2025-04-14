@@ -221,6 +221,10 @@ module DiscourseAi
           permitted[:tools] = permit_tools(tools)
         end
 
+        if response_format = params.dig(:ai_persona, :response_format)
+          permitted[:response_format] = permit_response_format(response_format)
+        end
+
         permitted
       end
 
@@ -233,6 +237,18 @@ module DiscourseAi
 
           # this is simpler from a storage perspective, 1 way to store tools
           [tool, options, !!force_tool]
+        end
+      end
+
+      def permit_response_format(response_format)
+        return [] if !response_format.is_a?(Array)
+
+        response_format.map do |element|
+          if element && element.is_a?(ActionController::Parameters)
+            element.permit!
+          else
+            false
+          end
         end
       end
     end

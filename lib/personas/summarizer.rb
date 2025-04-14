@@ -28,6 +28,10 @@ module DiscourseAi
           Where "xx" is replaced by the summary.
         PROMPT
       end
+
+      def response_format
+        [{ key: "summary", type: "string" }]
+      end
     end
   end
 end

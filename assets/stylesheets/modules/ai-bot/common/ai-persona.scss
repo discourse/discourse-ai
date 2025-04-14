@@ -52,6 +52,21 @@
     margin-bottom: 10px;
     font-size: var(--font-down-1);
   }
+
+  &__response-format {
+    width: 100%;
+    display: block;
+  }
+
+  &__response-format-pre {
+    margin-bottom: 0;
+    white-space: pre-line;
+  }
+
+  &__response-format-none {
+    margin-bottom: 1em;
+    margin-top: 0.5em;
+  }
 }
 
 .rag-options {
