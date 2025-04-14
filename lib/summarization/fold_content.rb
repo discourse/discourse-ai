@@ -112,38 +112,66 @@ module DiscourseAi
           )
 
         summary = +""
+
         # Auxiliary variables to get the summary content from the JSON response.
-        raw_buffer = +""
+        json_start_buffer = +""
         json_start_found = false
-        json_reply_start_regex = /\{?\s*"summary"\s*:\s*"/ # { is optional because Claude uses prefill, so it's not incldued.
+        # { is optional because Claude uses prefill, so it's not incldued.
+        # TODO(roman): Maybe extraction should happen in the bot?
+        json_summary_schema_keys = bot.persona.response_format&.first.to_h
+        json_reply_start_regex = /\{?\s*"#{json_summary_schema_keys[:key]}"\s*:\s*"/
+        # We need to buffer escaped newlines as the API likes to send \\ and n in different chunks.
+        partial_unescape_buffer = +""
         unescape_regex = %r{\\(["/bfnrt])}
         json_reply_end = "\"}"
 
         buffer_blk =
           Proc.new do |partial, cancel, _, type|
             if type.blank?
-              if json_start_found
-                unescaped_partial = partial.gsub(unescape_regex, '\1')
-                summary << unescaped_partial
+              if bot.returns_json?
+                # Extract summary from JSON.
+                if json_start_found
+                  if partial.end_with?("\\")
+                    partial_unescape_buffer << partial
+                  else
+                    unescaped_partial = partial_unescape_buffer
 
-                on_partial_blk.call(partial, cancel) if on_partial_blk
-              else
-                raw_buffer << partial
+                    buffered_newline = !partial_unescape_buffer.empty? && partial.first == "n"
+                    if buffered_newline
+                      unescaped_partial << partial.first
 
-                if raw_buffer.match?(json_reply_start_regex)
-                  buffered_start =
-                    raw_buffer.gsub(json_reply_start_regex, "").gsub(unescape_regex, '\1')
-                  summary << buffered_start
+                      unescaped_partial = unescaped_partial.gsub("\\n", "\n")
+                      unescaped_partial << partial[1..].to_s
+                    else
+                      unescaped_partial << partial.gsub("\\n", "\n")
+                    end
+                    partial_unescape_buffer = +""
 
-                  on_partial_blk.call(buffered_start, cancel) if on_partial_blk
+                    summary << unescaped_partial
 
-                  json_start_found = true
+                    on_partial_blk.call(unescaped_partial, cancel) if on_partial_blk
+                  end
+                else
+                  json_start_buffer << partial
+
+                  if json_start_buffer.match?(json_reply_start_regex)
+                    buffered_start = json_start_buffer.gsub(json_reply_start_regex, "")
+                    summary << buffered_start
+
+                    on_partial_blk.call(buffered_start, cancel) if on_partial_blk
+
+                    json_start_found = true
+                  end
                 end
+              else
+                # Assume response is a regular completion.
+                summary << partial
+                on_partial_blk.call(partial, cancel) if on_partial_blk
               end
             end
           end
 
-        bot.reply(context, llm_args: { response_format: response_format_schema }, &buffer_blk)
+        bot.reply(context, &buffer_blk)
 
         summary.chomp(json_reply_end)
       end
@@ -170,26 +198,6 @@ module DiscourseAi
         ].join(" ")
 
         item
-      end
-
-      def response_format_schema
-        {
-          type: "json_schema",
-          json_schema: {
-            name: "reply",
-            schema: {
-              type: "object",
-              properties: {
-                summary: {
-                  type: "string",
-                },
-              },
-              required: ["summary"],
-              additionalProperties: false,
-            },
-            strict: true,
-          },
-        }
       end
     end
   end

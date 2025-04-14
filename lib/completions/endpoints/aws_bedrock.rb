@@ -122,7 +122,7 @@ module DiscourseAi
               )
             payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
 
-            preffiled_message = +""
+            prefilled_message = +""
 
             if prompt.has_tools?
               payload[:tools] = prompt.tools
@@ -133,7 +133,7 @@ module DiscourseAi
                   # payload[:tool_choice] = { type: "none" }
 
                   # prefill prompt to nudge LLM to generate a response that is useful, instead of trying to call a tool
-                  preffiled_message << dialect.no_more_tool_calls_text
+                  prefilled_message << dialect.no_more_tool_calls_text
                 else
                   payload[:tool_choice] = { type: "tool", name: prompt.tool_choice }
                 end
@@ -142,12 +142,12 @@ module DiscourseAi
 
             # Prefill prompt to force JSON output.
             if model_params[:response_format].present?
-              preffiled_message << " " if !preffiled_message.empty?
-              preffiled_message << "{"
+              prefilled_message << " " if !prefilled_message.empty?
+              prefilled_message << "{"
             end
 
-            if !preffiled_message.empty?
-              payload[:messages] << { role: "assistant", content: preffiled_message }
+            if !prefilled_message.empty?
+              payload[:messages] << { role: "assistant", content: prefilled_message }
             end
           elsif dialect.is_a?(DiscourseAi::Completions::Dialects::Nova)
             payload = prompt.to_payload(default_options(dialect).merge(model_params))
