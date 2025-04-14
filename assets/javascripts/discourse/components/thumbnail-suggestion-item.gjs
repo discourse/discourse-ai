@@ -18,7 +18,7 @@ export default class ThumbnailSuggestionItem extends Component {
       return this.args.removeSelection(thumbnail);
     }
 
-    this.selectIcon = "check-circle";
+    this.selectIcon = "circle-check";
     this.selectLabel = "discourse_ai.ai_helper.thumbnail_suggestions.selected";
     this.selected = true;
     return this.args.addSelection(thumbnail);
