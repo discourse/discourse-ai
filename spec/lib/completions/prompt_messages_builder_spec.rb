@@ -95,6 +95,72 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     expect(content).to include("How do I solve this")
   end
 
+  describe "chat context posts in direct messages" do
+    fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, bot_user]) }
+    fab!(:dm_message) do
+      Fabricate(
+        :chat_message,
+        chat_channel: dm_channel,
+        user: user,
+        message: "I have a question about the topic",
+      )
+    end
+
+    fab!(:topic) { Fabricate(:topic, title: "Important topic for context") }
+    fab!(:post1) { Fabricate(:post, topic: topic, user: other_user, raw: "This is the first post") }
+    fab!(:post2) { Fabricate(:post, topic: topic, user: user, raw: "And here's a follow-up") }
+
+    it "correctly includes topic posts as context in direct message channels" do
+      context =
+        described_class.messages_from_chat(
+          dm_message,
+          channel: dm_channel,
+          context_post_ids: [post1.id, post2.id],
+          max_messages: 10,
+          include_uploads: false,
+          bot_user_ids: [bot_user.id],
+          instruction_message: nil,
+        )
+
+      expect(context.length).to eq(1)
+      content = context.first[:content]
+
+      # First part should contain the context intro
+      expect(content).to include("You are replying inside a Discourse chat")
+      expect(content).to include(
+        "This chat is in the context of the Discourse topic 'Important topic for context'",
+      )
+      expect(content).to include(post1.username)
+      expect(content).to include("This is the first post")
+      expect(content).to include(post2.username)
+      expect(content).to include("And here's a follow-up")
+
+      # Last part should have the user's message
+      expect(content).to include("I have a question about the topic")
+    end
+
+    it "includes uploads from context posts when include_uploads is true" do
+      upload = Fabricate(:upload, user: user)
+      UploadReference.create!(target: post1, upload: upload)
+
+      context =
+        described_class.messages_from_chat(
+          dm_message,
+          channel: dm_channel,
+          context_post_ids: [post1.id],
+          max_messages: 10,
+          include_uploads: true,
+          bot_user_ids: [bot_user.id],
+          instruction_message: nil,
+        )
+
+      # Verify the upload reference is included
+      upload_hashes = context.first[:content].select { |item| item.is_a?(Hash) && item[:upload_id] }
+      expect(upload_hashes).to be_present
+      expect(upload_hashes.first[:upload_id]).to eq(upload.id)
+    end
+  end
+
   describe ".messages_from_chat" do
     fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, bot_user]) }
     fab!(:dm_message1) do
@@ -366,7 +432,9 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       # will be brittle, but open to changing this
     end
 
-    it "handles uploads correctly in topic style messages" do
+    it "handles uploads correctly in topic style messages (and times)" do
+      freeze_time 1.month.ago
+
       # Use Discourse's upload format in the post raw content
       upload_markdown = "![test|658x372](#{image_upload1.short_url})"
 
@@ -381,6 +449,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       UploadReference.create!(target: post_with_upload, upload: image_upload1)
 
       upload2_markdown = "![test|658x372](#{image_upload2.short_url})"
+
+      freeze_time 1.month.from_now
 
       post2_with_upload =
         Fabricate(
@@ -415,6 +485,7 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       # second image
       expect(content.length).to eq(4)
       expect(content[0]).to include("This is the original")
+      expect(content[0]).to include("(1 month ago)")
       expect(content[1]).to eq({ upload_id: image_upload1.id })
       expect(content[2]).to include("different image")
       expect(content[3]).to eq({ upload_id: image_upload2.id })
