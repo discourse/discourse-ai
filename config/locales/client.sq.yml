@@ -34,6 +34,13 @@ sq:
             canned_reply:
               label: "Përgjigju"
     discourse_ai:
+      features:
+        back: "Kthehu mbrapa"
+        list:
+          header:
+            name: "Emri"
+            groups: "Grupet"
+          edit: "Redaktoni"
       modals:
         select_option: "Zgjidhni një opsion..."
       spam:

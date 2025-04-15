@@ -38,6 +38,13 @@ ko:
             canned_reply:
               label: "댓글쓰기"
     discourse_ai:
+      features:
+        back: "뒤로"
+        list:
+          header:
+            name: "그룹명"
+            groups: "그룹"
+          edit: "편집"
       modals:
         select_option: "옵션 선택..."
       spam:

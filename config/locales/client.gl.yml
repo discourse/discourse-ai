@@ -36,6 +36,13 @@ gl:
             canned_reply:
               label: "Responder"
     discourse_ai:
+      features:
+        back: "Volver"
+        list:
+          header:
+            name: "Nome"
+            groups: "Grupos"
+          edit: "Editar"
       modals:
         select_option: "Seleccione unha opción..."
       spam:

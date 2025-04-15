@@ -75,11 +75,10 @@ tr_TR:
     ai_embeddings_semantic_related_include_closed_topics: "Kapalı konuları semantik arama sonuçlarına dâhil edin"
     ai_embeddings_semantic_search_hyde_model: "Anlamsal arama sırasında daha iyi sonuçlar elde etmek için anahtar kelimeleri genişletmek üzere kullanılan model"
     ai_embeddings_per_post_enabled: Her gönderi için yerleştirmeler oluşturun
-    ai_summarization_enabled: "Konu özetleme modülünü etkinleştirin."
-    ai_summarization_model: "Özetleme için kullanılacak model."
+    ai_summarization_model: "Özetleme için kullanılacak model"
     ai_custom_summarization_allowed_groups: "Grupların yeni özetler oluşturmasına izin verilir."
     ai_pm_summarization_allowed_groups: "Kişisel mesajlarda özet oluşturma ve görüntüleme yetkisi olan gruplar."
-    ai_summary_gists_enabled: "Konulardaki son yanıtların kısa özetlerini otomatik olarak oluşturun."
+    ai_summary_gists_enabled: "Konulardaki son yanıtların kısa özetlerini otomatik olarak oluşturun"
     ai_summary_gists_allowed_groups: "Popüler konular listesindeki özetleri görme yetkisine sahip gruplar."
     ai_summary_backfill_maximum_topics_per_hour: "Saat başına doldurulacak konu özeti sayısı."
     ai_bot_enabled: "YZ Botu modülünü etkinleştirin."

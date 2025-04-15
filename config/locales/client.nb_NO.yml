@@ -34,6 +34,13 @@ nb_NO:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      features:
+        back: "Forrige"
+        list:
+          header:
+            name: "Navn"
+            groups: "Grupper"
+          edit: "Endre"
       modals:
         select_option: "Velg et alternativ..."
       spam:

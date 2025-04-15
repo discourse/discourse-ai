@@ -34,6 +34,13 @@ sl:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      features:
+        back: "Nazaj"
+        list:
+          header:
+            name: "Ime"
+            groups: "Skupine"
+          edit: "Uredi"
       modals:
         select_option: "Izberi možnost..."
       spam:

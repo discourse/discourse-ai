@@ -60,6 +60,13 @@ fa_IR:
               label: "مدل"
     discourse_ai:
       title: "هوش مصنوعی"
+      features:
+        back: "بازگشت"
+        list:
+          header:
+            name: "نام"
+            groups: "گروه‌ها"
+          edit: "ویرایش"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       spam:

@@ -36,6 +36,13 @@ hr:
             canned_reply:
               label: "Odgovor"
     discourse_ai:
+      features:
+        back: "Natrag"
+        list:
+          header:
+            name: "Ime"
+            groups: "Grupe"
+          edit: "Uredi"
       modals:
         select_option: "Odaberi opciju..."
       spam:

@@ -34,6 +34,13 @@ et:
             canned_reply:
               label: "Vasta"
     discourse_ai:
+      features:
+        back: "Tagasi"
+        list:
+          header:
+            name: "Nimi"
+            groups: "Grupid"
+          edit: "Muuda"
       modals:
         select_option: "Vali võimalus..."
       spam:

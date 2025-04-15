@@ -138,6 +138,14 @@ ar:
               label: "درجة الحرارة"
     discourse_ai:
       title: "الذكاء الاصطناعي"
+      features:
+        back: "الرجوع"
+        list:
+          header:
+            name: "الاسم"
+            groups: "المجموعات"
+          edit: "تعديل"
+          set_up: "إعداد"
       modals:
         select_option: "حدِّد خيارًا..."
       spam:
@@ -388,12 +396,8 @@ ar:
           anthropic-claude-3-7-sonnet: "النموذج الأكثر ذكاءً لدى Anthropic"
           anthropic-claude-3-5-haiku: "سريع وفعَّال من حيث التكلفة"
           anthropic-claude-3-opus: "يبرع في الكتابة والمهام المعقدة"
-          google-gemini-1-5-pro: "نموذج متعدد متوسط الحجم قادر على تنفيذ مجموعة واسعة من المهام"
-          google-gemini-1-5-flash: "خفيف وسريع وفعَّال من حيث التكلفة مع الاستدلال متعدد النماذج"
-          open_ai-gpt-4-turbo: "نموذج عالي الذكاء من الجيل السابق"
-          open_ai-gpt-4o: "نموذج عالي الذكاء للمهام المعقدة والمتعددة الخطوات"
-          open_ai-gpt-4o-mini: "نموذج صغير سريع وبأسعارٍ معقولة للمهام الخفيفة"
-          open_ai-o1-mini: "نموذج استدلال فعَّال من حيث التكلفة"
+          google-gemini-2-5-pro: "نموذج متعدد متوسط الحجم قادر على تنفيذ مجموعة واسعة من المهام"
+          google-gemini-2-0-flash: "خفيف وسريع وفعَّال من حيث التكلفة مع الاستدلال متعدد النماذج"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "نموذج متعدد اللغات خفيف وفعَّال"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "نموذج قوي متعدد الأغراض"
           mistral-mistral-large-latest: "النموذج الأقوى لدى Mistral"

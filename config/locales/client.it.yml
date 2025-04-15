@@ -138,6 +138,14 @@ it:
               label: "Temperatura"
     discourse_ai:
       title: "IA"
+      features:
+        back: "Indietro"
+        list:
+          header:
+            name: "Nome"
+            groups: "Gruppi"
+          edit: "Modifica"
+          set_up: "Configura"
       modals:
         select_option: "Scegli un'opzione..."
       spam:
@@ -380,12 +388,8 @@ it:
           anthropic-claude-3-7-sonnet: "Il modello più intelligente di Anthropic"
           anthropic-claude-3-5-haiku: "Veloce e conveniente"
           anthropic-claude-3-opus: "Eccelle nella scrittura e nei compiti complessi"
-          google-gemini-1-5-pro: "Modello multimodale di medie dimensioni in grado di svolgere un'ampia gamma di attività"
-          google-gemini-1-5-flash: "Leggero, veloce ed economico con ragionamento multimodale"
-          open_ai-gpt-4-turbo: "Modello ad alta intelligenza di generazione precedente"
-          open_ai-gpt-4o: "Modello ad alta intelligenza per attività complesse e multi-passaggio"
-          open_ai-gpt-4o-mini: "Modello piccolo, economico e veloce per lavori leggeri"
-          open_ai-o1-mini: "Modello di ragionamento economicamente efficiente"
+          google-gemini-2-5-pro: "Modello multimodale di medie dimensioni in grado di svolgere un'ampia gamma di attività"
+          google-gemini-2-0-flash: "Leggero, veloce ed economico con ragionamento multimodale"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modello multilingue leggero ed efficiente"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Potente modello multifunzionale"
           mistral-mistral-large-latest: "Il modello più potente di Mistral"
