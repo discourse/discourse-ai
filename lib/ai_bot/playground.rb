@@ -337,7 +337,7 @@ module DiscourseAi
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
             # no support for tools or thinking by design
-            next if type == :thinking || type == :tool_details
+            next if type == :thinking || type == :tool_details || type == :partial_tool
             if !reply
               # just eat all leading spaces we can not create the message
               next if partial.blank?
