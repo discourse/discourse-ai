@@ -311,10 +311,12 @@ module DiscourseAi
 
       def build_json_schema(response_format)
         properties =
-          response_format.reduce({}) do |memo, format|
-            memo[format[:key].to_sym] = { type: format[:type] }
-            memo
-          end
+          response_format
+            .to_a
+            .reduce({}) do |memo, format|
+              memo[format[:key].to_sym] = { type: format[:type] }
+              memo
+            end
 
         {
           type: "json_schema",

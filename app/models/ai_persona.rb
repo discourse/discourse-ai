@@ -400,7 +400,7 @@ end
 #  rag_llm_model_id             :bigint
 #  default_llm_id               :bigint
 #  question_consolidator_llm_id :bigint
-#  response_format              :json             not null
+#  response_format              :jsonb
 #
 # Indexes
 #
