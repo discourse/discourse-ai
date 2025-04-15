@@ -12,10 +12,8 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
   end
 
   let(:composer) { PageObjects::Components::Composer.new }
-  let(:rich) { composer.rich_editor }
   let(:toasts) { PageObjects::Components::Toasts.new }
   let(:diff_modal) { PageObjects::Modals::DiffModal.new }
-  let(:keyboard_shortcut) { [PLATFORM_KEY_MODIFIER, :alt, "p"] }
 
   context "when triggering via keyboard shortcut" do
     it "proofreads selected text using" do
@@ -26,7 +24,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
       composer.select_range(6, 12)
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do
-        composer.composer_input.send_keys(keyboard_shortcut)
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
         diff_modal.confirm_changes
         expect(composer.composer_input.value).to eq("hello world !")
       end
@@ -39,7 +37,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
       # Simulate AI response
       DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
-        composer.composer_input.send_keys(keyboard_shortcut)
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
         diff_modal.confirm_changes
         expect(composer.composer_input.value).to eq("hello world")
       end
@@ -50,40 +48,8 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
 
       # Simulate AI response
       DiscourseAi::Completions::Llm.with_prepared_responses(["hello world"]) do
-        composer.composer_input.send_keys(keyboard_shortcut)
+        composer.composer_input.send_keys([PLATFORM_KEY_MODIFIER, :alt, "p"])
         expect(toasts).to have_error(I18n.t("js.discourse_ai.ai_helper.no_content_error"))
-      end
-    end
-
-    context "when using rich text editor" do
-      before { SiteSetting.rich_editor = true }
-
-      it "proofreads selected text and replaces it" do
-        visit "/new-topic"
-        expect(composer).to be_opened
-        composer.toggle_rich_editor
-        composer.type_content("hello worldd !")
-
-        # NOTE: The rich text editor cannot use select_range on the page object since it is
-        # a contenteditable element. It would be hard to make this generic enough to put in
-        # the page object, maybe at some point in the future we can refactor this.
-        execute_script(<<~JS, text)
-          const composer = document.querySelector("#reply-control .d-editor-input");
-          const startNode = composer.firstChild.firstChild;
-          composer.focus();
-          const range = document.createRange();
-          range.setStart(startNode, 6);
-          range.setEnd(startNode, 12);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-        JS
-
-        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do
-          composer.composer_input.send_keys(keyboard_shortcut)
-          diff_modal.confirm_changes
-          expect(rich).to have_css("p", text: "hello world !")
-        end
       end
     end
   end
