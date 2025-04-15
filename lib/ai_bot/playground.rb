@@ -247,7 +247,7 @@ module DiscourseAi
 
         system_insts = <<~TEXT.strip
           You are titlebot. Given a conversation, you will suggest a title.
-  
+
           - You will never respond with anything but the suggested title.
           - You will always match the conversation language in your title suggestion.
           - Title will capture the essence of the conversation.
@@ -255,11 +255,11 @@ module DiscourseAi
 
         instruction = <<~TEXT.strip
           Given the following conversation:
-  
+
           {{{
           #{conversation}
           }}}
-  
+
           Reply only with a title that is 7 words or less.
         TEXT
 
@@ -336,6 +336,8 @@ module DiscourseAi
 
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder|
+            # no support for tools or thinking by design
+            next if !partial.is_a?(String)
             if !reply
               # just eat all leading spaces we can not create the message
               next if partial.blank?
