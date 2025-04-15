@@ -591,9 +591,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
           end
           .to_return(status: 200, body: messages)
 
-        response = +""
+        structured_output = nil
         proxy.generate("hello world", response_format: schema, user: user) do |partial|
-          response << partial
+          structured_output = partial
         end
 
         expected = {
@@ -607,7 +607,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
         expect(JSON.parse(request.body)).to eq(expected)
 
-        expect(response).to eq("\"key\":\"Hello!\"}")
+        expect(structured_output.full_output).to eq({ key: "Hello!" })
       end
     end
   end

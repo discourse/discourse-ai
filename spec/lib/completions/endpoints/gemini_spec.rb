@@ -482,10 +482,12 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
           end,
       ).to_return(status: 200, body: response)
 
-      output = +""
-      llm.generate("Hello", response_format: schema, user: user) { |partial| output << partial }
+      structured_response = nil
+      llm.generate("Hello", response_format: schema, user: user) do |partial|
+        structured_response = partial
+      end
 
-      expect(output).to eq("{\"key\":\"Hello!\"}")
+      expect(structured_response.full_output).to eq({ key: "Hello!" })
 
       parsed = JSON.parse(req_body, symbolize_names: true)
 

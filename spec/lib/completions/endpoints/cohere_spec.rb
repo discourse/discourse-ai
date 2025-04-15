@@ -308,4 +308,64 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     expect(audit.request_tokens).to eq(14)
     expect(audit.response_tokens).to eq(11)
   end
+
+  it "is able to return structured outputs" do
+    schema = {
+      type: "json_schema",
+      json_schema: {
+        name: "reply",
+        schema: {
+          type: "object",
+          properties: {
+            key: {
+              type: "string",
+            },
+          },
+          required: ["key"],
+          additionalProperties: false,
+        },
+        strict: true,
+      },
+    }
+
+    body = <<~TEXT
+      {"is_finished":false,"event_type":"stream-start","generation_id":"eb889b0f-c27d-45ea-98cf-567bdb7fc8bf"}
+      {"is_finished":false,"event_type":"text-generation","text":"\\""}
+      {"is_finished":false,"event_type":"text-generation","text":"key"}
+      {"is_finished":false,"event_type":"text-generation","text":"\\":\\""}
+      {"is_finished":false,"event_type":"text-generation","text":"Hello!"}
+      {"is_finished":false,"event_type":"text-generation","text":"\\"}"}|
+      {"is_finished":true,"event_type":"stream-end","response":{"response_id":"d235db17-8555-493b-8d91-e601f76de3f9","text":"{\\"key\\":\\"Hello!\\"}","generation_id":"eb889b0f-c27d-45ea-98cf-567bdb7fc8bf","chat_history":[{"role":"USER","message":"user1: hello"},{"role":"CHATBOT","message":"hi user"},{"role":"USER","message":"user1: thanks"},{"role":"CHATBOT","message":"You're welcome! Is there anything else I can help you with?"}],"token_count":{"prompt_tokens":29,"response_tokens":14,"total_tokens":43,"billed_tokens":28},"meta":{"api_version":{"version":"1"},"billed_units":{"input_tokens":14,"output_tokens":14}}},"finish_reason":"COMPLETE"}
+    TEXT
+
+    parsed_body = nil
+    structured_output = nil
+
+    EndpointMock.with_chunk_array_support do
+      stub_request(:post, "https://api.cohere.ai/v1/chat").with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+        headers: {
+          "Content-Type" => "application/json",
+          "Authorization" => "Bearer ABC",
+        },
+      ).to_return(status: 200, body: body.split("|"))
+
+      result =
+        llm.generate(prompt, response_format: schema, user: user) do |partial, cancel|
+          structured_output = partial
+        end
+    end
+
+    expect(parsed_body[:preamble]).to eq("You are hello bot")
+    expect(parsed_body[:chat_history]).to eq(
+      [{ role: "USER", message: "user1: hello" }, { role: "CHATBOT", message: "hi user" }],
+    )
+    expect(parsed_body[:message]).to eq("user1: thanks")
+
+    expect(structured_output.full_output).to eq({ key: "Hello!" })
+  end
 end
