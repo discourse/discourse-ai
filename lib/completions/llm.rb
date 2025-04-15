@@ -71,9 +71,9 @@ module DiscourseAi
                   models: [
                     { name: "o3-mini", tokens: 200_000, display_name: "o3 Mini" },
                     { name: "o1", tokens: 200_000, display_name: "o1" },
-                    { name: "gpt-4.1", tokens: 131_072, display_name: "GPT-4.1" },
-                    { name: "gpt-4.1-mini", tokens: 131_072, display_name: "GPT-4.1 Mini" },
-                    { name: "gpt-4.1-nano", tokens: 131_072, display_name: "GPT-4.1 Nano" },
+                    { name: "gpt-4.1", tokens: 800_000, display_name: "GPT-4.1" },
+                    { name: "gpt-4.1-mini", tokens: 800_000, display_name: "GPT-4.1 Mini" },
+                    { name: "gpt-4.1-nano", tokens: 800_000, display_name: "GPT-4.1 Nano" },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
                   endpoint: "https://api.openai.com/v1/chat/completions",
