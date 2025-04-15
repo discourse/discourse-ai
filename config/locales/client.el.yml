@@ -34,6 +34,13 @@ el:
             canned_reply:
               label: "Απάντηση"
     discourse_ai:
+      features:
+        back: "Πίσω"
+        list:
+          header:
+            name: "Όνομα"
+            groups: "Ομάδες"
+          edit: "Επεξεργασία"
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
       spam:

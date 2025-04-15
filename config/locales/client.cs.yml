@@ -36,6 +36,13 @@ cs:
             canned_reply:
               label: "Odpověď"
     discourse_ai:
+      features:
+        back: "Zpět"
+        list:
+          header:
+            name: "Název"
+            groups: "Skupiny"
+          edit: "Upravit"
       modals:
         select_option: "Zvolit možnost..."
       spam:

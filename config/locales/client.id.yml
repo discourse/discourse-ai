@@ -95,6 +95,13 @@ id:
               label: "Temperatur"
     discourse_ai:
       title: "AI"
+      features:
+        back: "Kembali"
+        list:
+          header:
+            name: "Nama"
+            groups: "Grup"
+          edit: "Ubah"
       modals:
         select_option: "Memilih sebuah pilihan..."
       spam:

@@ -30,6 +30,13 @@ sr:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      features:
+        back: "Nazad"
+        list:
+          header:
+            name: "Ime foruma"
+            groups: "Grupe"
+          edit: "Izmeni"
       modals:
         select_option: "Izaberi jednu od opcija..."
       spam:

@@ -38,6 +38,13 @@ sk:
             canned_reply:
               label: "Odpoveď"
     discourse_ai:
+      features:
+        back: "Späť"
+        list:
+          header:
+            name: "Meno"
+            groups: "Skupiny"
+          edit: "Upraviť"
       modals:
         select_option: "Vyberte možnosť..."
       spam:

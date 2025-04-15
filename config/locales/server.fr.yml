@@ -75,11 +75,10 @@ fr:
     ai_embeddings_semantic_related_include_closed_topics: "Inclure des sujets fermés dans les résultats de recherche sémantique"
     ai_embeddings_semantic_search_hyde_model: "Modèle utilisé pour développer des mots-clés afin d'obtenir de meilleurs résultats lors d'une recherche sémantique"
     ai_embeddings_per_post_enabled: Générer des intégrations pour chaque publication
-    ai_summarization_enabled: "Activez le module de résumé de sujet."
-    ai_summarization_model: "Modèle à utiliser pour les résumés."
+    ai_summarization_model: "Modèle à utiliser pour les résumés"
     ai_custom_summarization_allowed_groups: "Les groupes autorisés à utiliser la création de nouveaux résumés."
     ai_pm_summarization_allowed_groups: "Groupes autorisés à créer et à afficher des résumés dans les MD."
-    ai_summary_gists_enabled: "Générez automatiquement de brefs résumés des dernières réponses dans les sujets."
+    ai_summary_gists_enabled: "Générez automatiquement de brefs résumés des dernières réponses dans les sujets"
     ai_summary_gists_allowed_groups: "Les groupes sont autorisés à voir l'essentiel dans la liste des sujets d'actualité."
     ai_summary_backfill_maximum_topics_per_hour: "Nombre de résumés de sujets à compléter par heure."
     ai_bot_enabled: "Activez le module du robot IA."

@@ -81,11 +81,12 @@ de:
     ai_embeddings_semantic_related_include_closed_topics: "Geschlossene Themen in semantische Suchergebnisse einbeziehen"
     ai_embeddings_semantic_search_hyde_model: "Modell zur Erweiterung von Schlüsselwörtern, um bessere Ergebnisse bei der semantischen Suche zu erzielen"
     ai_embeddings_per_post_enabled: Erstelle Einbettungen für jeden Beitrag
-    ai_summarization_enabled: "Aktiviere das Modul für die Themenzusammenfassung."
-    ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll."
+    ai_summarization_enabled: "Aktiviere die Zusammenfassungsfunktion"
+    ai_summarization_model: "Modell, das für die Zusammenfassung verwendet werden soll"
+    ai_summarization_persona: "Persona, die für die Zusammenfassungsfunktion verwendet werden soll"
     ai_custom_summarization_allowed_groups: "Gruppen, die neue Zusammenfassungen erstellen dürfen."
     ai_pm_summarization_allowed_groups: "Gruppen, die Zusammenfassungen in PN erstellen und ansehen dürfen."
-    ai_summary_gists_enabled: "Erstelle automatisch kurze Zusammenfassungen der letzten Antworten in Themen."
+    ai_summary_gists_enabled: "Erstelle automatisch kurze Zusammenfassungen der letzten Antworten in Themen"
     ai_summary_gists_allowed_groups: "Gruppen, die zentrale Punkte in der Liste der aktuellen Themen sehen dürfen."
     ai_summary_backfill_maximum_topics_per_hour: "Anzahl der Themenzusammenfassungen, die pro Stunde nachgeholt werden."
     ai_bot_enabled: "Aktiviere das KI-Bot-Modul."
@@ -100,6 +101,12 @@ de:
     ai_stability_api_url: "URL für die stability.ai-API"
     ai_google_custom_search_api_key: "API-Schlüssel für die Google Custom Search API, siehe: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX für Google Custom Search API"
+    ai_discord_search_enabled: "Aktiviert die Discord-Suchfunktion"
+    ai_discord_app_id: "Die ID der Discord-Anwendung, mit der du die Discord-Suche verbinden möchtest"
+    ai_discord_app_public_key: "Der öffentliche Schlüssel der Discord-Anwendung, mit der du die Discord-Suche verbinden möchtest"
+    ai_discord_search_mode: "Wähle den Suchmodus für die Discord-Suche aus"
+    ai_discord_search_persona: "Die Persona, die für die Discord-Suche verwendet wird."
+    ai_discord_allowed_guilds: "Discord-Gilden (Server), auf denen der Bot suchen darf"
   reviewables:
     reasons:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
@@ -470,6 +477,19 @@ de:
     llm_models:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Modell zu verwenden."
+    features:
+      summarization:
+        name: "Zusammenfassungen"
+        description: "Stellt eine Schaltfläche für Zusammenfassungen zur Verfügung, mit der Besucher Themen zusammenfassen können"
+      gists:
+        name: "Kurze Zusammenfassungen"
+        description: "Fügt die Möglichkeit hinzu, kurze Zusammenfassungen von Themen in der Themenliste anzuzeigen"
+      discoveries:
+        name: "Discobot Entdeckungen"
+        description: "Verbessert das Sucherlebnis durch KI-generierte Antworten auf Suchanfragen"
+      discord_search:
+        name: "Discord-Suche"
+        description: "Fügt die Möglichkeit hinzu, Discord-Kanäle zu durchsuchen"
     errors:
       quota_exceeded: "Du hast das Kontingent für dieses Modell überschritten. Bitte versuche es erneut in %{relative_time}."
       quota_required: "Du musst die maximale Anzahl an Token oder Verwendungen für dieses Modell angeben"

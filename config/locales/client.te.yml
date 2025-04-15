@@ -36,6 +36,13 @@ te:
             canned_reply:
               label: "జవాబు"
     discourse_ai:
+      features:
+        back: "వెనుకకు"
+        list:
+          header:
+            name: "పేరు"
+            groups: "సమూహాలు"
+          edit: "సవరించండి"
       spam:
         short_title: "స్పామ్"
         enable: "ప్రారంభించండి"

@@ -75,11 +75,9 @@ pt_BR:
     ai_embeddings_semantic_related_include_closed_topics: "Incluir tópicos fechados em resultados de pesquisa semântica"
     ai_embeddings_semantic_search_hyde_model: "O modelo usado para expandir palavras-chave e obter resultados melhores durante uma pesquisa semântica"
     ai_embeddings_per_post_enabled: Gerar incorporações para cada postagem
-    ai_summarization_enabled: "Ative o módulo de geração de resumos de tópicos."
-    ai_summarization_model: "Modelo a ser usado para geração de resumos."
+    ai_summarization_model: "Modelo a ser usado para geração de resumos"
     ai_custom_summarization_allowed_groups: "Grupos com permissão para a criação de resumos novos."
     ai_pm_summarization_allowed_groups: "Grupos autorizados a criar e visualizar resumos em PMs."
-    ai_summary_gists_enabled: "Gerar automaticamente resumos breves das respostas mas recentes nos tópicos"
     ai_summary_gists_allowed_groups: "Grupos com permissão para ver gists na lista de tópicos mais acessados."
     ai_summary_backfill_maximum_topics_per_hour: "Quantidade de tópicos para preencher a cada hora."
     ai_bot_enabled: "Ative o módulo de Bot com IA."

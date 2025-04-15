@@ -75,11 +75,8 @@ ja:
     ai_embeddings_semantic_related_include_closed_topics: "閉鎖トピックをセマンティック検索結果に含める"
     ai_embeddings_semantic_search_hyde_model: "セマンティック検索中に得られる結果を改善するためにキーワードの拡張に使用されるモデル"
     ai_embeddings_per_post_enabled: 各投稿の埋め込みを生成する
-    ai_summarization_enabled: "トピック要約モジュールを有効にします。"
-    ai_summarization_model: "要約に使用するモデル。"
     ai_custom_summarization_allowed_groups: "新しい要約の作成に使用できるグループ。"
     ai_pm_summarization_allowed_groups: "PM での要約の作成と表示が許可されたグループ。"
-    ai_summary_gists_enabled: "トピック内の最新の返信の簡単な要約を自動的に生成します。"
     ai_summary_gists_allowed_groups: "ホットなトピックリストで gist の表示が許可されたグループ。"
     ai_summary_backfill_maximum_topics_per_hour: "1 時間あたりにバックフィルするトピック要約の数。"
     ai_bot_enabled: "AI ボットモジュールを有効にします。"

@@ -72,6 +72,13 @@ lt:
               label: "Modelis"
     discourse_ai:
       title: "AI"
+      features:
+        back: "Atgal"
+        list:
+          header:
+            name: "Vardas"
+            groups: "Grupės"
+          edit: "Redaguoti"
       modals:
         select_option: "Pasirink nustatymą..."
       spam:

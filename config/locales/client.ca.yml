@@ -34,6 +34,13 @@ ca:
             canned_reply:
               label: "Respon"
     discourse_ai:
+      features:
+        back: "Enrere"
+        list:
+          header:
+            name: "Nom"
+            groups: "Grups"
+          edit: "Edita"
       modals:
         select_option: "Trieu una opció..."
       spam:

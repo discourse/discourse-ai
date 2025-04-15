@@ -138,6 +138,14 @@ nl:
               label: "Temperatuur"
     discourse_ai:
       title: "AI"
+      features:
+        back: "Terug"
+        list:
+          header:
+            name: "Naam"
+            groups: "Groepen"
+          edit: "Bewerken"
+          set_up: "Instellen"
       modals:
         select_option: "Selecteer een optie..."
       spam:
@@ -380,12 +388,8 @@ nl:
           anthropic-claude-3-7-sonnet: "Het intelligentste model van Antropic"
           anthropic-claude-3-5-haiku: "Snel en kosteneffectief"
           anthropic-claude-3-opus: "Blinkt uit in schrijven en complexe taken"
-          google-gemini-1-5-pro: "Middelgroot multimodaal model dat een groot aantal taken kan uitvoeren"
-          google-gemini-1-5-flash: "Lichtgewicht, snel en kostenefficiënt met multimodale redenering"
-          open_ai-gpt-4-turbo: "Hoogintelligent model van de vorige generatie"
-          open_ai-gpt-4o: "Hoogintelligent model voor complexe taken met meerdere stappen"
-          open_ai-gpt-4o-mini: "Betaalbaar, snel en klein model voor lichte taken"
-          open_ai-o1-mini: "Kostenefficiënt redeneringsmodel"
+          google-gemini-2-5-pro: "Middelgroot multimodaal model dat een groot aantal taken kan uitvoeren"
+          google-gemini-2-0-flash: "Lichtgewicht, snel en kostenefficiënt met multimodale redenering"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficiënt lichtgewicht meertalig model"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Krachtig multifunctioneel model"
           mistral-mistral-large-latest: "Het krachtigste model van Mistral"

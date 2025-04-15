@@ -36,6 +36,13 @@ da:
             canned_reply:
               label: "Svar"
     discourse_ai:
+      features:
+        back: "Tilbage"
+        list:
+          header:
+            name: "Navn"
+            groups: "Grupper"
+          edit: "Rediger"
       modals:
         select_option: "Vælg en indstilling..."
       spam:
