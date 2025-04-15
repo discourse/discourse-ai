@@ -42,18 +42,25 @@ module DiscourseAi
                   id: "google",
                   models: [
                     {
-                      name: "gemini-1.5-pro",
+                      name: "gemini-2.5-pro",
                       tokens: 800_000,
                       endpoint:
-                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest",
-                      display_name: "Gemini 1.5 Pro",
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25",
+                      display_name: "Gemini 2.5 Pro",
                     },
                     {
-                      name: "gemini-1.5-flash",
+                      name: "gemini-2.0-flash",
                       tokens: 800_000,
                       endpoint:
-                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest",
-                      display_name: "Gemini 1.5 Flash",
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash",
+                      display_name: "Gemini 2.0 Flash",
+                    },
+                    {
+                      name: "gemini-2.0-flash-lite",
+                      tokens: 800_000,
+                      endpoint:
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite",
+                      display_name: "Gemini 2.0 Flash Lite",
                     },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::GeminiTokenizer,
@@ -64,11 +71,9 @@ module DiscourseAi
                   models: [
                     { name: "o3-mini", tokens: 200_000, display_name: "o3 Mini" },
                     { name: "o1", tokens: 200_000, display_name: "o1" },
-                    { name: "o1-preview", tokens: 131_072, display_name: "o1 preview" },
-                    { name: "o1-mini", tokens: 131_072, display_name: "o1 Mini" },
-                    { name: "gpt-4o", tokens: 131_072, display_name: "GPT-4 Omni" },
-                    { name: "gpt-4o-mini", tokens: 131_072, display_name: "GPT-4 Omni Mini" },
-                    { name: "gpt-4-turbo", tokens: 131_072, display_name: "GPT-4 Turbo" },
+                    { name: "gpt-4.1", tokens: 800_000, display_name: "GPT-4.1" },
+                    { name: "gpt-4.1-mini", tokens: 800_000, display_name: "GPT-4.1 Mini" },
+                    { name: "gpt-4.1-nano", tokens: 800_000, display_name: "GPT-4.1 Nano" },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
                   endpoint: "https://api.openai.com/v1/chat/completions",
