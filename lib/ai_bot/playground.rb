@@ -335,9 +335,9 @@ module DiscourseAi
         in_reply_to_id = channel.direct_message_channel? ? message.id : nil
 
         new_prompts =
-          bot.reply(context) do |partial, cancel, placeholder|
+          bot.reply(context) do |partial, cancel, placeholder, type|
             # no support for tools or thinking by design
-            next if !partial.is_a?(String)
+            next if type == :thinking || type == :tool_details
             if !reply
               # just eat all leading spaces we can not create the message
               next if partial.blank?

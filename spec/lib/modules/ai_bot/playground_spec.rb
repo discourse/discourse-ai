@@ -397,6 +397,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           guardian: guardian,
         )
 
+        thinking_partial =
+          DiscourseAi::Completions::Thinking.new(
+            message: "I should say hello",
+            signature: "thinking-signature-123",
+            partial: true,
+          )
+
         thinking =
           DiscourseAi::Completions::Thinking.new(
             message: "I should say hello",
@@ -404,7 +411,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             partial: false,
           )
         DiscourseAi::Completions::Llm.with_prepared_responses(
-          [[thinking, thinking, "wo", "rld", thinking]],
+          [[thinking_partial, thinking, "wo", "rld"]],
         ) do |_, _, _prompts|
           ChatSDK::Message.create(
             channel_id: channel.id,
