@@ -837,15 +837,15 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         },
       ).to_return(status: 200, body: body)
 
-      result = +""
+      structured_output = nil
       llm.generate(
         prompt,
         user: Discourse.system_user,
         feature_name: "testing",
         response_format: schema,
-      ) { |partial, cancel| result << partial }
+      ) { |partial, cancel| structured_output = partial }
 
-      expect(result).to eq("\"key\":\"Hello!\"}")
+      expect(structured_output.full_output).to eq({ key: "Hello!" })
 
       expected_body = {
         model: "claude-3-opus-20240229",
