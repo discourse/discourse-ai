@@ -4,7 +4,7 @@
   <h1>{{i18n "discourse_ai.ai_bot.conversations.header"}}</h1>
   <div class="custom-homepage__input-wrapper">
     <textarea
-      {{didInsert this.initializeTextarea}}
+      {{didInsert this.setTextArea}}
       {{on "input" this.updateInputValue}}
       {{on "keydown" this.handleKeyDown}}
       id="custom-homepage-input"
@@ -16,7 +16,7 @@
       @action={{this.aiBotConversationsHiddenSubmit.submitToBot}}
       @icon="paper-plane"
       @title="discourse_ai.ai_bot.conversations.header"
-      class="ai-bot-button btn-primary"
+      class="ai-bot-button btn-primary ai-conversation-submit"
     />
   </div>
   <p class="ai-disclaimer">

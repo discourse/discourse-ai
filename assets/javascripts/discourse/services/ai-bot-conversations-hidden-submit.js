@@ -25,19 +25,27 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     this.composer.close();
 
     if (this.inputValue.length < 10) {
-      // TODO: Translate
-      this.dialog.alert({
-        message: "Message must be longer than 10 characters",
+      return this.dialog.alert({
+        message: i18n(
+          "discourse_ai.ai_bot.conversations.min_input_length_message"
+        ),
         didConfirm: () => this.focusInput(),
         didCancel: () => this.focusInput(),
       });
     }
 
+    // borrowed from ai-bot-helper.js
+    const draftKey = "new_private_message_ai_" + new Date().getTime();
+
+    const personaWithUsername = this.currentUser.ai_enabled_personas.find(
+      (persona) => persona.username
+    );
+
     // this is a total hack, the composer is hidden on the homepage with CSS
     await this.composer.open({
       action: Composer.PRIVATE_MESSAGE,
-      draftKey: "private_message_ai",
-      recipients: this.currentUser.ai_enabled_personas[0].username,
+      draftKey,
+      recipients: personaWithUsername.username,
       topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
       topicBody: this.inputValue,
       archetypeId: "private_message",

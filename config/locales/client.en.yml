@@ -711,6 +711,7 @@ en:
           disclaimer: "Generative AI can make mistakes"
           placeholder: "Ask a question..."
           new: "New Question"
+          min_input_length_message: "Message must be longer than 10 characters"
       sentiments:
         dashboard:
           title: "Sentiment"
