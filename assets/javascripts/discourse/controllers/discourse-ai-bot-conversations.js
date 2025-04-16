@@ -5,12 +5,11 @@ import { service } from "@ember/service";
 export default class DiscourseAiBotConversations extends Controller {
   @service aiBotConversationsHiddenSubmit;
 
-  sidebarEnabled = true;
-  showSidebar = true;
-  textareaInteractor = null;
+  textarea = null;
 
   @action
   updateInputValue(event) {
+    this._autoExpandTextarea();
     this.aiBotConversationsHiddenSubmit.inputValue = event.target.value;
   }
 
