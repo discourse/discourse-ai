@@ -6,6 +6,8 @@ import SimpleTextareaInteractor from "../lib/simple-textarea-interactor";
 export default class DiscourseAiBotConversations extends Controller {
   @service aiBotConversationsHiddenSubmit;
 
+  sidebarEnabled = true;
+  showSidebar = true;
   textareaInteractor = null;
 
   @action
