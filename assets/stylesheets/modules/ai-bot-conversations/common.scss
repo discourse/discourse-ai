@@ -1,77 +1,67 @@
-.ai-new-question-button {
-  display: none;
-}
-
-body.discourse-ai-bot-conversations-page {
-  .ai-new-question-button {
-    margin: 1.25em 1em 2.65em 1.25em;
-    display: block;
-  }
-
-  #sidebar-section-content-community,
-  [data-section-name="tags"],
-  [data-section-name="categories"],
-  [data-section-name="messages"],
-  [data-section-name="user-threads"],
-  [data-section-name="chat-dms"],
-  .sidebar-sections:not(.admin-panel)
-    .sidebar-section-link
-    .sidebar-section-link-prefix,
-  .sidebar-footer-wrapper,
-  .sidebar__panel-switch-button {
-    display: none;
-  }
-
-  .sidebar-wrapper .sidebar-container {
-    border: none;
-  }
-
-  // ai related sidebar content
-  [data-section-name="custom-messages"] {
-    .sidebar-section-header-wrapper {
-      pointer-events: none;
-      font-size: var(--font-down-1);
-
-      .sidebar-section-header-caret {
-        display: none;
-      }
-
-      .sidebar-section-header-text {
-        letter-spacing: 0.5px;
-      }
-    }
-  }
-
-  [data-link-name="View All"] {
-    align-content: stretch;
-
-    .sidebar-section-link-prefix.icon {
+body.has-ai-conversations-sidebar {
+  .sidebar-wrapper {
+    .sidebar-footer-actions {
       display: flex;
-      font-size: var(--font-up-1);
-      margin-left: -0.15em;
-    }
-  }
+      flex-direction: column;
+      margin-left: 0;
+      align-items: flex-end;
+      width: 100%;
 
-  .sidebar-section-link-wrapper {
-    .sidebar-section-link {
-      height: unset;
-      padding-block: 0.65em;
-      font-size: var(--font-down-1);
-      letter-spacing: 0.35px;
-      border-radius: 0 var(--border-radius) var(--border-radius) 0;
-
-      .sidebar-section-link-content-text {
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
+      .ai-new-question-button {
+        width: 100%;
       }
     }
-  }
+    .sidebar-container {
+      border: none;
+    }
 
-  .sidebar-section-link-prefix {
-    align-self: start;
+    // ai related sidebar content
+    [data-section-name="custom-messages"] {
+      .sidebar-section-header-wrapper {
+        pointer-events: none;
+        font-size: var(--font-down-1);
+
+        .sidebar-section-header-caret {
+          display: none;
+        }
+
+        .sidebar-section-header-text {
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+
+    [data-link-name="View All"] {
+      align-content: stretch;
+
+      .sidebar-section-link-prefix.icon {
+        display: flex;
+        font-size: var(--font-up-1);
+        margin-left: -0.15em;
+      }
+    }
+
+    .sidebar-section-link-wrapper {
+      .sidebar-section-link {
+        height: unset;
+        padding-block: 0.65em;
+        font-size: var(--font-down-1);
+        letter-spacing: 0.35px;
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+
+        .sidebar-section-link-content-text {
+          white-space: normal;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+        }
+      }
+    }
+
+    .sidebar-section-link-prefix {
+      align-self: start;
+    }
   }
 
   // topic elements
@@ -100,7 +90,6 @@ body.discourse-ai-bot-conversations-page {
 
   .container.posts {
     margin-bottom: 0;
-
     .topic-navigation.with-timeline {
       top: calc(var(--header-offset, 60px) + 5.5em);
     }
@@ -130,25 +119,20 @@ body.discourse-ai-bot-conversations-page {
 
   #topic-footer-buttons {
     width: calc(100% - 6.5em);
-
+    margin-top: 0;
     @media screen and (max-width: 924px) {
       max-width: unset;
       width: 100%;
     }
-
     @media screen and (min-width: 1300px) {
       width: 100%;
       max-width: 51em;
     }
-    margin-top: 0;
-
     .topic-footer-main-buttons {
       justify-content: flex-end;
-
       @media screen and (min-width: 1180px) {
         margin-right: 0.6em;
       }
-
       @media screen and (max-width: 924px) {
         margin-right: 0.6em;
       }
@@ -167,7 +151,6 @@ body.discourse-ai-bot-conversations-page {
 
   nav.post-controls .actions button {
     padding: 0.5em 0.65em;
-
     &.reply {
       .d-icon {
         margin-right: 0.45em;
@@ -180,13 +163,9 @@ body.discourse-ai-bot-conversations-page {
   }
 
   // custom header notification button
+
   .user-menu.revamped .menu-tabs-container {
     display: none;
-  }
-
-  // narrow desktop slide-out sidebar
-  .hamburger-panel .revamped .sidebar-section-wrapper.sidebar-section ul {
-    grid-template-columns: 1fr;
   }
 
   // custom homepage
@@ -199,7 +178,6 @@ body.discourse-ai-bot-conversations-page {
       #main-outlet {
         padding-top: 0;
       }
-
       #main-outlet-wrapper #main-outlet {
         max-width: 95vw;
         overflow-x: hidden;
@@ -224,10 +202,6 @@ body.discourse-ai-bot-conversations-page {
     #main-outlet-wrapper:not(:has([data-section-name="custom-messages"])) {
       grid-template-areas: "content";
       grid-template-columns: 1fr !important;
-
-      .sidebar-wrapper {
-        display: none;
-      }
 
       @media screen and (min-width: 900px) {
         .custom-homepage__content-wrapper {
@@ -259,7 +233,6 @@ body.discourse-ai-bot-conversations-page {
       align-items: center;
       justify-content: center;
       height: calc(100dvh - var(--header-offset) - 1.25em);
-
       @media screen and (min-width: 675px) {
         border: 1px solid var(--primary-low);
         padding: 2em 2em 3em;
@@ -275,7 +248,6 @@ body.discourse-ai-bot-conversations-page {
       width: 100%;
       max-width: 90dvw;
       margin-top: 2em;
-
       @media screen and (min-width: 600px) {
         width: 80%;
         max-width: 46em;
@@ -292,7 +264,6 @@ body.discourse-ai-bot-conversations-page {
         resize: none;
         border-radius: var(--d-button-border-radius);
         max-height: 30vh;
-
         &:focus {
           outline: none;
           border-color: var(--primary-high);
@@ -304,7 +275,6 @@ body.discourse-ai-bot-conversations-page {
       margin-bottom: 1em;
       display: flex;
       gap: 1em;
-
       @media screen and (max-width: 600px) {
         padding-right: 2em;
         box-sizing: border-box;
@@ -314,8 +284,7 @@ body.discourse-ai-bot-conversations-page {
         font-size: var(--font-down-1);
         padding-bottom: 0.5em;
         margin-bottom: 0.5em;
-
-        &::after {
+        &:after {
           position: absolute;
           content: "";
           width: 4em;
@@ -331,7 +300,6 @@ body.discourse-ai-bot-conversations-page {
 
         button {
           display: flex;
-
           .d-button-label {
             white-space: nowrap;
           }
@@ -345,15 +313,12 @@ body.discourse-ai-bot-conversations-page {
       text-align: center;
       font-size: var(--font-up-6);
       line-height: var(--line-height-medium);
-
       @media screen and (min-height: 300px) {
         margin-top: -1em;
       }
-
       @media screen and (min-height: 600px) {
         margin-top: -3em;
       }
-
       @media screen and (min-height: 900px) {
         margin-top: -6em;
       }
@@ -363,11 +328,9 @@ body.discourse-ai-bot-conversations-page {
       border-radius: var(--border-radius);
       border: 1px solid var(--primary-low);
       line-height: var(--line-height-medium);
-
       .d-button-label {
         color: var(--primary-high);
       }
-
       .discourse-no-touch & {
         &:hover {
           background: var(--primary-low);
@@ -379,7 +342,6 @@ body.discourse-ai-bot-conversations-page {
       text-align: center;
       font-size: var(--font-down-1);
       color: var(--primary-700);
-
       @media screen and (min-width: 600px) {
         width: 80%;
         max-width: 46em;
@@ -388,11 +350,9 @@ body.discourse-ai-bot-conversations-page {
 
     .sidebar-footer-wrapper {
       display: flex;
-
       .powered-by-discourse {
         display: block;
       }
-
       button {
         display: none;
       }
@@ -422,11 +382,9 @@ body.discourse-ai-bot-conversations-page {
 
   // custom header menus
   .custom-admin-menu-trigger {
-    background: transparent;
     position: relative;
-
     &.-has-messages {
-      &::after {
+      &:after {
         position: absolute;
         content: "";
         background: var(--danger);
@@ -438,6 +396,9 @@ body.discourse-ai-bot-conversations-page {
     }
   }
 
+  .custom-admin-menu-trigger {
+    background: transparent;
+  }
   .custom-menu {
     .mod-message-badge {
       padding: 0.25em;
@@ -476,7 +437,6 @@ body.discourse-ai-bot-conversations-page {
         .d-icon {
           color: var(--primary-high);
         }
-
         span {
           display: flex;
           gap: 0.5em;
@@ -491,7 +451,6 @@ body.discourse-ai-bot-conversations-page {
       .d-icon {
         margin: 0;
       }
-
       .d-button-label {
         display: none;
       }
@@ -502,11 +461,9 @@ body.discourse-ai-bot-conversations-page {
     nav.post-controls .actions button.reply .d-icon {
       margin: 0;
     }
-
     .search-dropdown {
       display: none;
     }
-
     .sidebar-custom-sections {
       display: none;
     }
@@ -516,7 +473,6 @@ body.discourse-ai-bot-conversations-page {
   .user-card-meta__profile-link {
     display: block;
     padding: 0.5em 0 0.25em;
-
     .d-icon {
       font-size: var(--font-down-1);
       margin-right: 0.15em;

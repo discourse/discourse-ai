@@ -1,17 +1,17 @@
 import Component from "@glimmer/component";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import { AI_CONVERSATIONS_PANEL } from "../services/ai-conversations-sidebar-manager";
 
 export default class AiBotSidebarNewConversation extends Component {
-  @service router;
+  @service sidebarState;
 
-  get show() {
-    // don't show the new question button on the conversations home page
-    return this.router.currentRouteName !== "discourse-ai-bot-conversations";
+  get shouldRender() {
+    return this.sidebarState.isCurrentPanel(AI_CONVERSATIONS_PANEL);
   }
 
   <template>
-    {{#if this.show}}
+    {{#if this.shouldRender}}
       <DButton
         @route="/discourse-ai/ai-bot/conversations"
         @label="discourse_ai.ai_bot.conversations.new"

@@ -3,11 +3,16 @@ import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
+import { AI_CONVERSATIONS_PANEL } from "../discourse/services/ai-conversations-sidebar-manager";
 
 export default {
-  name: "custom-sidebar-bot-messages",
+  name: "ai-conversations-sidebar",
+
   initialize() {
-    withPluginApi("1.37.1", (api) => {
+    withPluginApi("1.8.0", (api) => {
+      const aiConversationsSidebarManager = api.container.lookup(
+        "service:ai-conversations-sidebar-manager"
+      );
       const currentUser = api.container.lookup("service:current-user");
       const appEvents = api.container.lookup("service:app-events");
       const messageBus = api.container.lookup("service:message-bus");
@@ -18,9 +23,24 @@ export default {
 
       // TODO: Replace
       const recentConversations = 10;
+      // Step 1: Add a custom sidebar panel
+      api.addSidebarPanel(
+        (BaseCustomSidebarPanel) =>
+          class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
+            key = AI_CONVERSATIONS_PANEL;
+            hidden = true; // Hide from panel switching UI
+            displayHeader = true;
+            expandActiveSection = true;
 
-      api.renderInOutlet("after-sidebar-sections", AiBotSidebarNewConversation);
+            // Optional - customize if needed
+            // switchButtonLabel = "Your Panel";
+            // switchButtonIcon = "cog";
+          }
+      );
 
+      api.renderInOutlet("sidebar-footer-actions", AiBotSidebarNewConversation);
+
+      // Step 2: Add a custom section to your panel
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           return class extends BaseCustomSidebarSection {
@@ -56,7 +76,9 @@ export default {
                   this.isFetching = false;
                   this.buildSidebarLinks();
                 })
-                .catch(() => (this.isFetching = false));
+                .catch((e) => {
+                  this.isFetching = false;
+                });
             }
 
             addNewMessage(newTopic) {
@@ -130,7 +152,31 @@ export default {
               return this.links?.length > 0;
             }
           };
-        }
+        },
+        AI_CONVERSATIONS_PANEL
+      );
+
+      api.modifyClass(
+        "route:topic",
+        (Superclass) =>
+          class extends Superclass {
+            activate() {
+              super.activate();
+              const topic = this.modelFor("topic");
+              if (
+                topic &&
+                topic.archetype === "private_message" &&
+                topic.ai_persona_name
+              ) {
+                aiConversationsSidebarManager.forceCustomSidebar();
+              }
+            }
+
+            deactivate() {
+              super.activate();
+              aiConversationsSidebarManager.stopForcingCustomSidebar();
+            }
+          }
       );
     });
   },

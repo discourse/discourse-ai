@@ -40,6 +40,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     const personaWithUsername = this.currentUser.ai_enabled_personas.find(
       (persona) => persona.username
     );
+
     // this is a total hack, the composer is hidden on the homepage with CSS
     await this.composer.open({
       action: Composer.PRIVATE_MESSAGE,
