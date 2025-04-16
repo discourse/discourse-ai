@@ -4,65 +4,77 @@
 
 body.discourse-ai-bot-conversations-page {
   .ai-new-question-button {
+    margin: 1.25em 1em 2.65em 1.25em;
     display: block;
   }
-  .sidebar-wrapper {
-    .sidebar-container {
-      border: none;
-    }
 
-    // ai related sidebar content
+  #sidebar-section-content-community,
+  [data-section-name="tags"],
+  [data-section-name="categories"],
+  [data-section-name="messages"],
+  [data-section-name="user-threads"],
+  [data-section-name="chat-dms"],
+  .sidebar-sections:not(.admin-panel)
+    .sidebar-section-link
+    .sidebar-section-link-prefix,
+  .sidebar-footer-wrapper,
+  .sidebar__panel-switch-button {
+    display: none;
+  }
 
-    [data-section-name="custom-messages"] {
-      .sidebar-section-header-wrapper {
-        pointer-events: none;
-        font-size: var(--font-down-1);
-        .sidebar-section-header-caret {
-          display: none;
-        }
-        .sidebar-section-header-text {
-          letter-spacing: 0.5px;
-        }
+  .sidebar-wrapper .sidebar-container {
+    border: none;
+  }
+
+  // ai related sidebar content
+  [data-section-name="custom-messages"] {
+    .sidebar-section-header-wrapper {
+      pointer-events: none;
+      font-size: var(--font-down-1);
+
+      .sidebar-section-header-caret {
+        display: none;
+      }
+
+      .sidebar-section-header-text {
+        letter-spacing: 0.5px;
       }
     }
+  }
 
-    [data-link-name="View All"] {
-      align-content: stretch;
-      .sidebar-section-link-prefix.icon {
-        display: flex;
-        font-size: var(--font-up-1);
-        margin-left: -0.15em;
+  [data-link-name="View All"] {
+    align-content: stretch;
+
+    .sidebar-section-link-prefix.icon {
+      display: flex;
+      font-size: var(--font-up-1);
+      margin-left: -0.15em;
+    }
+  }
+
+  .sidebar-section-link-wrapper {
+    .sidebar-section-link {
+      height: unset;
+      padding-block: 0.65em;
+      font-size: var(--font-down-1);
+      letter-spacing: 0.35px;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+
+      .sidebar-section-link-content-text {
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
       }
     }
+  }
 
-    .ai-new-question-button {
-      margin: 1.25em 1em 2.65em 1.25em;
-    }
-
-    .sidebar-section-link-wrapper {
-      .sidebar-section-link {
-        height: unset;
-        padding-block: 0.65em;
-        font-size: var(--font-down-1);
-        letter-spacing: 0.35px;
-        border-radius: 0 var(--border-radius) var(--border-radius) 0;
-
-        .sidebar-section-link-content-text {
-          white-space: normal;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 2;
-          overflow: hidden;
-        }
-      }
-    }
-    .sidebar-section-link-prefix {
-      align-self: start;
-    }
+  .sidebar-section-link-prefix {
+    align-self: start;
   }
 
   // topic elements
-
   #topic-footer-button-share-and-invite,
   body:not(.staff) #topic-footer-button-archive,
   #topic-footer-buttons .topic-notifications-button,
@@ -166,6 +178,11 @@ body.discourse-ai-bot-conversations-page {
     display: none;
   }
 
+  // narrow desktop slide-out sidebar
+  .hamburger-panel .revamped .sidebar-section-wrapper.sidebar-section ul {
+    grid-template-columns: 1fr;
+  }
+
   // custom homepage
   html.composer-open .custom-homepage #main-outlet {
     padding-bottom: 0;
@@ -200,9 +217,7 @@ body.discourse-ai-bot-conversations-page {
     #main-outlet-wrapper:not(:has([data-section-name="custom-messages"])) {
       grid-template-areas: "content";
       grid-template-columns: 1fr !important;
-      .sidebar-wrapper {
-        display: none;
-      }
+
       @media screen and (min-width: 900px) {
         .custom-homepage__content-wrapper {
           margin-left: 1em;
@@ -360,14 +375,12 @@ body.discourse-ai-bot-conversations-page {
   }
 
   // composer
-
   .reply-details .dropdown-select-box.composer-actions,
   .composer-fields {
     display: none;
   }
 
   // hide user stuff
-
   .new-user-wrapper {
     .user-navigation {
       display: none;
@@ -383,7 +396,6 @@ body.discourse-ai-bot-conversations-page {
   }
 
   // custom header menus
-
   .custom-admin-menu-trigger {
     position: relative;
     &.-has-messages {
@@ -402,7 +414,6 @@ body.discourse-ai-bot-conversations-page {
   .custom-admin-menu-trigger {
     background: transparent;
   }
-
   .custom-menu {
     .mod-message-badge {
       padding: 0.25em;
@@ -474,7 +485,6 @@ body.discourse-ai-bot-conversations-page {
   }
 
   // custom user card link
-
   .user-card-meta__profile-link {
     display: block;
     padding: 0.5em 0 0.25em;

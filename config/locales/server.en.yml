@@ -81,11 +81,12 @@ en:
     ai_embeddings_semantic_search_hyde_model: "Model used to expand keywords to get better results during a semantic search"
     ai_embeddings_per_post_enabled: Generate embeddings for each post
 
-    ai_summarization_enabled: "Enable the topic summarization module."
-    ai_summarization_model: "Model to use for summarization."
+    ai_summarization_enabled: "Enable the summarize feature"
+    ai_summarization_model: "Model to use for summarization"
+    ai_summarization_persona: "Persona to use for summarize feature"
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
-    ai_summary_gists_enabled: "Generate brief summaries of latest replies in topics automatically."
+    ai_summary_gists_enabled: "Generate brief summaries of latest replies in topics automatically"
     ai_summary_gists_allowed_groups: "Groups allowed to see gists in the hot topics list."
     ai_summary_backfill_maximum_topics_per_hour: "Number of topic summaries to backfill per hour."
 
@@ -103,6 +104,13 @@ en:
 
     ai_google_custom_search_api_key: "API key for the Google Custom Search API see: https://developers.google.com/custom-search"
     ai_google_custom_search_cx: "CX for Google Custom Search API"
+
+    ai_discord_search_enabled: "Enables the Discord search feature"
+    ai_discord_app_id: "The ID of the Discord application you would like to connect Discord search to"
+    ai_discord_app_public_key: "The public key of the Discord application you would like to connect Discord search to"
+    ai_discord_search_mode: "Select the search mode to use for Discord search"
+    ai_discord_search_persona: "The persona to use for Discord search."
+    ai_discord_allowed_guilds: "Discord guilds (servers) where the bot is allowed to search"
 
   reviewables:
     reasons:
@@ -486,6 +494,20 @@ en:
     llm_models:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to use this model."
+
+    features:
+      summarization:
+        name: "Summaries"
+        description: "Makes a summarization button available that allows visitors to summarize topics"
+      gists:
+        name: "Short Summaries"
+        description: "Adds the ability to view short summaries of topics on the topic list"
+      discoveries:
+        name: "Discobot Discoveries"
+        description: "Enhances search experience by providing AI-generated answers to queries"
+      discord_search:
+        name: "Discord Search"
+        description: "Adds the ability to search Discord channels"
 
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."

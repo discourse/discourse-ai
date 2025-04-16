@@ -57,7 +57,6 @@ export default {
                   this.buildSidebarLinks();
                 })
                 .catch((e) => {
-                  debugger;
                   this.isFetching = false;
                 });
             }

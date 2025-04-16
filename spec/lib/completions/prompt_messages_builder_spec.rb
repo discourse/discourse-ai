@@ -15,8 +15,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
   end
 
   it "correctly merges user messages with uploads" do
-    builder.push(type: :user, content: "Hello", name: "Alice", upload_ids: [1])
-    builder.push(type: :user, content: "World", name: "Bob", upload_ids: [2])
+    builder.push(type: :user, content: "Hello", id: "Alice", upload_ids: [1])
+    builder.push(type: :user, content: "World", id: "Bob", upload_ids: [2])
 
     messages = builder.to_a
 
@@ -34,8 +34,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
   end
 
   it "should allow merging user messages" do
-    builder.push(type: :user, content: "Hello", name: "Alice")
-    builder.push(type: :user, content: "World", name: "Bob")
+    builder.push(type: :user, content: "Hello", id: "Alice")
+    builder.push(type: :user, content: "World", id: "Bob")
 
     expect(builder.to_a).to eq([{ type: :user, content: "Alice: Hello\nBob: World" }])
   end
@@ -63,9 +63,9 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
   end
 
   it "should drop a tool call if it is not followed by tool" do
-    builder.push(type: :user, content: "Echo 123 please", name: "Alice")
+    builder.push(type: :user, content: "Echo 123 please", id: "Alice")
     builder.push(type: :tool_call, content: "echo(123)", name: "echo", id: 1)
-    builder.push(type: :user, content: "OK", name: "James")
+    builder.push(type: :user, content: "OK", id: "James")
 
     expected = [{ type: :user, content: "Alice: Echo 123 please\nJames: OK" }]
     expect(builder.to_a).to eq(expected)
@@ -80,8 +80,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     topic.save!
 
     builder.topic = topic
-    builder.push(type: :user, content: "I like frogs", name: "Bob")
-    builder.push(type: :user, content: "How do I solve this?", name: "Alice")
+    builder.push(type: :user, content: "I like frogs", id: "Bob")
+    builder.push(type: :user, content: "How do I solve this?", id: "Alice")
 
     result = builder.to_a(style: :topic)
 
@@ -93,6 +93,72 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     expect(content).to include("Bob: I like frogs")
     expect(content).to include("Alice")
     expect(content).to include("How do I solve this")
+  end
+
+  describe "chat context posts in direct messages" do
+    fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, bot_user]) }
+    fab!(:dm_message) do
+      Fabricate(
+        :chat_message,
+        chat_channel: dm_channel,
+        user: user,
+        message: "I have a question about the topic",
+      )
+    end
+
+    fab!(:topic) { Fabricate(:topic, title: "Important topic for context") }
+    fab!(:post1) { Fabricate(:post, topic: topic, user: other_user, raw: "This is the first post") }
+    fab!(:post2) { Fabricate(:post, topic: topic, user: user, raw: "And here's a follow-up") }
+
+    it "correctly includes topic posts as context in direct message channels" do
+      context =
+        described_class.messages_from_chat(
+          dm_message,
+          channel: dm_channel,
+          context_post_ids: [post1.id, post2.id],
+          max_messages: 10,
+          include_uploads: false,
+          bot_user_ids: [bot_user.id],
+          instruction_message: nil,
+        )
+
+      expect(context.length).to eq(1)
+      content = context.first[:content]
+
+      # First part should contain the context intro
+      expect(content).to include("You are replying inside a Discourse chat")
+      expect(content).to include(
+        "This chat is in the context of the Discourse topic 'Important topic for context'",
+      )
+      expect(content).to include(post1.username)
+      expect(content).to include("This is the first post")
+      expect(content).to include(post2.username)
+      expect(content).to include("And here's a follow-up")
+
+      # Last part should have the user's message
+      expect(content).to include("I have a question about the topic")
+    end
+
+    it "includes uploads from context posts when include_uploads is true" do
+      upload = Fabricate(:upload, user: user)
+      UploadReference.create!(target: post1, upload: upload)
+
+      context =
+        described_class.messages_from_chat(
+          dm_message,
+          channel: dm_channel,
+          context_post_ids: [post1.id],
+          max_messages: 10,
+          include_uploads: true,
+          bot_user_ids: [bot_user.id],
+          instruction_message: nil,
+        )
+
+      # Verify the upload reference is included
+      upload_hashes = context.first[:content].select { |item| item.is_a?(Hash) && item[:upload_id] }
+      expect(upload_hashes).to be_present
+      expect(upload_hashes.first[:upload_id]).to eq(upload.id)
+    end
   end
 
   describe ".messages_from_chat" do
@@ -155,7 +221,7 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
         )
 
       # this is all we got cause it is assuming threading
-      expect(context).to eq([{ type: :user, content: "How are you?", name: user.username }])
+      expect(context).to eq([{ type: :user, content: "How are you?", id: user.username }])
     end
 
     it "includes uploads when include_uploads is true" do
@@ -330,7 +396,45 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       )
     end
 
-    it "handles uploads correctly in topic style messages" do
+    it "provides rich context for for style topic messages" do
+      freeze_time
+
+      user.update!(trust_level: 2, created_at: 1.year.ago)
+      admin.update!(trust_level: 4, created_at: 1.month.ago)
+      user.user_stat.update!(post_count: 10, days_visited: 50)
+
+      reply_to_first_post =
+        Fabricate(
+          :post,
+          topic: pm,
+          user: admin,
+          reply_to_post_number: first_post.post_number,
+          raw: "This is a reply to the first post",
+        )
+
+      context =
+        described_class.messages_from_post(
+          reply_to_first_post,
+          style: :topic,
+          max_posts: 10,
+          bot_usernames: [bot_user.username],
+          include_uploads: false,
+        )
+
+      expect(context.length).to eq(1)
+      content = context[0][:content]
+
+      expect(content).to include(user.name)
+      expect(content).to include("Trust level 2")
+      expect(content).to include("account age: 1 year")
+
+      # I am mixed on asserting everything cause the test
+      # will be brittle, but open to changing this
+    end
+
+    it "handles uploads correctly in topic style messages (and times)" do
+      freeze_time 1.month.ago
+
       # Use Discourse's upload format in the post raw content
       upload_markdown = "![test|658x372](#{image_upload1.short_url})"
 
@@ -345,6 +449,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       UploadReference.create!(target: post_with_upload, upload: image_upload1)
 
       upload2_markdown = "![test|658x372](#{image_upload2.short_url})"
+
+      freeze_time 1.month.from_now
 
       post2_with_upload =
         Fabricate(
@@ -379,6 +485,7 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
       # second image
       expect(content.length).to eq(4)
       expect(content[0]).to include("This is the original")
+      expect(content[0]).to include("(1 month ago)")
       expect(content[1]).to eq({ upload_id: image_upload1.id })
       expect(content[2]).to include("different image")
       expect(content[3]).to eq({ upload_id: image_upload2.id })
