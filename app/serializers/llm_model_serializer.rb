@@ -17,6 +17,9 @@ class LlmModelSerializer < ApplicationSerializer
              :enabled_chat_bot,
              :provider_params,
              :vision_enabled,
+             :input_cost,
+             :output_cost,
+             :cached_input_cost,
              :used_by
 
   has_one :user, serializer: BasicUserSerializer, embed: :object

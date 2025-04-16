@@ -403,6 +403,10 @@ en:
         enabled_chat_bot: "Allow AI bot selector"
         vision_enabled: "Vision enabled"
         ai_bot_user: "AI bot User"
+        cost_input: "Input cost"
+        cost_cached_input: "Cached input cost"
+        cost_output: "Output cost"
+
         save: "Save"
         edit: "Edit"
         saved: "LLM model saved"
@@ -485,6 +489,10 @@ en:
           name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
           enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
+          cost_input: "The input cost per 1M tokens for this model"
+          cost_cached_input: "The cached input cost per 1M tokens for this model"
+          cost_output: "The output cost per 1M tokens for this model"
+          cost_measure: "$/1M tokens"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"

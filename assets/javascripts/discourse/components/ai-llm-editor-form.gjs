@@ -61,6 +61,9 @@ export default class AiLlmEditorForm extends Component {
       provider: model.provider,
       enabled_chat_bot: model.enabled_chat_bot,
       vision_enabled: model.vision_enabled,
+      input_cost: model.input_cost,
+      output_cost: model.output_cost,
+      cached_input_cost: model.cached_input_cost,
       provider_params: this.computeProviderParams(
         model.provider,
         model.provider_params
@@ -176,6 +179,7 @@ export default class AiLlmEditorForm extends Component {
 
   @action
   async save(data) {
+    console.log(data);
     this.isSaving = true;
     const isNew = this.args.model.isNew;
 
@@ -258,6 +262,7 @@ export default class AiLlmEditorForm extends Component {
       class="ai-llm-editor"
       as |form data|
     >
+      {{log this.formData}}
       {{#if this.modulesUsingModel}}
         <form.Alert @icon="circle-info">
           {{this.inUseWarning}}
@@ -381,6 +386,40 @@ export default class AiLlmEditorForm extends Component {
       >
         <field.Input @type="number" step="any" min="0" lang="en" />
       </form.Field>
+
+      <form.InputGroup as |inputGroup|>
+        <inputGroup.Field
+          @name="input_cost"
+          @title={{i18n "discourse_ai.llms.cost_input"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.cost_input"}}
+          @helpText={{i18n "discourse_ai.llms.hints.cost_measure"}}
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+
+        </inputGroup.Field>
+
+        <inputGroup.Field
+          @name="cached_input_cost"
+          @title={{i18n "discourse_ai.llms.cost_cached_input"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.cost_cached_input"}}
+          @helpText={{i18n "discourse_ai.llms.hints.cost_measure"}}
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+
+        </inputGroup.Field>
+
+        <inputGroup.Field
+          @name="output_cost"
+          @title={{i18n "discourse_ai.llms.cost_output"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.cost_output"}}
+          @helpText={{i18n "discourse_ai.llms.hints.cost_measure"}}
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+        </inputGroup.Field>
+      </form.InputGroup>
 
       <form.Field
         @name="vision_enabled"

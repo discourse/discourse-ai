@@ -13,6 +13,13 @@ class LlmModel < ActiveRecord::Base
   validates :url, presence: true, unless: -> { provider == BEDROCK_PROVIDER_NAME }
   validates_presence_of :name, :api_key
   validates :max_prompt_tokens, numericality: { greater_than: 0 }
+  validates :input_cost,
+            :cached_input_cost,
+            :output_cost,
+            numericality: {
+              greater_than_or_equal_to: 0,
+            },
+            allow_nil: true
   validate :required_provider_params
   scope :in_use,
         -> do
@@ -183,4 +190,7 @@ end
 #  enabled_chat_bot  :boolean          default(FALSE), not null
 #  provider_params   :jsonb
 #  vision_enabled    :boolean          default(FALSE), not null
+#  input_cost        :float
+#  cached_input_cost :float
+#  output_cost       :float
 #
