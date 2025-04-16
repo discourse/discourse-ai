@@ -1,7 +1,8 @@
 import { tracked } from "@glimmer/tracking";
+import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
+import { bind } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
-import { i18n } from "discourse-i18n";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
 import { AI_CONVERSATIONS_PANEL } from "../discourse/services/ai-conversations-sidebar-manager";
 
@@ -21,9 +22,6 @@ export default {
         return;
       }
 
-      // TODO: Replace
-      const recentConversations = 10;
-      // Step 1: Add a custom sidebar panel
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
           class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
@@ -31,10 +29,6 @@ export default {
             hidden = true; // Hide from panel switching UI
             displayHeader = true;
             expandActiveSection = true;
-
-            // Optional - customize if needed
-            // switchButtonLabel = "Your Panel";
-            // switchButtonIcon = "cog";
           }
       );
 
@@ -44,8 +38,10 @@ export default {
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           return class extends BaseCustomSidebarSection {
-            @tracked links = [];
+            @tracked links = new TrackedArray();
             @tracked topics = [];
+            @tracked hasMore = [];
+            page = 0;
             isFetching = false;
             totalTopicsCount = 0;
 
@@ -60,25 +56,81 @@ export default {
               });
             }
 
-            fetchMessages() {
+            willDestroy() {
+              const sidebar = this.sidebarElement;
+              if (sidebar) {
+                sidebar.removeEventListener("scroll", this.scrollHandler);
+              }
+            }
+
+            @bind
+            didInsert() {
+              const sidebar = this.sidebarElement;
+              if (sidebar) {
+                sidebar.addEventListener("scroll", this.scrollHandler);
+              }
+            }
+
+            get sidebarElement() {
+              return document.querySelector(
+                ".sidebar-wrapper .sidebar-sections"
+              );
+            }
+
+            @bind
+            scrollHandler() {
+              const sidebarElement = this.sidebarElement;
+              if (!sidebarElement) {
+                return;
+              }
+
+              const scrollPosition = sidebarElement.scrollTop;
+              const scrollHeight = sidebarElement.scrollHeight;
+              const clientHeight = sidebarElement.clientHeight;
+
+              // When user has scrolled to bottom with a small threshold
+              if (scrollHeight - scrollPosition - clientHeight < 100) {
+                if (this.hasMore && !this.isFetching) {
+                  this.loadMore();
+                }
+              }
+            }
+
+            fetchMessages(isLoadingMore = false) {
               if (this.isFetching) {
                 return;
               }
 
               this.isFetching = true;
 
-              ajax("/discourse-ai/ai-bot/conversations.json")
+              ajax("/discourse-ai/ai-bot/conversations.json", {
+                data: { page: this.page, per_page: 40 },
+              })
                 .then((data) => {
-                  this.topics = data.conversations.slice(
-                    0,
-                    recentConversations
-                  );
+                  if (isLoadingMore) {
+                    // Append to existing topics
+                    this.topics = [...this.topics, ...data.conversations];
+                  } else {
+                    this.topics = data.conversations;
+                  }
+
+                  this.totalTopicsCount = data.meta.total;
+                  this.hasMore = data.meta.more;
                   this.isFetching = false;
                   this.buildSidebarLinks();
                 })
-                .catch((e) => {
+                .catch(() => {
                   this.isFetching = false;
                 });
+            }
+
+            loadMore() {
+              if (this.isFetching || !this.hasMore) {
+                return;
+              }
+
+              this.page = this.page + 1;
+              this.fetchMessages(true);
             }
 
             addNewMessage(newTopic) {
@@ -98,36 +150,29 @@ export default {
               this.links = [builtTopic, ...this.links];
             }
 
-            buildSidebarLinks() {
-              this.links = this.topics.map((topic) => {
-                return new (class extends BaseCustomSidebarSectionLink {
-                  name = topic.title;
-                  route = "topic.fromParamsNear";
-                  models = [
-                    topic.slug,
-                    topic.id,
-                    topic.last_read_post_number || 0,
-                  ];
-                  title = topic.title;
-                  text = topic.title;
-                  prefixType = "icon";
-                  prefixValue = "robot";
-                })();
-              });
+            createBotConversationLink(SuperClass, topic) {
+              return new (class extends SuperClass {
+                name = topic.title;
+                route = "topic.fromParamsNear";
+                models = [
+                  topic.slug,
+                  topic.id,
+                  topic.last_read_post_number || 0,
+                ];
+                title = topic.title;
+                text = topic.title;
+                prefixType = "icon";
+                prefixValue = "robot";
+              })();
+            }
 
-              if (this.totalTopicsCount > recentConversations) {
-                this.links.push(
-                  new (class extends BaseCustomSidebarSectionLink {
-                    name = "View All";
-                    route = "userPrivateMessages.user.index";
-                    models = [currentUser.username];
-                    title = "View all...";
-                    text = "View all...";
-                    prefixType = "icon";
-                    prefixValue = "list";
-                  })()
-                );
-              }
+            buildSidebarLinks() {
+              this.links = this.topics.map((topic) =>
+                this.createBotConversationLink(
+                  BaseCustomSidebarSectionLink,
+                  topic
+                )
+              );
             }
 
             watchForTitleUpdate(topic) {
@@ -139,7 +184,7 @@ export default {
             }
 
             get name() {
-              return "custom-messages";
+              return "ai-conversations-history";
             }
 
             get text() {
