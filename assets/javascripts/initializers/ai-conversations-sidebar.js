@@ -9,6 +9,9 @@ export default {
 
   initialize() {
     withPluginApi("1.8.0", (api) => {
+      const aiConversationsSidebarManager = api.container.lookup(
+        "service:ai-conversations-sidebar-manager"
+      );
       const currentUser = api.container.lookup("service:current-user");
       const appEvents = api.container.lookup("service:app-events");
       const messageBus = api.container.lookup("service:message-bus");
@@ -150,6 +153,29 @@ export default {
           };
         },
         "ai-conversations"
+      );
+
+      api.modifyClass(
+        "route:topic",
+        (Superclass) =>
+          class extends Superclass {
+            activate() {
+              super.activate();
+              const topic = this.modelFor("topic");
+              if (
+                topic &&
+                topic.archetype === "private_message" &&
+                topic.ai_persona_name
+              ) {
+                aiConversationsSidebarManager.forceCustomSidebar();
+              }
+            }
+
+            deactivate() {
+              super.activate();
+              aiConversationsSidebarManager.stopForcingCustomSidebar();
+            }
+          }
       );
     });
   },
