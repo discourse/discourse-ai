@@ -3,6 +3,7 @@ import { ajax } from "discourse/lib/ajax";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
+import { AI_CONVERSATIONS_PANEL } from "../discourse/services/ai-conversations-sidebar-manager";
 
 export default {
   name: "ai-conversations-sidebar",
@@ -26,7 +27,7 @@ export default {
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
           class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
-            key = "ai-conversations";
+            key = AI_CONVERSATIONS_PANEL;
             hidden = true; // Hide from panel switching UI
             displayHeader = true;
             expandActiveSection = true;
@@ -37,7 +38,7 @@ export default {
           }
       );
 
-      //api.renderInOutlet("after-sidebar-sections", AiBotSidebarNewConversation);
+      api.renderInOutlet("sidebar-footer-actions", AiBotSidebarNewConversation);
 
       // Step 2: Add a custom section to your panel
       api.addSidebarSection(
@@ -152,7 +153,7 @@ export default {
             }
           };
         },
-        "ai-conversations"
+        AI_CONVERSATIONS_PANEL
       );
 
       api.modifyClass(

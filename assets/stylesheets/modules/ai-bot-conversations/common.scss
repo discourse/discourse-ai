@@ -1,13 +1,16 @@
-.ai-new-question-button {
-  display: none;
-}
-
-body.discourse-ai-bot-conversations-page {
-  .ai-new-question-button {
-    margin: 1.25em 1em 2.65em 1.25em;
-    display: block;
-  }
+body.has-ai-conversations-sidebar {
   .sidebar-wrapper {
+    .sidebar-footer-actions {
+      display: flex;
+      flex-direction: column;
+      margin-left: 0;
+      align-items: flex-end;
+      width: 100%;
+
+      .ai-new-question-button {
+        width: 100%;
+      }
+    }
     .sidebar-container {
       border: none;
     }
