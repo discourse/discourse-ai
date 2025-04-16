@@ -60,6 +60,7 @@ class AiUsageSerializer < ApplicationSerializer
       total_request_tokens: object.total_request_tokens,
       total_response_tokens: object.total_response_tokens,
       total_requests: object.total_requests,
+      total_spending: object.total_spending,
       date_range: {
         start: object.start_date,
         end: object.end_date,

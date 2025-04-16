@@ -4,6 +4,7 @@ import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
+import { modifier } from "ember-modifier";
 import { eq, gt, lt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
@@ -32,6 +33,22 @@ export default class AiUsage extends Component {
   @tracked selectedPeriod = "month";
   @tracked isCustomDateActive = false;
   @tracked loadingData = true;
+
+  // TODO: currently doing dollar, but how should we handle other currencies?
+  addCurrency = modifier((element) => {
+    element.querySelectorAll(".d-stat-tile__label").forEach((label) => {
+      if (
+        label.innerText.trim() === i18n("discourse_ai.usage.total_spending")
+      ) {
+        const valueElement = label
+          .closest(".d-stat-tile")
+          ?.querySelector(".d-stat-tile__value");
+        if (valueElement) {
+          valueElement.innerText = `$${valueElement.innerText}`;
+        }
+      }
+    });
+  });
 
   constructor() {
     super(...arguments);
@@ -152,6 +169,11 @@ export default class AiUsage extends Component {
         label: i18n("discourse_ai.usage.cached_tokens"),
         value: this.data.summary.total_cached_tokens,
         tooltip: i18n("discourse_ai.usage.stat_tooltips.cached_tokens"),
+      },
+      {
+        label: i18n("discourse_ai.usage.total_spending"),
+        value: this.data.summary.total_spending,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.total_spending"),
       },
     ];
   }
@@ -376,9 +398,10 @@ export default class AiUsage extends Component {
             class="ai-usage__summary"
           >
             <:content>
-              <DStatTiles as |tiles|>
+              <DStatTiles {{this.addCurrency}} as |tiles|>
                 {{#each this.metrics as |metric|}}
                   <tiles.Tile
+                    class="bar"
                     @label={{metric.label}}
                     @href={{metric.href}}
                     @value={{metric.value}}

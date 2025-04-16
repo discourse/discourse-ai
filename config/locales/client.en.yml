@@ -239,6 +239,7 @@ en:
         net_request_tokens: "Net request tokens"
         cached_tokens: "Cached tokens"
         cached_request_tokens: "Cached request tokens"
+        total_spending: "Total spending"
         no_users: "No user usage data found"
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
@@ -249,6 +250,7 @@ en:
           request_tokens: "Tokens used when the LLM tries to understand what you are saying"
           response_tokens: "Tokens used when the LLM responds to your prompt"
           cached_tokens: "Previously processed request tokens that the LLM reuses to optimize performance and cost"
+          total_spending: "Cumulative cost of all tokens used by the LLMs"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"
