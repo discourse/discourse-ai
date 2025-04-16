@@ -26,7 +26,7 @@ export default {
         (BaseCustomSidebarPanel) =>
           class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
             key = AI_CONVERSATIONS_PANEL;
-            hidden = true; // Hide from panel switching UI
+            hidden = true;
             displayHeader = true;
             expandActiveSection = true;
           }
@@ -34,7 +34,6 @@ export default {
 
       api.renderInOutlet("sidebar-footer-actions", AiBotSidebarNewConversation);
 
-      // Step 2: Add a custom section to your panel
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           return class extends BaseCustomSidebarSection {
@@ -145,6 +144,7 @@ export default {
                   text = newTopic.title;
                   prefixType = "icon";
                   prefixValue = "robot";
+                  classNames = `ai-conversation-${newTopic.topic_id}`;
                 })();
 
               this.links = [builtTopic, ...this.links];
@@ -163,6 +163,7 @@ export default {
                 text = topic.title;
                 prefixType = "icon";
                 prefixValue = "robot";
+                classNames = `ai-conversation-${topic.id}`;
               })();
             }
 
@@ -177,10 +178,21 @@ export default {
 
             watchForTitleUpdate(topic) {
               const channel = `/discourse-ai/ai-bot/topic/${topic.topic_id}`;
-              messageBus.subscribe(channel, () => {
-                this.fetchMessages();
+              const topicId = topic.topic_id;
+              const callback = this.updateTopicTitle.bind(this);
+              messageBus.subscribe(channel, ({ title }) => {
+                callback(topicId, title);
                 messageBus.unsubscribe(channel);
               });
+            }
+
+            updateTopicTitle(topicId, title) {
+              const text = document.querySelector(
+                `.sidebar-section-link-wrapper .ai-conversation-${topicId} .sidebar-section-link-content-text`
+              );
+              if (text) {
+                text.innerText = title;
+              }
             }
 
             get name() {
@@ -191,10 +203,6 @@ export default {
               // TODO: FIX
               //return i18n(themePrefix("messages_sidebar.title"));
               return "Conversations";
-            }
-
-            get displaySection() {
-              return this.links?.length > 0;
             }
           };
         },
