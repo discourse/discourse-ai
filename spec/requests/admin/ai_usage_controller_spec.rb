@@ -106,10 +106,10 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
         expected_total_spending =
           expected_input_spending + expected_cached_input_spending + expected_output_spending
 
-        expect(feature["input_spending"]).to eq(expected_input_spending.to_s)
-        expect(feature["output_spending"]).to eq(expected_output_spending.to_s)
-        expect(feature["cached_input_spending"]).to eq(expected_cached_input_spending.to_s)
-        expect(summary["total_spending"]).to eq(expected_total_spending.round(2))
+        expect(feature["input_spending"].to_s).to eq(expected_input_spending.to_s)
+        expect(feature["output_spending"].to_s).to eq(expected_output_spending.to_s)
+        expect(feature["cached_input_spending"].to_s).to eq(expected_cached_input_spending.to_s)
+        expect(summary["total_spending"].to_s).to eq(expected_total_spending.round(2).to_s)
       end
 
       it "handles different period groupings" do
