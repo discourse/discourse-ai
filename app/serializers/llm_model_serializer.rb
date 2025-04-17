@@ -11,6 +11,7 @@ class LlmModelSerializer < ApplicationSerializer
              :name,
              :provider,
              :max_prompt_tokens,
+             :max_output_tokens,
              :tokenizer,
              :api_key,
              :url,

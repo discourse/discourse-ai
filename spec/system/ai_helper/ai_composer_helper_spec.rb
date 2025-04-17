@@ -36,9 +36,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
         "I like to eat pie. It is a very good dessert. Some people are wasteful by throwing pie at others but I do not do that. I always eat the pie.",
     )
   end
-  fab!(:post_2) do
-    Fabricate(:post, topic: topic, raw: "La lluvia en España se queda principalmente en el avión.")
-  end
 
   def trigger_composer_helper(content)
     visit("/latest")

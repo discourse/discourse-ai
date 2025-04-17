@@ -53,6 +53,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     form.field("max_prompt_tokens").fill_in(8000)
     form.field("provider").select("vllm")
     form.field("tokenizer").select("DiscourseAi::Tokenizer::Llama3Tokenizer")
+    form.field("max_output_tokens").fill_in(2000)
     form.field("vision_enabled").toggle
     form.field("enabled_chat_bot").toggle
     form.submit
@@ -67,6 +68,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     expect(llm.tokenizer).to eq("DiscourseAi::Tokenizer::Llama3Tokenizer")
     expect(llm.max_prompt_tokens.to_i).to eq(8000)
     expect(llm.provider).to eq("vllm")
+    expect(llm.max_output_tokens.to_i).to eq(2000)
     expect(llm.vision_enabled).to eq(true)
     expect(llm.user_id).not_to be_nil
   end

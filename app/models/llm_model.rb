@@ -16,6 +16,7 @@ class LlmModel < ActiveRecord::Base
   validates :input_cost,
             :cached_input_cost,
             :output_cost,
+            :max_output_tokens,
             numericality: {
               greater_than_or_equal_to: 0,
             },
@@ -193,4 +194,5 @@ end
 #  input_cost        :float
 #  cached_input_cost :float
 #  output_cost       :float
+#  max_output_tokens :integer
 #
