@@ -56,6 +56,11 @@ export default {
             }
 
             willDestroy() {
+              this.removeScrollListener();
+            }
+
+            @bind
+            removeScrollListener() {
               const sidebar = this.sidebarElement;
               if (sidebar) {
                 sidebar.removeEventListener("scroll", this.scrollHandler);
@@ -63,7 +68,7 @@ export default {
             }
 
             @bind
-            didInsert() {
+            attachScrollListener() {
               const sidebar = this.sidebarElement;
               if (sidebar) {
                 sidebar.addEventListener("scroll", this.scrollHandler);
@@ -116,7 +121,9 @@ export default {
                   this.totalTopicsCount = data.meta.total;
                   this.hasMore = data.meta.more;
                   this.isFetching = false;
+                  this.removeScrollListener();
                   this.buildSidebarLinks();
+                  this.attachScrollListener();
                 })
                 .catch(() => {
                   this.isFetching = false;
