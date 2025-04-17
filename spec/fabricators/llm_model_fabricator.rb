@@ -8,6 +8,9 @@ Fabricator(:llm_model) do
   api_key "123"
   url "https://api.openai.com/v1/chat/completions"
   max_prompt_tokens 131_072
+  input_cost 10
+  cached_input_cost 2.5
+  output_cost 40
 end
 
 Fabricator(:anthropic_model, from: :llm_model) do
