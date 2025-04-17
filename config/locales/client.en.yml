@@ -323,6 +323,13 @@ en:
         rag_conversation_chunks: "Search conversation chunks"
         rag_conversation_chunks_help: "The number of chunks to use for the RAG model searches. Increase to increase the amount of context the AI can use."
         persona_description: "Personas are a powerful feature that allows you to customize the behavior of the AI engine in your Discourse forum. They act as a 'system message' that guides the AI's responses and interactions, helping to create a more personalized and engaging user experience."
+        response_format:
+          title: "JSON response format"
+          no_format: "No JSON format specified"
+          open_modal: "Edit"
+          modal:
+            root_title: "Response structure"
+            key_title: "Key"
 
         list:
           enabled: "AI Bot?"

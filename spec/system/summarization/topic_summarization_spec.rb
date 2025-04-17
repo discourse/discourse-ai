@@ -12,7 +12,9 @@ RSpec.describe "Summarize a topic ", type: :system do
         "I like to eat pie. It is a very good dessert. Some people are wasteful by throwing pie at others but I do not do that. I always eat the pie.",
     )
   end
+
   let(:summarization_result) { "This is a summary" }
+
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:summary_box) { PageObjects::Components::AiSummaryTrigger.new }
 

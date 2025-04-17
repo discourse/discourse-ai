@@ -15,6 +15,7 @@ import Group from "discourse/models/group";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
 import GroupChooser from "select-kit/components/group-chooser";
+import AiPersonaResponseFormatEditor from "../components/modal/ai-persona-response-format-editor";
 import AiLlmSelector from "./ai-llm-selector";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
@@ -324,6 +325,8 @@ export default class PersonaEditor extends Component {
         >
           <field.Textarea />
         </form.Field>
+
+        <AiPersonaResponseFormatEditor @form={{form}} @data={{data}} />
 
         <form.Field
           @name="default_llm_id"

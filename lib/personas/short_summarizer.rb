@@ -18,8 +18,18 @@ module DiscourseAi
           - Limit the summary to a maximum of 40 words.
           - Do *NOT* repeat the discussion title in the summary.
 
-          Return the summary inside <ai></ai> tags.
+          Format your response as a JSON object with a single key named "summary", which has the summary as the value.
+          Your output should be in the following format:
+            <output>
+              {"summary": "xx"}
+            </output>
+          
+          Where "xx" is replaced by the summary.
         PROMPT
+      end
+
+      def response_format
+        [{ key: "summary", type: "string" }]
       end
     end
   end

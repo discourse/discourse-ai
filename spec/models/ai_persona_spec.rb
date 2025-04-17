@@ -267,6 +267,7 @@ RSpec.describe AiPersona do
         description: "system persona",
         system_prompt: "system persona",
         tools: %w[Search Time],
+        response_format: [{ key: "summary", type: "string" }],
         system: true,
       )
     end
@@ -283,6 +284,22 @@ RSpec.describe AiPersona do
         system_persona.update(tools: invalid_tools)
         expect(system_persona.errors[:base]).to include(
           I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"),
+        )
+      end
+
+      it "doesn't accept response format changes" do
+        new_format = [{ key: "summary2", type: "string" }]
+
+        expect { system_persona.update!(response_format: new_format) }.to raise_error(
+          ActiveRecord::RecordInvalid,
+        )
+      end
+
+      it "doesn't accept additional format changes" do
+        new_format = [{ key: "summary", type: "string" }, { key: "summary2", type: "string" }]
+
+        expect { system_persona.update!(response_format: new_format) }.to raise_error(
+          ActiveRecord::RecordInvalid,
         )
       end
     end
