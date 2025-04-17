@@ -36,6 +36,41 @@ export default {
 
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
+          const AiConversationLink = class extends BaseCustomSidebarSectionLink {
+            route = "topic.fromParamsNear";
+            prefixType = "icon";
+            prefixValue = "robot";
+
+            constructor(topic) {
+              super(...arguments);
+              this.topic = topic;
+            }
+
+            get name() {
+              return this.topic.title;
+            }
+
+            get models() {
+              return [
+                this.topic.slug,
+                this.topic.id,
+                this.topic.last_read_post_number || 0,
+              ];
+            }
+
+            get title() {
+              return this.topic.title;
+            }
+
+            get text() {
+              return this.topic.title;
+            }
+
+            get classNames() {
+              return `ai-conversation-${this.topic.id}`;
+            }
+          };
+
           return class extends BaseCustomSidebarSection {
             @tracked links = new TrackedArray();
             @tracked topics = [];
@@ -48,16 +83,37 @@ export default {
               super(...arguments);
               this.fetchMessages();
 
-              appEvents.on("topic:created", (topic) => {
-                // when asking a new question
-                this.addNewMessage(topic);
-                this.watchForTitleUpdate(topic);
-              });
+              appEvents.on("topic:created", this, "addNewMessageToSidebar");
             }
 
+            @bind
             willDestroy() {
               this.removeScrollListener();
+              appEvents.on("topic:created", this, "addNewMessageToSidebar");
             }
+
+get name() {
+              return "ai-conversations-history";
+            }
+
+            get text() {
+              // TODO: FIX
+              //return i18n(themePrefix("messages_sidebar.title"));
+              return "Conversations";
+            }
+
+            get sidebarElement() {
+              return document.querySelector(
+                ".sidebar-wrapper .sidebar-sections"
+              );
+            }
+
+            addNewMessageToSidebar(topic) {
+              this.addNewMessage(topic);
+              this.watchForTitleUpdate(topic);
+            }
+
+
 
             @bind
             removeScrollListener() {
@@ -73,12 +129,6 @@ export default {
               if (sidebar) {
                 sidebar.addEventListener("scroll", this.scrollHandler);
               }
-            }
-
-            get sidebarElement() {
-              return document.querySelector(
-                ".sidebar-wrapper .sidebar-sections"
-              );
             }
 
             @bind
@@ -108,7 +158,7 @@ export default {
               this.isFetching = true;
 
               ajax("/discourse-ai/ai-bot/conversations.json", {
-                data: { page: this.page, per_page: 40 },
+                data: { page: this.page, per_page: 20 },
               })
                 .then((data) => {
                   if (isLoadingMore) {
@@ -139,48 +189,14 @@ export default {
               this.fetchMessages(true);
             }
 
-            addNewMessage(newTopic) {
-              // the pm endpoint isn't fast enough include the newly created topic
-              // so this adds the new topic to the existing list
-              const builtTopic =
-                new (class extends BaseCustomSidebarSectionLink {
-                  name = newTopic.title;
-                  route = "topic.fromParamsNear";
-                  models = [newTopic.topic_slug, newTopic.topic_id, 0];
-                  title = newTopic.title;
-                  text = newTopic.title;
-                  prefixType = "icon";
-                  prefixValue = "robot";
-                  classNames = `ai-conversation-${newTopic.topic_id}`;
-                })();
-
-              this.links = [builtTopic, ...this.links];
-            }
-
-            createBotConversationLink(SuperClass, topic) {
-              return new (class extends SuperClass {
-                name = topic.title;
-                route = "topic.fromParamsNear";
-                models = [
-                  topic.slug,
-                  topic.id,
-                  topic.last_read_post_number || 0,
-                ];
-                title = topic.title;
-                text = topic.title;
-                prefixType = "icon";
-                prefixValue = "robot";
-                classNames = `ai-conversation-${topic.id}`;
-              })();
-            }
-
             buildSidebarLinks() {
-              this.links = this.topics.map((topic) =>
-                this.createBotConversationLink(
-                  BaseCustomSidebarSectionLink,
-                  topic
-                )
+              this.links = this.topics.map(
+                (topic) => new AiConversationLink(topic)
               );
+            }
+
+            addNewMessage(newTopic) {
+              this.links = [new AiConversationLink(newTopic), ...this.links];
             }
 
             watchForTitleUpdate(topic) {
@@ -200,16 +216,6 @@ export default {
               if (text) {
                 text.innerText = title;
               }
-            }
-
-            get name() {
-              return "ai-conversations-history";
-            }
-
-            get text() {
-              // TODO: FIX
-              //return i18n(themePrefix("messages_sidebar.title"));
-              return "Conversations";
             }
           };
         },
