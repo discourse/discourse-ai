@@ -2,9 +2,10 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
-import { modifier } from "ember-modifier";
 import { eq, gt, lt } from "truth-helpers";
 import ConditionalLoadingSpinner from "discourse/components/conditional-loading-spinner";
 import DButton from "discourse/components/d-button";
@@ -33,22 +34,6 @@ export default class AiUsage extends Component {
   @tracked selectedPeriod = "month";
   @tracked isCustomDateActive = false;
   @tracked loadingData = true;
-
-  // TODO: currently doing dollar, but how should we handle other currencies?
-  addCurrency = modifier((element) => {
-    element.querySelectorAll(".d-stat-tile__label").forEach((label) => {
-      if (
-        label.innerText.trim() === i18n("discourse_ai.usage.total_spending")
-      ) {
-        const valueElement = label
-          .closest(".d-stat-tile")
-          ?.querySelector(".d-stat-tile__value");
-        if (valueElement) {
-          valueElement.innerText = `$${valueElement.innerText}`;
-        }
-      }
-    });
-  });
 
   constructor() {
     super(...arguments);
@@ -89,6 +74,22 @@ export default class AiUsage extends Component {
   onModelChanged(value) {
     this.selectedModel = value;
     this.onFilterChange();
+  }
+
+  @action
+  addCurrencyChar(element) {
+    element.querySelectorAll(".d-stat-tile__label").forEach((label) => {
+      if (
+        label.innerText.trim() === i18n("discourse_ai.usage.total_spending")
+      ) {
+        const valueElement = label
+          .closest(".d-stat-tile")
+          ?.querySelector(".d-stat-tile__value");
+        if (valueElement) {
+          valueElement.innerText = `$${valueElement.innerText}`;
+        }
+      }
+    });
   }
 
   @bind
@@ -403,7 +404,12 @@ export default class AiUsage extends Component {
             class="ai-usage__summary"
           >
             <:content>
-              <DStatTiles {{this.addCurrency}} as |tiles|>
+              <DStatTiles
+                {{didInsert this.addCurrencyChar this.metrics}}
+                {{didUpdate this.addCurrencyChar this.metrics}}
+                as |tiles|
+              >
+
                 {{#each this.metrics as |metric|}}
                   <tiles.Tile
                     class="bar"

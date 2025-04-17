@@ -250,7 +250,7 @@ en:
           request_tokens: "Tokens used when the LLM tries to understand what you are saying"
           response_tokens: "Tokens used when the LLM responds to your prompt"
           cached_tokens: "Previously processed request tokens that the LLM reuses to optimize performance and cost"
-          total_spending: "Cumulative cost of all tokens used by the LLMs"
+          total_spending: "Cumulative cost of all tokens used by the LLMs based on specified cost metrics added to LLM configuration settings"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"
