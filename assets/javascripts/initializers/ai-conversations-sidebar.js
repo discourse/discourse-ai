@@ -214,7 +214,7 @@ export default {
           return aiConversationsSidebarManager.forceCustomSidebar();
         }
 
-        const topic = api.container.lookup("route:topic").modelFor("topic");
+        const topic = api.container.lookup("controller:topic").model;
         if (
           topic &&
           topic.archetype === "private_message" &&
