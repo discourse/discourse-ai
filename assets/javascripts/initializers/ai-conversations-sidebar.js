@@ -209,28 +209,26 @@ export default {
         AI_CONVERSATIONS_PANEL
       );
 
-      api.modifyClass(
-        "route:topic",
-        (Superclass) =>
-          class extends Superclass {
-            activate() {
-              super.activate();
-              const topic = this.modelFor("topic");
-              if (
-                topic &&
-                topic.archetype === "private_message" &&
-                topic.ai_persona_name
-              ) {
-                aiConversationsSidebarManager.forceCustomSidebar();
-              }
-            }
+      const setSidebarPanel = (transition) => {
+        if (transition?.to?.name === "discourse-ai-bot-conversations") {
+          return aiConversationsSidebarManager.forceCustomSidebar();
+        }
 
-            deactivate() {
-              super.activate();
-              aiConversationsSidebarManager.stopForcingCustomSidebar();
-            }
-          }
-      );
+        const topic = api.container.lookup("route:topic").modelFor("topic");
+        if (
+          topic &&
+          topic.archetype === "private_message" &&
+          topic.ai_persona_name
+        ) {
+          return aiConversationsSidebarManager.forceCustomSidebar();
+        }
+
+        aiConversationsSidebarManager.stopForcingCustomSidebar();
+      };
+
+      api.container
+        .lookup("service:router")
+        .on("routeDidChange", setSidebarPanel);
     });
   },
 };
