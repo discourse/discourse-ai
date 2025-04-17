@@ -161,6 +161,9 @@ module DiscourseAi
             :api_key,
             :enabled_chat_bot,
             :vision_enabled,
+            :input_cost,
+            :cached_input_cost,
+            :output_cost,
           )
 
         provider = updating ? updating.provider : permitted[:provider]

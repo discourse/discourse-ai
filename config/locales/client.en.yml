@@ -239,6 +239,7 @@ en:
         net_request_tokens: "Net request tokens"
         cached_tokens: "Cached tokens"
         cached_request_tokens: "Cached request tokens"
+        total_spending: "Estimated cost"
         no_users: "No user usage data found"
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
@@ -249,6 +250,7 @@ en:
           request_tokens: "Tokens used when the LLM tries to understand what you are saying"
           response_tokens: "Tokens used when the LLM responds to your prompt"
           cached_tokens: "Previously processed request tokens that the LLM reuses to optimize performance and cost"
+          total_spending: "Cumulative cost of all tokens used by the LLMs based on specified cost metrics added to LLM configuration settings"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"
@@ -404,6 +406,10 @@ en:
         enabled_chat_bot: "Allow AI bot selector"
         vision_enabled: "Vision enabled"
         ai_bot_user: "AI bot User"
+        cost_input: "Input cost"
+        cost_cached_input: "Cached input cost"
+        cost_output: "Output cost"
+
         save: "Save"
         edit: "Edit"
         saved: "LLM model saved"
@@ -487,6 +493,10 @@ en:
           name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
           enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
+          cost_input: "The input cost per 1M tokens for this model"
+          cost_cached_input: "The cached input cost per 1M tokens for this model"
+          cost_output: "The output cost per 1M tokens for this model"
+          cost_measure: "$/1M tokens"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
