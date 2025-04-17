@@ -131,7 +131,13 @@ module DiscourseAi
 
       def feature_breakdown
         base_query
-          .group(:feature_name)
+          .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+          .group(
+            :feature_name,
+            "llm_models.input_cost",
+            "llm_models.output_cost",
+            "llm_models.cached_input_cost",
+          )
           .order("usage_count DESC")
           .select(
             "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",
@@ -140,12 +146,21 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
+            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
           )
       end
 
       def model_breakdown
         base_query
-          .group(:language_model)
+          .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+          .group(
+            :language_model,
+            "llm_models.input_cost",
+            "llm_models.output_cost",
+            "llm_models.cached_input_cost",
+          )
           .order("usage_count DESC")
           .select(
             "language_model as llm",
@@ -154,6 +169,9 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
+            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
           )
       end
 

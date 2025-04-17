@@ -22,6 +22,9 @@ class AiUsageSerializer < ApplicationSerializer
         total_cached_tokens
         total_request_tokens
         total_response_tokens
+        input_spending
+        output_spending
+        cached_input_spending
       ],
     )
   end
@@ -35,6 +38,9 @@ class AiUsageSerializer < ApplicationSerializer
         total_cached_tokens
         total_request_tokens
         total_response_tokens
+        input_spending
+        output_spending
+        cached_input_spending
       ],
     )
   end

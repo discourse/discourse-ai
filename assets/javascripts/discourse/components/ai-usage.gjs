@@ -330,6 +330,11 @@ export default class AiUsage extends Component {
     this.fetchData();
   }
 
+  totalSpending(inputSpending, cachedSpending, outputSpending) {
+    const total = inputSpending + cachedSpending + outputSpending;
+    return `$${total.toFixed(2)}`;
+  }
+
   <template>
     <div class="ai-usage admin-detail">
       <DPageSubheader
@@ -445,6 +450,7 @@ export default class AiUsage extends Component {
                         <th>{{i18n "discourse_ai.usage.feature"}}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -461,6 +467,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__features-cell"
                             title={{feature.total_tokens}}
                           >{{number feature.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              feature.input_spending
+                              feature.cached_input_spending
+                              feature.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>
@@ -487,6 +500,8 @@ export default class AiUsage extends Component {
                         <th>{{i18n "discourse_ai.usage.model"}}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -501,6 +516,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__models-cell"
                             title={{model.total_tokens}}
                           >{{number model.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              model.input_spending
+                              model.cached_input_spending
+                              model.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>
