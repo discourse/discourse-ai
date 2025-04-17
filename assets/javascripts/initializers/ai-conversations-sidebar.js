@@ -92,7 +92,7 @@ export default {
               appEvents.on("topic:created", this, "addNewMessageToSidebar");
             }
 
-get name() {
+            get name() {
               return "ai-conversations-history";
             }
 
@@ -112,8 +112,6 @@ get name() {
               this.addNewMessage(topic);
               this.watchForTitleUpdate(topic);
             }
-
-
 
             @bind
             removeScrollListener() {
@@ -158,11 +156,10 @@ get name() {
               this.isFetching = true;
 
               ajax("/discourse-ai/ai-bot/conversations.json", {
-                data: { page: this.page, per_page: 20 },
+                data: { page: this.page, per_page: 40 },
               })
                 .then((data) => {
                   if (isLoadingMore) {
-                    // Append to existing topics
                     this.topics = [...this.topics, ...data.conversations];
                   } else {
                     this.topics = data.conversations;
