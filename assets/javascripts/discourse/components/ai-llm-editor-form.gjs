@@ -179,7 +179,6 @@ export default class AiLlmEditorForm extends Component {
 
   @action
   async save(data) {
-    console.log(data);
     this.isSaving = true;
     const isNew = this.args.model.isNew;
 
