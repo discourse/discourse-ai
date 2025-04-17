@@ -40,6 +40,7 @@ export default class AiLlmEditorForm extends Component {
 
       return {
         max_prompt_tokens: modelInfo.tokens,
+        max_output_tokens: modelInfo.max_output_tokens,
         tokenizer: info.tokenizer,
         url: modelInfo.endpoint || info.endpoint,
         display_name: modelInfo.display_name,
@@ -53,6 +54,7 @@ export default class AiLlmEditorForm extends Component {
 
     return {
       max_prompt_tokens: model.max_prompt_tokens,
+      max_output_tokens: model.max_output_tokens,
       api_key: model.api_key,
       tokenizer: model.tokenizer,
       url: model.url,
@@ -183,8 +185,18 @@ export default class AiLlmEditorForm extends Component {
     this.isSaving = true;
     const isNew = this.args.model.isNew;
 
+    const updatedData = {
+      ...data,
+    };
+
+    // If max_prompt_tokens input is cleared,
+    // we want the db to store null
+    if (!data.max_output_tokens) {
+      updatedData.max_output_tokens = null;
+    }
+
     try {
-      await this.args.model.save(data);
+      await this.args.model.save(updatedData);
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);
@@ -393,6 +405,16 @@ export default class AiLlmEditorForm extends Component {
           @title={{i18n "discourse_ai.llms.max_prompt_tokens"}}
           @tooltip={{i18n "discourse_ai.llms.hints.max_prompt_tokens"}}
           @validation="required"
+          @format="large"
+          as |field|
+        >
+          <field.Input @type="number" step="any" min="0" lang="en" />
+        </form.Field>
+
+        <form.Field
+          @name="max_output_tokens"
+          @title={{i18n "discourse_ai.llms.max_output_tokens"}}
+          @tooltip={{i18n "discourse_ai.llms.hints.max_output_tokens"}}
           @format="large"
           as |field|
         >

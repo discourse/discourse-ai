@@ -10,6 +10,7 @@ export default class AiLlm extends RestModel {
       "provider",
       "tokenizer",
       "max_prompt_tokens",
+      "max_output_tokens",
       "url",
       "api_key",
       "enabled_chat_bot",
