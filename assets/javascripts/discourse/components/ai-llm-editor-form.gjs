@@ -262,7 +262,6 @@ export default class AiLlmEditorForm extends Component {
       class="ai-llm-editor"
       as |form data|
     >
-      {{log this.formData}}
       {{#if this.modulesUsingModel}}
         <form.Alert @icon="circle-info">
           {{this.inUseWarning}}

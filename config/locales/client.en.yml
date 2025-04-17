@@ -239,7 +239,7 @@ en:
         net_request_tokens: "Net request tokens"
         cached_tokens: "Cached tokens"
         cached_request_tokens: "Cached request tokens"
-        total_spending: "Total spending"
+        total_spending: "Estimated cost"
         no_users: "No user usage data found"
         no_models: "No model usage data found"
         no_features: "No feature usage data found"

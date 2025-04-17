@@ -556,6 +556,7 @@ export default class AiUsage extends Component {
                           }}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -580,6 +581,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__users-cell"
                             title={{user.total_tokens}}
                           >{{number user.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              user.input_spending
+                              user.cached_input_spending
+                              user.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>
