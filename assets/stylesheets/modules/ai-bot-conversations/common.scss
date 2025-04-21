@@ -241,22 +241,6 @@ body.has-ai-conversations-sidebar {
       }
     }
 
-    .ai-question-button {
-      border-radius: var(--border-radius);
-      border: 1px solid var(--primary-low);
-      line-height: var(--line-height-medium);
-
-      .d-button-label {
-        color: var(--primary-high);
-      }
-
-      .discourse-no-touch & {
-        &:hover {
-          background: var(--primary-low);
-        }
-      }
-    }
-
     .ai-disclaimer {
       text-align: center;
       font-size: var(--font-down-1);

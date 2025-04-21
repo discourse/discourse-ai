@@ -14,7 +14,10 @@ module PageObjects
       end
 
       def has_too_short_dialog?
-        page.find(".dialog-content", text: "Message must be longer than 10 characters")
+        page.find(
+          ".dialog-content",
+          text: I18n.t("js.discourse_ai.ai_bot.conversations.min_input_length_message"),
+        )
       end
 
       def has_homepage?

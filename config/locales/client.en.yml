@@ -719,7 +719,7 @@ en:
         conversations:
           header: "What can I help with?"
           submit: "Submit question"
-          disclaimer: "Generative AI can make mistakes"
+          disclaimer: "Generative AI can make mistakes. Verify important information."
           placeholder: "Ask a question..."
           new: "New Question"
           min_input_length_message: "Message must be longer than 10 characters"

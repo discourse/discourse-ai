@@ -168,7 +168,7 @@ export default {
                 }
 
                 this.totalTopicsCount = data.meta.total;
-                this.hasMore = data.meta.more;
+                this.hasMore = data.meta.has_more;
                 this.isFetching = false;
                 this.removeScrollListener();
                 this.buildSidebarLinks();
