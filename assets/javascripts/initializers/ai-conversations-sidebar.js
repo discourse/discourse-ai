@@ -12,7 +12,7 @@ export default {
   name: "ai-conversations-sidebar",
 
   initialize() {
-    withPluginApi("1.8.0", (api) => {
+    withPluginApi((api) => {
       const currentUser = api.container.lookup("service:current-user");
       if (!currentUser) {
         return;
