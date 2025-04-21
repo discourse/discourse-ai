@@ -37,10 +37,6 @@ DiscourseAi::Engine.routes.draw do
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
   end
 
-  scope module: :ai_bot, path: "/ai-bot/conversations" do
-    get "/" => "conversations#index"
-  end
-
   scope module: :ai_bot, path: "/ai-bot/artifacts" do
     get "/:id" => "artifacts#show"
     get "/:id/:version" => "artifacts#show"

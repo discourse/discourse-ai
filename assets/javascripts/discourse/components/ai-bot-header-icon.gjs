@@ -9,7 +9,6 @@ export default class AiBotHeaderIcon extends Component {
   @service currentUser;
   @service siteSettings;
   @service composer;
-  @service router;
 
   get bots() {
     const availableBots = this.currentUser.ai_enabled_chat_bots
@@ -25,9 +24,6 @@ export default class AiBotHeaderIcon extends Component {
 
   @action
   compose() {
-    if (this.siteSettings.ai_enable_experimental_bot_ux) {
-      return this.router.transitionTo("discourse-ai-bot-conversations");
-    }
     composeAiBotMessage(this.bots[0], this.composer);
   }
 

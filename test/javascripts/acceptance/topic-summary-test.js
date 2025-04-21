@@ -29,8 +29,6 @@ acceptance("Topic - Summary", function (needs) {
         done: false,
       });
     });
-
-    server.get("/discourse-ai/ai-bot/conversations.json", () => {});
   });
 
   needs.hooks.beforeEach(() => {

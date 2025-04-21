@@ -50,8 +50,6 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
         done: false,
       });
     });
-
-    server.get("/discourse-ai/ai-bot/conversations.json", () => {});
   });
 
   test("displays streamed explanation", async function (assert) {

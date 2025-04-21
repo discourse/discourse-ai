@@ -716,14 +716,6 @@ en:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
-        conversations:
-          header: "What can I help with?"
-          submit: "Submit question"
-          disclaimer: "Generative AI can make mistakes. Verify important information."
-          placeholder: "Ask a question..."
-          new: "New Question"
-          min_input_length_message: "Message must be longer than 10 characters"
-          messages_sidebar_title: "Conversations"
       sentiments:
         dashboard:
           title: "Sentiment"
