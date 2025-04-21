@@ -26,7 +26,7 @@ module DiscourseAi
                    total: total,
                    page: page,
                    per_page: per_page,
-                   more: total > (page + 1) * per_page,
+                   has_more: total > (page + 1) * per_page,
                  },
                }
       end

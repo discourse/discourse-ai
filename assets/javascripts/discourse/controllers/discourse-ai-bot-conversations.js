@@ -31,6 +31,10 @@ export default class DiscourseAiBotConversations extends Controller {
     }
   }
 
+  get displayPersonaSelector() {
+    return this.personaOptions.length > 1;
+  }
+
   get filterable() {
     return this.personaOptions.length > 4;
   }

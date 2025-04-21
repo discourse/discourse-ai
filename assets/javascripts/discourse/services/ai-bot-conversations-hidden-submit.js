@@ -1,6 +1,7 @@
 import { action } from "@ember/object";
 import { next } from "@ember/runloop";
 import Service, { service } from "@ember/service";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
 
@@ -54,9 +55,8 @@ export default class AiBotConversationsHiddenSubmit extends Service {
         // but avoids deleting too-short message on submit
         this.inputValue = "";
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Failed to submit message:", error);
+    } catch (e) {
+      popupAjaxError(e);
     }
   }
 }
