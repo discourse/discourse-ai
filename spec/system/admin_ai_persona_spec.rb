@@ -27,10 +27,12 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     tool_selector = PageObjects::Components::SelectKit.new("#control-tools .select-kit")
     tool_selector.expand
     tool_selector.select_row_by_value("Read")
+    tool_selector.select_row_by_value("ListCategories")
     tool_selector.collapse
 
     tool_selector = PageObjects::Components::SelectKit.new("#control-forcedTools .select-kit")
     tool_selector.expand
+    tool_selector.select_row_by_value("ListCategories")
     tool_selector.select_row_by_value("Read")
     tool_selector.collapse
 
@@ -46,12 +48,14 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
     expect(persona.name).to eq("Test Persona")
     expect(persona.description).to eq("I am a test persona")
     expect(persona.system_prompt).to eq("You are a helpful bot")
-    expect(persona.tools).to eq([["Read", { "read_private" => nil }, true]])
     expect(persona.forced_tool_count).to eq(1)
+
+    expected_tools = [["Read", { "read_private" => nil }, true], ["ListCategories", {}, true]]
+    expect(persona.tools).to contain_exactly(*expected_tools)
   end
 
   it "will not allow deletion or editing of system personas" do
-    visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}/edit"
+    visit "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}/edit"
     expect(page).not_to have_selector(".ai-persona-editor__delete")
     expect(form.field("system_prompt")).to be_disabled
   end

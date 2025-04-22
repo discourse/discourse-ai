@@ -47,9 +47,9 @@ module DiscourseAi
 
       def discover
         ai_persona =
-          AiPersona.all_personas.find do |persona|
-            persona.id == SiteSetting.ai_bot_discover_persona.to_i
-          end
+          AiPersona
+            .all_personas(enabled_only: false)
+            .find { |persona| persona.id == SiteSetting.ai_bot_discover_persona.to_i }
 
         if ai_persona.nil? || !current_user.in_any_groups?(ai_persona.allowed_group_ids.to_a)
           raise Discourse::InvalidAccess.new
@@ -68,6 +68,40 @@ module DiscourseAi
         Jobs.enqueue(:stream_discover_reply, user_id: current_user.id, query: query)
 
         render json: {}, status: 200
+      end
+
+      def discover_continue_convo
+        raise Discourse::InvalidParameters.new("user_id") if !params[:user_id]
+        raise Discourse::InvalidParameters.new("query") if !params[:query]
+        raise Discourse::InvalidParameters.new("context") if !params[:context]
+
+        user = User.find(params[:user_id])
+
+        bot_user_id = AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona).user_id
+        bot_username = User.find_by(id: bot_user_id).username
+
+        query = params[:query]
+        context = "[quote]\n#{params[:context]}\n[/quote]"
+
+        post =
+          PostCreator.create!(
+            user,
+            title:
+              I18n.t("discourse_ai.ai_bot.discoveries.continue_conversation.title", query: query),
+            raw:
+              I18n.t(
+                "discourse_ai.ai_bot.discoveries.continue_conversation.raw",
+                query: query,
+                context: context,
+              ),
+            archetype: Archetype.private_message,
+            target_usernames: bot_username,
+            skip_validations: true,
+          )
+
+        render json: success_json.merge(topic_id: post.topic_id)
+      rescue StandardError => e
+        render json: failed_json.merge(errors: [e.message]), status: 422
       end
     end
   end

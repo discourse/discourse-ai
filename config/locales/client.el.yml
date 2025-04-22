@@ -138,6 +138,10 @@ el:
         sentiment_analysis:
           filter_types:
             all: "Όλα"
+          group_types:
+            category: "Κατηγορία"
+          table:
+            total_count: "Σύνολο"
       discobot_discoveries:
         regular_results: "Θέματα"
         collapse: "Σύμπτυξη"

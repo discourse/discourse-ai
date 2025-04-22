@@ -130,6 +130,10 @@ bg:
         sentiment_analysis:
           filter_types:
             all: "Всички"
+          group_types:
+            category: "Категория"
+          table:
+            total_count: "Общо"
       summarization:
         chat:
           summarize: "Обобщаване"

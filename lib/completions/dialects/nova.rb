@@ -155,7 +155,7 @@ module DiscourseAi
             end
           end
 
-          { role: "user", content: msg[:content], images: images }
+          { role: "user", content: prompt.text_only(msg), images: images }
         end
 
         def model_msg(msg)

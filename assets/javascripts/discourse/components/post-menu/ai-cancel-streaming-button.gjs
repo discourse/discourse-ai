@@ -5,8 +5,10 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 
 export default class AiCancelStreamingButton extends Component {
-  // TODO (glimmer-post-menu): Remove this static function and move the code into the button action after the widget code is removed
-  static async cancelStreaming(post) {
+  @action
+  async cancelStreaming() {
+    const post = this.args.post;
+
     try {
       await ajax(`/discourse-ai/ai-bot/post/${post.id}/stop-streaming`, {
         type: "POST",
@@ -18,11 +20,6 @@ export default class AiCancelStreamingButton extends Component {
     } catch (e) {
       popupAjaxError(e);
     }
-  }
-
-  @action
-  cancelStreaming() {
-    this.constructor.cancelStreaming(this.args.post);
   }
 
   <template>

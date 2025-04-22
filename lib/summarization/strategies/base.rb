@@ -33,13 +33,8 @@ module DiscourseAi
           raise NotImplementedError
         end
 
-        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM when extending an existing summary.
-        def summary_extension_prompt(_summary, _texts_to_summarize)
-          raise NotImplementedError
-        end
-
-        # @returns { DiscourseAi::Completions::Prompt } - Prompt passed to the LLM for summarizing a single chunk of content.
-        def first_summary_prompt(_input)
+        # @returns { Array } - Prompt messages to send to the LLM for summarizing content.
+        def as_llm_messages(_input)
           raise NotImplementedError
         end
 

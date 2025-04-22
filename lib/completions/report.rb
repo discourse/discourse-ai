@@ -33,6 +33,27 @@ module DiscourseAi
         stats.total_requests || 0
       end
 
+      def total_spending
+        total = total_input_spending + total_output_spending + total_cached_input_spending
+        total.round(2)
+      end
+
+      def total_input_spending
+        model_costs.sum { |row| row.input_cost.to_f * row.total_request_tokens.to_i / 1_000_000.0 }
+      end
+
+      def total_output_spending
+        model_costs.sum do |row|
+          row.output_cost.to_f * row.total_response_tokens.to_i / 1_000_000.0
+        end
+      end
+
+      def total_cached_input_spending
+        model_costs.sum do |row|
+          row.cached_input_cost.to_f * row.total_cached_tokens.to_i / 1_000_000.0
+        end
+      end
+
       def stats
         @stats ||=
           base_query.select(
@@ -44,6 +65,24 @@ module DiscourseAi
           )[
             0
           ]
+      end
+
+      def model_costs
+        @model_costs ||=
+          base_query
+            .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+            .group(
+              "llm_models.name, llm_models.input_cost, llm_models.output_cost, llm_models.cached_input_cost",
+            )
+            .select(
+              "llm_models.name",
+              "llm_models.input_cost",
+              "llm_models.output_cost",
+              "llm_models.cached_input_cost",
+              "SUM(COALESCE(request_tokens, 0)) as total_request_tokens",
+              "SUM(COALESCE(response_tokens, 0)) as total_response_tokens",
+              "SUM(COALESCE(cached_tokens, 0)) as total_cached_tokens",
+            )
       end
 
       def guess_period(period = nil)
@@ -76,7 +115,15 @@ module DiscourseAi
       def user_breakdown
         base_query
           .joins(:user)
-          .group(:user_id, "users.username", "users.uploaded_avatar_id")
+          .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+          .group(
+            :user_id,
+            "users.username",
+            "users.uploaded_avatar_id",
+            "llm_models.input_cost",
+            "llm_models.output_cost",
+            "llm_models.cached_input_cost",
+          )
           .order("usage_count DESC")
           .limit(USER_LIMIT)
           .select(
@@ -87,12 +134,21 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
+            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
           )
       end
 
       def feature_breakdown
         base_query
-          .group(:feature_name)
+          .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+          .group(
+            :feature_name,
+            "llm_models.input_cost",
+            "llm_models.output_cost",
+            "llm_models.cached_input_cost",
+          )
           .order("usage_count DESC")
           .select(
             "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",
@@ -101,12 +157,21 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
+            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
           )
       end
 
       def model_breakdown
         base_query
-          .group(:language_model)
+          .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
+          .group(
+            :language_model,
+            "llm_models.input_cost",
+            "llm_models.output_cost",
+            "llm_models.cached_input_cost",
+          )
           .order("usage_count DESC")
           .select(
             "language_model as llm",
@@ -115,6 +180,9 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
+            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
           )
       end
 

@@ -11,12 +11,16 @@ class LlmModelSerializer < ApplicationSerializer
              :name,
              :provider,
              :max_prompt_tokens,
+             :max_output_tokens,
              :tokenizer,
              :api_key,
              :url,
              :enabled_chat_bot,
              :provider_params,
              :vision_enabled,
+             :input_cost,
+             :output_cost,
+             :cached_input_cost,
              :used_by
 
   has_one :user, serializer: BasicUserSerializer, embed: :object

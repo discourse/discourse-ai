@@ -17,11 +17,9 @@ describe DiscourseAi::GuardianExtensions do
 
   describe "#can_see_summary?" do
     context "when the user cannot generate a summary" do
-      before { SiteSetting.ai_custom_summarization_allowed_groups = "" }
+      before { assign_persona_to(:ai_summarization_persona, []) }
 
       it "returns false" do
-        SiteSetting.ai_custom_summarization_allowed_groups = ""
-
         expect(guardian.can_see_summary?(topic)).to eq(false)
       end
 
@@ -33,7 +31,7 @@ describe DiscourseAi::GuardianExtensions do
     end
 
     context "when the user can generate a summary" do
-      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
+      before { assign_persona_to(:ai_summarization_persona, [group.id]) }
 
       it "returns true if the user group is present in the ai_custom_summarization_allowed_groups_map setting" do
         expect(guardian.can_see_summary?(topic)).to eq(true)
@@ -41,7 +39,7 @@ describe DiscourseAi::GuardianExtensions do
     end
 
     context "when the topic is a PM" do
-      before { SiteSetting.ai_custom_summarization_allowed_groups = group.id }
+      before { assign_persona_to(:ai_summarization_persona, [group.id]) }
       let(:pm) { Fabricate(:private_message_topic) }
 
       it "returns false" do
@@ -68,34 +66,34 @@ describe DiscourseAi::GuardianExtensions do
   end
 
   describe "#can_see_gists?" do
-    before { SiteSetting.ai_summary_gists_allowed_groups = group.id }
+    before { assign_persona_to(:ai_summary_gists_persona, [group.id]) }
     let(:guardian) { Guardian.new(user) }
 
-    context "when there is no user" do
+    context "when access is restricted to the user's group" do
+      it "returns false when there is a user who is a member of an allowed group" do
+        expect(guardian.can_see_gists?).to eq(true)
+      end
+
       it "returns false for anons" do
         expect(anon_guardian.can_see_gists?).to eq(false)
       end
+
+      it "returns false for non-group members" do
+        other_user_guardian = Guardian.new(Fabricate(:user))
+
+        expect(other_user_guardian.can_see_gists?).to eq(false)
+      end
     end
 
-    context "when setting is set to everyone" do
-      before { SiteSetting.ai_summary_gists_allowed_groups = Group::AUTO_GROUPS[:everyone] }
+    context "when access is set to everyone" do
+      before { assign_persona_to(:ai_summary_gists_persona, [Group::AUTO_GROUPS[:everyone]]) }
 
       it "returns true" do
         expect(guardian.can_see_gists?).to eq(true)
       end
-    end
 
-    context "when there is a user but it's not a member of the allowed groups" do
-      before { SiteSetting.ai_summary_gists_allowed_groups = "" }
-
-      it "returns false" do
-        expect(guardian.can_see_gists?).to eq(false)
-      end
-    end
-
-    context "when there is a user who is a member of an allowed group" do
-      it "returns false" do
-        expect(guardian.can_see_gists?).to eq(true)
+      it "returns false for anons" do
+        expect(anon_guardian.can_see_gists?).to eq(true)
       end
     end
   end

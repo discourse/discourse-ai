@@ -303,9 +303,11 @@ de:
         rag_conversation_chunks: "Unterhaltungs-Chunks durchsuchen"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         persona_description: "Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Erlebnis für Benutzer zu schaffen."
+        list:
+          enabled: "KI-Bot?"
         ai_bot:
           title: "KI-Bot-Optionen"
-          save_first: "Die KI-Bot-Optionen werden verfügbar, sobald du die Persona gespeichert hast."
+          save_first: "Weitere KI-Bot-Optionen werden verfügbar, sobald du die Persona gespeichert hast."
       rag:
         title: "RAG"
         options:
@@ -675,6 +677,12 @@ de:
             positive: "Positiv"
             neutral: "Neutral"
             negative: "Negativ"
+          group_types:
+            category: "Kategorie"
+            tag: "Schlagwort"
+          table:
+            sentiment: "Stimmung"
+            total_count: "Gesamt"
       summarization:
         chat:
           title: "Nachrichten zusammenfassen"
@@ -695,9 +703,11 @@ de:
         main_title: "Discobot Entdeckungen"
         regular_results: "Themen"
         tell_me_more: "Erzähl mir mehr..."
+        continue_convo: "Unterhaltung fortsetzen..."
+        loading_convo: "Unterhaltung wird geladen"
         collapse: "Zuklappen"
         timed_out: "Discobot konnte keine Entdeckungen finden. Irgendetwas ist schief gelaufen."
-        user_setting: "Sucherkennungen ermöglichen"
+        user_setting: "Suchentdeckungen aktivieren"
         tooltip:
           header: "KI-gestützte Suche"
           content: "Natürliche Sprachsuche unterstützt von %{model}"

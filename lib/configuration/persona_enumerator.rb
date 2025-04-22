@@ -10,7 +10,9 @@ module DiscourseAi
       end
 
       def self.values
-        AiPersona.all_personas.map { |persona| { name: persona.name, value: persona.id } }
+        AiPersona
+          .all_personas(enabled_only: false)
+          .map { |persona| { name: persona.name, value: persona.id } }
       end
     end
   end

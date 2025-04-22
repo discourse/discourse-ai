@@ -29,7 +29,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mistral do
     prompt =
       DiscourseAi::Completions::Prompt.new(
         "You are image bot",
-        messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+        messages: [type: :user, id: "user1", content: ["hello", { upload_id: upload100x100.id }]],
       )
 
     encoded = prompt.encoded_uploads(prompt.messages.last)
@@ -41,7 +41,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mistral do
     content = dialect.translate[1][:content]
 
     expect(content).to eq(
-      [{ type: "image_url", image_url: { url: image } }, { type: "text", text: "user1: hello" }],
+      [{ type: "text", text: "user1: hello" }, { type: "image_url", image_url: { url: image } }],
     )
   end
 

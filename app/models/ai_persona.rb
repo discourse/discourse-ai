@@ -46,13 +46,18 @@ class AiPersona < ActiveRecord::Base
 
   scope :ordered, -> { order("priority DESC, lower(name) ASC") }
 
-  def self.all_personas
+  def self.all_personas(enabled_only: true)
     persona_cache[:value] ||= AiPersona
       .ordered
-      .where(enabled: true)
       .all
       .limit(MAX_PERSONAS_PER_SITE)
       .map(&:class_instance)
+
+    if enabled_only
+      persona_cache[:value].select { |p| p.enabled }
+    else
+      persona_cache[:value]
+    end
   end
 
   def self.persona_users(user: nil)
@@ -176,6 +181,7 @@ class AiPersona < ActiveRecord::Base
       description
       allowed_group_ids
       tool_details
+      enabled
     ]
 
     instance_attributes = {}
@@ -201,14 +207,14 @@ class AiPersona < ActiveRecord::Base
         if inner_name.start_with?("custom-")
           custom_tool_id = inner_name.split("-", 2).last.to_i
           if AiTool.exists?(id: custom_tool_id, enabled: true)
-            klass = DiscourseAi::AiBot::Tools::Custom.class_instance(custom_tool_id)
+            klass = DiscourseAi::Personas::Tools::Custom.class_instance(custom_tool_id)
           end
         else
           inner_name = inner_name.gsub("Tool", "")
           inner_name = "List#{inner_name}" if %w[Categories Tags].include?(inner_name)
 
           begin
-            klass = "DiscourseAi::AiBot::Tools::#{inner_name}".constantize
+            klass = "DiscourseAi::Personas::Tools::#{inner_name}".constantize
             options[klass] = current_options if current_options
           rescue StandardError
           end
@@ -218,7 +224,7 @@ class AiPersona < ActiveRecord::Base
         klass
       end
 
-    persona_class = DiscourseAi::AiBot::Personas::Persona.system_personas_by_id[self.id]
+    persona_class = DiscourseAi::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
       instance_attributes.each do |key, value|
         # description/name are localized
@@ -230,7 +236,7 @@ class AiPersona < ActiveRecord::Base
 
     ai_persona_id = self.id
 
-    Class.new(DiscourseAi::AiBot::Personas::Persona) do
+    Class.new(DiscourseAi::Personas::Persona) do
       instance_attributes.each { |key, value| define_singleton_method(key) { value } }
 
       define_singleton_method(:to_s) do

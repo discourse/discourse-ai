@@ -12,8 +12,8 @@ RSpec.describe "Summarize a channel since your last visit", type: :system do
     group.add(current_user)
 
     assign_fake_provider_to(:ai_summarization_model)
+    assign_persona_to(:ai_summarization_persona, [group.id])
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_custom_summarization_allowed_groups = group.id.to_s
 
     SiteSetting.chat_enabled = true
     SiteSetting.chat_allowed_groups = group.id.to_s

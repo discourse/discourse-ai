@@ -22,6 +22,9 @@ class AiUsageSerializer < ApplicationSerializer
         total_cached_tokens
         total_request_tokens
         total_response_tokens
+        input_spending
+        output_spending
+        cached_input_spending
       ],
     )
   end
@@ -35,6 +38,9 @@ class AiUsageSerializer < ApplicationSerializer
         total_cached_tokens
         total_request_tokens
         total_response_tokens
+        input_spending
+        output_spending
+        cached_input_spending
       ],
     )
   end
@@ -49,6 +55,9 @@ class AiUsageSerializer < ApplicationSerializer
         total_cached_tokens: user.total_cached_tokens,
         total_request_tokens: user.total_request_tokens,
         total_response_tokens: user.total_response_tokens,
+        input_spending: user.input_spending,
+        output_spending: user.output_spending,
+        cached_input_spending: user.cached_input_spending,
       }
     end
   end
@@ -60,6 +69,7 @@ class AiUsageSerializer < ApplicationSerializer
       total_request_tokens: object.total_request_tokens,
       total_response_tokens: object.total_response_tokens,
       total_requests: object.total_requests,
+      total_spending: object.total_spending,
       date_range: {
         start: object.start_date,
         end: object.end_date,

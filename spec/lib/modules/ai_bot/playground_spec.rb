@@ -22,14 +22,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   fab!(:bot) do
     persona =
       AiPersona
-        .find(
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::General
-          ],
-        )
+        .find(DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General])
         .class_instance
         .new
-    DiscourseAi::AiBot::Bot.as(bot_user, persona: persona)
+    DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
   end
 
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
@@ -103,7 +99,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
@@ -173,8 +169,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "uses custom tool in conversation" do
       persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
-      playground = DiscourseAi::AiBot::Playground.new(bot)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
+      playground = described_class.new(bot)
 
       responses = [tool_call, "custom tool did stuff (maybe)"]
 
@@ -213,7 +209,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       custom_tool.update!(enabled: false)
       # so we pick up new cache
       persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona_klass.new)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
       responses = ["custom tool did stuff (maybe)", tool_call]
@@ -267,7 +263,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         prompts = inner_prompts
       end
 
-      expect(prompts[0].messages[1][:upload_ids]).to eq([upload.id])
+      content = prompts[0].messages[1][:content]
+
+      expect(content).to include({ upload_id: upload.id })
+
       expect(prompts[0].max_pixels).to eq(1000)
 
       post.topic.reload
@@ -398,7 +397,22 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           guardian: guardian,
         )
 
-        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do |_, _, _prompts|
+        thinking_partial =
+          DiscourseAi::Completions::Thinking.new(
+            message: "I should say hello",
+            signature: "thinking-signature-123",
+            partial: true,
+          )
+
+        thinking =
+          DiscourseAi::Completions::Thinking.new(
+            message: "I should say hello",
+            signature: "thinking-signature-123",
+            partial: false,
+          )
+        DiscourseAi::Completions::Llm.with_prepared_responses(
+          [[thinking_partial, thinking, "wo", "rld"]],
+        ) do |_, _, _prompts|
           ChatSDK::Message.create(
             channel_id: channel.id,
             raw: "Hello @#{persona.user.username}",
@@ -965,7 +979,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "supports disabling tool details" do
       persona = Fabricate(:ai_persona, tool_details: false, tools: ["Search"])
-      bot = DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new)
+      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new)
       playground = described_class.new(bot)
 
       response1 =
@@ -1018,13 +1032,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       let(:persona) do
         AiPersona.find(
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::DallE3
-          ],
+          DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::DallE3],
         )
       end
 
-      let(:bot) { DiscourseAi::AiBot::Bot.as(bot_user, persona: persona.class_instance.new) }
+      let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new) }
       let(:data) do
         image =
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -1155,78 +1167,49 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
-  describe "#conversation_context" do
-    context "with limited context" do
-      before do
-        @old_persona = playground.bot.persona
-        persona = Fabricate(:ai_persona, max_context_posts: 1)
-        playground.bot.persona = persona.class_instance.new
-      end
+  describe "custom tool context injection" do
+    let!(:custom_tool) do
+      AiTool.create!(
+        name: "context_tool",
+        tool_name: "context_tool",
+        summary: "tool with custom context",
+        description: "A test custom tool that injects context",
+        parameters: [{ name: "query", type: "string", description: "Input for the custom tool" }],
+        script: <<~JS,
+          function invoke(params) {
+            return 'Custom tool result: ' + params.query;
+          }
 
-      after { playground.bot.persona = @old_persona }
+          function customContext() {
+            return "This is additional context from the tool";
+          }
 
-      it "respects max_context_post" do
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[{ type: :user, id: user.username, content: third_post.raw }],
-        )
-      end
-    end
-
-    xit "includes previous posts ordered by post_number" do
-      context = playground.conversation_context(third_post)
-
-      expect(context).to contain_exactly(
-        *[
-          { type: :user, id: user.username, content: third_post.raw },
-          { type: :model, content: second_post.raw },
-          { type: :user, id: user.username, content: first_post.raw },
-        ],
+          function details() {
+            return 'executed with custom context';
+          }
+        JS
+        created_by: user,
       )
     end
 
-    xit "only include regular posts" do
-      first_post.update!(post_type: Post.types[:whisper])
+    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
+    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
-      context = playground.conversation_context(third_post)
+    it "injects custom context into the prompt" do
+      prompts = nil
+      response = "I received the additional context"
 
-      # skips leading model reply which makes no sense cause first post was whisper
-      expect(context).to contain_exactly(
-        *[{ type: :user, id: user.username, content: third_post.raw }],
-      )
-    end
-
-    context "with custom prompts" do
-      it "When post custom prompt is present, we use that instead of the post content" do
-        custom_prompt = [
-          [
-            { name: "time", arguments: { name: "time", timezone: "Buenos Aires" } }.to_json,
-            "time",
-            "tool_call",
-          ],
-          [
-            { args: { timezone: "Buenos Aires" }, time: "2023-12-14 17:24:00 -0300" }.to_json,
-            "time",
-            "tool",
-          ],
-          ["I replied to the time command", bot_user.username],
-        ]
-
-        PostCustomPrompt.create!(post: second_post, custom_prompt: custom_prompt)
-
-        context = playground.conversation_context(third_post)
-
-        expect(context).to contain_exactly(
-          *[
-            { type: :user, id: user.username, content: first_post.raw },
-            { type: :tool_call, content: custom_prompt.first.first, id: "time" },
-            { type: :tool, id: "time", content: custom_prompt.second.first },
-            { type: :model, content: custom_prompt.third.first },
-            { type: :user, id: user.username, content: third_post.raw },
-          ],
-        )
+      DiscourseAi::Completions::Llm.with_prepared_responses([response]) do |_, _, _prompts|
+        new_post = Fabricate(:post, raw: "Can you use the custom context tool?")
+        playground.reply_to(new_post)
+        prompts = _prompts
       end
+
+      # The first prompt should have the custom context prepended to the user message
+      user_message = prompts[0].messages.last
+      expect(user_message[:content]).to include("This is additional context from the tool")
+      expect(user_message[:content]).to include("Can you use the custom context tool?")
     end
   end
 end

@@ -188,6 +188,11 @@ fa_IR:
         sentiment_analysis:
           filter_types:
             all: "همه"
+          group_types:
+            category: "دسته‌بندی"
+            tag: "برچسب"
+          table:
+            total_count: "مجموع"
       summarization:
         chat:
           summarize: "خلاصه کنید"

@@ -620,6 +620,12 @@ tr_TR:
             positive: "Pozitif"
             neutral: "Nötr"
             negative: "Negatif"
+          group_types:
+            category: "Kategori"
+            tag: "Etiket"
+          table:
+            sentiment: "Duyarlılık"
+            total_count: "Toplam"
       summarization:
         chat:
           title: "Mesajları özetle"

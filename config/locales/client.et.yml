@@ -129,6 +129,10 @@ et:
           filter_types:
             all: "Kõik"
             neutral: "Neutraalne"
+          group_types:
+            category: "Foorum"
+          table:
+            total_count: "Kokku"
       discobot_discoveries:
         regular_results: "Teemasid"
         collapse: "Ahenda"

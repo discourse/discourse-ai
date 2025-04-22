@@ -26,6 +26,7 @@ DiscourseAi::Engine.routes.draw do
     post "post/:post_id/stop-streaming" => "bot#stop_streaming_response"
 
     get "discover" => "bot#discover"
+    post "discover/continue-convo" => "bot#discover_continue_convo"
   end
 
   scope module: :ai_bot, path: "/ai-bot/shared-ai-conversations" do
@@ -34,6 +35,10 @@ DiscourseAi::Engine.routes.draw do
     get "/:share_key" => "shared_ai_conversations#show"
     get "/asset/:version/:name" => "shared_ai_conversations#asset"
     get "/preview/:topic_id" => "shared_ai_conversations#preview"
+  end
+
+  scope module: :ai_bot, path: "/ai-bot/conversations" do
+    get "/" => "conversations#index"
   end
 
   scope module: :ai_bot, path: "/ai-bot/artifacts" do
@@ -109,6 +114,11 @@ Discourse::Application.routes.draw do
               controller: "discourse_ai/admin/ai_embeddings" do
       collection { get :test }
     end
+
+    resources :ai_features,
+              only: %i[index edit],
+              path: "ai-features",
+              controller: "discourse_ai/admin/ai_features"
   end
 end
 

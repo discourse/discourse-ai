@@ -619,6 +619,12 @@ fi:
             positive: "Positiivinen"
             neutral: "Neutraali"
             negative: "Negatiivinen"
+          group_types:
+            category: "Luokka"
+            tag: "Tunniste"
+          table:
+            sentiment: "Tunne"
+            total_count: "Yhteensä"
       summarization:
         chat:
           title: "Tee yhteenveto viesteistä"

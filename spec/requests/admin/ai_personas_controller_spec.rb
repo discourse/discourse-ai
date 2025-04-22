@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       expect(response.parsed_body["ai_personas"].length).to eq(AiPersona.count)
       expect(response.parsed_body["meta"]["tools"].length).to eq(
-        DiscourseAi::AiBot::Personas::Persona.all_available_tools.length,
+        DiscourseAi::Personas::Persona.all_available_tools.length,
       )
     end
 
@@ -136,10 +136,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       it "returns localized persona names and descriptions" do
         get "/admin/plugins/discourse-ai/ai-personas.json"
 
-        id =
-          DiscourseAi::AiBot::Personas::Persona.system_personas[
-            DiscourseAi::AiBot::Personas::General
-          ]
+        id = DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General]
         persona = response.parsed_body["ai_personas"].find { |p| p["id"] == id }
 
         expect(persona["name"]).to eq("Général")
@@ -242,6 +239,54 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   end
 
   describe "PUT #update" do
+    context "with scoped api key" do
+      it "allows updates with a properly scoped API key" do
+        api_key = Fabricate(:api_key, user: admin, created_by: admin)
+
+        scope =
+          ApiKeyScope.create!(
+            resource: "discourse_ai",
+            action: "update_personas",
+            api_key_id: api_key.id,
+            allowed_parameters: {
+            },
+          )
+
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
+            params: {
+              ai_persona: {
+                name: "UpdatedByAPI",
+                description: "Updated via API key",
+              },
+            },
+            headers: {
+              "Api-Key" => api_key.key,
+              "Api-Username" => admin.username,
+            }
+
+        expect(response).to have_http_status(:ok)
+        ai_persona.reload
+        expect(ai_persona.name).to eq("UpdatedByAPI")
+        expect(ai_persona.description).to eq("Updated via API key")
+
+        scope.update!(action: "fake")
+
+        put "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json",
+            params: {
+              ai_persona: {
+                name: "UpdatedByAPI 2",
+                description: "Updated via API key",
+              },
+            },
+            headers: {
+              "Api-Key" => api_key.key,
+              "Api-Username" => admin.username,
+            }
+
+        expect(response).not_to have_http_status(:ok)
+      end
+    end
+
     it "allows us to trivially clear top_p and temperature" do
       persona = Fabricate(:ai_persona, name: "test_bot2", top_p: 0.5, temperature: 0.1)
       put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
@@ -301,7 +346,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
 
     it "does not allow temperature and top p changes on stock personas" do
-      put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+      put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
           params: {
             ai_persona: {
               top_p: 0.5,
@@ -335,7 +380,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     context "with system personas" do
       it "does not allow editing of system prompts" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 system_prompt: "you are not a helpful bot",
@@ -348,7 +393,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of tools" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 tools: %w[SearchCommand ImageCommand],
@@ -361,7 +406,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does not allow editing of name and description cause it is localized" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 name: "bob",
@@ -375,7 +420,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
 
       it "does allow some actions" do
-        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json",
+        put "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json",
             params: {
               ai_persona: {
                 allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_1]],
@@ -413,7 +458,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
     it "is not allowed to delete system personas" do
       expect {
-        delete "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::AiBot::Personas::Persona.system_personas.values.first}.json"
+        delete "/admin/plugins/discourse-ai/ai-personas/#{DiscourseAi::Personas::Persona.system_personas.values.first}.json"
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"].join).not_to be_blank
         # let's make sure this is translated

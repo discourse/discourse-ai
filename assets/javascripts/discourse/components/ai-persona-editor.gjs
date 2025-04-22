@@ -30,7 +30,6 @@ export default class PersonaEditor extends Component {
 
   @tracked allGroups = [];
   @tracked isSaving = false;
-  @tracked availableForcedTools = [];
 
   dirtyFormData = null;
 
@@ -93,7 +92,16 @@ export default class PersonaEditor extends Component {
 
   @action
   async updateAllGroups() {
-    this.allGroups = await Group.findAll();
+    const groups = await Group.findAll({ include_everyone: true });
+
+    // Backwards-compatibility code. TODO(roman): Remove 01-09-2025
+    const hasEveryoneGroup = groups.find((g) => g.id === 0);
+    if (!hasEveryoneGroup) {
+      const everyoneGroupName = "everyone";
+      groups.push({ id: 0, name: everyoneGroupName });
+    }
+
+    this.allGroups = groups;
   }
 
   @action
@@ -208,16 +216,17 @@ export default class PersonaEditor extends Component {
       toolOptions: updatedOptions,
     });
 
-    this.availableForcedTools = this.allTools.filter((tool) =>
-      updatedTools.includes(tool.id)
-    );
-
     if (currentData.forcedTools?.length > 0) {
       const updatedForcedTools = currentData.forcedTools.filter(
         (fct) => !removedTools.includes(fct)
       );
       form.set("forcedTools", updatedForcedTools);
     }
+  }
+
+  @action
+  availableForcedTools(tools) {
+    return this.allTools.filter((tool) => tools.includes(tool.id));
   }
 
   mapToolOptions(currentOptions, toolNames) {
@@ -439,7 +448,7 @@ export default class PersonaEditor extends Component {
                   @value={{field.value}}
                   @disabled={{data.system}}
                   @onChange={{field.set}}
-                  @content={{this.availableForcedTools}}
+                  @content={{this.availableForcedTools data.tools}}
                 />
               </field.Custom>
             </form.Field>

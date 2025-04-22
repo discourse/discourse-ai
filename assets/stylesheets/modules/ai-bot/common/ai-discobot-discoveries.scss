@@ -10,6 +10,7 @@
 
 .ai-search-discoveries {
   &__regular-results-title {
+    margin-top: 0.5em;
     margin-bottom: 0;
   }
 
@@ -61,6 +62,10 @@
   .cooked p:first-child {
     margin-top: 0;
   }
+
+  &__continue-conversation {
+    margin-block: 1rem;
+  }
 }
 
 .ai-search-discoveries-tooltip {
@@ -93,10 +98,6 @@
   }
 }
 
-.ai-discobot-discoveries {
-  padding: 0.5em;
-}
-
 .full-page-discoveries {
   padding: 1em 10%;
 }
@@ -107,30 +108,46 @@
   width: 1.15em;
 }
 
+.ai-discobot-discoveries {
+  padding-top: 0.5em;
+}
+
 @include breakpoint("medium", min-width) {
-  .search-menu .menu-panel:has(.ai-discobot-discoveries) {
+  .search-menu .menu-panel:has(.ai-search-discoveries__discoveries-title) {
     width: 80vw;
-    max-width: 800px;
+    max-width: 900px;
     transition: width 0.5s;
 
-    .search-result-topic {
+    .results {
       display: grid;
-      grid-template-areas: "results-title ai-title" "results ai";
       grid-template-columns: 58% 38%;
+      grid-template-rows: auto auto 1fr;
       gap: 0 4%;
 
-      .list {
-        grid-area: results;
+      * {
+        // covers all non-discovery content
+        grid-column-start: 1;
       }
 
       .ai-discobot-discoveries {
-        grid-area: ai;
+        // always in the second column, always spans all rows
+        grid-column-start: 2;
+        grid-row: 1 / -1;
+        box-sizing: border-box;
+        padding: 0 0.5em 0 2em;
+        margin: 0.75em 0 0 0;
+        border-left: 1px solid var(--primary-low);
+
+        .cooked {
+          font-size: var(--font-down-1);
+        }
       }
     }
 
     .ai-search-discoveries {
       font-size: var(--font-0);
       color: var(--primary-high);
+      padding-right: 0.5em;
     }
 
     .ai-search-discoveries__regular-results-title {

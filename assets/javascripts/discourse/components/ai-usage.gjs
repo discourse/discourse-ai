@@ -2,6 +2,8 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import didUpdate from "@ember/render-modifiers/modifiers/did-update";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import { eq, gt, lt } from "truth-helpers";
@@ -72,6 +74,22 @@ export default class AiUsage extends Component {
   onModelChanged(value) {
     this.selectedModel = value;
     this.onFilterChange();
+  }
+
+  @action
+  addCurrencyChar(element) {
+    element.querySelectorAll(".d-stat-tile__label").forEach((label) => {
+      if (
+        label.innerText.trim() === i18n("discourse_ai.usage.total_spending")
+      ) {
+        const valueElement = label
+          .closest(".d-stat-tile")
+          ?.querySelector(".d-stat-tile__value");
+        if (valueElement) {
+          valueElement.innerText = `$${valueElement.innerText}`;
+        }
+      }
+    });
   }
 
   @bind
@@ -152,6 +170,11 @@ export default class AiUsage extends Component {
         label: i18n("discourse_ai.usage.cached_tokens"),
         value: this.data.summary.total_cached_tokens,
         tooltip: i18n("discourse_ai.usage.stat_tooltips.cached_tokens"),
+      },
+      {
+        label: i18n("discourse_ai.usage.total_spending"),
+        value: this.data.summary.total_spending,
+        tooltip: i18n("discourse_ai.usage.stat_tooltips.total_spending"),
       },
     ];
   }
@@ -308,6 +331,11 @@ export default class AiUsage extends Component {
     this.fetchData();
   }
 
+  totalSpending(inputSpending, cachedSpending, outputSpending) {
+    const total = inputSpending + cachedSpending + outputSpending;
+    return `$${total.toFixed(2)}`;
+  }
+
   <template>
     <div class="ai-usage admin-detail">
       <DPageSubheader
@@ -376,9 +404,15 @@ export default class AiUsage extends Component {
             class="ai-usage__summary"
           >
             <:content>
-              <DStatTiles as |tiles|>
+              <DStatTiles
+                {{didInsert this.addCurrencyChar this.metrics}}
+                {{didUpdate this.addCurrencyChar this.metrics}}
+                as |tiles|
+              >
+
                 {{#each this.metrics as |metric|}}
                   <tiles.Tile
+                    class="bar"
                     @label={{metric.label}}
                     @href={{metric.href}}
                     @value={{metric.value}}
@@ -422,6 +456,7 @@ export default class AiUsage extends Component {
                         <th>{{i18n "discourse_ai.usage.feature"}}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -438,6 +473,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__features-cell"
                             title={{feature.total_tokens}}
                           >{{number feature.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              feature.input_spending
+                              feature.cached_input_spending
+                              feature.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>
@@ -464,6 +506,8 @@ export default class AiUsage extends Component {
                         <th>{{i18n "discourse_ai.usage.model"}}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -478,6 +522,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__models-cell"
                             title={{model.total_tokens}}
                           >{{number model.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              model.input_spending
+                              model.cached_input_spending
+                              model.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>
@@ -511,6 +562,7 @@ export default class AiUsage extends Component {
                           }}</th>
                         <th>{{i18n "discourse_ai.usage.usage_count"}}</th>
                         <th>{{i18n "discourse_ai.usage.total_tokens"}}</th>
+                        <th>{{i18n "discourse_ai.usage.total_spending"}}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -535,6 +587,13 @@ export default class AiUsage extends Component {
                             class="ai-usage__users-cell"
                             title={{user.total_tokens}}
                           >{{number user.total_tokens}}</td>
+                          <td>
+                            {{this.totalSpending
+                              user.input_spending
+                              user.cached_input_spending
+                              user.output_spending
+                            }}
+                          </td>
                         </tr>
                       {{/each}}
                     </tbody>

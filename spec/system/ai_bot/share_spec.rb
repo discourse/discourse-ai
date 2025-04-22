@@ -43,122 +43,114 @@ RSpec.describe "Share conversation", type: :system do
     page.execute_script("window.navigator.clipboard.writeText('')")
   end
 
-  glimmer_post_menu_states = %w[enabled disabled]
+  it "can share a conversation with a persona user" do
+    clip_text = nil
 
-  glimmer_post_menu_states.each do |state|
-    context "with the glimmer post menu #{state}" do
-      before { SiteSetting.glimmer_post_menu_mode = state }
+    persona = Fabricate(:ai_persona, name: "Tester")
+    persona.create_user!
 
-      it "can share a conversation with a persona user" do
-        clip_text = nil
+    Fabricate(:post, topic: pm, user: admin, raw: "How do I do stuff?")
+    Fabricate(:post, topic: pm, user: persona.user, raw: "No idea")
 
-        persona = Fabricate(:ai_persona, name: "Tester")
-        persona.create_user!
+    visit(pm.url)
 
-        Fabricate(:post, topic: pm, user: admin, raw: "How do I do stuff?")
-        Fabricate(:post, topic: pm, user: persona.user, raw: "No idea")
+    find("#post_2 .post-action-menu__share-ai").click
 
-        visit(pm.url)
-
-        find("#post_2 .post-action-menu__share-ai").click
-
-        try_until_success do
-          clip_text = cdp.read_clipboard
-          expect(clip_text).not_to eq("")
-        end
-
-        conversation = (<<~TEXT).strip
-          <details class='ai-quote'>
-          <summary>
-          <span>This is my special PM</span>
-          <span title='Conversation with AI'>AI</span>
-          </summary>
-
-          **ai_sharer:**
-
-          How do I do stuff?
-
-          **Tester_bot:**
-
-          No idea
-          </details>
-        TEXT
-
-        expect(conversation).to eq(clip_text)
-      end
-
-      it "can share a conversation" do
-        clip_text = nil
-
-        pm
-        pm_posts
-
-        visit(pm.url)
-
-        find("#post_2 .post-action-menu__share-ai").click
-
-        try_until_success do
-          clip_text = cdp.read_clipboard
-          expect(clip_text).not_to eq("")
-        end
-
-        conversation = (<<~TEXT).strip
-          <details class='ai-quote'>
-          <summary>
-          <span>This is my special PM</span>
-          <span title='Conversation with AI'>AI</span>
-          </summary>
-
-          **ai_sharer:**
-
-          test test test user reply 1
-
-          **gpt-4:**
-
-          test test test bot reply 1
-          </details>
-        TEXT
-
-        expect(conversation).to eq(clip_text)
-
-        page.execute_script("window.navigator.clipboard.writeText('')")
-
-        find("#post_6 .post-action-menu__share-ai").click
-        find(".ai-share-modal__slider input").set("2")
-        find(".ai-share-modal button.btn-primary").click
-
-        try_until_success do
-          clip_text = cdp.read_clipboard
-          expect(clip_text).not_to eq("")
-        end
-
-        conversation = (<<~TEXT).strip
-          <details class='ai-quote'>
-          <summary>
-          <span>This is my special PM</span>
-          <span title='Conversation with AI'>AI</span>
-          </summary>
-
-          **ai_sharer:**
-
-          test test test user reply 2
-
-          **gpt-4:**
-
-          test test test bot reply 2
-
-          **ai_sharer:**
-
-          test test test user reply 3
-
-          **gpt-4:**
-
-          test test test bot reply 3
-          </details>
-        TEXT
-
-        expect(conversation).to eq(clip_text)
-      end
+    try_until_success do
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
     end
+
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      How do I do stuff?
+
+      **Tester_bot:**
+
+      No idea
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
+  end
+
+  it "can share a conversation" do
+    clip_text = nil
+
+    pm
+    pm_posts
+
+    visit(pm.url)
+
+    find("#post_2 .post-action-menu__share-ai").click
+
+    try_until_success do
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
+    end
+
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      test test test user reply 1
+
+      **gpt-4:**
+
+      test test test bot reply 1
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
+
+    page.execute_script("window.navigator.clipboard.writeText('')")
+
+    find("#post_6 .post-action-menu__share-ai").click
+    find(".ai-share-modal__slider input").set("2")
+    find(".ai-share-modal button.btn-primary").click
+
+    try_until_success do
+      clip_text = cdp.read_clipboard
+      expect(clip_text).not_to eq("")
+    end
+
+    conversation = (<<~TEXT).strip
+      <details class='ai-quote'>
+      <summary>
+      <span>This is my special PM</span>
+      <span title='Conversation with AI'>AI</span>
+      </summary>
+
+      **ai_sharer:**
+
+      test test test user reply 2
+
+      **gpt-4:**
+
+      test test test bot reply 2
+
+      **ai_sharer:**
+
+      test test test user reply 3
+
+      **gpt-4:**
+
+      test test test bot reply 3
+      </details>
+    TEXT
+
+    expect(conversation).to eq(clip_text)
   end
 end

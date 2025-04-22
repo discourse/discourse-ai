@@ -122,6 +122,10 @@ th:
         sentiment_analysis:
           filter_types:
             all: "ทั้งหมด"
+          group_types:
+            category: "หมวดหมู่"
+          table:
+            total_count: "ทั้งหมด"
       discobot_discoveries:
         regular_results: "หัวข้อ"
         collapse: "ย่อ"

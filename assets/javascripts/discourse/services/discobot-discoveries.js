@@ -11,11 +11,21 @@ export default class DiscobotDiscoveries extends Service {
   @tracked lastQuery = "";
   @tracked discoveryTimedOut = false;
   @tracked modelUsed = "";
+  @tracked loadingDiscoveries = false;
 
   resetDiscovery() {
+    this.loadingDiscoveries = false;
     this.discovery = "";
     this.discoveryTimedOut = false;
     this.modelUsed = "";
+  }
+
+  get showDiscoveryTitle() {
+    return (
+      this.discovery.length > 0 ||
+      this.loadingDiscoveries ||
+      this.discoveryTimedOut
+    );
   }
 
   @action

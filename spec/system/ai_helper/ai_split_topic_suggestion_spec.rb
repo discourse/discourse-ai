@@ -86,28 +86,23 @@ RSpec.describe "AI Post helper", type: :system, js: true do
         SiteSetting.ai_embeddings_enabled = true
       end
 
-      skip "TODO: Category suggester only loading one category in test" do
-        it "updates the category with the suggested category" do
-          response =
-            Category
-              .take(3)
-              .pluck(:name)
-              .map { |s| { name: s, score: rand(0.0...45.0) } }
-              .sort { |h| h[:score] }
-          DiscourseAi::AiHelper::SemanticCategorizer
-            .any_instance
-            .stubs(:categories)
-            .returns(response)
+      it "updates the category with the suggested category" do
+        response =
+          Category
+            .take(3)
+            .pluck(:id, :name)
+            .map { |s| { id: s[0], name: s[1], score: rand(0.0...45.0) } }
+            .sort { |h| h[:score] }
+        DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:categories).returns(response)
 
-          open_move_topic_modal
-          suggestion_menu.click_suggest_category_button
-          wait_for { suggestion_menu.has_dropdown? }
-          suggestion = category.name
-          suggestion_menu.select_suggestion_by_name(suggestion)
-          category_selector = page.find(".category-chooser summary")
+        open_move_topic_modal
+        suggestion_menu.click_suggest_category_button
+        wait_for { suggestion_menu.has_dropdown? }
+        suggestion = category.name
+        suggestion_menu.select_suggestion_by_name(suggestion)
+        category_selector = page.find(".category-chooser summary")
 
-          expect(category_selector["data-name"]).to eq(suggestion)
-        end
+        expect(category_selector["data-name"]).to eq(suggestion)
       end
     end
 
@@ -133,7 +128,6 @@ RSpec.describe "AI Post helper", type: :system, js: true do
         suggestion = suggestion_menu.suggestion_name(0)
         suggestion_menu.select_suggestion_by_value(0)
         tag_selector = page.find(".tag-chooser summary")
-
         expect(tag_selector["data-name"]).to eq(suggestion)
       end
     end

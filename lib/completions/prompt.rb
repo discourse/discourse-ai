@@ -89,7 +89,6 @@ module DiscourseAi
         content:,
         id: nil,
         name: nil,
-        upload_ids: nil,
         thinking: nil,
         thinking_signature: nil,
         redacted_thinking_signature: nil
@@ -98,7 +97,6 @@ module DiscourseAi
         new_message = { type: type, content: content }
         new_message[:name] = name.to_s if name
         new_message[:id] = id.to_s if id
-        new_message[:upload_ids] = upload_ids if upload_ids
         new_message[:thinking] = thinking if thinking
         new_message[:thinking_signature] = thinking_signature if thinking_signature
         new_message[
@@ -115,11 +113,44 @@ module DiscourseAi
         tools.present?
       end
 
-      # helper method to get base64 encoded uploads
-      # at the correct dimentions
       def encoded_uploads(message)
-        return [] if message[:upload_ids].blank?
-        UploadEncoder.encode(upload_ids: message[:upload_ids], max_pixels: max_pixels)
+        if message[:content].is_a?(Array)
+          upload_ids =
+            message[:content]
+              .map do |content|
+                content[:upload_id] if content.is_a?(Hash) && content.key?(:upload_id)
+              end
+              .compact
+          if !upload_ids.empty?
+            return UploadEncoder.encode(upload_ids: upload_ids, max_pixels: max_pixels)
+          end
+        end
+
+        []
+      end
+
+      def text_only(message)
+        if message[:content].is_a?(Array)
+          message[:content].map { |element| element if element.is_a?(String) }.compact.join
+        else
+          message[:content]
+        end
+      end
+
+      def encode_upload(upload_id)
+        UploadEncoder.encode(upload_ids: [upload_id], max_pixels: max_pixels).first
+      end
+
+      def content_with_encoded_uploads(content)
+        return [content] unless content.is_a?(Array)
+
+        content.map do |c|
+          if c.is_a?(Hash) && c.key?(:upload_id)
+            encode_upload(c[:upload_id])
+          else
+            c
+          end
+        end
       end
 
       def ==(other)
@@ -150,7 +181,6 @@ module DiscourseAi
           content
           id
           name
-          upload_ids
           thinking
           thinking_signature
           redacted_thinking_signature
@@ -159,15 +189,17 @@ module DiscourseAi
           raise ArgumentError, "message contains invalid keys: #{invalid_keys}"
         end
 
-        if message[:type] == :upload_ids && !message[:upload_ids].is_a?(Array)
-          raise ArgumentError, "upload_ids must be an array of ids"
+        if message[:content].is_a?(Array)
+          message[:content].each do |content|
+            if !content.is_a?(String) && !(content.is_a?(Hash) && content.keys == [:upload_id])
+              raise ArgumentError, "Array message content must be a string or {upload_id: ...} "
+            end
+          end
+        else
+          if !message[:content].is_a?(String)
+            raise ArgumentError, "Message content must be a string or an array"
+          end
         end
-
-        if message[:upload_ids].present? && message[:type] != :user
-          raise ArgumentError, "upload_ids are only supported for users"
-        end
-
-        raise ArgumentError, "message content must be a string" if !message[:content].is_a?(String)
       end
 
       def validate_turn(last_turn, new_turn)

@@ -34,8 +34,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::OpenAiCompatible do
             messages: [
               {
                 type: :user,
-                content: "Describe this image in a single sentence.",
-                upload_ids: [upload.id],
+                content: ["Describe this image in a single sentence.", { upload_id: upload.id }],
               },
             ],
           )
@@ -49,10 +48,15 @@ RSpec.describe DiscourseAi::Completions::Dialects::OpenAiCompatible do
 
         expect(translated_messages.length).to eq(1)
 
+        # no system message support here
         expected_user_message = {
           role: "user",
           content: [
-            { type: "text", text: prompt.messages.map { |m| m[:content] }.join("\n") },
+            {
+              type: "text",
+              text:
+                "You are a bot specializing in image captioning.\nDescribe this image in a single sentence.",
+            },
             {
               type: "image_url",
               image_url: {

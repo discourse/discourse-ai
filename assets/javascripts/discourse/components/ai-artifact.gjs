@@ -123,7 +123,7 @@ export default class AiArtifactComponent extends Component {
       {{#unless this.requireClickToRun}}
         <div class="ai-artifact__footer">
           <DButton
-            class="btn-flat btn-icon-text ai-artifact__expand-button"
+            class="btn-transparent btn-icon-text ai-artifact__expand-button"
             @icon="discourse-expand"
             @label="discourse_ai.ai_artifact.expand_view_label"
             @action={{this.toggleView}}

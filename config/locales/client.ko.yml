@@ -145,6 +145,11 @@ ko:
           filter_types:
             all: "전체"
             neutral: "중립국"
+          group_types:
+            category: "카테고리"
+            tag: "태그"
+          table:
+            total_count: "합계"
       summarization:
         chat:
           title: "메시지 요약"

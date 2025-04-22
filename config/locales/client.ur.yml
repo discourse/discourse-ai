@@ -140,6 +140,11 @@ ur:
           filter_types:
             all: "تمام"
             neutral: "نیوٹرل"
+          group_types:
+            category: "زمرہ"
+            tag: "ٹیگ"
+          table:
+            total_count: "کُل"
       summarization:
         chat:
           summarize: "خلاصہ"

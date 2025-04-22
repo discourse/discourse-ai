@@ -17,6 +17,7 @@ RSpec.describe Jobs::StreamDiscordReply, type: :job do
   fab!(:persona) { Fabricate(:ai_persona, default_llm_id: llm_model.id) }
 
   before do
+    SiteSetting.ai_discord_search_enabled = true
     SiteSetting.ai_discord_search_mode = "persona"
     SiteSetting.ai_discord_search_persona = persona.id
   end

@@ -5,6 +5,7 @@ require "rails_helper"
 RSpec.describe DiscourseAi::Admin::AiUsageController do
   fab!(:admin)
   fab!(:user)
+  fab!(:llm_model)
   let(:usage_report_path) { "/admin/plugins/discourse-ai/ai-usage-report.json" }
 
   before { SiteSetting.discourse_ai_enabled = true }
@@ -35,6 +36,18 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
         )
       end
 
+      fab!(:log3) do
+        AiApiAuditLog.create!(
+          provider_id: 1,
+          feature_name: "ai_helper",
+          language_model: llm_model.name,
+          request_tokens: 300,
+          response_tokens: 150,
+          cached_tokens: 50,
+          created_at: 3.days.ago,
+        )
+      end
+
       it "returns correct data structure" do
         get usage_report_path
 
@@ -55,7 +68,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
             }
 
         json = response.parsed_body
-        expect(json["summary"]["total_tokens"]).to eq(450) # sum of all tokens
+        expect(json["summary"]["total_tokens"]).to eq(900) # sum of all tokens
       end
 
       it "filters by feature" do
@@ -77,6 +90,26 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
         expect(models.length).to eq(1)
         expect(models.first["llm"]).to eq("gpt-3.5")
         expect(models.first["total_tokens"]).to eq(300)
+      end
+
+      it "shows an estimated cost" do
+        get usage_report_path, params: { model: llm_model.name }
+
+        json = response.parsed_body
+        summary = json["summary"]
+        feature = json["features"].find { |f| f["feature_name"] == "ai_helper" }
+
+        expected_input_spending = llm_model.input_cost * log3.request_tokens / 1_000_000.0
+        expected_cached_input_spending =
+          llm_model.cached_input_cost * log3.cached_tokens / 1_000_000.0
+        expected_output_spending = llm_model.output_cost * log3.response_tokens / 1_000_000.0
+        expected_total_spending =
+          expected_input_spending + expected_cached_input_spending + expected_output_spending
+
+        expect(feature["input_spending"].to_s).to eq(expected_input_spending.to_s)
+        expect(feature["output_spending"].to_s).to eq(expected_output_spending.to_s)
+        expect(feature["cached_input_spending"].to_s).to eq(expected_cached_input_spending.to_s)
+        expect(summary["total_spending"].to_s).to eq(expected_total_spending.round(2).to_s)
       end
 
       it "handles different period groupings" do

@@ -41,24 +41,43 @@ export function showShareConversationModal(modal, topicId) {
     .catch(popupAjaxError);
 }
 
-export function composeAiBotMessage(targetBot, composer) {
+export async function composeAiBotMessage(
+  targetBot,
+  composer,
+  options = {
+    skipFocus: false,
+    topicBody: "",
+    personaUsername: null,
+  }
+) {
   const currentUser = composer.currentUser;
   const draftKey = "new_private_message_ai_" + new Date().getTime();
 
-  let botUsername = currentUser.ai_enabled_chat_bots.find(
-    (bot) => bot.model_name === targetBot
-  ).username;
+  let botUsername;
+  if (targetBot) {
+    botUsername = currentUser.ai_enabled_chat_bots.find(
+      (bot) => bot.model_name === targetBot
+    )?.username;
+  } else if (options.personaUsername) {
+    botUsername = options.personaUsername;
+  } else {
+    botUsername = currentUser.ai_enabled_chat_bots[0].username;
+  }
 
-  composer.focusComposer({
-    fallbackToNewTopic: true,
-    openOpts: {
-      action: Composer.PRIVATE_MESSAGE,
-      recipients: botUsername,
-      topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
-      archetypeId: "private_message",
-      draftKey,
-      hasGroups: false,
-      warningsDisabled: true,
-    },
-  });
+  const data = {
+    action: Composer.PRIVATE_MESSAGE,
+    recipients: botUsername,
+    topicTitle: i18n("discourse_ai.ai_bot.default_pm_prefix"),
+    archetypeId: "private_message",
+    draftKey,
+    hasGroups: false,
+    warningsDisabled: true,
+  };
+
+  if (options.skipFocus) {
+    data.topicBody = options.topicBody;
+    await composer.open(data);
+  } else {
+    composer.focusComposer({ fallbackToNewTopic: true, openOpts: data });
+  }
 }

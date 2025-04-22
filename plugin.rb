@@ -27,6 +27,7 @@ enabled_site_setting :discourse_ai_enabled
 register_asset "stylesheets/common/streaming.scss"
 register_asset "stylesheets/common/ai-blinking-animation.scss"
 register_asset "stylesheets/common/ai-user-settings.scss"
+register_asset "stylesheets/common/ai-features.scss"
 
 register_asset "stylesheets/modules/ai-helper/common/ai-helper.scss"
 register_asset "stylesheets/modules/ai-helper/desktop/ai-helper-fk-modals.scss", :desktop
@@ -41,6 +42,8 @@ register_asset "stylesheets/modules/ai-bot/common/bot-replies.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-persona.scss"
 register_asset "stylesheets/modules/ai-bot/common/ai-discobot-discoveries.scss"
 register_asset "stylesheets/modules/ai-bot/mobile/ai-persona.scss", :mobile
+
+register_asset "stylesheets/modules/ai-bot-conversations/common.scss"
 
 register_asset "stylesheets/modules/embeddings/common/semantic-related-topics.scss"
 register_asset "stylesheets/modules/embeddings/common/semantic-search.scss"
@@ -69,6 +72,11 @@ end
 Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::DiscourseAi)
 
 require_relative "lib/engine"
+require_relative "lib/features"
+
+DiscourseAi::Features.feature_config.each do |feature|
+  register_site_setting_area("ai-features/#{feature[:name_ref]}")
+end
 
 after_initialize do
   if defined?(Rack::MiniProfiler)
@@ -82,6 +90,8 @@ after_initialize do
   require_relative "discourse_automation/llm_persona_triage"
 
   add_admin_route("discourse_ai.title", "discourse-ai", { use_new_show_route: true })
+
+  register_seedfu_fixtures(Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "personas"))
 
   [
     DiscourseAi::Embeddings::EntryPoint.new,
@@ -124,6 +134,11 @@ after_initialize do
       nil
     end
   end
+
+  add_api_key_scope(
+    :discourse_ai,
+    { update_personas: { actions: %w[discourse_ai/admin/ai_personas#update] } },
+  )
 
   plugin_icons = %w[
     chart-column

@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+module PageObjects
+  module Components
+    class AiPmHomepage < PageObjects::Components::Base
+      HOMEPAGE_WRAPPER_CLASS = ".ai-bot-conversations__content-wrapper"
+
+      def input
+        page.find("#ai-bot-conversations-input")
+      end
+
+      def submit
+        page.find(".ai-conversation-submit").click
+      end
+
+      def has_too_short_dialog?
+        page.find(
+          ".dialog-content",
+          text: I18n.t("js.discourse_ai.ai_bot.conversations.min_input_length_message"),
+        )
+      end
+
+      def has_homepage?
+        page.has_css?(HOMEPAGE_WRAPPER_CLASS)
+      end
+
+      def has_no_homepage?
+        page.has_no_css?(HOMEPAGE_WRAPPER_CLASS)
+      end
+    end
+  end
+end

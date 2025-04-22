@@ -10,10 +10,15 @@ import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
+import { withPluginApi } from "discourse/lib/plugin-api";
+import DiscourseURL from "discourse/lib/url";
+import Topic from "discourse/models/topic";
 import { i18n } from "discourse-i18n";
 import SmoothStreamer from "../lib/smooth-streamer";
 import AiBlinkingAnimation from "./ai-blinking-animation";
+import AiIndicatorWave from "./ai-indicator-wave";
 
 const DISCOVERY_TIMEOUT_MS = 10000;
 
@@ -22,8 +27,11 @@ export default class AiSearchDiscoveries extends Component {
   @service messageBus;
   @service discobotDiscoveries;
   @service appEvents;
+  @service currentUser;
+  @service siteSettings;
+  @service composer;
 
-  @tracked loadingDiscoveries = false;
+  @tracked loadingConversationTopic = false;
   @tracked hideDiscoveries = false;
   @tracked fullDiscoveryToggled = false;
   @tracked discoveryPreviewLength = this.args.discoveryPreviewLength || 150;
@@ -34,8 +42,6 @@ export default class AiSearchDiscoveries extends Component {
   );
 
   discoveryTimeout = null;
-  typingTimer = null;
-  streamedTextLength = 0;
 
   constructor() {
     super(...arguments);
@@ -56,6 +62,34 @@ export default class AiSearchDiscoveries extends Component {
   }
 
   @bind
+  detectSearch() {
+    if (
+      this.query?.length === 0 &&
+      this.discobotDiscoveries.discovery?.length > 0
+    ) {
+      this.discobotDiscoveries.resetDiscovery();
+      this.smoothStreamer.resetStreaming();
+    }
+
+    withPluginApi((api) => {
+      api.addSearchMenuOnKeyDownCallback((searchMenu, event) => {
+        if (!searchMenu) {
+          return;
+        }
+
+        if (this.discobotDiscoveries.lastQuery === this.query) {
+          return true;
+        }
+
+        if (event.key === "Enter" && this.query) {
+          this.triggerDiscovery();
+        }
+        return true;
+      });
+    });
+  }
+
+  @bind
   async _updateDiscovery(update) {
     if (this.query === update.query) {
       if (this.discoveryTimeout) {
@@ -67,7 +101,7 @@ export default class AiSearchDiscoveries extends Component {
       }
 
       this.discobotDiscoveries.modelUsed = update.model_used;
-      this.loadingDiscoveries = false;
+      this.discobotDiscoveries.loadingDiscoveries = false;
       this.smoothStreamer.updateResult(update, "ai_discover_reply");
     }
   }
@@ -110,7 +144,7 @@ export default class AiSearchDiscoveries extends Component {
 
   get canShowExpandtoggle() {
     return (
-      !this.loadingDiscoveries &&
+      !this.discobotDiscoveries.loadingDiscoveries &&
       this.smoothStreamer.renderedText.length > this.discoveryPreviewLength
     );
   }
@@ -119,8 +153,45 @@ export default class AiSearchDiscoveries extends Component {
     return !this.fullDiscoveryToggled && this.canShowExpandtoggle;
   }
 
+  get canContinueConversation() {
+    const personas = this.currentUser?.ai_enabled_personas;
+    if (!personas) {
+      return false;
+    }
+
+    if (this.discobotDiscoveries.discoveryTimedOut) {
+      return false;
+    }
+
+    const discoverPersona = personas.find(
+      (persona) =>
+        persona.id === parseInt(this.siteSettings?.ai_bot_discover_persona, 10)
+    );
+    const discoverPersonaHasBot = discoverPersona?.username;
+
+    return (
+      this.discobotDiscoveries.discovery?.length > 0 &&
+      !this.smoothStreamer.isStreaming &&
+      discoverPersonaHasBot
+    );
+  }
+
+  get continueConvoBtnLabel() {
+    if (this.loadingConversationTopic) {
+      return "discourse_ai.discobot_discoveries.loading_convo";
+    }
+
+    return "discourse_ai.discobot_discoveries.continue_convo";
+  }
+
   @action
   async triggerDiscovery() {
+    if (this.query?.length === 0) {
+      this.discobotDiscoveries.resetDiscovery();
+      this.smoothStreamer.resetStreaming();
+      return;
+    }
+
     if (this.discobotDiscoveries.lastQuery === this.query) {
       this.hideDiscoveries = false;
       return;
@@ -130,7 +201,8 @@ export default class AiSearchDiscoveries extends Component {
     }
 
     this.hideDiscoveries = false;
-    this.loadingDiscoveries = true;
+    this.discobotDiscoveries.loadingDiscoveries = true;
+
     this.discoveryTimeout = later(
       this,
       this.timeoutDiscovery,
@@ -139,6 +211,7 @@ export default class AiSearchDiscoveries extends Component {
 
     try {
       this.discobotDiscoveries.lastQuery = this.query;
+
       await ajax("/discourse-ai/ai-bot/discover", {
         data: { query: this.query },
       });
@@ -152,23 +225,64 @@ export default class AiSearchDiscoveries extends Component {
     this.fullDiscoveryToggled = !this.fullDiscoveryToggled;
   }
 
-  timeoutDiscovery() {
-    this.loadingDiscoveries = false;
-    this.discobotDiscoveries.discovery = "";
+  @action
+  async continueConversation() {
+    const data = {
+      user_id: this.currentUser.id,
+      query: this.query,
+      context: this.discobotDiscoveries.discovery,
+    };
+    try {
+      this.loadingConversationTopic = true;
+      const continueRequest = await ajax(
+        `/discourse-ai/ai-bot/discover/continue-convo`,
+        {
+          type: "POST",
+          data,
+        }
+      );
+      const topicJSON = await Topic.find(continueRequest.topic_id, {});
+      const topic = Topic.create(topicJSON);
 
+      DiscourseURL.routeTo(`/t/${continueRequest.topic_id}`, {
+        afterRouteComplete: () => {
+          if (this.args.closeSearchMenu) {
+            this.args.closeSearchMenu();
+          }
+
+          this.composer.focusComposer({
+            topic,
+          });
+        },
+      });
+    } catch (e) {
+      popupAjaxError(e);
+    } finally {
+      this.loadingConversationTopic = false;
+    }
+  }
+
+  timeoutDiscovery() {
+    if (this.discobotDiscoveries.discovery?.length > 0) {
+      return;
+    }
+
+    this.discobotDiscoveries.loadingDiscoveries = false;
+    this.discobotDiscoveries.discovery = "";
     this.discobotDiscoveries.discoveryTimedOut = true;
   }
 
   <template>
     <div
       class="ai-search-discoveries"
-      {{didInsert this.subscribe @searchTerm}}
-      {{didUpdate this.subscribe @searchTerm}}
+      {{didInsert this.subscribe this.query}}
+      {{didUpdate this.subscribe this.query}}
+      {{didUpdate this.detectSearch this.query}}
       {{didInsert this.triggerDiscovery this.query}}
       {{willDestroy this.unsubscribe}}
     >
       <div class="ai-search-discoveries__completion">
-        {{#if this.loadingDiscoveries}}
+        {{#if this.discobotDiscoveries.loadingDiscoveries}}
           <AiBlinkingAnimation />
         {{else if this.discobotDiscoveries.discoveryTimedOut}}
           {{i18n "discourse_ai.discobot_discoveries.timed_out"}}
@@ -181,9 +295,10 @@ export default class AiSearchDiscoveries extends Component {
               "streamable-content"
             }}
           >
-            <div class="cooked">
-              <CookText @rawText={{this.smoothStreamer.renderedText}} />
-            </div>
+            <CookText
+              @rawText={{this.smoothStreamer.renderedText}}
+              class="cooked"
+            />
           </article>
 
           {{#if this.canShowExpandtoggle}}
@@ -196,6 +311,18 @@ export default class AiSearchDiscoveries extends Component {
           {{/if}}
         {{/if}}
       </div>
+
+      {{#if this.canContinueConversation}}
+        <div class="ai-search-discoveries__continue-conversation">
+          <DButton
+            @action={{this.continueConversation}}
+            @label={{this.continueConvoBtnLabel}}
+            class="btn-small"
+          >
+            <AiIndicatorWave @loading={{this.loadingConversationTopic}} />
+          </DButton>
+        </div>
+      {{/if}}
     </div>
   </template>
 }

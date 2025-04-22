@@ -37,7 +37,11 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
 
       it "properly formats messages with images" do
         messages = [
-          { type: :user, id: "user1", content: "What's in this image?", upload_ids: [upload.id] },
+          {
+            type: :user,
+            id: "user1",
+            content: ["What's in this image?", { upload_id: upload.id }],
+          },
         ]
 
         prompt = DiscourseAi::Completions::Prompt.new(messages: messages)

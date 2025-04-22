@@ -7,6 +7,9 @@ RSpec.describe Jobs::SummariesBackfill do
   let(:limit) { 24 } # guarantee two summaries per batch
   let(:intervals) { 12 } # budget is split into intervals. Job runs every five minutes.
 
+  before { DiscourseAi::Completions::Endpoints::Fake.delays = [] }
+  after { DiscourseAi::Completions::Endpoints::Fake.reset! }
+
   before do
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true

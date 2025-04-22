@@ -147,6 +147,11 @@ ug:
           filter_types:
             all: "ھەممىسى"
             neutral: "بىتەرەپ"
+          group_types:
+            category: "سەھىپە"
+            tag: "بەلگە"
+          table:
+            total_count: "جەمئىي"
       summarization:
         chat:
           title: "ئۇچۇرنى خۇلاسىلە"

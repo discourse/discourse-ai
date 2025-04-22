@@ -22,6 +22,11 @@ module PageObjects
       def new_value
         find(".composer-ai-helper-modal__new-value").text
       end
+
+      def has_diff?(old_value, new_value)
+        has_css?(".inline-diff ins", text: new_value) &&
+          has_css?(".inline-diff del", text: old_value)
+      end
     end
   end
 end

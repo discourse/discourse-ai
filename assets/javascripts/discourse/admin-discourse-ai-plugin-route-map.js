@@ -29,5 +29,9 @@ export default {
         this.route("edit", { path: "/:id/edit" });
       }
     );
+
+    this.route("discourse-ai-features", { path: "ai-features" }, function () {
+      this.route("edit", { path: "/:id/edit" });
+    });
   },
 };

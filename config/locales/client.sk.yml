@@ -149,6 +149,11 @@ sk:
           filter_types:
             all: "Všetky"
             neutral: "Neutrálna"
+          group_types:
+            category: "Kategória"
+            tag: "Značka"
+          table:
+            total_count: "Celkovo"
       summarization:
         chat:
           title: "Zhrnutie správ"

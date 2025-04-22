@@ -271,7 +271,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     prompt =
       DiscourseAi::Completions::Prompt.new(
         "You are image bot",
-        messages: [type: :user, id: "user1", content: "hello", upload_ids: [upload100x100.id]],
+        messages: [type: :user, id: "user1", content: ["hello", { upload_id: upload100x100.id }]],
       )
 
     encoded = prompt.encoded_uploads(prompt.messages.last)
@@ -283,6 +283,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         {
           role: "user",
           content: [
+            { type: "text", text: "user1: hello" },
             {
               type: "image",
               source: {
@@ -291,7 +292,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
                 data: encoded[0][:base64],
               },
             },
-            { type: "text", text: "user1: hello" },
           ],
         },
       ],

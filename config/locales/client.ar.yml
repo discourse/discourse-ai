@@ -631,6 +631,12 @@ ar:
             positive: "إيجابية"
             neutral: "محايدة"
             negative: "سلبية"
+          group_types:
+            category: "الفئة"
+            tag: "الوسم"
+          table:
+            sentiment: "المشاعر"
+            total_count: "الإجمالي"
       summarization:
         chat:
           title: "تلخيص الرسائل"

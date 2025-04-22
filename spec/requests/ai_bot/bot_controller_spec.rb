@@ -168,4 +168,71 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       end
     end
   end
+
+  describe "#discover_continue_convo" do
+    before { SiteSetting.ai_bot_enabled = true }
+    fab!(:group)
+    fab!(:llm_model)
+    fab!(:ai_persona) do
+      persona = Fabricate(:ai_persona, allowed_group_ids: [group.id], default_llm_id: llm_model.id)
+      persona.create_user!
+      persona
+    end
+    let(:query) { "What is Discourse?" }
+    let(:context) { "Discourse is an open-source discussion platform." }
+
+    context "when the user is allowed to discover" do
+      before do
+        SiteSetting.ai_bot_discover_persona = ai_persona.id
+        group.add(user)
+      end
+
+      it "returns a 200 and creates a private message topic" do
+        expect {
+          post "/discourse-ai/ai-bot/discover/continue-convo",
+               params: {
+                 user_id: user.id,
+                 query: query,
+                 context: context,
+               }
+        }.to change(Topic, :count).by(1)
+
+        expect(response.status).to eq(200)
+        expect(response.parsed_body["topic_id"]).to be_present
+      end
+
+      it "returns invalid parameters if the user_id is missing" do
+        post "/discourse-ai/ai-bot/discover/continue-convo",
+             params: {
+               query: query,
+               context: context,
+             }
+
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include("user_id")
+      end
+
+      it "returns invalid parameters if the query is missing" do
+        post "/discourse-ai/ai-bot/discover/continue-convo",
+             params: {
+               user_id: user.id,
+               context: context,
+             }
+
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include("query")
+      end
+
+      it "returns invalid parameters if the context is missing" do
+        post "/discourse-ai/ai-bot/discover/continue-convo",
+             params: {
+               user_id: user.id,
+               query: query,
+             }
+
+        expect(response.status).to eq(422)
+        expect(response.parsed_body["errors"]).to include("context")
+      end
+    end
+  end
 end

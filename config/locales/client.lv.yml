@@ -126,6 +126,10 @@ lv:
         sentiment_analysis:
           filter_types:
             all: "Viss"
+          group_types:
+            category: "Sadaļa"
+          table:
+            total_count: "Kopā"
       discobot_discoveries:
         regular_results: "Tēmas"
         collapse: "Sakļaut"

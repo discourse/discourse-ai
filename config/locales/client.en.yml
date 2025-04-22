@@ -7,6 +7,7 @@ en:
             discourse_ai:
               search: "Allows AI search"
               stream_completion: "Allows streaming AI persona completions"
+              update_personas: "Allows updating AI personas"
 
       site_settings:
         categories:
@@ -164,6 +165,20 @@ en:
     discourse_ai:
       title: "AI"
 
+      features:
+        short_title: "Features"
+        description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
+        back: "Back"
+        list:
+          header:
+            name: "Name"
+            persona: "Persona"
+            groups: "Groups"
+          edit: "Edit"
+          set_up: "Set up"
+          configured_features: "Configured features"
+          unconfigured_features: "Unconfigured features"
+
       modals:
         select_option: "Select an option..."
 
@@ -224,6 +239,7 @@ en:
         net_request_tokens: "Net request tokens"
         cached_tokens: "Cached tokens"
         cached_request_tokens: "Cached request tokens"
+        total_spending: "Estimated cost"
         no_users: "No user usage data found"
         no_models: "No model usage data found"
         no_features: "No feature usage data found"
@@ -234,6 +250,7 @@ en:
           request_tokens: "Tokens used when the LLM tries to understand what you are saying"
           response_tokens: "Tokens used when the LLM responds to your prompt"
           cached_tokens: "Previously processed request tokens that the LLM reuses to optimize performance and cost"
+          total_spending: "Cumulative cost of all tokens used by the LLMs based on specified cost metrics added to LLM configuration settings"
         periods:
           last_day: "Last 24 hours"
           last_week: "Last week"
@@ -354,7 +371,9 @@ en:
         script: "Script"
         parameters: "Parameters"
         save: "Save"
-        add_parameter: "Add Parameter"
+        parameter_type: "Parameter type"
+        add_parameter: "Add parameter"
+        remove_parameter: "Remove"
         parameter_required: "Required"
         parameter_enum: "Enum"
         parameter_name: "Parameter name"
@@ -365,10 +384,7 @@ en:
         test: "Run test"
         delete: "Delete"
         saved: "Tool saved"
-        presets: "Select a preset..."
         confirm_delete: "Are you sure you want to delete this tool?"
-        next:
-          title: "Next"
         test_modal:
           title: "Test AI tool"
           run: "Run test"
@@ -382,12 +398,17 @@ en:
         name: "Model id"
         provider: "Provider"
         tokenizer: "Tokenizer"
-        max_prompt_tokens: "Number of tokens for the prompt"
+        max_prompt_tokens: "Context window"
+        max_output_tokens: "Max output tokens"
         url: "URL of the service hosting the model"
         api_key: "API Key of the service hosting the model"
         enabled_chat_bot: "Allow AI bot selector"
         vision_enabled: "Vision enabled"
         ai_bot_user: "AI bot User"
+        cost_input: "Input cost"
+        cost_cached_input: "Cached input cost"
+        cost_output: "Output cost"
+
         save: "Save"
         edit: "Edit"
         saved: "LLM model saved"
@@ -431,15 +452,14 @@ en:
           anthropic-claude-3-7-sonnet: "Anthropic's most intelligent model"
           anthropic-claude-3-5-haiku: "Fast and cost-effective"
           anthropic-claude-3-opus: "Excels at writing and complex tasks"
-          google-gemini-1-5-pro: "Mid-sized multimodal model capable of a wide range of tasks"
-          google-gemini-1-5-flash: "Lightweight, fast, and cost-efficient with multimodal reasoning"
-          open_ai-gpt-4-turbo: "Previous generation high-intelligence model"
-          open_ai-gpt-4o: "High intelligence model for complex, multi-step tasks"
-          open_ai-gpt-4o-mini: "Affordable and fast small model for lightweight tasks"
-          open_ai-o1-mini: "Cost-efficient reasoning model"
-          open_ai-o1-preview: "Open AI's most capabale reasoning model (preview)"
+          google-gemini-2-5-pro: "Mid-sized multimodal model capable of a wide range of tasks"
+          google-gemini-2-0-flash: "Lightweight, fast, and cost-efficient with multimodal reasoning"
+          google-gemini-2-0-flash-lite: "Cost efficient and low latency model"
           open_ai-o1: "Open AI's most capable reasoning model"
           open_ai-o3-mini: "Advanced Cost-efficient reasoning model"
+          open_ai-gpt-4-1: "Open AI's flagship model. It is well suited for problem solving across domains"
+          open_ai-gpt-4-1-mini: "Provides a balance between intelligence, speed, and cost that makes it an attractive model for many use cases."
+          open_ai-gpt-4-1-nano: "Fastest, most cost-effective GPT-4.1 model."
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficient lightweight multilingual model"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Powerful multipurpose model"
           mistral-mistral-large-latest: "Mistral's most powerful model"
@@ -466,11 +486,16 @@ en:
           failure: "Trying to contact the model returned this error: %{error}"
 
         hints:
-          max_prompt_tokens: "Max numbers of tokens for the prompt. As a rule of thumb, this should be 50% of the model's context window."
+          max_prompt_tokens: "The maximum number of tokens the model can process in a single request"
+          max_output_tokens: "The maximum number of tokens the model can generate in a single request"
           display_name: "The name used to reference this model across your site's interface."
           name: "We include this in the API call to specify which model we'll use"
           vision_enabled: "If enabled, the AI will attempt to understand images. It depends on the model being used supporting vision. Supported by latest models from Anthropic, Google, and OpenAI."
           enabled_chat_bot: "If enabled, users can select this model when creating PMs with the AI bot"
+          cost_input: "The input cost per 1M tokens for this model"
+          cost_cached_input: "The cached input cost per 1M tokens for this model"
+          cost_output: "The output cost per 1M tokens for this model"
+          cost_measure: "$/1M tokens"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -690,6 +715,14 @@ en:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          header: "What can I help with?"
+          submit: "Submit question"
+          disclaimer: "Generative AI can make mistakes. Verify important information."
+          placeholder: "Ask a question..."
+          new: "New Question"
+          min_input_length_message: "Message must be longer than 10 characters"
+          messages_sidebar_title: "Conversations"
       sentiments:
         dashboard:
           title: "Sentiment"
@@ -731,6 +764,8 @@ en:
         main_title: "Discobot discoveries"
         regular_results: "Topics"
         tell_me_more: "Tell me more..."
+        continue_convo: "Continue conversation..."
+        loading_convo: "Loading conversation"
         collapse: "Collapse"
         timed_out: "Discobot couldn't find any discoveries. Something went wrong."
         user_setting: "Enable search discoveries"
