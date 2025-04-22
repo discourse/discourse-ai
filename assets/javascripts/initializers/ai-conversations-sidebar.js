@@ -232,8 +232,11 @@ export default {
         }
 
         const topic = api.container.lookup("controller:topic").model;
+        // if the topic is not a private message, not created by the current user,
+        // or doesn't have a bot response, we don't need to override sidebar
         if (
           topic?.archetype === "private_message" &&
+          topic.user_id === currentUser.id &&
           topic.postStream.posts.some((post) =>
             isPostFromAiBot(post, currentUser)
           )

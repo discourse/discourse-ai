@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "AI Bot - Personal Message", type: :system do
+RSpec.describe "AI Bot - Homepage", type: :system do
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_pm_homepage) { PageObjects::Components::AiPmHomepage.new }
@@ -9,6 +9,7 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
   let(:dialog) { PageObjects::Components::Dialog.new }
 
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+  fab!(:user_2) { Fabricate(:user, refresh_auto_groups: true) }
 
   fab!(:claude_2) do
     Fabricate(
@@ -86,15 +87,6 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
     Jobs.run_immediately!
     SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
     sign_in(user)
-  end
-
-  it "has normal bot interaction when `ai_enable_experimental_bot_ux` is disabled" do
-    SiteSetting.ai_enable_experimental_bot_ux = false
-    visit "/"
-    find(".ai-bot-button").click
-
-    expect(ai_pm_homepage).to have_no_homepage
-    expect(composer).to be_opened
   end
 
   context "when `ai_enable_experimental_bot_ux` is enabled" do
@@ -180,6 +172,60 @@ RSpec.describe "AI Bot - Personal Message", type: :system do
       composer.fill_in(with: "Hello bot replying to you")
       composer.submit
       expect(page).to have_content("Hello bot replying to you")
+    end
+
+    it "does not render custom sidebar on non-authored bot pms" do
+      # Include user_2 in the PM by creating a new post and topic_allowed_user association
+      Fabricate(:post, topic: pm, user: user_2, post_number: 4)
+      Fabricate(:topic_allowed_user, topic: pm, user: user_2)
+      sign_in(user_2)
+      topic_page.visit_topic(pm)
+
+      expect(sidebar).to be_visible
+      expect(sidebar).to have_no_section("ai-conversations-history")
+      expect(sidebar).to have_no_css("button.ai-new-question-button")
+    end
+
+    it "does not include non-authored bot pms in sidebar" do
+      # Include user_2 in the PM by creating a new post and topic_allowed_user association
+      Fabricate(:post, topic: pm, user: user_2, post_number: 4)
+      Fabricate(:topic_allowed_user, topic: pm, user: user_2)
+      sign_in(user_2)
+
+      visit "/"
+      find(".ai-bot-button").click
+      expect(ai_pm_homepage).to have_homepage
+      expect(sidebar).to have_no_section_link(pm.title)
+    end
+  end
+
+  context "when `ai_enable_experimental_bot_ux` is disabled" do
+    before { SiteSetting.ai_enable_experimental_bot_ux = false }
+
+    it "opens composer on bot click" do
+      visit "/"
+      find(".ai-bot-button").click
+
+      expect(ai_pm_homepage).to have_no_homepage
+      expect(composer).to be_opened
+    end
+
+    it "does not render sidebar when navigation menu is set to header on pm" do
+      SiteSetting.navigation_menu = "header dropdown"
+      topic_page.visit_topic(pm)
+
+      expect(ai_pm_homepage).to have_no_homepage
+      expect(sidebar).to be_not_visible
+      expect(header_dropdown).to be_visible
+    end
+
+    it "shows default content in the sidebar" do
+      topic_page.visit_topic(pm)
+
+      expect(sidebar).to have_section("categories")
+      expect(sidebar).to have_section("messages")
+      expect(sidebar).to have_section("chat-dms")
+      expect(sidebar).to have_no_css("button.ai-new-question-button")
     end
   end
 end

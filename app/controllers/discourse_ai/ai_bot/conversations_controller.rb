@@ -14,9 +14,11 @@ module DiscourseAi
         base_query =
           Topic
             .private_messages_for_user(current_user)
+            .where(user: current_user) # Only show PMs where the current user is the author
             .joins(:topic_users)
             .where(topic_users: { user_id: bot_user_ids })
             .distinct
+
         total = base_query.count
         pms = base_query.order(last_posted_at: :desc).offset(page * per_page).limit(per_page)
 
