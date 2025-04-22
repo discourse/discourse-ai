@@ -4,6 +4,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_pm_homepage) { PageObjects::Components::AiPmHomepage.new }
+  let(:header) { PageObjects::Pages::DiscourseAi::Header.new }
   let(:sidebar) { PageObjects::Components::NavigationMenu::Sidebar.new }
   let(:header_dropdown) { PageObjects::Components::NavigationMenu::HeaderDropdown.new }
   let(:dialog) { PageObjects::Components::Dialog.new }
@@ -92,14 +93,14 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   context "when `ai_enable_experimental_bot_ux` is enabled" do
     it "renders landing page on bot click" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to be_visible
     end
 
     it "displays error when message is too short" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
 
       ai_pm_homepage.input.fill_in(with: "a")
       ai_pm_homepage.submit
@@ -111,7 +112,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     it "renders sidebar even when navigation menu is set to header" do
       SiteSetting.navigation_menu = "header dropdown"
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to be_visible
       expect(header_dropdown).to be_visible
@@ -119,7 +120,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
     it "hides default content in the sidebar" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
 
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_no_tags_section
@@ -132,7 +133,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
     it "shows the bot conversation in the sidebar" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
 
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_section("ai-conversations-history")
@@ -142,13 +143,31 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
     it "navigates to the bot conversation when clicked" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
 
       expect(ai_pm_homepage).to have_homepage
       sidebar.find(
         ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link",
       ).click
       expect(topic_page).to have_topic_title(pm.title)
+    end
+
+    it "displays the shuffle icon when on homepage or bot PM" do
+      visit "/"
+      expect(header).to have_icon_in_bot_button(icon: "robot")
+      header.click_bot_button
+
+      expect(header).to have_icon_in_bot_button(icon: "shuffle")
+
+      # Go to a PM and assert that the icon is still shuffle
+      sidebar.find(
+        ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link",
+      ).click
+      expect(header).to have_icon_in_bot_button(icon: "shuffle")
+
+      # Go back home and assert that the icon is now robot again
+      header.click_bot_button
+      expect(header).to have_icon_in_bot_button(icon: "robot")
     end
 
     it "displays sidebar and 'new question' on the topic page" do
@@ -193,7 +212,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       sign_in(user_2)
 
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_no_section_link(pm.title)
     end
@@ -204,7 +223,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
     it "opens composer on bot click" do
       visit "/"
-      find(".ai-bot-button").click
+      header.click_bot_button
 
       expect(ai_pm_homepage).to have_no_homepage
       expect(composer).to be_opened
