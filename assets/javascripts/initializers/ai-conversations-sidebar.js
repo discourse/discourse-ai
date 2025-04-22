@@ -13,6 +13,11 @@ export default {
 
   initialize() {
     withPluginApi((api) => {
+      const siteSettings = api.container.lookup("service:site-settings");
+      if (!siteSettings.ai_enable_experimental_bot_ux) {
+        return;
+      }
+
       const currentUser = api.container.lookup("service:current-user");
       if (!currentUser) {
         return;
