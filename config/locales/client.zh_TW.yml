@@ -36,6 +36,13 @@ zh_TW:
             canned_reply:
               label: "回覆"
     discourse_ai:
+      features:
+        back: "上一步"
+        list:
+          header:
+            name: "名字"
+            groups: "群組"
+          edit: "編輯"
       spam:
         short_title: "垃圾內容"
         last_seven_days: "過去 7 天"

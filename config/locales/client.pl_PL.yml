@@ -150,6 +150,15 @@ pl_PL:
               description: "Temperatura używana dla LLM. Zwiększ, aby zwiększyć losowość (pozostaw puste, aby użyć domyślnego modelu)."
     discourse_ai:
       title: "AI"
+      features:
+        back: "Poprzednia"
+        list:
+          header:
+            name: "Nazwa"
+            persona: "Osobowość"
+            groups: "Grupy"
+          edit: "Edytuj"
+          set_up: "Skonfiguruj"
       modals:
         select_option: "Wybierz opcję..."
       spam:
@@ -329,7 +338,6 @@ pl_PL:
         name: "Identyfikator modelu"
         provider: "Dostawca"
         tokenizer: "Tokenizer"
-        max_prompt_tokens: "Liczba tokenów dla promptu"
         url: "Adres URL usługi hostującej model"
         api_key: "Klucz API usługi hostującej model"
         enabled_chat_bot: "Zezwól na wybór bota AI"
@@ -374,13 +382,8 @@ pl_PL:
           anthropic-claude-3-7-sonnet: "Najbardziej inteligentny model Anthropic"
           anthropic-claude-3-5-haiku: "Szybko i ekonomicznie"
           anthropic-claude-3-opus: "Doskonale radzi sobie z pisaniem i złożonymi zadaniami"
-          google-gemini-1-5-pro: "Średniej wielkości model multimodalny zdolny do wykonywania szerokiego zakresu zadań"
-          google-gemini-1-5-flash: "Lekki, szybki i ekonomiczny z multimodalnym rozumowaniem"
-          open_ai-gpt-4-turbo: "Model wysokiej inteligencji poprzedniej generacji"
-          open_ai-gpt-4o: "Model o wysokiej inteligencji do złożonych, wieloetapowych zadań"
-          open_ai-gpt-4o-mini: "Przystępny cenowo i szybki mały model do lekkich zadań"
-          open_ai-o1-mini: "Ekonomiczny model rozumowania"
-          open_ai-o1-preview: "Najbardziej wydajny model rozumowania Open AI (podgląd)"
+          google-gemini-2-5-pro: "Średniej wielkości model multimodalny zdolny do wykonywania szerokiego zakresu zadań"
+          google-gemini-2-0-flash: "Lekki, szybki i ekonomiczny z multimodalnym rozumowaniem"
           open_ai-o1: "Najbardziej wydajny model rozumowania Open AI"
           open_ai-o3-mini: "Zaawansowany, efektywny kosztowo model rozumowania"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Wydajny, lekki model wielojęzyczny"
@@ -405,7 +408,6 @@ pl_PL:
           success: "Sukces!"
           failure: "Próba nawiązania kontaktu z modelem zwróciła następujący błąd: %{error}"
         hints:
-          max_prompt_tokens: "Maksymalna liczba tokenów dla promptu. Z reguły powinno to być 50% okna kontekstowego modelu."
           display_name: "Nazwa używana do odwoływania się do tego modelu w interfejsie Twojej witryny."
           name: "Uwzględniamy to w wywołaniu API, aby określić, którego modelu będziemy używać"
           enabled_chat_bot: "Jeśli ta opcja jest włączona, użytkownicy mogą wybrać ten model podczas tworzenia wiadomości prywatnych za pomocą bota AI"

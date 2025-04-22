@@ -13,6 +13,7 @@ de:
             discourse_ai:
               search: "Ermöglicht KI-Suche"
               stream_completion: "Ermöglicht das Streamen von KI-Persona-Vervollständigungen"
+              update_personas: "Ermöglicht die Aktualisierung von KI-Personas"
       site_settings:
         categories:
           discourse_ai: "Discourse-KI"
@@ -164,6 +165,19 @@ de:
               description: "Temperatur, die für das LLM verwendet werden soll. Erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um das Standardmodell zu verwenden)"
     discourse_ai:
       title: "KI"
+      features:
+        short_title: "Funktionen"
+        description: "Dies sind die KI-Funktionen, die den Besuchern deiner Website zur Verfügung stehen. Sie können so konfiguriert werden, dass sie bestimmte Personas und LLMs verwenden, und der Zugriff kann mithilfe von Gruppen gesteuert werden."
+        back: "Zurück"
+        list:
+          header:
+            name: "Name"
+            persona: "Persona"
+            groups: "Gruppen"
+          edit: "Bearbeiten"
+          set_up: "Einrichten"
+          configured_features: "Konfigurierte Funktionen"
+          unconfigured_features: "Unkonfigurierte Funktionen"
       modals:
         select_option: "Wähle eine Option aus..."
       spam:
@@ -374,7 +388,6 @@ de:
         name: "Modell-ID"
         provider: "Anbieter"
         tokenizer: "Tokenizer"
-        max_prompt_tokens: "Anzahl der Token für die Eingabeaufforderung"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
         enabled_chat_bot: "KI-Bot-Auswahl zulassen"
@@ -422,15 +435,14 @@ de:
           anthropic-claude-3-7-sonnet: "Das intelligenteste Modell von Anthropic"
           anthropic-claude-3-5-haiku: "Schnell und kosteneffizient"
           anthropic-claude-3-opus: "Hervorragend im Schreiben und bei komplexen Aufgaben"
-          google-gemini-1-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
-          google-gemini-1-5-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation"
-          open_ai-gpt-4-turbo: "Hochintelligentes Modell der vorherigen Generation"
-          open_ai-gpt-4o: "Hochintelligentes Modell für komplexe, mehrstufige Aufgaben"
-          open_ai-gpt-4o-mini: "Erschwingliches und schnelles kleines Modell für leichte Aufgaben"
-          open_ai-o1-mini: "Kosteneffizientes Argumentationsmodell"
-          open_ai-o1-preview: "Open AI's fähigstes Argumentationsmodell (Vorschau)"
+          google-gemini-2-5-pro: "Multimodales Modell mittlerer Größe, das eine Vielzahl von Aufgaben bewältigen kann"
+          google-gemini-2-0-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation"
+          google-gemini-2-0-flash-lite: "Kosteneffizientes Modell mit niedriger Latenz"
           open_ai-o1: "Das leistungsfähigste Argumentationsmodell von Open AI"
           open_ai-o3-mini: "Erweitertes kosteneffizientes Argumentationsmodell"
+          open_ai-gpt-4-1: "Das Vorzeigemodell von Open AI. Es ist gut geeignet für Problemlösungen in verschiedenen Bereichen"
+          open_ai-gpt-4-1-mini: "Bietet ein ausgewogenes Verhältnis zwischen Intelligenz, Geschwindigkeit und Kosten, was es zu einem attraktiven Modell für viele Anwendungsfälle macht."
+          open_ai-gpt-4-1-nano: "Das schnellste und kostengünstigste GPT-4.1-Modell."
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Effizientes leichtgewichtiges mehrsprachiges Modell"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Leistungsstarkes Mehrzweckmodell"
           mistral-mistral-large-latest: "Das leistungsstärkste Modell von Mistral"
@@ -453,7 +465,6 @@ de:
           success: "Erfolg!"
           failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
         hints:
-          max_prompt_tokens: "Maximale Anzahl von Token für die Eingabeaufforderung. Als Faustregel gilt, dass dies 50 % des Kontextfensters des Modells sein sollten."
           display_name: "Der Name, der verwendet wird, um dieses Modell in der Benutzeroberfläche deiner Website zu referenzieren."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden"
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."

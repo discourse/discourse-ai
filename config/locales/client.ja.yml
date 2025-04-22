@@ -138,6 +138,14 @@ ja:
               label: "Temperature"
     discourse_ai:
       title: "AI"
+      features:
+        back: "戻る"
+        list:
+          header:
+            name: "名前"
+            groups: "グループ"
+          edit: "編集"
+          set_up: "セットアップ"
       modals:
         select_option: "オプションを選択..."
       spam:
@@ -332,7 +340,6 @@ ja:
         name: "モデル ID"
         provider: "プロバイダー"
         tokenizer: "トークナイザ―"
-        max_prompt_tokens: "プロンプトのトークン数"
         url: "モデルをホストするサービスの URL"
         api_key: "モデルをホストするサービスの API キー"
         enabled_chat_bot: "AI ボットのセレクターを許可"
@@ -377,12 +384,8 @@ ja:
           anthropic-claude-3-7-sonnet: "Anthropic の最もインテリジェントなモデル"
           anthropic-claude-3-5-haiku: "高速でコスト効率に優れています"
           anthropic-claude-3-opus: "作文と複雑なタスクに優れています"
-          google-gemini-1-5-pro: "広範なタスクに対応できる中規模のマルチモーダルモデル"
-          google-gemini-1-5-flash: "マルチモーダル推論による軽量・高速で、コスト効率に優れています"
-          open_ai-gpt-4-turbo: "前世代ハイインテリジェンスモデル"
-          open_ai-gpt-4o: "複雑な多段階タスクに対応するハイイテンリジェンスモデル"
-          open_ai-gpt-4o-mini: "軽量なタスクに対応する手頃で高速な小型モデル"
-          open_ai-o1-mini: "コスト効率の良い推論モデル"
+          google-gemini-2-5-pro: "広範なタスクに対応できる中規模のマルチモーダルモデル"
+          google-gemini-2-0-flash: "マルチモーダル推論による軽量・高速で、コスト効率に優れています"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "効率的な軽量多言語モデル"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "強力な多目的モデル"
           mistral-mistral-large-latest: "Mistral の最も強力なモデル"
@@ -404,7 +407,6 @@ ja:
           success: "成功!"
           failure: "モデルに接続しようとした際に、次のエラーが返されました: %{error}"
         hints:
-          max_prompt_tokens: "プロンプトのトークンの最大数。目安として、これはモデルのコンテキストウィンドウの 50% です。"
           name: "これを API 呼び出しに含めて、使用するモデルを指定します"
           vision_enabled: "有効にすると、AI は画像を理解しようとします。ビジョンのサポートに使用されているモデルに応じます。Anthropic、Google、および OpenAI の最新モデルでサポートされています。"
           enabled_chat_bot: "有効にすると、ユーザーは AI ボットを使って PM を作成するときに、このモデルを選択できます"

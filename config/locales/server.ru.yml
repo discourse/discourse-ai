@@ -75,11 +75,10 @@ ru:
     ai_embeddings_semantic_related_include_closed_topics: "Включать в результаты семантического поиска закрытые темы"
     ai_embeddings_semantic_search_hyde_model: "Модель, используемая для расширения ключевых слов, чтобы получить лучшие результаты во время семантического поиска"
     ai_embeddings_per_post_enabled: Генерировать эмбеддинги для каждой публикации
-    ai_summarization_enabled: "Включить модуль сводки по теме."
-    ai_summarization_model: "Модель, используемая для формирования сводки."
+    ai_summarization_model: "Модель, используемая для формирования сводки"
     ai_custom_summarization_allowed_groups: "Группы, которым разрешено делать новые сводки."
     ai_pm_summarization_allowed_groups: "Группам разрешено создавать и просматривать сводки в личных сообщениях."
-    ai_summary_gists_enabled: "Автоматически создает краткие сводки последних ответов в темах."
+    ai_summary_gists_enabled: "Автоматически создает краткие сводки последних ответов в темах"
     ai_summary_gists_allowed_groups: "Группы, которые могут просматривать краткие сводки в списке горячих тем."
     ai_summary_backfill_maximum_topics_per_hour: "Число сводок по теме для заполнения за час."
     ai_bot_enabled: "Включить модуль AI-бота."

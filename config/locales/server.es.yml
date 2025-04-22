@@ -75,11 +75,10 @@ es:
     ai_embeddings_semantic_related_include_closed_topics: "Incluir temas cerrados en los resultados de la búsqueda semántica"
     ai_embeddings_semantic_search_hyde_model: "Modelo utilizado para expandir palabras clave para obtener mejores resultados durante una búsqueda semántica"
     ai_embeddings_per_post_enabled: Generar incrustaciones para cada publicación
-    ai_summarization_enabled: "Activar el módulo de resumen de temas."
-    ai_summarization_model: "Modelo que se utilizará para el resumen."
+    ai_summarization_model: "Modelo que se utilizará para el resumen"
     ai_custom_summarization_allowed_groups: "Grupos autorizados a utilizar la creación de nuevos resúmenes."
     ai_pm_summarization_allowed_groups: "Grupos autorizados a crear y ver resúmenes en MPs."
-    ai_summary_gists_enabled: "Genera automáticamente breves resúmenes de las últimas respuestas en los temas."
+    ai_summary_gists_enabled: "Genera automáticamente breves resúmenes de las últimas respuestas en los temas"
     ai_summary_gists_allowed_groups: "Grupos autorizados a ver fragmentos en la lista de temas candentes."
     ai_summary_backfill_maximum_topics_per_hour: "Número de resúmenes de temas a completar por hora."
     ai_bot_enabled: "Activar el módulo AI Bot."

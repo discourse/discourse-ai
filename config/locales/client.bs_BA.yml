@@ -34,6 +34,13 @@ bs_BA:
             canned_reply:
               label: "Odgovori"
     discourse_ai:
+      features:
+        back: "Prethodno"
+        list:
+          header:
+            name: "Ime"
+            groups: "Groups"
+          edit: "Edit"
       modals:
         select_option: "Odaberi opciju..."
       spam:

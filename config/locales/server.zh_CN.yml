@@ -75,11 +75,8 @@ zh_CN:
     ai_embeddings_semantic_related_include_closed_topics: "在语义搜索结果中包含已关闭话题"
     ai_embeddings_semantic_search_hyde_model: "用于在语义搜索中扩展关键字以获得更好结果的模型"
     ai_embeddings_per_post_enabled: 为每个帖子生成嵌入向量
-    ai_summarization_enabled: "启用话题总结模块。"
-    ai_summarization_model: "用于总结的模型。"
     ai_custom_summarization_allowed_groups: "能够创建新总结的群组。"
     ai_pm_summarization_allowed_groups: "可以创建摘要并在私信中查看的群组。"
-    ai_summary_gists_enabled: "自动生成话题中最新回复的简要摘要。"
     ai_summary_gists_allowed_groups: "可以查看热门话题列表中的要点的群组。"
     ai_summary_backfill_maximum_topics_per_hour: "每小时回填的话题摘要数。"
     ai_bot_enabled: "启用 AI 机器人模块。"
