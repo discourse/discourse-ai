@@ -4,21 +4,15 @@
 }
 
 body.has-ai-conversations-sidebar {
+  .ai-new-question-button {
+    margin: 1em 2em 1em 1em;
+  }
   .sidebar-wrapper {
-    .sidebar-footer-actions {
-      display: flex;
-      flex-direction: column;
-      margin-left: 0;
-      align-items: flex-end;
-      width: 100%;
-
-      .ai-new-question-button {
-        width: 100%;
-      }
-    }
-
     .sidebar-container {
       border: none;
+    }
+    .ai-conversations-panel {
+      padding-top: 0;
     }
 
     // ai related sidebar content

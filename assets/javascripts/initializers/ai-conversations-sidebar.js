@@ -39,7 +39,10 @@ export default {
           }
       );
 
-      api.renderInOutlet("sidebar-footer-actions", AiBotSidebarNewConversation);
+      api.renderInOutlet(
+        "before-sidebar-sections",
+        AiBotSidebarNewConversation
+      );
       api.addSidebarSection(
         (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
           const AiConversationLink = class extends BaseCustomSidebarSectionLink {
