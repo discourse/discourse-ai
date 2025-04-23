@@ -4,6 +4,7 @@ import { hash } from "@ember/helper";
 import { next } from "@ember/runloop";
 import { service } from "@ember/service";
 import KeyValueStore from "discourse/lib/key-value-store";
+import { i18n } from "discourse-i18n";
 import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 
 export default class AiPersonaLlmSelector extends Component {
@@ -88,7 +89,7 @@ export default class AiPersonaLlmSelector extends Component {
   }
 
   get filterable() {
-    return this.botOptions.length > 4;
+    return this.botOptions.length > 8;
   }
 
   get value() {
@@ -156,23 +157,36 @@ export default class AiPersonaLlmSelector extends Component {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  get showLLMSelector() {
+    return this.allowLLMSelector && this.llmOptions.length > 0;
+  }
+
   <template>
     <div class="persona-llm-selector">
-      <div class="gpt-persona">
+      <div class="persona-llm-selector__selection-wrapper gpt-persona">
+        {{#if @showLabels}}
+          <label>{{i18n "discourse_ai.ai_bot.persona"}}</label>
+        {{/if}}
         <DropdownSelectBox
           class="persona-llm-selector__persona-dropdown"
           @value={{this.value}}
           @content={{this.botOptions}}
-          @options={{hash icon="robot" filterable=this.filterable}}
+          @options={{hash
+            icon=(if @showLabels "angle-down" "robot")
+            filterable=this.filterable
+          }}
         />
       </div>
-      {{#if this.allowLLMSelector}}
-        <div class="llm-selector">
+      {{#if this.showLLMSelector}}
+        <div class="persona-llm-selector__selection-wrapper llm-selector">
+          {{#if @showLabels}}
+            <label>{{i18n "discourse_ai.ai_bot.llm"}}</label>
+          {{/if}}
           <DropdownSelectBox
             class="persona-llm-selector__llm-dropdown"
             @value={{this.currentLlm}}
             @content={{this.llmOptions}}
-            @options={{hash icon="globe"}}
+            @options={{hash icon=(if @showLabels "angle-down" "globe")}}
           />
         </div>
       {{/if}}

@@ -10,6 +10,7 @@ export default RouteTemplate(
   <template>
     <div class="ai-bot-conversations">
       <AiPersonaLlmSelector
+        @showLabels={{true}}
         @setPersonaId={{@controller.setPersonaId}}
         @setTargetRecipient={{@controller.setTargetRecipient}}
       />
