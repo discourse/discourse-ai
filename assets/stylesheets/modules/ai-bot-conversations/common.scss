@@ -171,6 +171,11 @@ body.has-ai-conversations-sidebar {
       height: calc(100dvh - var(--header-offset) - 10em);
     }
 
+    .persona-llm-selector {
+      display: flex;
+      gap: 0.5em;
+      justify-content: flex-end;
+    }
     &__persona-selector {
       display: flex;
       justify-content: flex-end;
@@ -183,6 +188,10 @@ body.has-ai-conversations-sidebar {
       align-items: center;
       justify-content: center;
       height: 100%;
+
+      .loading-container {
+        display: contents;
+      }
     }
 
     &__input-wrapper {
