@@ -120,9 +120,6 @@ module DiscourseAi
             :user_id,
             "users.username",
             "users.uploaded_avatar_id",
-            "llm_models.input_cost",
-            "llm_models.output_cost",
-            "llm_models.cached_input_cost",
           )
           .order("usage_count DESC")
           .limit(USER_LIMIT)
@@ -144,10 +141,7 @@ module DiscourseAi
         base_query
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
           .group(
-            :feature_name,
-            "llm_models.input_cost",
-            "llm_models.output_cost",
-            "llm_models.cached_input_cost",
+            :feature_name
           )
           .order("usage_count DESC")
           .select(
@@ -167,10 +161,7 @@ module DiscourseAi
         base_query
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
           .group(
-            :language_model,
-            "llm_models.input_cost",
-            "llm_models.output_cost",
-            "llm_models.cached_input_cost",
+            :language_model
           )
           .order("usage_count DESC")
           .select(
