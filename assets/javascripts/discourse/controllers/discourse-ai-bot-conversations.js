@@ -1,18 +1,19 @@
 import Controller from "@ember/controller";
 import { action } from "@ember/object";
-import { alias } from "@ember/object/computed";
 import { service } from "@ember/service";
 
 export default class DiscourseAiBotConversations extends Controller {
   @service aiBotConversationsHiddenSubmit;
   @service currentUser;
 
-  @alias("aiBotConversationsHiddenSubmit.loading") loading;
-
   textarea = null;
 
   init() {
     super.init(...arguments);
+  }
+
+  get loading() {
+    return this.aiBotConversationsHiddenSubmit?.loading;
   }
 
   @action
