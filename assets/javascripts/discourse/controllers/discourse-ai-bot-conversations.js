@@ -1,48 +1,28 @@
 import Controller from "@ember/controller";
 import { action } from "@ember/object";
+import { alias } from "@ember/object/computed";
 import { service } from "@ember/service";
-import { tracked } from "@ember-compat/tracked-built-ins";
 
 export default class DiscourseAiBotConversations extends Controller {
   @service aiBotConversationsHiddenSubmit;
   @service currentUser;
 
-  @tracked selectedPersona = this.personaOptions[0].username;
+  @alias("aiBotConversationsHiddenSubmit.loading") loading;
 
   textarea = null;
 
   init() {
     super.init(...arguments);
-    this.selectedPersonaChanged(this.selectedPersona);
-  }
-
-  get personaOptions() {
-    if (this.currentUser.ai_enabled_personas) {
-      return this.currentUser.ai_enabled_personas
-        .filter((persona) => persona.username)
-        .map((persona) => {
-          return {
-            id: persona.id,
-            username: persona.username,
-            name: persona.name,
-            description: persona.description,
-          };
-        });
-    }
-  }
-
-  get displayPersonaSelector() {
-    return this.personaOptions.length > 1;
-  }
-
-  get filterable() {
-    return this.personaOptions.length > 4;
   }
 
   @action
-  selectedPersonaChanged(username) {
-    this.selectedPersona = username;
-    this.aiBotConversationsHiddenSubmit.personaUsername = username;
+  setPersonaId(id) {
+    this.aiBotConversationsHiddenSubmit.personaId = id;
+  }
+
+  @action
+  setTargetRecipient(username) {
+    this.aiBotConversationsHiddenSubmit.targetUsername = username;
   }
 
   @action

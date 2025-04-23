@@ -53,6 +53,10 @@ export default {
               this.topic = topic;
             }
 
+            get key() {
+              return this.topic.id;
+            }
+
             get name() {
               return this.topic.title;
             }
@@ -90,13 +94,21 @@ export default {
               super(...arguments);
               this.fetchMessages();
 
-              appEvents.on("topic:created", this, "addNewMessageToSidebar");
+              appEvents.on(
+                "discourse-ai:bot-pm-created",
+                this,
+                "addNewPMToSidebar"
+              );
             }
 
             @bind
             willDestroy() {
               this.removeScrollListener();
-              appEvents.on("topic:created", this, "addNewMessageToSidebar");
+              appEvents.off(
+                "discourse-ai:bot-pm-created",
+                this,
+                "addNewPMToSidebar"
+              );
             }
 
             get name() {
@@ -115,8 +127,8 @@ export default {
               );
             }
 
-            addNewMessageToSidebar(topic) {
-              this.addNewMessage(topic);
+            addNewPMToSidebar(topic) {
+              this.links = [new AiConversationLink(topic), ...this.links];
               this.watchForTitleUpdate(topic);
             }
 
@@ -201,28 +213,25 @@ export default {
               );
             }
 
-            addNewMessage(newTopic) {
-              this.links = [new AiConversationLink(newTopic), ...this.links];
-            }
-
             watchForTitleUpdate(topic) {
-              const channel = `/discourse-ai/ai-bot/topic/${topic.topic_id}`;
-              const topicId = topic.topic_id;
+              const channel = `/discourse-ai/ai-bot/topic/${topic.id}`;
               const callback = this.updateTopicTitle.bind(this);
               messageBus.subscribe(channel, ({ title }) => {
-                callback(topicId, title);
+                callback(topic, title);
                 messageBus.unsubscribe(channel);
               });
             }
 
-            updateTopicTitle(topicId, title) {
-              // update the topic title in the sidebar, instead of the default title
-              const text = document.querySelector(
-                `.sidebar-section-link-wrapper .ai-conversation-${topicId} .sidebar-section-link-content-text`
+            updateTopicTitle(topic, title) {
+              // update the data
+              topic.title = title;
+
+              // force Glimmer to re-render that one link
+              this.links = this.links.map((link) =>
+                link.topic.id === topic.id
+                  ? new AiConversationLink(topic)
+                  : link
               );
-              if (text) {
-                text.innerText = title;
-              }
             }
           };
         },
@@ -240,9 +249,10 @@ export default {
         if (
           topic?.archetype === "private_message" &&
           topic.user_id === currentUser.id &&
-          topic.postStream.posts.some((post) =>
-            isPostFromAiBot(post, currentUser)
-          )
+          (topic.is_bot_pm ||
+            topic.postStream.posts.some((post) =>
+              isPostFromAiBot(post, currentUser)
+            ))
         ) {
           return aiConversationsSidebarManager.forceCustomSidebar();
         }

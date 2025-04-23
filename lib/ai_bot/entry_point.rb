@@ -3,6 +3,7 @@
 module DiscourseAi
   module AiBot
     USER_AGENT = "Discourse AI Bot 1.0 (https://www.discourse.org)"
+    TOPIC_AI_BOT_PM_FIELD = "is_ai_bot_pm"
 
     class EntryPoint
       Bot = Struct.new(:id, :name, :llm)
@@ -64,6 +65,8 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        plugin.register_editable_topic_custom_field(TOPIC_AI_BOT_PM_FIELD)
+
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
             allowed_chat =
@@ -101,6 +104,14 @@ module DiscourseAi
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
+
+        plugin.add_to_serializer(
+          :topic_view,
+          :is_bot_pm,
+          include_condition: -> do
+            object.personal_message && object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
+          end,
+        ) { true }
 
         plugin.add_to_serializer(
           :current_user,
