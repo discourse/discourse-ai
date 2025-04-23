@@ -1,3 +1,5 @@
+@use "lib/viewport";
+
 // Hide the new question button from the hamburger menu's footer
 .hamburger-panel .ai-new-question-button {
   display: none;
@@ -9,10 +11,6 @@ body.has-ai-conversations-sidebar {
   }
 
   .sidebar-wrapper {
-    .sidebar-container {
-      border: none;
-    }
-
     .ai-conversations-panel {
       padding-top: 0;
     }
@@ -66,7 +64,6 @@ body.has-ai-conversations-sidebar {
   .topic-header-participants,
   .topic-above-footer-buttons-outlet,
   .topic-map,
-  .timeline-ago,
   #topic-footer-buttons .topic-footer-main-buttons details {
     display: none;
   }
@@ -114,26 +111,18 @@ body.has-ai-conversations-sidebar {
     width: calc(100% - 6.5em);
     margin-top: 0;
 
-    @media screen and (max-width: 924px) {
+    @include viewport.until(md) {
       max-width: unset;
       width: 100%;
     }
 
-    @media screen and (min-width: 1300px) {
+    @include viewport.from(xl) {
       width: 100%;
       max-width: 51em;
     }
 
     .topic-footer-main-buttons {
       justify-content: flex-end;
-
-      @media screen and (min-width: 1180px) {
-        margin-right: 0.6em;
-      }
-
-      @media screen and (max-width: 924px) {
-        margin-right: 0.6em;
-      }
     }
   }
 
@@ -141,7 +130,7 @@ body.has-ai-conversations-sidebar {
     display: none;
   }
 
-  @media screen and (max-width: 924px) {
+  @include viewport.until(lg) {
     .archetype-private_message .topic-post:last-child {
       margin-bottom: 0;
     }
@@ -164,16 +153,25 @@ body.has-ai-conversations-sidebar {
   .ai-bot-conversations {
     height: calc(100dvh - var(--header-offset) - 1.25em);
 
-    @media screen and (min-width: 675px) {
-      border: 1px solid var(--primary-low);
-      padding: 2em 2em 3em;
-      border-radius: var(--border-radius);
-      height: calc(100dvh - var(--header-offset) - 10em);
-    }
-
     &__persona-selector {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
+    }
+
+    &__persona-selector .btn {
+      background-color: transparent;
+      font-weight: bold;
+    }
+
+    &__persona-selector .btn:hover,
+    &__persona-selector .btn:focus {
+      background-color: transparent;
+      color: var(--primary);
+    }
+
+    &__persona-selector .btn:hover .d-icon,
+    &__persona-selector .btn:focus .d-icon {
+      color: var(--primary);
     }
 
     &__content-wrapper {
@@ -182,7 +180,11 @@ body.has-ai-conversations-sidebar {
       box-sizing: border-box;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      height: calc(90% - 1.25em - var(--header-offset));
+
+      @include viewport.until(sm) {
+        height: calc(75% - 1.25em - var(--header-offset) - 2em);
+      }
     }
 
     &__input-wrapper {
@@ -190,10 +192,8 @@ body.has-ai-conversations-sidebar {
       align-items: stretch;
       gap: 0.5em;
       width: 100%;
-      max-width: 90dvw;
-      margin-top: 2em;
 
-      @media screen and (min-width: 600px) {
+      @include viewport.from(sm) {
         width: 80%;
         max-width: 46em;
       }
@@ -217,32 +217,12 @@ body.has-ai-conversations-sidebar {
       }
     }
 
-    h1 {
-      margin-bottom: 0.45em;
-      max-width: 20em;
-      text-align: center;
-      font-size: var(--font-up-6);
-      line-height: var(--line-height-medium);
-
-      @media screen and (min-height: 300px) {
-        margin-top: -1em;
-      }
-
-      @media screen and (min-height: 600px) {
-        margin-top: -3em;
-      }
-
-      @media screen and (min-height: 900px) {
-        margin-top: -6em;
-      }
-    }
-
     .ai-disclaimer {
       text-align: center;
       font-size: var(--font-down-1);
       color: var(--primary-700);
 
-      @media screen and (min-width: 600px) {
+      @include viewport.from(sm) {
         width: 80%;
         max-width: 46em;
       }
@@ -259,30 +239,13 @@ body.has-ai-conversations-sidebar {
         display: none;
       }
     }
-  }
 
-  // composer
-  .reply-details .dropdown-select-box.composer-actions,
-  .composer-fields {
-    display: none;
-  }
-
-  // hide user stuff
-  .new-user-wrapper {
-    .user-navigation {
-      display: none;
+    .topic-footer-main-buttons {
+      justify-content: flex-end;
     }
   }
 
-  .user-main .about.collapsed-info .details {
-    display: none;
-  }
-
-  .user-content {
-    margin-top: 0;
-  }
-
-  @media screen and (max-width: 600px) {
+  @include viewport.until(sm) {
     .share-ai-conversation-button {
       .d-icon {
         margin: 0;
@@ -291,20 +254,6 @@ body.has-ai-conversations-sidebar {
       .d-button-label {
         display: none;
       }
-    }
-  }
-
-  .mobile-view {
-    nav.post-controls .actions button.reply .d-icon {
-      margin: 0;
-    }
-
-    .search-dropdown {
-      display: none;
-    }
-
-    .sidebar-custom-sections {
-      display: none;
     }
   }
 

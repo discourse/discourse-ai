@@ -16,7 +16,7 @@ export default RouteTemplate(
             @value={{@controller.selectedPersona}}
             @valueProperty="username"
             @content={{@controller.personaOptions}}
-            @options={{hash icon="robot" filterable=@controller.filterable}}
+            @options={{hash icon="angle-down"}}
             @onChange={{@controller.selectedPersonaChanged}}
           />
         </div>
