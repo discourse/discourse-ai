@@ -68,21 +68,23 @@ export default class AiPersonaLlmSelector extends Component {
   }
 
   get botOptions() {
-    if (this.currentUser.ai_enabled_personas) {
-      let enabledPersonas = this.currentUser.ai_enabled_personas;
-
-      if (!this.hasLlmSelector) {
-        enabledPersonas = enabledPersonas.filter((persona) => persona.username);
-      }
-
-      return enabledPersonas.map((persona) => {
-        return {
-          id: persona.id,
-          name: persona.name,
-          description: persona.description,
-        };
-      });
+    if (!this.currentUser.ai_enabled_personas) {
+      return;
     }
+
+    let enabledPersonas = this.currentUser.ai_enabled_personas;
+
+    if (!this.hasLlmSelector) {
+      enabledPersonas = enabledPersonas.filter((persona) => persona.username);
+    }
+
+    return enabledPersonas.map((persona) => {
+      return {
+        id: persona.id,
+        name: persona.name,
+        description: persona.description,
+      };
+    });
   }
 
   get filterable() {
