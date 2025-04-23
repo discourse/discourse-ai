@@ -158,7 +158,7 @@ export default class AiPersonaLlmSelector extends Component {
   }
 
   get showLLMSelector() {
-    return this.allowLLMSelector && this.llmOptions.length > 0;
+    return this.allowLLMSelector && this.llmOptions.length > 1;
   }
 
   <template>
