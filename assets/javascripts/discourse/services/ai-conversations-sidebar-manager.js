@@ -10,7 +10,12 @@ export default class AiConversationsSidebarManager extends Service {
   @tracked newTopicForceSidebar = false;
 
   forceCustomSidebar() {
-    // Set the panel to your custom panel
+    // Return early if we already have the correct panel, so we don't
+    // re-render it.
+    if (this.sidebarState.currentPanel?.key === AI_CONVERSATIONS_PANEL) {
+      return;
+    }
+
     this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
 
     // Use separated mode to ensure independence from hamburger menu
