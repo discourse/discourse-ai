@@ -20,38 +20,8 @@ export default class AiPersonaLlmSelector extends Component {
     super(...arguments);
 
     if (this.botOptions?.length) {
-      let personaId = this.keyValueStore.getItem(PERSONA_SELECTOR_KEY);
-
-      this._value = this.botOptions[0].id;
-      if (personaId) {
-        personaId = parseInt(personaId, 10);
-        if (this.botOptions.any((bot) => bot.id === personaId)) {
-          this._value = personaId;
-        }
-      }
-
-      this.args.setPersonaId(this._value);
-      this.setAllowLLMSelector();
-
-      if (this.hasLlmSelector) {
-        let llm = this.keyValueStore.getItem(LLM_SELECTOR_KEY);
-
-        const llmOption =
-          this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
-          this.llmOptions[0];
-
-        if (llmOption) {
-          llm = llmOption.id;
-        } else {
-          llm = "";
-        }
-
-        if (llm) {
-          next(() => {
-            this.currentLlm = llm;
-          });
-        }
-      }
+      this.#loadStoredPersona();
+      this.#loadStoredLlm();
 
       next(() => {
         this.resetTargetRecipients();
@@ -158,6 +128,44 @@ export default class AiPersonaLlmSelector extends Component {
 
   get showLLMSelector() {
     return this.allowLLMSelector && this.llmOptions.length > 1;
+  }
+
+  #loadStoredPersona() {
+    let personaId = this.keyValueStore.getItem(PERSONA_SELECTOR_KEY);
+
+    this._value = this.botOptions[0].id;
+    if (personaId) {
+      personaId = parseInt(personaId, 10);
+      if (this.botOptions.any((bot) => bot.id === personaId)) {
+        this._value = personaId;
+      }
+    }
+
+    this.args.setPersonaId(this._value);
+  }
+
+  #loadStoredLlm() {
+    this.setAllowLLMSelector();
+
+    if (this.hasLlmSelector) {
+      let llm = this.keyValueStore.getItem(LLM_SELECTOR_KEY);
+
+      const llmOption =
+        this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
+        this.llmOptions[0];
+
+      if (llmOption) {
+        llm = llmOption.id;
+      } else {
+        llm = "";
+      }
+
+      if (llm) {
+        next(() => {
+          this.currentLlm = llm;
+        });
+      }
+    }
   }
 
   <template>
