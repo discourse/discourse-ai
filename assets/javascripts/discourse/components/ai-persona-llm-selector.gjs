@@ -3,27 +3,24 @@ import { tracked } from "@glimmer/tracking";
 import { hash } from "@ember/helper";
 import { next } from "@ember/runloop";
 import { service } from "@ember/service";
-import KeyValueStore from "discourse/lib/key-value-store";
 import { i18n } from "discourse-i18n";
 import DropdownSelectBox from "select-kit/components/dropdown-select-box";
 
+const PERSONA_SELECTOR_KEY = "ai_persona_selector_id";
+const LLM_SELECTOR_KEY = "ai_llm_selector_id";
+
 export default class AiPersonaLlmSelector extends Component {
   @service currentUser;
+  @service keyValueStore;
 
   @tracked llm;
   @tracked allowLLMSelector = true;
 
-  STORE_NAMESPACE = "discourse_ai_persona_selector_";
-  LLM_STORE_NAMESPACE = "discourse_ai_llm_selector_";
-
-  preferredPersonaStore = new KeyValueStore(this.STORE_NAMESPACE);
-  preferredLlmStore = new KeyValueStore(this.LLM_STORE_NAMESPACE);
-
   constructor() {
     super(...arguments);
 
-    if (this.botOptions && this.botOptions.length) {
-      let personaId = this.preferredPersonaStore.getObject("id");
+    if (this.botOptions?.length) {
+      let personaId = this.keyValueStore.getItem(PERSONA_SELECTOR_KEY);
 
       this._value = this.botOptions[0].id;
       if (personaId) {
@@ -37,7 +34,7 @@ export default class AiPersonaLlmSelector extends Component {
       this.setAllowLLMSelector();
 
       if (this.hasLlmSelector) {
-        let llm = this.preferredLlmStore.getObject("id");
+        let llm = this.keyValueStore.getItem(LLM_SELECTOR_KEY);
 
         const llmOption =
           this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
@@ -98,7 +95,7 @@ export default class AiPersonaLlmSelector extends Component {
 
   set value(newValue) {
     this._value = newValue;
-    this.preferredPersonaStore.setObject({ key: "id", value: newValue });
+    this.keyValueStore.setItem(PERSONA_SELECTOR_KEY, newValue);
     this.args.setPersonaId(newValue);
     this.setAllowLLMSelector();
     this.resetTargetRecipients();
@@ -123,7 +120,7 @@ export default class AiPersonaLlmSelector extends Component {
 
   set currentLlm(newValue) {
     this.llm = newValue;
-    this.preferredLlmStore.setObject({ key: "id", value: newValue });
+    this.keyValueStore.setItem(LLM_SELECTOR_KEY, newValue);
 
     this.resetTargetRecipients();
   }
