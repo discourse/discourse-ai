@@ -217,9 +217,16 @@ body.has-ai-conversations-sidebar {
         max-width: 46em;
       }
 
-      .btn-primary {
+      .ai-conversation-submit {
         align-self: end;
         min-height: 2.5em;
+        max-height: 2.5em;
+      }
+
+      .spinner {
+        margin: 0;
+        width: 2em;
+        height: 2em;
       }
 
       #ai-bot-conversations-input {
@@ -228,6 +235,7 @@ body.has-ai-conversations-sidebar {
         resize: none;
         border-radius: var(--d-button-border-radius);
         max-height: 30vh;
+        overflow: hidden;
 
         &:focus {
           outline: none;
