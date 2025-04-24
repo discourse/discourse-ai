@@ -439,10 +439,12 @@ en:
         usage:
           ai_bot: "AI bot"
           ai_helper: "Helper"
+          ai_helper_image_caption: "Image caption"
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Summarize"
           ai_embeddings_semantic_search: "AI search"
           ai_spam: "Spam"
+          automation: "Automation (%{name})"
         in_use_warning:
           one: "This model is currently used by %{settings}. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following: %{settings}. If misconfigured, features won't work as expected. "

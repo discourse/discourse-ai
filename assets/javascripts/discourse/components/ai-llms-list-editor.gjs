@@ -116,6 +116,10 @@ export default class AiLlmsListEditor extends Component {
       return i18n("discourse_ai.llms.usage.ai_persona", {
         persona: usage.name,
       });
+    } else if (usage.type === "automation") {
+      return i18n("discourse_ai.llms.usage.automation", {
+        name: usage.name,
+      });
     } else {
       return i18n("discourse_ai.llms.usage." + usage.type);
     }
