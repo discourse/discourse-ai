@@ -337,42 +337,38 @@ module DiscourseAi
         force_thread = message.thread_id.nil? && channel.direct_message_channel?
         in_reply_to_id = channel.direct_message_channel? ? message.id : nil
 
+        streamer =
+          ChatStreamer.new(
+            message: message,
+            channel: channel,
+            guardian: guardian,
+            thread_id: message.thread_id,
+            in_reply_to_id: in_reply_to_id,
+            force_thread: force_thread,
+          )
+
         new_prompts =
           bot.reply(context) do |partial, cancel, placeholder, type|
             # no support for tools or thinking by design
             next if type == :thinking || type == :tool_details || type == :partial_tool
-            if !reply
-              # just eat all leading spaces we can not create the message
-              next if partial.blank?
-              reply =
-                ChatSDK::Message.create(
-                  raw: partial,
-                  thread_id: message.thread_id,
-                  channel_id: channel.id,
-                  guardian: guardian,
-                  in_reply_to_id: in_reply_to_id,
-                  force_thread: force_thread,
-                  enforce_membership: !channel.direct_message_channel?,
-                )
-              ChatSDK::Message.start_stream(message_id: reply.id, guardian: guardian)
-            else
-              streaming =
-                ChatSDK::Message.stream(message_id: reply.id, raw: partial, guardian: guardian)
-
-              if !streaming
-                cancel&.call
-                break
-              end
-            end
+            streamer.cancel = cancel
+            streamer << partial
+            break if streamer.cancelled
           end
 
-        if new_prompts.length > 1 && reply.id
+        reply = streamer.reply
+        if new_prompts.length > 1 && reply
           ChatMessageCustomPrompt.create!(message_id: reply.id, custom_prompt: new_prompts)
         end
 
-        ChatSDK::Message.stop_stream(message_id: reply.id, guardian: guardian) if reply
+        if streamer
+          streamer.done
+          streamer = nil
+        end
 
         reply
+      ensure
+        streamer.done if streamer
       end
 
       def reply_to(
