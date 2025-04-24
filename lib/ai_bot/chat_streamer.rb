@@ -53,7 +53,9 @@ module DiscourseAi
         if @reply
           @queue << partial
         else
-          create_reply(partial)
+          # we throw away leading spaces prior to message creation for now
+          # by design
+          create_reply(partial) if partial.present?
         end
       end
 
