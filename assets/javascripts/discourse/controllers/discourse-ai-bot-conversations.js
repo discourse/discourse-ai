@@ -27,9 +27,10 @@ export default class DiscourseAiBotConversations extends Controller {
   }
 
   @action
-  updateInputValue(event) {
+  updateInputValue(value) {
     this._autoExpandTextarea();
-    this.aiBotConversationsHiddenSubmit.inputValue = event.target.value;
+    this.aiBotConversationsHiddenSubmit.inputValue =
+      value.target?.value || value;
   }
 
   @action
