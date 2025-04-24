@@ -32,6 +32,14 @@ module PageObjects
         page.has_no_css?(HOMEPAGE_WRAPPER_CLASS)
       end
 
+      def has_no_new_question_button?
+        page.has_no_css?(".ai-new-question-button")
+      end
+
+      def click_new_question_button
+        page.find(".ai-new-question-button").click
+      end
+
       def persona_selector
         PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
       end

@@ -1,4 +1,5 @@
 import Component from "@glimmer/component";
+import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { AI_CONVERSATIONS_PANEL } from "../services/ai-conversations-sidebar-manager";
@@ -14,12 +15,18 @@ export default class AiBotSidebarNewConversation extends Component {
     );
   }
 
+  @action
+  routeTo() {
+    this.router.transitionTo("/discourse-ai/ai-bot/conversations");
+    this.args.outletArgs?.toggleNavigationMenu?.();
+  }
+
   <template>
     {{#if this.shouldRender}}
       <DButton
-        @route="/discourse-ai/ai-bot/conversations"
         @label="discourse_ai.ai_bot.conversations.new"
         @icon="plus"
+        @action={{this.routeTo}}
         class="ai-new-question-button btn-default"
       />
     {{/if}}
