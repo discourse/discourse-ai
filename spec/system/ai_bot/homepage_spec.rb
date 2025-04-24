@@ -271,10 +271,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   end
 
   context "with header dropdown on mobile", mobile: true do
-    before do
-      SiteSetting.navigation_menu = "header dropdown"
-      SiteSetting.discourse_global_communities_enabled = false
-    end
+    before { SiteSetting.navigation_menu = "header dropdown" }
 
     it "displays the new question button in the menu when viewing a PM" do
       ai_pm_homepage.visit
