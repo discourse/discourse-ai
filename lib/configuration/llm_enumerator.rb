@@ -23,12 +23,12 @@ module DiscourseAi
 
         if SiteSetting.ai_helper_enabled
           model_id = SiteSetting.ai_helper_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper }
+          rval[model_id] << { type: :ai_helper } if model_id != 0
         end
 
         if SiteSetting.ai_helper_image_caption_model
           model_id = SiteSetting.ai_helper_image_caption_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper_image_caption }
+          rval[model_id] << { type: :ai_helper_image_caption } if model_id != 0
         end
 
         if SiteSetting.ai_summarization_enabled
