@@ -62,6 +62,7 @@ module DiscourseAi
           ChatSDK::Message.create(
             raw: message,
             channel_id: channel.id,
+            thread_id: thread_id,
             guardian: guardian,
             force_thread: force_thread,
             in_reply_to_id: in_reply_to_id,
@@ -78,7 +79,7 @@ module DiscourseAi
       def done
         @queue << :done
         @worker_thread.join
-        ChatSDK::Message.stop_stream(message_id: @reply.id, guardian: @guardian)
+        ChatSDK::Message.stop_stream(message_id: @reply.id, guardian: @guardian) if @reply
         @reply
       end
 
