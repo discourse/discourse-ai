@@ -7,12 +7,12 @@
 
 body.has-ai-conversations-sidebar {
   .ai-new-question-button {
-    margin: 1em 2em 1em 1em;
+    margin: 1.8em 1rem 0;
   }
 
   .sidebar-wrapper {
     .ai-conversations-panel {
-      padding-top: 0;
+      padding-top: 1em;
     }
 
     // ai related sidebar content
@@ -151,7 +151,9 @@ body.has-ai-conversations-sidebar {
   }
 
   .ai-bot-conversations {
-    height: calc(100dvh - var(--header-offset) - 1.25em);
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - var(--header-offset) - 5em);
 
     .persona-llm-selector {
       display: flex;
@@ -195,14 +197,17 @@ body.has-ai-conversations-sidebar {
       box-sizing: border-box;
       align-items: center;
       justify-content: center;
-      height: calc(90% - 1.25em - var(--header-offset));
-
-      @include viewport.until(sm) {
-        height: calc(75% - 1.25em - var(--header-offset) - 2em);
-      }
+      flex: 1 1 auto;
 
       .loading-container {
         display: contents;
+      }
+
+      // optical centering for layout balance
+      @media screen and (min-height: 600px) {
+        h1 {
+          margin-top: -6em;
+        }
       }
     }
 
