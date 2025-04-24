@@ -153,7 +153,7 @@ body.has-ai-conversations-sidebar {
   .ai-bot-conversations {
     display: flex;
     flex-direction: column;
-    height: calc(100dvh - var(--header-offset) - 1.5em);
+    height: calc(100dvh - var(--header-offset) - 5em);
 
     .persona-llm-selector {
       display: flex;
