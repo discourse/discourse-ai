@@ -35,6 +35,20 @@ RSpec.describe DiscourseAi::AiBot::EntryPoint do
         expect(serializer[:current_user][:can_debug_ai_bot_conversations]).to eq(true)
       end
 
+      describe "adding TOPIC_AI_BOT_PM_FIELD to topic custom fields" do
+        it "is added when user PMs a single bot" do
+          topic = PostCreator.create!(admin, post_args).topic
+          expect(topic.reload.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD]).to eq("t")
+        end
+
+        it "is not added when user PMs a bot and another user" do
+          user = Fabricate(:user)
+          post_args[:target_usernames] = [gpt_bot.username, user.username].join(",")
+          topic = PostCreator.create!(admin, post_args).topic
+          expect(topic.reload.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD]).to be_nil
+        end
+      end
+
       it "adds information about forcing default llm to current_user_serializer" do
         Group.refresh_automatic_groups!
 

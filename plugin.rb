@@ -8,8 +8,8 @@
 # url: https://meta.discourse.org/t/discourse-ai/259214
 # required_version: 2.7.0
 
-gem "tokenizers", "0.4.4"
-gem "tiktoken_ruby", "0.0.9"
+gem "tokenizers", "0.5.4"
+gem "tiktoken_ruby", "0.0.11.1"
 gem "ed25519", "1.2.4" #TODO remove this as existing ssl gem should handle this
 
 # we probably want to move all dependencies directly in to the Discourse Gemfile, this

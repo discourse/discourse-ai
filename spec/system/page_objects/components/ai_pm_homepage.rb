@@ -5,6 +5,10 @@ module PageObjects
     class AiPmHomepage < PageObjects::Components::Base
       HOMEPAGE_WRAPPER_CLASS = ".ai-bot-conversations__content-wrapper"
 
+      def visit
+        page.visit("/discourse-ai/ai-bot/conversations")
+      end
+
       def input
         page.find("#ai-bot-conversations-input")
       end
@@ -26,6 +30,22 @@ module PageObjects
 
       def has_no_homepage?
         page.has_no_css?(HOMEPAGE_WRAPPER_CLASS)
+      end
+
+      def has_no_new_question_button?
+        page.has_no_css?(".ai-new-question-button")
+      end
+
+      def click_new_question_button
+        page.find(".ai-new-question-button").click
+      end
+
+      def persona_selector
+        PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
+      end
+
+      def llm_selector
+        PageObjects::Components::SelectKit.new(".persona-llm-selector__llm-dropdown")
       end
     end
   end

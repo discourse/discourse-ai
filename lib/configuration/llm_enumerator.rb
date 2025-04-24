@@ -13,16 +13,22 @@ module DiscourseAi
             .where("enabled_chat_bot = ?", true)
             .pluck(:id)
             .each { |llm_id| rval[llm_id] << { type: :ai_bot } }
-
-          AiPersona
-            .where("force_default_llm = ?", true)
-            .pluck(:default_llm_id, :name, :id)
-            .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
         end
+
+        # this is unconditional, so it is clear that we always signal configuration
+        AiPersona
+          .where("default_llm_id IS NOT NULL")
+          .pluck(:default_llm_id, :name, :id)
+          .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
 
         if SiteSetting.ai_helper_enabled
           model_id = SiteSetting.ai_helper_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper }
+          rval[model_id] << { type: :ai_helper } if model_id != 0
+        end
+
+        if SiteSetting.ai_helper_image_caption_model
+          model_id = SiteSetting.ai_helper_image_caption_model.split(":").last.to_i
+          rval[model_id] << { type: :ai_helper_image_caption } if model_id != 0
         end
 
         if SiteSetting.ai_summarization_enabled
@@ -40,6 +46,25 @@ module DiscourseAi
         if SiteSetting.ai_spam_detection_enabled && AiModerationSetting.spam.present?
           model_id = AiModerationSetting.spam[:llm_model_id]
           rval[model_id] << { type: :ai_spam }
+        end
+
+        if defined?(DiscourseAutomation::Automation)
+          DiscourseAutomation::Automation
+            .joins(:fields)
+            .where(script: %w[llm_report llm_triage])
+            .where("discourse_automation_fields.name = ?", "model")
+            .pluck(
+              "metadata ->> 'value', discourse_automation_automations.name, discourse_automation_automations.id",
+            )
+            .each do |model_text, name, id|
+              next if model_text.blank?
+              model_id = model_text.split("custom:").last.to_i
+              if model_id.present?
+                if model_text =~ /custom:(\d+)/
+                  rval[model_id] << { type: :automation, name: name, id: id }
+                end
+              end
+            end
         end
 
         rval
@@ -84,45 +109,6 @@ module DiscourseAi
 
         values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
         values
-      end
-
-      # TODO(roman): Deprecated. Remove by Sept 2024
-      def self.old_summarization_options
-        %w[
-          gpt-4
-          gpt-4-32k
-          gpt-4-turbo
-          gpt-4o
-          gpt-3.5-turbo
-          gpt-3.5-turbo-16k
-          gemini-pro
-          gemini-1.5-pro
-          gemini-1.5-flash
-          claude-2
-          claude-instant-1
-          claude-3-haiku
-          claude-3-sonnet
-          claude-3-opus
-          mistralai/Mixtral-8x7B-Instruct-v0.1
-          mistralai/Mixtral-8x7B-Instruct-v0.1
-        ]
-      end
-
-      # TODO(roman): Deprecated. Remove by Sept 2024
-      def self.available_ai_bots
-        %w[
-          gpt-3.5-turbo
-          gpt-4
-          gpt-4-turbo
-          gpt-4o
-          claude-2
-          gemini-1.5-pro
-          mixtral-8x7B-Instruct-V0.1
-          claude-3-opus
-          claude-3-sonnet
-          claude-3-haiku
-          cohere-command-r-plus
-        ]
       end
     end
   end

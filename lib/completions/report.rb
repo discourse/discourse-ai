@@ -116,14 +116,7 @@ module DiscourseAi
         base_query
           .joins(:user)
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
-          .group(
-            :user_id,
-            "users.username",
-            "users.uploaded_avatar_id",
-            "llm_models.input_cost",
-            "llm_models.output_cost",
-            "llm_models.cached_input_cost",
-          )
+          .group(:user_id, "users.username", "users.uploaded_avatar_id")
           .order("usage_count DESC")
           .limit(USER_LIMIT)
           .select(
@@ -134,21 +127,16 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
-            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
-            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
-            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
+            "SUM(COALESCE(request_tokens, 0) * COALESCE(llm_models.input_cost, 0)) / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0) * COALESCE(llm_models.output_cost, 0)) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0) * COALESCE(llm_models.cached_input_cost, 0)) / 1000000.0 as cached_input_spending",
           )
       end
 
       def feature_breakdown
         base_query
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
-          .group(
-            :feature_name,
-            "llm_models.input_cost",
-            "llm_models.output_cost",
-            "llm_models.cached_input_cost",
-          )
+          .group(:feature_name)
           .order("usage_count DESC")
           .select(
             "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",
@@ -157,9 +145,9 @@ module DiscourseAi
             "SUM(COALESCE(cached_tokens,0)) as total_cached_tokens",
             "SUM(COALESCE(request_tokens,0)) as total_request_tokens",
             "SUM(COALESCE(response_tokens,0)) as total_response_tokens",
-            "SUM(COALESCE(request_tokens, 0)) * COALESCE(llm_models.input_cost, 0) / 1000000.0 as input_spending",
-            "SUM(COALESCE(response_tokens, 0)) * COALESCE(llm_models.output_cost, 0) / 1000000.0 as output_spending",
-            "SUM(COALESCE(cached_tokens, 0)) * COALESCE(llm_models.cached_input_cost, 0) / 1000000.0 as cached_input_spending",
+            "SUM(COALESCE(request_tokens, 0) * COALESCE(llm_models.input_cost, 0))  / 1000000.0 as input_spending",
+            "SUM(COALESCE(response_tokens, 0) * COALESCE(llm_models.output_cost, 0)) / 1000000.0 as output_spending",
+            "SUM(COALESCE(cached_tokens, 0) * COALESCE(llm_models.cached_input_cost, 0)) / 1000000.0 as cached_input_spending",
           )
       end
 
