@@ -93,6 +93,9 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   end
 
   before do
+    pm.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD] = "t"
+    pm.save!
+
     SiteSetting.ai_enable_experimental_bot_ux = true
     SiteSetting.ai_bot_enabled = true
     Jobs.run_immediately!
