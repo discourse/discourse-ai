@@ -269,4 +269,24 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       expect(sidebar).to have_no_css("button.ai-new-question-button")
     end
   end
+
+  context "with header dropdown on mobile", mobile: true do
+    before do
+      SiteSetting.navigation_menu = "header dropdown"
+      SiteSetting.discourse_global_communities_enabled = false
+    end
+
+    it "displays the new question button in the menu when viewing a PM" do
+      ai_pm_homepage.visit
+      header_dropdown.open
+      expect(ai_pm_homepage).to have_no_new_question_button
+
+      topic_page.visit_topic(pm)
+      header_dropdown.open
+      ai_pm_homepage.click_new_question_button
+
+      # Hamburger sidebar is closed
+      expect(header_dropdown).to have_no_dropdown_visible
+    end
+  end
 end
