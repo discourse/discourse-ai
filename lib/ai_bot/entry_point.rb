@@ -73,8 +73,8 @@ module DiscourseAi
 
           # Only process if creator is not a bot or system user
           next if DiscourseAi::AiBot::Playground.is_bot_user_id?(creator.id)
-          # Get all bot user IDs defined by the discourse-ai plugin
 
+          # Get all bot user IDs defined by the discourse-ai plugin
           bot_ids = DiscourseAi::AiBot::EntryPoint.all_bot_ids
 
           # Check if the only recipients are bots
