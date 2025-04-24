@@ -7,7 +7,6 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
   before do
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.ai_bot_enabled_chat_bots = "gpt-4"
     sign_in(admin)
   end
 

@@ -5,6 +5,9 @@ module DiscourseAi
     class Playground
       BYPASS_AI_REPLY_CUSTOM_FIELD = "discourse_ai_bypass_ai_reply"
       BOT_USER_PREF_ID_CUSTOM_FIELD = "discourse_ai_bot_user_pref_id"
+      # 10 minutes is enough for vast majority of cases
+      # there is a small chance that some reasoning models may take longer
+      MAX_STREAM_DELAY_SECONDS = 600
 
       attr_reader :bot
 
@@ -464,7 +467,7 @@ module DiscourseAi
           publish_update(reply_post, { raw: reply_post.cooked })
 
           redis_stream_key = "gpt_cancel:#{reply_post.id}"
-          Discourse.redis.setex(redis_stream_key, 60, 1)
+          Discourse.redis.setex(redis_stream_key, MAX_STREAM_DELAY_SECONDS, 1)
         end
 
         context.skip_tool_details ||= !bot.persona.class.tool_details
@@ -504,7 +507,7 @@ module DiscourseAi
 
             if post_streamer
               post_streamer.run_later do
-                Discourse.redis.expire(redis_stream_key, 60)
+                Discourse.redis.expire(redis_stream_key, MAX_STREAM_DELAY_SECONDS)
                 publish_update(reply_post, { raw: raw })
               end
             end

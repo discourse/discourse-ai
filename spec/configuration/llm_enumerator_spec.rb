@@ -4,6 +4,9 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
   fab!(:fake_model)
   fab!(:llm_model)
   fab!(:seeded_model)
+  fab!(:automation) do
+    Fabricate(:automation, script: "llm_report", name: "some automation", enabled: true)
+  end
 
   describe "#values_for_serialization" do
     it "returns an array for that can be used for serialization" do
@@ -37,13 +40,27 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
   end
 
   describe "#global_usage" do
-    before do
+    it "returns a hash of Llm models in use globally" do
       SiteSetting.ai_helper_model = "custom:#{fake_model.id}"
       SiteSetting.ai_helper_enabled = true
+      expect(described_class.global_usage).to eq(fake_model.id => [{ type: :ai_helper }])
     end
 
-    it "returns a hash of Llm models in use globally" do
-      expect(described_class.global_usage).to eq(fake_model.id => [{ type: :ai_helper }])
+    it "returns information about automation rules" do
+      automation.fields.create!(
+        component: "text",
+        name: "model",
+        metadata: {
+          value: "custom:#{fake_model.id}",
+        },
+        target: "script",
+      )
+
+      usage = described_class.global_usage
+
+      expect(usage).to eq(
+        { fake_model.id => [{ type: :automation, name: "some automation", id: automation.id }] },
+      )
     end
 
     it "doesn't error on spam when spam detection is enabled but moderation setting is missing" do
