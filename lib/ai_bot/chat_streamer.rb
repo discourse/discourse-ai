@@ -39,6 +39,9 @@ module DiscourseAi
 
       def <<(partial)
         return if partial.to_s.empty?
+        # we throw away leading spaces prior to message creation for now
+        # by design
+        return if partial.to_s.blank? && !@reply
 
         if @client_id
           ChatSDK::Channel.stop_reply(

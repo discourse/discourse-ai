@@ -354,7 +354,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           )
 
         prompts = nil
-        DiscourseAi::Completions::Llm.with_prepared_responses(["world"]) do |_, _, _prompts|
+        DiscourseAi::Completions::Llm.with_prepared_responses([[" ", "world"]]) do |_, _, _prompts|
           message =
             ChatSDK::Message.create(
               channel_id: channel.id,
@@ -386,6 +386,9 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         TEXT
 
         expect(content.strip).to eq(expected)
+
+        reply = Chat::Message.order(:id).last
+        expect(reply.message).to eq("world")
       end
 
       it "should reply to a mention if properly enabled" do
