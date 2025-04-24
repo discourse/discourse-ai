@@ -116,11 +116,7 @@ module DiscourseAi
         base_query
           .joins(:user)
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
-          .group(
-            :user_id,
-            "users.username",
-            "users.uploaded_avatar_id",
-          )
+          .group(:user_id, "users.username", "users.uploaded_avatar_id")
           .order("usage_count DESC")
           .limit(USER_LIMIT)
           .select(
@@ -140,9 +136,7 @@ module DiscourseAi
       def feature_breakdown
         base_query
           .joins("LEFT JOIN llm_models ON llm_models.name = language_model")
-          .group(
-            :feature_name
-          )
+          .group(:feature_name)
           .order("usage_count DESC")
           .select(
             "case when coalesce(feature_name, '') = '' then '#{UNKNOWN_FEATURE}' else feature_name end as feature_name",

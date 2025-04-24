@@ -18,10 +18,20 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       provider: "anthropic",
       url: "https://api.anthropic.com/v1/messages",
       name: "claude-2",
+      display_name: "Claude 2",
+    )
+  end
+  fab!(:claude_2_dup) do
+    Fabricate(
+      :llm_model,
+      provider: "anthropic",
+      url: "https://api.anthropic.com/v1/messages",
+      name: "claude-2",
+      display_name: "Duplicate",
     )
   end
   fab!(:bot_user) do
-    toggle_enabled_bots(bots: [claude_2])
+    toggle_enabled_bots(bots: [claude_2, claude_2_dup])
     SiteSetting.ai_bot_enabled = true
     claude_2.reload.user
   end
@@ -215,6 +225,18 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       header.click_bot_button
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_no_section_link(pm.title)
+    end
+
+    it "Allows choosing persona and LLM" do
+      ai_pm_homepage.visit
+
+      ai_pm_homepage.persona_selector.expand
+      ai_pm_homepage.persona_selector.select_row_by_name(persona.name)
+      ai_pm_homepage.persona_selector.collapse
+
+      ai_pm_homepage.llm_selector.expand
+      ai_pm_homepage.llm_selector.select_row_by_name(claude_2_dup.display_name)
+      ai_pm_homepage.llm_selector.collapse
     end
   end
 

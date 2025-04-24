@@ -664,6 +664,8 @@ en:
         click_to_run_label: "Run Artifact"
 
       ai_bot:
+        persona: "Persona"
+        llm: "Model"
         pm_warning: "AI chatbot messages are monitored regularly by moderators."
         cancel_streaming: "Stop reply"
         default_pm_prefix: "[Untitled AI bot PM]"

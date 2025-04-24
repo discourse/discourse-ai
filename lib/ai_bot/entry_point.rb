@@ -3,6 +3,7 @@
 module DiscourseAi
   module AiBot
     USER_AGENT = "Discourse AI Bot 1.0 (https://www.discourse.org)"
+    TOPIC_AI_BOT_PM_FIELD = "is_ai_bot_pm"
 
     class EntryPoint
       Bot = Struct.new(:id, :name, :llm)
@@ -64,6 +65,34 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        plugin.register_topic_custom_field_type(TOPIC_AI_BOT_PM_FIELD, :string)
+
+        plugin.on(:topic_created) do |topic|
+          next if !topic.private_message?
+          creator = topic.user
+
+          # Only process if creator is not a bot or system user
+          next if DiscourseAi::AiBot::Playground.is_bot_user_id?(creator.id)
+
+          # Get all bot user IDs defined by the discourse-ai plugin
+          bot_ids = DiscourseAi::AiBot::EntryPoint.all_bot_ids
+
+          # Check if the only recipients are bots
+          recipients = topic.topic_allowed_users.pluck(:user_id)
+
+          # Remove creator from recipients for checking
+          recipients -= [creator.id]
+
+          # If all remaining recipients are AI bots and there's exactly one recipient
+          if recipients.length == 1 && (recipients - bot_ids).empty?
+            # The only recipient is an AI bot - add the custom field to the topic
+            topic.custom_fields[TOPIC_AI_BOT_PM_FIELD] = true
+
+            # Save the custom fields
+            topic.save_custom_fields
+          end
+        end
+
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
             allowed_chat =
@@ -101,6 +130,14 @@ module DiscourseAi
         plugin.register_seedfu_fixtures(
           Rails.root.join("plugins", "discourse-ai", "db", "fixtures", "ai_bot"),
         )
+
+        plugin.add_to_serializer(
+          :topic_view,
+          :is_bot_pm,
+          include_condition: -> do
+            object.personal_message && object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
+          end,
+        ) { true }
 
         plugin.add_to_serializer(
           :current_user,

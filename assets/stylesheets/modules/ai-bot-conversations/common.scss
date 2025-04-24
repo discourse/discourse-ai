@@ -153,25 +153,40 @@ body.has-ai-conversations-sidebar {
   .ai-bot-conversations {
     height: calc(100dvh - var(--header-offset) - 1.25em);
 
-    &__persona-selector {
+    .persona-llm-selector {
       display: flex;
+      gap: 0.5em;
       justify-content: flex-start;
-    }
 
-    &__persona-selector .btn {
-      background-color: transparent;
-      font-weight: bold;
-    }
+      &__selection-wrapper {
+        display: flex;
+        flex-direction: column;
 
-    &__persona-selector .btn:hover,
-    &__persona-selector .btn:focus {
-      background-color: transparent;
-      color: var(--primary);
-    }
+        label {
+          font-size: var(--font-down-1);
+          font-weight: 300;
+          margin-left: 1em;
+          margin-bottom: 0;
+        }
+      }
 
-    &__persona-selector .btn:hover .d-icon,
-    &__persona-selector .btn:focus .d-icon {
-      color: var(--primary);
+      .btn {
+        display: flex;
+        justify-content: flex-start;
+        background-color: transparent;
+        font-weight: bold;
+      }
+
+      .btn:hover,
+      .btn:focus {
+        background-color: transparent;
+        color: var(--primary);
+      }
+
+      .btn:hover .d-icon,
+      .btn:focus .d-icon {
+        color: var(--primary);
+      }
     }
 
     &__content-wrapper {
@@ -184,6 +199,10 @@ body.has-ai-conversations-sidebar {
 
       @include viewport.until(sm) {
         height: calc(75% - 1.25em - var(--header-offset) - 2em);
+      }
+
+      .loading-container {
+        display: contents;
       }
     }
 
