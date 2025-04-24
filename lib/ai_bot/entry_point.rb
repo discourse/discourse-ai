@@ -65,7 +65,33 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
-        plugin.register_editable_topic_custom_field(TOPIC_AI_BOT_PM_FIELD)
+        plugin.register_topic_custom_field_type(TOPIC_AI_BOT_PM_FIELD, :string)
+
+        plugin.on(:topic_created) do |topic|
+          next if !topic.private_message?
+          creator = topic.user
+
+          # Only process if creator is not a bot or system user
+          next if DiscourseAi::AiBot::Playground.is_bot_user_id?(creator.id)
+          # Get all bot user IDs defined by the discourse-ai plugin
+
+          bot_ids = DiscourseAi::AiBot::EntryPoint.all_bot_ids
+
+          # Check if the only recipients are bots
+          recipients = topic.topic_allowed_users.pluck(:user_id)
+
+          # Remove creator from recipients for checking
+          recipients -= [creator.id]
+
+          # If all remaining recipients are AI bots and there's exactly one recipient
+          if recipients.length == 1 && (recipients - bot_ids).empty?
+            # The only recipient is an AI bot - add the custom field to the topic
+            topic.custom_fields[TOPIC_AI_BOT_PM_FIELD] = true
+
+            # Save the custom fields
+            topic.save_custom_fields
+          end
+        end
 
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
