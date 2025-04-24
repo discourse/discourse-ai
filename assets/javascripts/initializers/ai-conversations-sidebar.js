@@ -5,7 +5,6 @@ import { bind } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
-import { isPostFromAiBot } from "../discourse/lib/ai-bot-helper";
 import { AI_CONVERSATIONS_PANEL } from "../discourse/services/ai-conversations-sidebar-manager";
 
 export default {
@@ -249,10 +248,7 @@ export default {
         if (
           topic?.archetype === "private_message" &&
           topic.user_id === currentUser.id &&
-          (topic.is_bot_pm ||
-            topic.postStream.posts.some((post) =>
-              isPostFromAiBot(post, currentUser)
-            ))
+          topic.is_bot_pm
         ) {
           return aiConversationsSidebarManager.forceCustomSidebar();
         }

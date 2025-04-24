@@ -15,8 +15,8 @@ module DiscourseAi
           Topic
             .private_messages_for_user(current_user)
             .where(user: current_user) # Only show PMs where the current user is the author
-            .joins(:topic_users)
-            .where(topic_users: { user_id: bot_user_ids })
+            .joins("INNER JOIN topic_custom_fields tcf ON tcf.topic_id = topics.id")
+            .where("tcf.name = ? AND tcf.value = 't'", DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD)
             .distinct
 
         total = base_query.count
