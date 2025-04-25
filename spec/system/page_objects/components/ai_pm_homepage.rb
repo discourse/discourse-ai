@@ -40,6 +40,12 @@ module PageObjects
         page.find(".ai-new-question-button").click
       end
 
+      def click_fist_sidebar_conversation
+        page.find(
+          ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link:not(.date-heading)",
+        ).click
+      end
+
       def persona_selector
         PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
       end
