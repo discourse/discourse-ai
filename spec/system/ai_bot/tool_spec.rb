@@ -41,7 +41,7 @@ describe "AI Tool Management", type: :system do
     find(".ai-tool-list-editor__new-button").click
 
     tool_presets = PageObjects::Components::DMenu.new(find(".ai-tool-list-editor__new-button"))
-    tool_presets.option(".btn[data-option='exchange_rate'").click
+    tool_presets.option(".btn[data-option='exchange_rate']").click
 
     required_toggle_css = "#control-parameters-0-required .form-kit__control-checkbox"
     enum_toggle_css = "#control-parameters-0-isEnum .form-kit__control-checkbox"
