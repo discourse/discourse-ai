@@ -213,8 +213,11 @@ export default class AiFullPageSearch extends Component {
   }
 
   <template>
-    <span {{didUpdate this.sortChanged @sortOrder}}></span>
-    <div class="semantic-search__container search-results" role="region">
+    <div
+      {{didUpdate this.sortChanged @sortOrder}}
+      class="semantic-search__container search-results"
+      role="region"
+    >
       <div class="semantic-search__results">
         <div
           class={{concatClass "semantic-search__searching" this.searchClass}}
