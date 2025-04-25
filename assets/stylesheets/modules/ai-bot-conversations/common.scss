@@ -248,7 +248,7 @@ body.has-ai-conversations-sidebar {
         resize: none;
         border-radius: var(--d-button-border-radius);
         max-height: 30vh;
-        overflow: hidden;
+        overflow-y: hidden;
 
         &:focus {
           outline: none;
