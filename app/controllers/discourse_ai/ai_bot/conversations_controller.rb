@@ -10,7 +10,6 @@ module DiscourseAi
         page = params[:page].to_i
         per_page = params[:per_page]&.to_i || 40
 
-        bot_user_ids = EntryPoint.all_bot_ids
         base_query =
           Topic
             .private_messages_for_user(current_user)
@@ -26,7 +25,7 @@ module DiscourseAi
         pms = base_query.order(last_posted_at: :desc).offset(page * per_page).limit(per_page)
 
         render json: {
-                 conversations: serialize_data(pms, BasicTopicSerializer),
+                 conversations: serialize_data(pms, ListableTopicSerializer),
                  meta: {
                    total: total,
                    page: page,

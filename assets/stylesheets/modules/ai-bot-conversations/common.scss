@@ -10,6 +10,10 @@ body.has-ai-conversations-sidebar {
     margin: 1.8em 1rem 0;
   }
 
+  .sidebar-toggle-all-sections {
+    display: none;
+  }
+
   .sidebar-wrapper {
     .ai-conversations-panel {
       padding-top: 1em;
@@ -18,19 +22,23 @@ body.has-ai-conversations-sidebar {
     // ai related sidebar content
     [data-section-name="ai-conversations-history"] {
       .sidebar-section-header-wrapper {
-        pointer-events: none;
-        font-size: var(--font-down-1);
-
-        .sidebar-section-header-caret {
-          display: none;
-        }
-
-        .sidebar-section-header-text {
-          letter-spacing: 0.5px;
-        }
+        display: none;
       }
 
       .sidebar-section-link-wrapper {
+        .sidebar-section-link.date-heading {
+          pointer-events: none;
+          cursor: default;
+          color: var(--primary-medium);
+          opacity: 0.8;
+          font-weight: 700;
+          margin-top: 1em;
+
+          &[data-link-name="date-heading-last-7-days"] {
+            margin-top: 0;
+          }
+        }
+
         .sidebar-section-link {
           height: unset;
           padding-block: 0.65em;

@@ -727,6 +727,8 @@ en:
           new: "New Question"
           min_input_length_message: "Message must be longer than 10 characters"
           messages_sidebar_title: "Conversations"
+          last_7_days: "Last 7 days"
+          last_30_days: "Last 30 days"
       sentiments:
         dashboard:
           title: "Sentiment"

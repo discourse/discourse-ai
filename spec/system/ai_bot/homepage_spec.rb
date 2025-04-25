@@ -49,6 +49,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       :private_message_topic,
       title: "This is my special PM",
       user: user,
+      last_posted_at: Time.zone.now,
       topic_allowed_users: [
         Fabricate.build(:topic_allowed_user, user: user),
         Fabricate.build(:topic_allowed_user, user: bot_user),
@@ -150,8 +151,27 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_section("ai-conversations-history")
+      expect(sidebar).to have_section_link("Last 7 days")
       expect(sidebar).to have_section_link(pm.title)
       expect(sidebar).to have_no_css("button.ai-new-question-button")
+    end
+
+    it "displays last_30_days label in the sidebar" do
+      pm.update!(last_posted_at: Time.zone.now - 28.days)
+      visit "/"
+      header.click_bot_button
+
+      expect(ai_pm_homepage).to have_homepage
+      expect(sidebar).to have_section_link("Last 30 days")
+    end
+
+    it "displays month and year label in the sidebar for older conversations" do
+      pm.update!(last_posted_at: "2024-04-10 15:39:11.406192000 +00:00")
+      visit "/"
+      header.click_bot_button
+
+      expect(ai_pm_homepage).to have_homepage
+      expect(sidebar).to have_section_link("Apr 2024")
     end
 
     it "navigates to the bot conversation when clicked" do
@@ -159,9 +179,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       header.click_bot_button
 
       expect(ai_pm_homepage).to have_homepage
-      sidebar.find(
-        ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link",
-      ).click
+      ai_pm_homepage.click_fist_sidebar_conversation
       expect(topic_page).to have_topic_title(pm.title)
     end
 
@@ -173,9 +191,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       expect(header).to have_icon_in_bot_button(icon: "shuffle")
 
       # Go to a PM and assert that the icon is still shuffle
-      sidebar.find(
-        ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link",
-      ).click
+      ai_pm_homepage.click_fist_sidebar_conversation
       expect(header).to have_icon_in_bot_button(icon: "shuffle")
 
       # Go back home and assert that the icon is now robot again
