@@ -48,5 +48,15 @@ export default class DiscourseAiBotConversations extends Controller {
   _autoExpandTextarea() {
     this.textarea.style.height = "auto";
     this.textarea.style.height = this.textarea.scrollHeight + "px";
+
+    // Get the max-height value from CSS (30vh)
+    const maxHeight = parseInt(getComputedStyle(this.textarea).maxHeight, 10);
+
+    // Only enable scrolling if content exceeds max-height
+    if (this.textarea.scrollHeight > maxHeight) {
+      this.textarea.style.overflowY = "auto";
+    } else {
+      this.textarea.style.overflowY = "hidden";
+    }
   }
 }
