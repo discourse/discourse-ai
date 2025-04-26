@@ -33,10 +33,7 @@ body.has-ai-conversations-sidebar {
           opacity: 0.8;
           font-weight: 700;
           margin-top: 1em;
-
-          &[data-link-name="date-heading-last-7-days"] {
-            margin-top: 0;
-          }
+          font-size: var(--font-down-2);
         }
 
         .sidebar-section-link {
@@ -234,12 +231,6 @@ body.has-ai-conversations-sidebar {
         align-self: end;
         min-height: 2.5em;
         max-height: 2.5em;
-      }
-
-      .spinner {
-        margin: 0;
-        width: 2em;
-        height: 2em;
       }
 
       #ai-bot-conversations-input {

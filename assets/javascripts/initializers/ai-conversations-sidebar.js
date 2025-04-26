@@ -87,6 +87,7 @@ export default {
             @tracked links = new TrackedArray();
             @tracked topics = [];
             @tracked hasMore = [];
+            @tracked loadedTodayLabel = false;
             @tracked loadedSevenDayLabel = false;
             @tracked loadedThirtyDayLabel = false;
             @tracked loadedMonthLabels = new Set();
@@ -133,6 +134,7 @@ export default {
 
             addNewPMToSidebar(topic) {
               // Reset category labels since we're adding a new topic
+              this.loadedTodayLabel = false;
               this.loadedSevenDayLabel = false;
               this.loadedThirtyDayLabel = false;
               this.loadedMonthLabels.clear();
@@ -225,8 +227,18 @@ export default {
                 (now - lastPostedAt) / (1000 * 60 * 60 * 24)
               );
 
+              if (daysDiff <= 1 || !topic.last_posted_at) {
+                if (!this.loadedTodayLabel) {
+                  this.loadedTodayLabel = true;
+                  return {
+                    text: i18n("discourse_ai.ai_bot.conversations.today"),
+                    classNames: "date-heading",
+                    name: "date-heading-today",
+                  };
+                }
+              }
               // Last 7 days group
-              if (daysDiff <= 7) {
+              else if (daysDiff <= 7) {
                 if (!this.loadedSevenDayLabel) {
                   this.loadedSevenDayLabel = true;
                   return {
@@ -273,6 +285,7 @@ export default {
 
             buildSidebarLinks() {
               // Reset date header tracking
+              this.loadedTodayLabel = false;
               this.loadedSevenDayLabel = false;
               this.loadedThirtyDayLabel = false;
               this.loadedMonthLabels.clear();

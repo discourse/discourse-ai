@@ -151,9 +151,18 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_section("ai-conversations-history")
-      expect(sidebar).to have_section_link("Last 7 days")
+      expect(sidebar).to have_section_link("Today")
       expect(sidebar).to have_section_link(pm.title)
       expect(sidebar).to have_no_css("button.ai-new-question-button")
+    end
+
+    it "displays last_7_days label in the sidebar" do
+      pm.update!(last_posted_at: Time.zone.now - 5.days)
+      visit "/"
+      header.click_bot_button
+
+      expect(ai_pm_homepage).to have_homepage
+      expect(sidebar).to have_section_link("Last 7 days")
     end
 
     it "displays last_30_days label in the sidebar" do
