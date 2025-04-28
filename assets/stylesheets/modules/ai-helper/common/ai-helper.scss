@@ -281,7 +281,7 @@
   .composer-popup {
     // need to raise the z-index here
     // because we need another layer to put the AI icon above dropdowns
-    // while also keeping them below the composer tips
+    // while also keeping them below the composer tips and reply details dropdowns
     z-index: z("composer", "dropdown") + 2;
   }
 
