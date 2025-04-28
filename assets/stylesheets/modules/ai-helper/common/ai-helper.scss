@@ -277,6 +277,7 @@
 }
 
 #reply-control {
+  .reply-details,
   .composer-popup {
     // need to raise the z-index here
     // because we need another layer to put the AI icon above dropdowns
