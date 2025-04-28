@@ -75,11 +75,10 @@ nl:
     ai_embeddings_semantic_related_include_closed_topics: "Neem gesloten topics op in semantische zoekresultaten"
     ai_embeddings_semantic_search_hyde_model: "Gebruikt model voor het uitbreiden van trefwoorden om betere resultaten te krijgen bij semantisch zoeken"
     ai_embeddings_per_post_enabled: Insluitingen genereren voor elk bericht
-    ai_summarization_enabled: "Schakel de module voor het samenvatten van topics in."
-    ai_summarization_model: "Te gebruiken model voor samenvattingen."
+    ai_summarization_model: "Te gebruiken model voor samenvattingen"
     ai_custom_summarization_allowed_groups: "Groepen die nieuwe samenvattingen mogen maken."
     ai_pm_summarization_allowed_groups: "Groepen mogen samenvattingen maken en bekijken in PB's."
-    ai_summary_gists_enabled: "Genereer automatisch korte samenvattingen van de nieuwste reacties in topics."
+    ai_summary_gists_enabled: "Genereer automatisch korte samenvattingen van de nieuwste reacties in topics"
     ai_summary_gists_allowed_groups: "Groepen kunnen samenvattingen zien in de lijst van populaire topics."
     ai_summary_backfill_maximum_topics_per_hour: "Aantal topicsamenvattingen om aan te vullen per uur."
     ai_bot_enabled: "Schakel de AI-botmodule in."

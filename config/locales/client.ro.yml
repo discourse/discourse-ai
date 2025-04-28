@@ -36,6 +36,13 @@ ro:
             canned_reply:
               label: "Răspunde"
     discourse_ai:
+      features:
+        back: "Înapoi"
+        list:
+          header:
+            name: "Nume"
+            groups: "Grupuri"
+          edit: "Modifică"
       modals:
         select_option: "Alege o opțiune..."
       spam:

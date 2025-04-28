@@ -36,6 +36,13 @@ ur:
             canned_reply:
               label: "جواب"
     discourse_ai:
+      features:
+        back: "واپس"
+        list:
+          header:
+            name: "نام"
+            groups: "گروپس"
+          edit: "ترمیم کریں"
       modals:
         select_option: "ایک آپشن منتخب کریں..."
       spam:

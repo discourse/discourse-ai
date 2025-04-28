@@ -67,8 +67,7 @@ uk:
     ai_embeddings_semantic_related_include_closed_topics: "Включити закриті теми в результати семантичного пошуку"
     ai_embeddings_semantic_search_hyde_model: "Модель, що використовується для розширення ключових слів для отримання кращих результатів під час семантичного пошуку"
     ai_embeddings_per_post_enabled: Згенерувати вкладення для кожного повідомлення
-    ai_summarization_enabled: "Увімкнути модуль узагальнення тем."
-    ai_summarization_model: "Модель для узагальнення."
+    ai_summarization_model: "Модель для узагальнення"
     ai_custom_summarization_allowed_groups: "Групи, яким дозволено створювати нові зведення."
     ai_pm_summarization_allowed_groups: "Групи дозволили створювати та переглядати підсумки в особистих повідомленнях."
     ai_summary_gists_allowed_groups: "Групи, яким дозволено бачити суть у списку гарячих тем."

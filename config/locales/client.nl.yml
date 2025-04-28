@@ -138,6 +138,14 @@ nl:
               label: "Temperatuur"
     discourse_ai:
       title: "AI"
+      features:
+        back: "Terug"
+        list:
+          header:
+            name: "Naam"
+            groups: "Groepen"
+          edit: "Bewerken"
+          set_up: "Instellen"
       modals:
         select_option: "Selecteer een optie..."
       spam:
@@ -334,7 +342,6 @@ nl:
         name: "Model-ID"
         provider: "Provider"
         tokenizer: "Tokenizer"
-        max_prompt_tokens: "Aantal tokens voor de prompt"
         url: "URL van de service die het model host"
         api_key: "API-sleutel van de service die het model host"
         enabled_chat_bot: "AI-botkiezer toestaan"
@@ -380,12 +387,8 @@ nl:
           anthropic-claude-3-7-sonnet: "Het intelligentste model van Antropic"
           anthropic-claude-3-5-haiku: "Snel en kosteneffectief"
           anthropic-claude-3-opus: "Blinkt uit in schrijven en complexe taken"
-          google-gemini-1-5-pro: "Middelgroot multimodaal model dat een groot aantal taken kan uitvoeren"
-          google-gemini-1-5-flash: "Lichtgewicht, snel en kostenefficiënt met multimodale redenering"
-          open_ai-gpt-4-turbo: "Hoogintelligent model van de vorige generatie"
-          open_ai-gpt-4o: "Hoogintelligent model voor complexe taken met meerdere stappen"
-          open_ai-gpt-4o-mini: "Betaalbaar, snel en klein model voor lichte taken"
-          open_ai-o1-mini: "Kostenefficiënt redeneringsmodel"
+          google-gemini-2-5-pro: "Middelgroot multimodaal model dat een groot aantal taken kan uitvoeren"
+          google-gemini-2-0-flash: "Lichtgewicht, snel en kostenefficiënt met multimodale redenering"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Efficiënt lichtgewicht meertalig model"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Krachtig multifunctioneel model"
           mistral-mistral-large-latest: "Het krachtigste model van Mistral"
@@ -408,7 +411,6 @@ nl:
           success: "Succes!"
           failure: "Een poging om verbinding te maken met het model resulteerde in deze fout: %{error}"
         hints:
-          max_prompt_tokens: "Maximaal aantal tokens voor de prompt. Als vuistregel zou dit 50% van het contextvenster van het model moeten zijn."
           name: "We nemen dit op in de API-aanroep om aan te geven welk model we gebruiken"
           vision_enabled: "Indien ingeschakeld, zal de AI proberen afbeeldingen te begrijpen. Dit is afhankelijk van het gebruikte model ter ondersteuning van zicht. Ondersteund door de nieuwste modellen van Anthropic, Google en OpenAI."
           enabled_chat_bot: "Indien ingeschakeld, kunnen gebruikers dit model selecteren bij het maken van PB's met de AI-bot."

@@ -34,6 +34,13 @@ vi:
             canned_reply:
               label: "Trả lời"
     discourse_ai:
+      features:
+        back: "Quay lại"
+        list:
+          header:
+            name: "Tên"
+            groups: "Nhóm"
+          edit: "Sửa"
       modals:
         select_option: "Chọn một tùy Chọn..."
       spam:

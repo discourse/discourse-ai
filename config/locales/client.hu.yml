@@ -36,6 +36,13 @@ hu:
             canned_reply:
               label: "Válasz"
     discourse_ai:
+      features:
+        back: "Vissza"
+        list:
+          header:
+            name: "Név"
+            groups: "Csoportok"
+          edit: "Szerkesztés"
       modals:
         select_option: "Válasszon egy lehetőséget…"
       spam:

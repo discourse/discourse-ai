@@ -38,6 +38,13 @@ ug:
             canned_reply:
               label: "جاۋاب"
     discourse_ai:
+      features:
+        back: "كەينى"
+        list:
+          header:
+            name: "ئىسمى"
+            groups: "گۇرۇپپا"
+          edit: "تەھرىر"
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
       spam:

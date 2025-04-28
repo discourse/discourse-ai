@@ -36,6 +36,13 @@ sv:
             canned_reply:
               label: "Svara"
     discourse_ai:
+      features:
+        back: "Tillbaka"
+        list:
+          header:
+            name: "Namn"
+            groups: "Grupper"
+          edit: "Redigera"
       modals:
         select_option: "Välj ett alternativ..."
       spam:
