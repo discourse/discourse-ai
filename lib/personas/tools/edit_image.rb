@@ -49,14 +49,9 @@ module DiscourseAi
 
           return { prompt: prompt, error: "No valid images provided" } if image_urls.blank?
 
-          sha1s =
-            image_urls
-              .map do |url|
-                Upload.sha1_from_short_url(url)
-              end
-              .compact
+          sha1s = image_urls.map { |url| Upload.sha1_from_short_url(url) }.compact
 
-          uploads = Upload.where(sha1: sha1s).order(created_by: :asc).limit(10)
+          uploads = Upload.where(sha1: sha1s).order(created_at: :asc).limit(10).to_a
 
           return { prompt: prompt, error: "No valid images provided" } if uploads.blank?
 
