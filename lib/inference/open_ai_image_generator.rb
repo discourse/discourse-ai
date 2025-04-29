@@ -161,9 +161,7 @@ module ::DiscourseAi
           end
         end
 
-        threads_complete = false
-        threads_complete = threads.all? { |t| t.join(2) } until threads_complete
-
+        threads.each(&:join)
         threads.filter_map(&:value)
       end
 
@@ -343,25 +341,8 @@ module ::DiscourseAi
               end
             image_data = File.read(image_path)
             image_filename = File.basename(image.url)
-          elsif image.is_a?(File) || image.is_a?(Tempfile)
-            image_data = File.read(image.path)
-            image_filename = File.basename(image.path)
-          elsif image.is_a?(String) && File.exist?(image)
-            image_data = File.read(image)
-            image_filename = File.basename(image)
-          elsif image.is_a?(String) && image.start_with?("http")
-            # Download image from URL
-            image_temp =
-              FileHelper.download(
-                image,
-                max_file_size: 25.megabytes,
-                tmp_file_name: "edit_image_download",
-                follow_redirect: true,
-              )
-            image_data = File.read(image_temp)
-            image_filename = File.basename(image)
           else
-            raise "Unsupported image format. Must be Upload, File, path string, or URL."
+            raise "Unsupported image format. Must be an Upload"
           end
 
           body << "--#{boundary}\r\n"
