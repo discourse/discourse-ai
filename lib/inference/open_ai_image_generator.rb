@@ -46,7 +46,6 @@ module ::DiscourseAi
       def self.create_edited_upload!(
         images,
         prompt,
-        mask: nil,
         model: "gpt-image-1",
         size: "auto",
         api_key: nil,
@@ -60,7 +59,6 @@ module ::DiscourseAi
           edit_images(
             images,
             prompt,
-            mask: mask,
             model: model,
             size: size,
             api_key: api_key,
@@ -168,7 +166,6 @@ module ::DiscourseAi
       def self.edit_images(
         images,
         prompt,
-        mask: nil,
         model: "gpt-image-1",
         size: "auto",
         api_key: nil,
@@ -196,7 +193,6 @@ module ::DiscourseAi
           perform_edit_api_call!(
             images,
             prompt,
-            mask: mask,
             model: model,
             size: size,
             api_key: api_key,
@@ -297,7 +293,6 @@ module ::DiscourseAi
       def self.perform_edit_api_call!(
         images,
         prompt,
-        mask: nil,
         model: "gpt-image-1",
         size: "auto",
         api_key:,
@@ -326,6 +321,8 @@ module ::DiscourseAi
 
         body << "#{model}\r\n"
 
+        files_to_delete = []
+
         # Add images
         images.each do |image|
           image_data = nil
@@ -337,7 +334,10 @@ module ::DiscourseAi
               if image.local?
                 Discourse.store.path_for(image)
               else
-                Discourse.store.download_safe(image, max_file_size_kb: MAX_IMAGE_SIZE)&.path
+                filename =
+                  Discourse.store.download_safe(image, max_file_size_kb: MAX_IMAGE_SIZE)&.path
+                files_to_delete << filename if filename
+                filename
               end
             image_data = File.read(image_path)
             image_filename = File.basename(image.url)
@@ -349,43 +349,6 @@ module ::DiscourseAi
           body << "Content-Disposition: form-data; name=\"image[]\"; filename=\"#{image_filename}\"\r\n"
           body << "Content-Type: image/png\r\n\r\n"
           body << image_data
-          body << "\r\n"
-        end
-
-        # Add mask if provided
-        if mask
-          mask_data = nil
-          mask_filename = nil
-
-          # Handle different mask input types (similar to images)
-          if mask.is_a?(Upload)
-            mask_data = File.read(Discourse.store.path_for(mask))
-            mask_filename = File.basename(mask.url)
-          elsif mask.is_a?(File) || mask.is_a?(Tempfile)
-            mask_data = File.read(mask.path)
-            mask_filename = File.basename(mask.path)
-          elsif mask.is_a?(String) && File.exist?(mask)
-            mask_data = File.read(mask)
-            mask_filename = File.basename(mask)
-          elsif mask.is_a?(String) && mask.start_with?("http")
-            # Download mask from URL
-            mask_temp =
-              FileHelper.download(
-                mask,
-                max_file_size: 4.megabytes,
-                tmp_file_name: "edit_mask_download",
-                follow_redirect: true,
-              )
-            mask_data = File.read(mask_temp)
-            mask_filename = File.basename(mask)
-          else
-            raise "Unsupported mask format. Must be Upload, File, path string, or URL."
-          end
-
-          body << "--#{boundary}\r\n"
-          body << "Content-Disposition: form-data; name=\"mask\"; filename=\"#{mask_filename}\"\r\n"
-          body << "Content-Type: image/png\r\n\r\n"
-          body << mask_data
           body << "\r\n"
         end
 
@@ -451,6 +414,10 @@ module ::DiscourseAi
             end
           end
           json
+        end
+      ensure
+        if files_to_delete.present?
+          files_to_delete.each { |file| File.delete(file) if File.exist?(file) }
         end
       end
     end
