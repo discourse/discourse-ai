@@ -99,6 +99,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
     SiteSetting.ai_enable_experimental_bot_ux = true
     SiteSetting.ai_bot_enabled = true
+    SiteSetting.navigation_menu = "sidebar"
     Jobs.run_immediately!
     SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
     sign_in(user)
@@ -121,15 +122,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       expect(ai_pm_homepage).to have_too_short_dialog
       dialog.click_yes
       expect(composer).to be_closed
-    end
-
-    it "renders sidebar even when navigation menu is set to header" do
-      SiteSetting.navigation_menu = "header dropdown"
-      visit "/"
-      header.click_bot_button
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to be_visible
-      expect(header_dropdown).to be_visible
     end
 
     it "hides default content in the sidebar" do
@@ -265,6 +257,31 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       ai_pm_homepage.llm_selector.expand
       ai_pm_homepage.llm_selector.select_row_by_name(claude_2_dup.display_name)
       ai_pm_homepage.llm_selector.collapse
+    end
+
+    it "renders back to forum link" do
+      ai_pm_homepage.visit
+      expect(ai_pm_homepage).to have_sidebar_back_link
+    end
+
+    context "with hamburger menu" do
+      before { SiteSetting.navigation_menu = "header dropdown" }
+      it "keeps robot icon in the header and doesn't display sidebar back link" do
+        visit "/"
+        expect(header).to have_icon_in_bot_button(icon: "robot")
+        header.click_bot_button
+        expect(ai_pm_homepage).to have_homepage
+        expect(header).to have_icon_in_bot_button(icon: "robot")
+        expect(ai_pm_homepage).to have_no_sidebar_back_link
+      end
+
+      it "still renders the sidebar" do
+        visit "/"
+        header.click_bot_button
+        expect(ai_pm_homepage).to have_homepage
+        expect(sidebar).to be_visible
+        expect(header_dropdown).to be_visible
+      end
     end
   end
 
