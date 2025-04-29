@@ -74,11 +74,10 @@ ca:
         description: "Descripció"
         summary: "Resum"
         save: "Desa"
+        remove_parameter: "Elimina"
         parameter_required: "Necessari"
         edit: "Edita"
         delete: "Suprimeix"
-        next:
-          title: "Següent"
       llms:
         display_name: "Nom"
         save: "Desa"
@@ -132,6 +131,10 @@ ca:
           previous_log: "Previ"
         share_modal:
           copy: "Còpia"
+        conversations:
+          today: "Avui"
+          last_7_days: "Els darrers 7 dies"
+          last_30_days: "Els darrers 30 dies"
       sentiments:
         sentiment_analysis:
           filter_types:

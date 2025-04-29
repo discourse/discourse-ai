@@ -77,11 +77,10 @@ ro:
         description: "Descriere"
         summary: "Rezumat"
         save: "Salvează"
+        remove_parameter: "Elimină"
         parameter_required: "Necesare"
         edit: "Modifică"
         delete: "Șterge"
-        next:
-          title: "Următorul"
       llms:
         display_name: "Nume"
         save: "Salvează"
@@ -141,6 +140,10 @@ ro:
           previous_log: "Precedent"
         share_modal:
           copy: "Copiază"
+        conversations:
+          today: "Astăzi"
+          last_7_days: "Ultimele 7 zile"
+          last_30_days: "Ultimele 30 de zile"
       sentiments:
         sentiment_analysis:
           filter_types:

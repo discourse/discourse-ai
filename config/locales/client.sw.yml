@@ -71,11 +71,10 @@ sw:
         description: "Elezo"
         summary: "Muhtasari"
         save: "Hifadhi"
+        remove_parameter: "Ondoa"
         parameter_required: "Muhimu na Inahitajika"
         edit: "Hariri"
         delete: "Futa"
-        next:
-          title: "Ijayo"
       llms:
         display_name: "Jina"
         save: "Hifadhi"
@@ -124,6 +123,8 @@ sw:
           previous_log: "Uliopita"
         share_modal:
           copy: "Nakili"
+        conversations:
+          today: "Leo"
       sentiments:
         sentiment_analysis:
           filter_types:

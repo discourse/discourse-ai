@@ -319,7 +319,7 @@ ar:
         script: "البرنامج النصي"
         parameters: "المعلمات"
         save: "حفظ"
-        add_parameter: "إضافة معلمة"
+        remove_parameter: "إزالة"
         parameter_required: "مطلوب"
         parameter_enum: "Enum"
         parameter_name: "اسم المعلمة"
@@ -330,10 +330,7 @@ ar:
         test: "تشغيل الاختبار"
         delete: "حذف"
         saved: "تم حفظ الأداة"
-        presets: "حدِّد إعدادًا مسبقًا..."
         confirm_delete: "هل تريد بالتأكيد حذف هذه الأداة؟"
-        next:
-          title: "التالي"
         test_modal:
           title: "اختبار أداة الذكاء الاصطناعي"
           run: "تشغيل الاختبار"
@@ -576,6 +573,7 @@ ar:
         collapse_view_label: "الخروج من وضع ملء الشاشة (ESC أو زر الرجوع)"
         click_to_run_label: "تشغيل المنتج الثانوي"
       ai_bot:
+        llm: "النموذج"
         pm_warning: "تتم مراقبة رسائل روبوت دردشة الذكاء الاصطناعي بانتظام من قِبل المشرفين."
         cancel_streaming: "إيقاف الرد"
         default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
@@ -624,6 +622,10 @@ ar:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "اليوم"
+          last_7_days: "آخر 7 أيام"
+          last_30_days: "آخر 30 يومًا"
       sentiments:
         dashboard:
           title: "المشاعر"

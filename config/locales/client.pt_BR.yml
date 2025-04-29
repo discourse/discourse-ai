@@ -315,7 +315,7 @@ pt_BR:
         script: "Script"
         parameters: "Parâmetros"
         save: "Salvar"
-        add_parameter: "Adicionar parâmero"
+        remove_parameter: "Remover"
         parameter_required: "Necessário(a)"
         parameter_enum: "Enumeração"
         parameter_name: "Nome do parâmetro"
@@ -326,10 +326,7 @@ pt_BR:
         test: "Rodar teste"
         delete: "Excluir"
         saved: "Ferramenta salva"
-        presets: "Selecione uma predefinição..."
         confirm_delete: "Tem certeza de que deseja excluir esta ferramenta?"
-        next:
-          title: "Próximo"
         test_modal:
           title: "Ferramenta de IA de teste"
           run: "Rodar teste"
@@ -564,6 +561,7 @@ pt_BR:
         collapse_view_label: "Sair de tela cheia (ESC ou botão de voltar)"
         click_to_run_label: "Rodar artefato"
       ai_bot:
+        llm: "Modelo"
         pm_warning: "Todas as mensagens do chatbot de IA são monitoradas regularmente por moderadores(as)."
         cancel_streaming: "Parar resposta"
         default_pm_prefix: "[MP de bot de IA não identificado]"
@@ -612,6 +610,10 @@ pt_BR:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Hoje"
+          last_7_days: "Últimos sete dias"
+          last_30_days: "Últimos 30 dias"
       sentiments:
         dashboard:
           title: "Sentimento"

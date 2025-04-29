@@ -333,7 +333,7 @@ zh_CN:
         script: "脚本"
         parameters: "参数"
         save: "保存"
-        add_parameter: "添加参数"
+        remove_parameter: "移除"
         parameter_required: "必选"
         parameter_enum: "枚举"
         parameter_name: "参数名称"
@@ -344,10 +344,7 @@ zh_CN:
         test: "运行测试"
         delete: "删除"
         saved: "工具已保存"
-        presets: "选择一个预设…"
         confirm_delete: "确定要删除此工具吗？"
-        next:
-          title: "下一步"
         test_modal:
           title: "测试 AI 工具"
           run: "运行测试"
@@ -579,6 +576,8 @@ zh_CN:
         collapse_view_label: "退出全屏（按 ESC 或“返回”按钮）"
         click_to_run_label: "运行工件"
       ai_bot:
+        persona: "角色模型"
+        llm: "模型"
         pm_warning: "版主会定期监控 AI 聊天机器人消息。"
         cancel_streaming: "停止回复"
         default_pm_prefix: "[无标题 AI 机器人私信]"
@@ -627,6 +626,10 @@ zh_CN:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "今天"
+          last_7_days: "过去 7 天"
+          last_30_days: "过去 30 天"
       sentiments:
         dashboard:
           title: "情绪"

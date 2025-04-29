@@ -52,7 +52,6 @@ ar:
     ai_nsfw_flag_threshold_porn: "الحد الأدنى للصورة المصنَّفة كمحتوى إباحي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_flag_threshold_sexy: "الحد الأدنى للصورة المصنَّفة كمحتوى جنسي ليتم اعتبارها غير آمنة لبيئة العمل."
     ai_nsfw_models: "نماذج المراد استخدامها في الاستدلال على المحتوى غير الآمن لبيئة العمل."
-    ai_openai_api_key: "مفتاح API لواجهة OpenAI API. لا يُستخدَم إلا مع Dall-E. بالنسبة إلى GPT، استخدم علامة تبويب تكوين نموذج اللغة الكبير"
     ai_helper_enabled: "تفعيل مساعد الذكاء الاصطناعي"
     composer_ai_helper_allowed_groups: "سيرى المستخدمون في هذه المجموعات زر مساعد الذكاء الاصطناعي في أداة الإنشاء."
     ai_helper_allowed_in_pm: "تفعيل مساعد الذكاء الاصطناعي في الرسائل الخاصة."
@@ -357,6 +356,8 @@ ar:
         time: "الوقت في المنطقة الزمنية %{timezone} هو %{time}"
         summarize: "تم تلخيص <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           zero: "تم العثور على %{count} فئات"

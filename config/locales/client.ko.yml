@@ -80,11 +80,10 @@ ko:
         description: "내용"
         summary: "요약"
         save: "저장"
+        remove_parameter: "제거"
         parameter_required: "필수"
         edit: "편집"
         delete: "삭제하기"
-        next:
-          title: "다음"
       llms:
         display_name: "그룹명"
         save: "저장"
@@ -147,6 +146,10 @@ ko:
           previous_log: "이전값"
         share_modal:
           copy: "복사"
+        conversations:
+          today: "오늘"
+          last_7_days: "지난 7일"
+          last_30_days: "지난 30일"
       sentiments:
         sentiment_analysis:
           filter_types:

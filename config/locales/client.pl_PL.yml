@@ -311,7 +311,7 @@ pl_PL:
         script: "Skrypt"
         parameters: "Parametry"
         save: "Zapisz"
-        add_parameter: "Dodaj parametr"
+        remove_parameter: "Usuń"
         parameter_required: "Wymagane"
         parameter_enum: "Enum"
         parameter_name: "Nazwa parametru"
@@ -322,10 +322,7 @@ pl_PL:
         test: "Przeprowadź test"
         delete: "Usuń"
         saved: "Narzędzie zapisane"
-        presets: "Wybierz ustawienie wstępne..."
         confirm_delete: "Czy na pewno chcesz usunąć to narzędzie?"
-        next:
-          title: "Następna"
         test_modal:
           title: "Przetestuj narzędzie AI"
           run: "Przeprowadź test"
@@ -505,6 +502,8 @@ pl_PL:
         expand_view_label: "Rozszerz widok"
         collapse_view_label: "Wyjdź z trybu pełnoekranowego (przycisk ESC lub Wstecz)"
       ai_bot:
+        persona: "Osobowość"
+        llm: "Model"
         pm_warning: "Wiadomości wysyłane przez chatboty AI są regularnie monitorowane przez moderatorów."
         cancel_streaming: "Zatrzymaj odpowiedź"
         default_pm_prefix: "[PW bota AI bez tytułu]"
@@ -531,6 +530,10 @@ pl_PL:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+        conversations:
+          today: "Dzisiaj"
+          last_7_days: "Ostatnie 7 dni"
+          last_30_days: "Ostatnie 30 dni"
       sentiments:
         dashboard:
           title: "Sentiment"

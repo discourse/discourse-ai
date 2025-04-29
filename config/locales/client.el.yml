@@ -77,11 +77,10 @@ el:
         description: "Περιγραφή"
         summary: "Περίληψη"
         save: "Αποθήκευση"
+        remove_parameter: "Αφαίρεση"
         parameter_required: "Απαιτείται"
         edit: "Επεξεργασία"
         delete: "Σβήσιμο"
-        next:
-          title: "Επόμενο"
       llms:
         display_name: "Όνομα"
         save: "Αποθήκευση"
@@ -141,6 +140,10 @@ el:
           previous_log: "Προηγούμενο"
         share_modal:
           copy: "Αντιγραφή"
+        conversations:
+          today: "Σήμερα"
+          last_7_days: "Τελευταίες 7 ημέρες"
+          last_30_days: "Τελευταίες 30 ημέρες"
       sentiments:
         sentiment_analysis:
           filter_types:

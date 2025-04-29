@@ -79,11 +79,10 @@ da:
         description: "Beskrivelse"
         summary: "Statistik"
         save: "Gem"
+        remove_parameter: "Fjern"
         parameter_required: "Obligatoriske"
         edit: "Rediger"
         delete: "Slet"
-        next:
-          title: "Næste"
       llms:
         display_name: "Navn"
         save: "Gem"
@@ -146,6 +145,10 @@ da:
           previous_log: "Forrige"
         share_modal:
           copy: "Kopier"
+        conversations:
+          today: "I dag"
+          last_7_days: "Seneste 7 dage"
+          last_30_days: "Seneste 30 dage"
       sentiments:
         sentiment_analysis:
           filter_types:

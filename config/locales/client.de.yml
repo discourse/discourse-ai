@@ -167,7 +167,7 @@ de:
       title: "KI"
       features:
         short_title: "Funktionen"
-        description: "Dies sind die KI-Funktionen, die den Besuchern deiner Website zur Verfügung stehen. Sie können so konfiguriert werden, dass sie bestimmte Personas und LLMs verwenden, und der Zugriff kann mithilfe von Gruppen gesteuert werden."
+        description: "Dies sind die KI-Funktionen, die den Besuchern deiner Website zur Verfügung stehen. Sie können so konfiguriert werden, dass sie bestimmte Personas und LLM verwenden, und der Zugriff kann mithilfe von Gruppen gesteuert werden."
         back: "Zurück"
         list:
           header:
@@ -236,16 +236,18 @@ de:
         net_request_tokens: "Token für Netzanfragen"
         cached_tokens: "Zwischengespeicherte Token"
         cached_request_tokens: "Zwischengespeicherte Anfragetoken"
+        total_spending: "Geschätzte Kosten"
         no_users: "Keine Benutzernutzungsdaten gefunden"
         no_models: "Keine Modellnutzungsdaten gefunden"
         no_features: "Keine Funktionsnutzungsdaten gefunden"
-        subheader_description: "Token sind die Basiseinheiten, die LLMs zum Verstehen und Generieren von Text verwenden. Nutzungsdaten können sich auf die Kosten auswirken"
+        subheader_description: "Token sind die Basiseinheiten, die LLM zum Verstehen und Generieren von Text verwenden. Nutzungsdaten können sich auf die Kosten auswirken"
         stat_tooltips:
           total_requests: "Alle Anfragen an LLMs über Discourse"
           total_tokens: "Alle Token, die bei der Abfrage einer LLM verwendet werden"
           request_tokens: "Tokens, die verwendet werden, wenn das LLM versucht zu verstehen, was du sagst"
           response_tokens: "Token, die verwendet werden, wenn die LLM auf deine Aufforderung antwortet"
           cached_tokens: "Zuvor verarbeitete Anfragetoken, die das LLM wiederverwendet, um Leistung und Kosten zu optimieren"
+          total_spending: "Kumulierte Kosten aller von den LLM verwendeten Token auf Grundlage der spezifischen Kostenmetriken, die zu den LLM-Konfigurationseinstellungen hinzugefügt wurden"
         periods:
           last_day: "Letzte 24 Stunden"
           last_week: "Letzte Woche"
@@ -361,7 +363,9 @@ de:
         script: "Skript"
         parameters: "Parameter"
         save: "Speichern"
+        parameter_type: "Parametertyp"
         add_parameter: "Parameter hinzufügen"
+        remove_parameter: "Entfernen"
         parameter_required: "Erforderlich"
         parameter_enum: "Aufzählung"
         parameter_name: "Parametername"
@@ -372,10 +376,7 @@ de:
         test: "Test ausführen"
         delete: "Löschen"
         saved: "Tool gespeichert"
-        presets: "Wähle eine Voreinstellung aus …"
         confirm_delete: "Bist du sicher, dass du dieses Tool löschen willst?"
-        next:
-          title: "Weiter"
         test_modal:
           title: "KI-Tool testen"
           run: "Test ausführen"
@@ -388,11 +389,16 @@ de:
         name: "Modell-ID"
         provider: "Anbieter"
         tokenizer: "Tokenizer"
+        max_prompt_tokens: "Kontextfenster"
+        max_output_tokens: "Maximale Ausgabetoken"
         url: "URL des Dienstes, der das Modell hostet"
         api_key: "API-Schlüssel des Dienstes, der das Modell hostet"
         enabled_chat_bot: "KI-Bot-Auswahl zulassen"
         vision_enabled: "Sehen aktiviert"
         ai_bot_user: "KI-Bot-Benutzer"
+        cost_input: "Eingabekosten"
+        cost_cached_input: "Eingabekosten für Zwischengespeichertes"
+        cost_output: "Ausgabekosten"
         save: "Speichern"
         edit: "Bearbeiten"
         saved: "LLM-Modell gespeichert"
@@ -423,10 +429,12 @@ de:
         usage:
           ai_bot: "KI-Bot"
           ai_helper: "Helfer"
+          ai_helper_image_caption: "Bildbeschriftungen"
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Zusammenfassen"
           ai_embeddings_semantic_search: "KI-Suche"
           ai_spam: "Spam"
+          automation: "Automatisierung (%{name})"
         in_use_warning:
           one: "Dieses Modell wird derzeit von %{settings} verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
           other: "Dieses Modell wird derzeit verwendet von: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
@@ -465,10 +473,16 @@ de:
           success: "Erfolg!"
           failure: "Beim Versuch, das Modell zu kontaktieren, wurde dieser Fehler zurückgegeben: %{error}"
         hints:
+          max_prompt_tokens: "Die maximale Anzahl von Token, die das Modell in einer einzigen Anfrage verarbeiten kann"
+          max_output_tokens: "Die maximale Anzahl von Token, die das Modell in einer einzigen Anfrage generieren kann"
           display_name: "Der Name, der verwendet wird, um dieses Modell in der Benutzeroberfläche deiner Website zu referenzieren."
           name: "Wir fügen dies in den API-Aufruf ein, um anzugeben, welches Modell wir verwenden werden"
           vision_enabled: "Wenn diese Funktion aktiviert ist, versucht die KI, Bilder zu verstehen. Dafür wird ein Modell benötigt, das Sehen unterstützt. Verfügbar in den neuesten Modellen von Anthropic, Google und OpenAI."
           enabled_chat_bot: "Wenn diese Option aktiviert ist, können Benutzer dieses Modell auswählen, wenn sie PN mit dem KI-Bot erstellen"
+          cost_input: "Die Kosten für die Eingabe pro 1 Million Token für dieses Modell"
+          cost_cached_input: "Die Kosten für die Eingabe von Zwischengespeichertem pro 1 Million Token für dieses Modell"
+          cost_output: "Die Kosten für die Ausgabe pro 1 Million Token für dieses Modell"
+          cost_measure: "$/1M Token"
         providers:
           aws_bedrock: "AWS Bedrock"
           anthropic: "Anthropic"
@@ -627,6 +641,8 @@ de:
         collapse_view_label: "Vollbild verlassen (ESC- oder Zurück-Taste)"
         click_to_run_label: "Artefakt ausführen"
       ai_bot:
+        persona: "Persona"
+        llm: "Modell"
         pm_warning: "KI-Chatbot-Nachrichten werden regelmäßig von Moderatoren überwacht."
         cancel_streaming: "Antwort abbrechen"
         default_pm_prefix: "[KI-Bot-PN ohne Titel]"
@@ -675,6 +691,17 @@ de:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          header: "Wie kann ich helfen?"
+          submit: "Frage abschicken"
+          disclaimer: "Generative KI kann Fehler machen. Überprüfe wichtige Informationen."
+          placeholder: "Stell eine Frage ..."
+          new: "Neue Frage"
+          min_input_length_message: "Die Nachricht muss länger als 10 Zeichen sein"
+          messages_sidebar_title: "Unterhaltungen"
+          today: "Heute"
+          last_7_days: "Letzte 7 Tage"
+          last_30_days: "Letzte 30 Tage"
       sentiments:
         dashboard:
           title: "Stimmung"

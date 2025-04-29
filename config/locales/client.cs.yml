@@ -77,11 +77,10 @@ cs:
         description: "Popis"
         summary: "Souhrn"
         save: "Uložit"
+        remove_parameter: "Smazat"
         parameter_required: "Nezbytnosti"
         edit: "Upravit"
         delete: "Smazat"
-        next:
-          title: "Další"
       llms:
         display_name: "Jméno"
         save: "Uložit"
@@ -225,6 +224,10 @@ cs:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Dnes"
+          last_7_days: "Posledních 7 dní"
+          last_30_days: "Posledních 30 dní"
       sentiments:
         dashboard:
           title: "Sentiment"

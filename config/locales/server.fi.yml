@@ -52,7 +52,6 @@ fi:
     ai_nsfw_flag_threshold_porn: "Raja, jolloin pornoksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_flag_threshold_sexy: "Raja, jolloin seksikkääksi luokiteltua kuvaa pidetään NSFW:nä."
     ai_nsfw_models: "NSFW-päätelmiin käytettävät mallit."
-    ai_openai_api_key: "OpenAI APIn API-avain. Käytetään VAIN Dall-E:hen. Käytä LLM-määritysvälilehteä GPT:lle."
     ai_helper_enabled: "Ota tekoälyapuri käyttöön."
     composer_ai_helper_allowed_groups: "Näiden ryhmien käyttäjät näkevät tekoälyavustajan painikkeen kirjoitustoiminnossa."
     ai_helper_allowed_in_pm: "Ota kirjoitustoiminnon tekoälyavustaja käyttöön yksityisviesteissä."
@@ -358,6 +357,8 @@ fi:
         time: "Aika aikavyöhykkeellä %{timezone} on %{time}"
         summarize: "Yhteenveto: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Löytyi %{count} alue"

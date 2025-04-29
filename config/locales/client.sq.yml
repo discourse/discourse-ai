@@ -70,11 +70,10 @@ sq:
         description: "Përshkrimi"
         summary: "Përmbledhja"
         save: "Ruaj"
+        remove_parameter: "Hiq"
         parameter_required: "E nevojshme"
         edit: "Redakto"
         delete: "Fshij"
-        next:
-          title: "Vazhdo përpara"
       llms:
         display_name: "Emri"
         save: "Ruaj"
@@ -126,6 +125,8 @@ sq:
           previous_log: "I kaluar"
         share_modal:
           copy: "Kopjo"
+        conversations:
+          today: "Sot"
       sentiments:
         sentiment_analysis:
           filter_types:

@@ -343,7 +343,9 @@ he:
         script: "סקריפט"
         parameters: "משתנים"
         save: "שמירה"
+        parameter_type: "סוג משתנה"
         add_parameter: "הוספת משתנה"
+        remove_parameter: "הסרה"
         parameter_required: "נדרש"
         parameter_enum: "מונה"
         parameter_name: "שם משתנה"
@@ -354,10 +356,7 @@ he:
         test: "הרצת בדיקה"
         delete: "מחיקה"
         saved: "הכלי נשמר"
-        presets: "בחירת ערכה…"
         confirm_delete: "למחוק את הכלי הזה?"
-        next:
-          title: "הבא"
         test_modal:
           title: "כלי בדיקת בינה מלאכותית"
           run: "הרצת בדיקה"
@@ -370,11 +369,14 @@ he:
         name: "מזהה מודל"
         provider: "ספק"
         tokenizer: "מפרק לאסימונים"
+        max_prompt_tokens: "חלון הקשר"
         url: "כתובת השירות שמארח את המודל"
         api_key: "מפתח ה־API של השירות שמארח את המודל"
         enabled_chat_bot: "לאפשר בורר בוטים של בינה מלאכותית"
         vision_enabled: "ראייה מופעלת"
         ai_bot_user: "משתמש בוט בינה מלאכותית"
+        cost_input: "עלות קלט"
+        cost_output: "עלות פלט"
         save: "שמירה"
         edit: "עריכה"
         saved: "מודל ה־LLM נשמר"
@@ -592,6 +594,8 @@ he:
         collapse_view_label: "יציאה ממסך מלא (כפתורי ESC או Back)"
         click_to_run_label: "הרצת תוצר"
       ai_bot:
+        persona: "דמות"
+        llm: "מודל"
         pm_warning: "הודעות בוט שיח בינה מלאכותית לא נאכפות דרך קבע על ידי המפקחים."
         cancel_streaming: "עצירת התגובה"
         default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
@@ -640,6 +644,10 @@ he:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "היום"
+          last_7_days: "7 הימים האחרונים"
+          last_30_days: "30 הימים האחרונים"
       sentiments:
         dashboard:
           title: "רגש"

@@ -315,7 +315,7 @@ it:
         script: "Script"
         parameters: "Parametri"
         save: "Salva"
-        add_parameter: "Aggiungi parametro"
+        remove_parameter: "Rimuovi"
         parameter_required: "Obbligatorie"
         parameter_enum: "Enumerazione"
         parameter_name: "Nome del parametro"
@@ -326,10 +326,7 @@ it:
         test: "Esegui test"
         delete: "Elimina"
         saved: "Strumento salvato"
-        presets: "Seleziona una preimpostazione..."
         confirm_delete: "Vuoi davvero eliminare questo strumento?"
-        next:
-          title: "Avanti"
         test_modal:
           title: "Prova lo strumento IA"
           run: "Esegui test"
@@ -564,6 +561,7 @@ it:
         collapse_view_label: "Esci dalla modalità a schermo intero (tasto ESC o Indietro)"
         click_to_run_label: "Esegui artefatto"
       ai_bot:
+        llm: "Modello"
         pm_warning: "I messaggi del chatbot IA vengono controllati regolarmente dai moderatori."
         cancel_streaming: "Interrompi risposta"
         default_pm_prefix: "[Bot IA senza titolo MP]"
@@ -612,6 +610,10 @@ it:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Oggi"
+          last_7_days: "Ultimi 7 giorni"
+          last_30_days: "Ultimi 30 giorni"
       sentiments:
         dashboard:
           title: "Sentimento"

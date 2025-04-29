@@ -75,11 +75,10 @@ sl:
         description: "Opis"
         summary: "Povzetek"
         save: "Shrani"
+        remove_parameter: "Odstrani"
         parameter_required: "Zahtevano"
         edit: "Uredi"
         delete: "Izbriši"
-        next:
-          title: "Naprej"
       llms:
         display_name: "Ime"
         save: "Shrani"
@@ -138,6 +137,10 @@ sl:
           previous_log: "Prejšnja"
         share_modal:
           copy: "Kopiraj"
+        conversations:
+          today: "Danes"
+          last_7_days: "Zadnjih 7 dni"
+          last_30_days: "Zadnjih 30 dni"
       sentiments:
         sentiment_analysis:
           filter_types:

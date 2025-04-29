@@ -52,7 +52,6 @@ ja:
     ai_nsfw_flag_threshold_porn: "ポルノとして分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_flag_threshold_sexy: "官能的として分類された画像が NSFW として見なされるためのしきい値。"
     ai_nsfw_models: "NSFW 推論に使用するモデル。"
-    ai_openai_api_key: "OpenAI API の API キー。Dall-E のみに使用されます。GPT の場合は LLM 構成タブを使用します"
     ai_helper_enabled: "AI ヘルパーを有効にします。"
     composer_ai_helper_allowed_groups: "これらのグループのユーザーの作成ツールには、AI ヘルパーボタンが表示されます。"
     ai_helper_allowed_in_pm: "PM で作成ツールの AI ヘルパーを有効にします。"
@@ -356,6 +355,8 @@ ja:
         time: "%{timezone} の時刻は %{time} です"
         summarize: "<a href='%{url}'>%{title}</a> の要約"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           other: "%{count} 個のカテゴリが見つかりました"

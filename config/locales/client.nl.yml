@@ -315,7 +315,7 @@ nl:
         script: "Script"
         parameters: "Parameters"
         save: "Opslaan"
-        add_parameter: "Parameter toevoegen"
+        remove_parameter: "Verwijderen"
         parameter_required: "Vereist"
         parameter_enum: "Enum"
         parameter_name: "Parameternaam"
@@ -326,10 +326,7 @@ nl:
         test: "Test uitvoeren"
         delete: "Verwijderen"
         saved: "Tool opgeslagen"
-        presets: "Selecteer een preset..."
         confirm_delete: "Weet je zeker dat je deze tool wilt verwijderen?"
-        next:
-          title: "Volgende"
         test_modal:
           title: "AI-tool testen"
           run: "Test uitvoeren"
@@ -564,6 +561,7 @@ nl:
         collapse_view_label: "Volledig scherm verlaten (ESC of knop Terug)"
         click_to_run_label: "Artefact uitvoeren"
       ai_bot:
+        llm: "Model"
         pm_warning: "AI-chatbotberichten worden regelmatig gecontroleerd door moderators."
         cancel_streaming: "Stoppen met antwoorden"
         default_pm_prefix: "[Ongetitelde PB van AI-bot]"
@@ -612,6 +610,10 @@ nl:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Vandaag"
+          last_7_days: "Afgelopen 7 dagen"
+          last_30_days: "Afgelopen 30 dagen"
       sentiments:
         dashboard:
           title: "Sentiment"

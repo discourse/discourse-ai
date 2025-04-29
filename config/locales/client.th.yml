@@ -73,11 +73,10 @@ th:
         description: "รายละเอียด"
         summary: "สรุป"
         save: "บันทึก"
+        remove_parameter: "ลบ"
         parameter_required: "ต้องการ"
         edit: "แก้ไข"
         delete: "ลบ"
-        next:
-          title: "ต่อไป"
       llms:
         display_name: "ชื่อ"
         save: "บันทึก"
@@ -125,6 +124,10 @@ th:
           previous_log: "ก่อนหน้า"
         share_modal:
           copy: "คัดลอก"
+        conversations:
+          today: "วันนี้"
+          last_7_days: "7 วันที่ผ่านมา"
+          last_30_days: "30 วันที่ผ่านมา"
       sentiments:
         sentiment_analysis:
           filter_types:

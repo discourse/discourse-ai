@@ -78,11 +78,10 @@ sv:
         description: "Beskrivning"
         summary: "Sammanfattning"
         save: "Spara"
+        remove_parameter: "Ta bort"
         parameter_required: "Krävs"
         edit: "Redigera"
         delete: "Ta bort"
-        next:
-          title: "Nästa"
       llms:
         display_name: "Namn"
         save: "Spara"
@@ -147,6 +146,10 @@ sv:
           previous_log: "Föregående"
         share_modal:
           copy: "Kopiera"
+        conversations:
+          today: "Idag"
+          last_7_days: "Senaste 7 dagarna"
+          last_30_days: "Senaste 30 dagarna"
       sentiments:
         sentiment_analysis:
           filter_types:

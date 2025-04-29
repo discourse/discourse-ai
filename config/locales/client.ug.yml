@@ -79,11 +79,10 @@ ug:
         summary: "خۇلاسە"
         script: "قوليازما"
         save: "ساقلا"
+        remove_parameter: "چىقىرىۋەت"
         parameter_required: "زۆرۈر"
         edit: "تەھرىر"
         delete: "ئۆچۈر"
-        next:
-          title: "كېيىنكى"
       llms:
         display_name: "ئىسمى"
         save: "ساقلا"
@@ -149,6 +148,8 @@ ug:
           previous_log: "ئالدىنقى"
         share_modal:
           copy: "كۆچۈر"
+        conversations:
+          today: "بۈگۈن"
       sentiments:
         sentiment_analysis:
           filter_types:

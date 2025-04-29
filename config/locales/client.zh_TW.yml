@@ -75,11 +75,10 @@ zh_TW:
         description: "簡述"
         summary: "摘要"
         save: "保存"
+        remove_parameter: "移除"
         parameter_required: "必要設定"
         edit: "編輯"
         delete: "刪除"
-        next:
-          title: "下一步"
       llms:
         display_name: "名字"
         save: "保存"
@@ -141,6 +140,10 @@ zh_TW:
           previous_log: "舊"
         share_modal:
           copy: "複製"
+        conversations:
+          today: "今天"
+          last_7_days: "過去 7 天"
+          last_30_days: "過去 30 天"
       sentiments:
         sentiment_analysis:
           filter_types:

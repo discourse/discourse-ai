@@ -71,11 +71,10 @@ hy:
         description: "Նկարագրությունը"
         summary: "Ամփոփումը"
         save: "Պահպանել"
+        remove_parameter: "Հեռացնել"
         parameter_required: "Պարտադիր"
         edit: "Խմբագրել"
         delete: "Ջնջել"
-        next:
-          title: "Հաջորդը"
       llms:
         display_name: "Անուն"
         save: "Պահպանել"
@@ -132,6 +131,8 @@ hy:
           previous_log: "Նախորդը"
         share_modal:
           copy: "Կրկնօրինակել"
+        conversations:
+          today: "Այսօրվա"
       sentiments:
         sentiment_analysis:
           filter_types:

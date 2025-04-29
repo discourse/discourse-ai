@@ -71,11 +71,10 @@ bs_BA:
         description: "Opis"
         summary: "Sažetak"
         save: "Save"
+        remove_parameter: "Ukloni"
         parameter_required: "Required"
         edit: "Edit"
         delete: "Delete"
-        next:
-          title: "Iduće"
       llms:
         display_name: "Ime"
         save: "Save"
@@ -127,6 +126,8 @@ bs_BA:
           previous_log: "Previous"
         share_modal:
           copy: "Copy"
+        conversations:
+          today: "Today"
       sentiments:
         sentiment_analysis:
           filter_types:
