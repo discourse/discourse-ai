@@ -1060,7 +1060,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       it "properly returns an image when skipping tool details" do
         persona.update!(tool_details: false)
 
-        WebMock.stub_request(:post, SiteSetting.ai_openai_dall_e_3_url).to_return(
+        WebMock.stub_request(:post, SiteSetting.ai_openai_image_generation_url).to_return(
           status: 200,
           body: { data: data }.to_json,
         )
@@ -1075,7 +1075,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       it "does not include placeholders in conversation context (simulate DALL-E)" do
-        WebMock.stub_request(:post, SiteSetting.ai_openai_dall_e_3_url).to_return(
+        WebMock.stub_request(:post, SiteSetting.ai_openai_image_generation_url).to_return(
           status: 200,
           body: { data: data }.to_json,
         )

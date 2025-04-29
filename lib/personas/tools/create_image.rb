@@ -3,7 +3,7 @@
 module DiscourseAi
   module Personas
     module Tools
-      class DallE < Tool
+      class CreateImage < Tool
         def self.signature
           {
             name: name,
@@ -12,32 +12,21 @@ module DiscourseAi
               {
                 name: "prompts",
                 description:
-                  "The prompts used to generate or create or draw the image (5000 chars or less, be creative) up to 4 prompts",
+                  "The prompts used to generate or create or draw the image (5000 chars or less, be creative) up to 4 prompts, usually only supply a single prompt",
                 type: "array",
                 item_type: "string",
                 required: true,
-              },
-              {
-                name: "aspect_ratio",
-                description: "The aspect ratio (optional, square by default)",
-                type: "string",
-                required: false,
-                enum: %w[tall square wide],
               },
             ],
           }
         end
 
         def self.name
-          "dall_e"
+          "create_image"
         end
 
         def prompts
           parameters[:prompts]
-        end
-
-        def aspect_ratio
-          parameters[:aspect_ratio]
         end
 
         def chain_next_response?
@@ -53,18 +42,10 @@ module DiscourseAi
 
           results = nil
 
-          size = "1024x1024"
-          if aspect_ratio == "tall"
-            size = "1024x1792"
-          elsif aspect_ratio == "wide"
-            size = "1792x1024"
-          end
-
           results =
             DiscourseAi::Inference::OpenAiImageGenerator.create_uploads!(
               max_prompts,
-              model: "dall-e-3",
-              size: size,
+              model: "gpt-image-1",
               user_id: bot_user.id,
             )
 
@@ -83,7 +64,9 @@ module DiscourseAi
             [/grid]
           RAW
 
-          { prompts: results.map { |item| item[:prompt] } }
+          {
+            prompts: results.map { |item| { prompt: item[:prompt], url: item[:upload].short_url } },
+          }
         end
 
         protected

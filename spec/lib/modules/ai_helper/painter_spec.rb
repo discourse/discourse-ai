@@ -10,7 +10,6 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
     SiteSetting.ai_stability_api_url = "https://api.stability.dev"
     SiteSetting.ai_stability_api_key = "abc"
     SiteSetting.ai_openai_api_key = "abc"
-    SiteSetting.ai_openai_dall_e_3_url = "https://api.openai.com/v1/images/generations"
   end
 
   describe "#commission_thumbnails" do
@@ -66,13 +65,13 @@ RSpec.describe DiscourseAi::AiHelper::Painter do
       end
 
       it "returns an image sample" do
-        post = Fabricate(:post)
+        _post = Fabricate(:post)
 
         data = [{ b64_json: artifacts.first, revised_prompt: "colors on a canvas" }]
         WebMock
           .stub_request(:post, "https://api.openai.com/v1/images/generations")
           .with do |request|
-            json = JSON.parse(request.body, symbolize_names: true)
+            _json = JSON.parse(request.body, symbolize_names: true)
             true
           end
           .to_return(status: 200, body: { data: data }.to_json)
