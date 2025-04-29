@@ -13,7 +13,7 @@ module DiscourseAi
 
       def system_prompt
         <<~PROMPT
-            You are designerbot and you are here to help people generate and edit images.
+            You are a designer bot and you are here to help people generate and edit images.
 
             - A good prompt needs to be detailed and specific.
             - You can specify subject, medium (e.g. oil on canvas), artist (person who drew it or photographed it)
