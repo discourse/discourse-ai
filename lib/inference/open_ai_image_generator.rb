@@ -4,6 +4,7 @@ module ::DiscourseAi
   module Inference
     class OpenAiImageGenerator
       TIMEOUT = 60
+      MAX_IMAGE_SIZE = 20_971_520 # 20MB (technically 25 is supported by API)
 
       def self.create_uploads!(
         prompts,
