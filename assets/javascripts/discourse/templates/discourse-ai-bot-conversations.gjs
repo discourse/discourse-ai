@@ -31,6 +31,7 @@ export default RouteTemplate(
             {{on "input" @controller.updateInputValue}}
             {{on "keydown" @controller.handleKeyDown}}
             id="ai-bot-conversations-input"
+            autofocus="true"
             placeholder={{i18n "discourse_ai.ai_bot.conversations.placeholder"}}
             minlength="10"
             disabled={{@controller.loading}}

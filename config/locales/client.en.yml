@@ -673,6 +673,7 @@ en:
         share: "Copy AI conversation"
         conversation_shared: "Conversation copied"
         debug_ai: "View raw AI request and response"
+        sidebar_empty: "Bot conversation history will appear here."
         debug_ai_modal:
           title: "View AI interaction"
           copy_request: "Copy request"
@@ -725,6 +726,7 @@ en:
           disclaimer: "Generative AI can make mistakes. Verify important information."
           placeholder: "Ask a question..."
           new: "New Question"
+          enter_question: "Enter Question"
           min_input_length_message: "Message must be longer than 10 characters"
           messages_sidebar_title: "Conversations"
           today: "Today"

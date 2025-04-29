@@ -200,10 +200,20 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       expect(header).to have_icon_in_bot_button(icon: "robot")
     end
 
-    it "displays sidebar and 'new question' on the topic page" do
+    it "displays 'new question' button on the topic page" do
       topic_page.visit_topic(pm)
-      expect(sidebar).to be_visible
-      expect(sidebar).to have_css("button.ai-new-question-button")
+      expect(sidebar).to have_css(
+        "button.ai-new-question-button",
+        text: I18n.t("js.discourse_ai.ai_bot.conversations.new"),
+      )
+    end
+
+    it "displays 'enter question' button on conversations homepage" do
+      ai_pm_homepage.visit
+      expect(sidebar).to have_css(
+        "button.ai-new-question-button",
+        text: I18n.t("js.discourse_ai.ai_bot.conversations.enter_question"),
+      )
     end
 
     it "redirect to the homepage when 'new question' is clicked" do
@@ -245,6 +255,12 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       header.click_bot_button
       expect(ai_pm_homepage).to have_homepage
       expect(sidebar).to have_no_section_link(pm.title)
+    end
+
+    it "renders empty state in sidebar with no bot PM history" do
+      sign_in(user_2)
+      ai_pm_homepage.visit
+      expect(ai_pm_homepage).to have_empty_state
     end
 
     it "Allows choosing persona and LLM" do

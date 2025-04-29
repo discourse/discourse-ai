@@ -6,6 +6,7 @@ import { bind } from "discourse/lib/decorators";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
+import AiBotSidebarEmptyState from "../discourse/components/ai-bot-sidebar-empty-state";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
 import { AI_CONVERSATIONS_PANEL } from "../discourse/services/ai-conversations-sidebar-manager";
 
@@ -119,6 +120,10 @@ export default {
 
             get name() {
               return "ai-conversations-history";
+            }
+
+            get emptyStateComponent() {
+              return AiBotSidebarEmptyState;
             }
 
             get text() {

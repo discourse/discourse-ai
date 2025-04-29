@@ -9,10 +9,21 @@ export default class AiBotSidebarNewConversation extends Component {
   @service sidebarState;
 
   get shouldRender() {
-    return (
-      this.router.currentRouteName !== "discourse-ai-bot-conversations" &&
-      this.sidebarState.isCurrentPanel(AI_CONVERSATIONS_PANEL)
-    );
+    return this.sidebarState.isCurrentPanel(AI_CONVERSATIONS_PANEL);
+  }
+
+  get disabled() {
+    return this.router.currentRouteName === "discourse-ai-bot-conversations";
+  }
+
+  get label() {
+    return this.disabled
+      ? "discourse_ai.ai_bot.conversations.enter_question"
+      : "discourse_ai.ai_bot.conversations.new";
+  }
+
+  get icon() {
+    return this.disabled ? "keyboard" : "plus";
   }
 
   @action
@@ -24,8 +35,9 @@ export default class AiBotSidebarNewConversation extends Component {
   <template>
     {{#if this.shouldRender}}
       <DButton
-        @label="discourse_ai.ai_bot.conversations.new"
-        @icon="plus"
+        @label={{this.label}}
+        @icon={{this.icon}}
+        @disabled={{this.disabled}}
         @action={{this.routeTo}}
         class="ai-new-question-button btn-default"
       />
