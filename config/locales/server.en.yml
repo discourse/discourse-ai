@@ -292,6 +292,9 @@ en:
         artist:
           name: Artist
           description: "AI Bot specialized in generating images"
+        designer:
+          name: Designer
+          description: "AI Bot specialized in generating and editing images"
         sql_helper:
           name: SQL Helper
           description: "AI Bot specialized in helping craft SQL queries on this Discourse instance"
@@ -379,6 +382,8 @@ en:
         dall_e: "Generate image"
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
+        create_image: "Creating image"
+        edit_image: "Editing image"
       tool_help:
         read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Update a web artifact using the AI Bot"
@@ -395,6 +400,8 @@ en:
         time: "Find time in various time zones"
         summary: "Summarize a topic"
         image: "Generate image using Stable Diffusion"
+        create_image: "Generate image using Open AI GPT image model"
+        edit_image: "Edit image using Open AI GPT image model"
         google: "Search Google for a query"
         read: "Read public topic on the forum"
         setting_context: "Look up site setting context"
@@ -417,6 +424,8 @@ en:
         time: "Time in %{timezone} is %{time}"
         summarize: "Summarized <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Found %{count} category"

@@ -46,6 +46,7 @@ module DiscourseAi
             WebArtifactCreator => -10,
             Summarizer => -11,
             ShortSummarizer => -12,
+            Designer => -13,
           }
         end
 
@@ -111,7 +112,12 @@ module DiscourseAi
           tools << Tools::ListTags if SiteSetting.tagging_enabled
           tools << Tools::Image if SiteSetting.ai_stability_api_key.present?
 
-          tools << Tools::DallE if SiteSetting.ai_openai_api_key.present?
+          if SiteSetting.ai_openai_api_key.present?
+            tools << Tools::DallE
+            tools << Tools::CreateImage
+            tools << Tools::EditImage
+          end
+
           if SiteSetting.ai_google_custom_search_api_key.present? &&
                SiteSetting.ai_google_custom_search_cx.present?
             tools << Tools::Google

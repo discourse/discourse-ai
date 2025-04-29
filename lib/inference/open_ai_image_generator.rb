@@ -69,7 +69,6 @@ module ::DiscourseAi
             quality: quality,
           )
 
-        # Create uploads in the main thread
         create_uploads_from_responses([api_response], user_id, for_private_message).first
       end
 
@@ -211,7 +210,7 @@ module ::DiscourseAi
           attempts += 1
           sleep 2
           retry if attempts < 3
-          if Rails.env.development?
+          if Rails.env.development? || Rails.env.test?
             puts "Error editing image(s) with prompt: #{prompt} #{e}"
             p e
           end
@@ -326,6 +325,7 @@ module ::DiscourseAi
         # Add model
         body << "--#{boundary}\r\n"
         body << "Content-Disposition: form-data; name=\"model\"\r\n\r\n"
+
         body << "#{model}\r\n"
 
         # Add images
