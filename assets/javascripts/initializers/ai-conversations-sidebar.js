@@ -29,13 +29,14 @@ export default {
       );
       const appEvents = api.container.lookup("service:app-events");
       const messageBus = api.container.lookup("service:message-bus");
+      const navigationMenu = api.container.lookup("service:navigationMenu");
 
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
           class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
             key = AI_CONVERSATIONS_PANEL;
             hidden = true;
-            displayHeader = true;
+            displayHeader = !navigationMenu.isHeaderDropdownMode;
             expandActiveSection = true;
           }
       );
