@@ -21,17 +21,18 @@ module DiscourseAi
 
           base64_to_image(artifacts, user.id)
         elsif model == "dall_e_3"
-          api_key = SiteSetting.ai_openai_api_key
-          api_url = SiteSetting.ai_openai_dall_e_3_url
-
-          artifacts =
-            DiscourseAi::Inference::OpenAiImageGenerator
-              .perform!(input, api_key: api_key, api_url: api_url)
-              .dig(:data)
-              .to_a
-              .map { |art| art[:b64_json] }
-
-          base64_to_image(artifacts, user.id)
+          attribution =
+            I18n.t(
+              "discourse_ai.ai_helper.painter.attribution.#{SiteSetting.ai_helper_illustrate_post_model}",
+            )
+          results =
+            DiscourseAi::Inference::OpenAiImageGenerator.create_uploads!(
+              input,
+              model: "dall-e-3",
+              user_id: user.id,
+              title: attribution,
+            )
+          results.map { |result| UploadSerializer.new(result[:upload], root: false) }
         end
       end
 
