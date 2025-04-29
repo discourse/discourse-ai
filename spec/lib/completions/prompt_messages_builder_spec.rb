@@ -240,7 +240,11 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
         )
 
       # Find the message with upload
-      message = context.find { |m| m[:content] == ["Check this image", { upload_id: upload.id }] }
+      message =
+        context.find do |m|
+          m[:content] ==
+            ["Check this image -- uploaded(#{upload.short_url})", { upload_id: upload.id }]
+        end
       expect(message).to be_present
     end
 
@@ -261,7 +265,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
         )
 
       # Find the message with upload
-      message = context.find { |m| m[:content] == "Check this image" }
+      message =
+        context.find { |m| m[:content] == "Check this image -- uploaded(#{upload.short_url})" }
       expect(message).to be_present
       expect(message[:upload_ids]).to be_nil
     end
