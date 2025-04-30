@@ -309,6 +309,7 @@ body.has-ai-conversations-sidebar {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5em;
+      padding-bottom: 1em;
     }
 
     .ai-bot-upload {
@@ -318,6 +319,7 @@ body.has-ai-conversations-sidebar {
       border-radius: 10em;
       padding-left: 0.75em;
       color: var(--primary-high);
+      font-size: var(--font-down-2);
 
       &:hover,
       &:focus-visible {
