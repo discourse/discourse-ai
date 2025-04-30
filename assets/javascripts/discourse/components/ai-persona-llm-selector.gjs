@@ -148,21 +148,24 @@ export default class AiPersonaLlmSelector extends Component {
     this.setAllowLLMSelector();
 
     if (this.hasLlmSelector) {
-      let llm = this.keyValueStore.getItem(LLM_SELECTOR_KEY);
+      let llmId = this.keyValueStore.getItem(LLM_SELECTOR_KEY);
+      if (llmId) {
+        llmId = parseInt(llmId, 10);
+      }
 
       const llmOption =
-        this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llm) ||
+        this.llmOptions.find((innerLlmOption) => innerLlmOption.id === llmId) ||
         this.llmOptions[0];
 
       if (llmOption) {
-        llm = llmOption.id;
+        llmId = llmOption.id;
       } else {
-        llm = "";
+        llmId = "";
       }
 
-      if (llm) {
+      if (llmId) {
         next(() => {
-          this.currentLlm = llm;
+          this.currentLlm = llmId;
         });
       }
     }

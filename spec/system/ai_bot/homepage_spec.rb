@@ -254,13 +254,13 @@ RSpec.describe "AI Bot - Homepage", type: :system do
         it "Allows choosing persona and LLM" do
           ai_pm_homepage.visit
 
-          ai_pm_homepage.persona_selector.expand
-          ai_pm_homepage.persona_selector.select_row_by_name(persona.name)
-          ai_pm_homepage.persona_selector.collapse
-
           ai_pm_homepage.llm_selector.expand
           ai_pm_homepage.llm_selector.select_row_by_name(claude_2_dup.display_name)
           ai_pm_homepage.llm_selector.collapse
+
+          # confirm memory works for llm selection
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage.llm_selector).to have_selected_name(claude_2_dup.display_name)
         end
 
         it "renders back to forum link" do
