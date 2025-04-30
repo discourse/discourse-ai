@@ -8,6 +8,7 @@ import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
 import AiShareButton from "../discourse/components/post-menu/ai-share-button";
 import {
+  getBotType,
   isGPTBot,
   showShareConversationModal,
 } from "../discourse/lib/ai-bot-helper";
@@ -62,13 +63,19 @@ function initializePersonaDecorator(api) {
 
 function initializeWidgetPersonaDecorator(api) {
   api.decorateWidget(`poster-name:after`, (dec) => {
-    if (!isGPTBot(dec.attrs.user)) {
-      return;
+    const botType = getBotType(dec.attrs.user);
+    // we have 2 ways of decorating
+    // 1. if a bot is a LLM we decorate with persona name
+    // 2. if bot is a persona we decorate with LLM name
+    if (botType === "llm") {
+      return dec.widget.attach("persona-flair", {
+        personaName: dec.model?.topic?.ai_persona_name,
+      });
+    } else if (botType === "persona") {
+      return dec.widget.attach("persona-flair", {
+        personaName: dec.model?.llm_name,
+      });
     }
-
-    return dec.widget.attach("persona-flair", {
-      personaName: dec.model?.topic?.ai_persona_name,
-    });
   });
 
   registerWidgetShim(

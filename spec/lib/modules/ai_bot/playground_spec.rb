@@ -783,6 +783,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
       expect(last_post.user_id).to eq(persona.user_id)
+
+      expect(last_post.custom_fields[DiscourseAi::AiBot::POST_AI_LLM_NAME_FIELD]).to eq(
+        gpt_35_turbo.name,
+      )
     end
 
     it "picks the correct llm for persona in PMs" do

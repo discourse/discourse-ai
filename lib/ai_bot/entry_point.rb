@@ -4,6 +4,7 @@ module DiscourseAi
   module AiBot
     USER_AGENT = "Discourse AI Bot 1.0 (https://www.discourse.org)"
     TOPIC_AI_BOT_PM_FIELD = "is_ai_bot_pm"
+    POST_AI_LLM_NAME_FIELD = "ai_llm_name"
 
     class EntryPoint
       Bot = Struct.new(:id, :name, :llm)
@@ -65,6 +66,10 @@ module DiscourseAi
       end
 
       def inject_into(plugin)
+        # Long term we need a better API here
+        # we only want to load this custom field for bots
+        TopicView.default_post_custom_fields << POST_AI_LLM_NAME_FIELD
+
         plugin.register_topic_custom_field_type(TOPIC_AI_BOT_PM_FIELD, :string)
 
         plugin.on(:topic_created) do |topic|
@@ -138,6 +143,14 @@ module DiscourseAi
             object.personal_message && object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
           end,
         ) { true }
+
+        plugin.add_to_serializer(
+          :post,
+          :llm_name,
+          include_condition: -> do
+            object.topic.private_message? && object.custom_fields[POST_AI_LLM_NAME_FIELD]
+          end,
+        ) { object.custom_fields[POST_AI_LLM_NAME_FIELD] }
 
         plugin.add_to_serializer(
           :current_user,
