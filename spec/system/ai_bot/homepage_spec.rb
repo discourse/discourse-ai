@@ -248,6 +248,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           Fabricate(:post, topic: pm, user: user_2, post_number: 4)
           Fabricate(:topic_allowed_user, topic: pm, user: user_2)
           sign_in(user_2)
+
           topic_page.visit_topic(pm)
 
           expect(sidebar).to be_visible
