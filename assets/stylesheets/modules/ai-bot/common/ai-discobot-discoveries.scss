@@ -1,3 +1,5 @@
+@use "lib/viewport";
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -99,7 +101,11 @@
 }
 
 .full-page-discoveries {
-  padding: 1em 10%;
+  padding: 0 1rem;
+
+  @include viewport.until(md) {
+    padding: 0.25rem 1rem 0 1rem;
+  }
 }
 
 .d-icon-discobot {
@@ -164,6 +170,116 @@
       &::after {
         display: none;
       }
+    }
+  }
+}
+
+.search-page .ai-search-discoveries__discoveries-wrapper {
+  padding-bottom: 0.5rem;
+}
+
+.ai-search-discoveries__discoveries-title.full-page-discoveries {
+  border: none;
+  padding-top: 1rem;
+}
+
+@mixin discoveries-sidebar {
+  .full-page-discoveries {
+    padding: 1em 10%;
+  }
+
+  &.search-page.has-discoveries {
+    .semantic-search__container {
+      background: transparent;
+      margin: 0;
+    }
+
+    .semantic-search__container .semantic-search__results {
+      .semantic-search__searching {
+        margin-left: 0;
+      }
+
+      .semantic-search__searching-text {
+        margin-left: 1.25em;
+      }
+    }
+
+    .search-container .search-header {
+      padding: 1em 2em;
+    }
+
+    .semantic-search__container .search-results,
+    .search-container .search-advanced .search-results,
+    .search-container .search-advanced .search-info {
+      padding: 1em 2em;
+    }
+
+    .search-results .fps-result {
+      padding: 0;
+      margin-bottom: 2.5em;
+    }
+
+    .search-advanced {
+      display: grid;
+      grid-template-columns: 70% 30%;
+      grid-auto-rows: auto;
+
+      > * {
+        grid-column: 1;
+        align-self: start;
+      }
+    }
+
+    .search-info {
+      grid-row: 1;
+    }
+
+    .ai-search-discoveries__discoveries-title {
+      border: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .ai-search-discoveries__discoveries-wrapper {
+      grid-column: 2 / -1;
+      grid-row: 1 / 5;
+      border-left: 1px solid var(--primary-low);
+      align-self: stretch;
+
+      .cooked {
+        color: var(--primary-high);
+      }
+    }
+  }
+}
+
+body:not(.has-sidebar-page) {
+  @include viewport.from(md) {
+    @include discoveries-sidebar;
+  }
+}
+
+body.has-sidebar-page {
+  @include viewport.from(lg) {
+    @include discoveries-sidebar;
+  }
+
+  @include viewport.between(md, lg) {
+    .ai-search-discoveries__discoveries-wrapper {
+      padding-bottom: 0;
+    }
+
+    .ai-search-discoveries__discoveries-title {
+      padding-top: 1rem;
+    }
+
+    .search-container .search-advanced .search-info,
+    .semantic-search__container.search-results {
+      padding-inline: 10%;
+    }
+
+    .full-page-discoveries {
+      padding-inline: 10%;
     }
   }
 }
