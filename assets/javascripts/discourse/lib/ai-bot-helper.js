@@ -7,21 +7,40 @@ import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
 
 const MAX_PERSONA_USER_ID = -1200;
 
-let enabledChatBotIds;
+let enabledChatBotMap = null;
+
+function ensureBotMap() {
+  if (!enabledChatBotMap) {
+    const currentUser = getOwnerWithFallback(this).lookup(
+      "service:current-user"
+    );
+    enabledChatBotMap = {};
+    currentUser.ai_enabled_chat_bots.forEach((bot) => {
+      enabledChatBotMap[bot.id] = bot;
+    });
+  }
+}
 
 export function isGPTBot(user) {
   if (!user) {
     return;
   }
 
-  if (!enabledChatBotIds) {
-    const currentUser = getOwnerWithFallback(this).lookup(
-      "service:current-user"
-    );
-    enabledChatBotIds = currentUser.ai_enabled_chat_bots.map((bot) => bot.id);
+  ensureBotMap();
+  return !!enabledChatBotMap[user.id];
+}
+
+export function getBotType(user) {
+  if (!user) {
+    return;
   }
 
-  return enabledChatBotIds.includes(user.id);
+  ensureBotMap();
+  const bot = enabledChatBotMap[user.id];
+  if (!bot) {
+    return;
+  }
+  return bot.is_persona ? "persona" : "llm";
 }
 
 export function isPostFromAiBot(post, currentUser) {
