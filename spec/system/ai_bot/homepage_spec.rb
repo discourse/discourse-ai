@@ -332,7 +332,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
         it "displays the new question button in the menu when viewing a PM" do
           ai_pm_homepage.visit
           header_dropdown.open
-          expect(ai_pm_homepage).to have_no_new_question_button
+          expect(ai_pm_homepage).to have_new_question_button
 
           topic_page.visit_topic(pm)
           header_dropdown.open
