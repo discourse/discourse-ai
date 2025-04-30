@@ -673,6 +673,7 @@ en:
         share: "Copy AI conversation"
         conversation_shared: "Conversation copied"
         debug_ai: "View raw AI request and response"
+        sidebar_empty: "Bot conversation history will appear here."
         debug_ai_modal:
           title: "View AI interaction"
           copy_request: "Copy request"

@@ -36,8 +36,20 @@ module PageObjects
         page.has_no_css?(".ai-new-question-button")
       end
 
+      def has_new_question_button?
+        sidebar = PageObjects::Components::NavigationMenu::Sidebar.new
+        sidebar.has_css?(
+          "button.ai-new-question-button",
+          text: I18n.t("js.discourse_ai.ai_bot.conversations.new"),
+        )
+      end
+
       def click_new_question_button
         page.find(".ai-new-question-button").click
+      end
+
+      def has_empty_state?
+        page.has_css?(".ai-bot-sidebar-empty-state")
       end
 
       def click_fist_sidebar_conversation

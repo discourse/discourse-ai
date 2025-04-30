@@ -9,15 +9,14 @@ export default class AiBotSidebarNewConversation extends Component {
   @service sidebarState;
 
   get shouldRender() {
-    return (
-      this.router.currentRouteName !== "discourse-ai-bot-conversations" &&
-      this.sidebarState.isCurrentPanel(AI_CONVERSATIONS_PANEL)
-    );
+    return this.sidebarState.isCurrentPanel(AI_CONVERSATIONS_PANEL);
   }
 
   @action
   routeTo() {
-    this.router.transitionTo("/discourse-ai/ai-bot/conversations");
+    if (this.router.currentRouteName !== "discourse-ai-bot-conversations") {
+      this.router.transitionTo("/discourse-ai/ai-bot/conversations");
+    }
     this.args.outletArgs?.toggleNavigationMenu?.();
   }
 

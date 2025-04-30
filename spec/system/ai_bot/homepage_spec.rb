@@ -149,7 +149,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(sidebar).to have_section("ai-conversations-history")
           expect(sidebar).to have_section_link("Today")
           expect(sidebar).to have_section_link(pm.title)
-          expect(sidebar).to have_no_css("button.ai-new-question-button")
         end
 
         it "displays last_7_days label in the sidebar" do
@@ -204,16 +203,18 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(header).to have_icon_in_bot_button(icon: "robot")
         end
 
-        it "displays sidebar and 'new question' on the topic page" do
+        it "displays 'new question' button on homepage and topic page" do
           topic_page.visit_topic(pm)
-          expect(sidebar).to be_visible
-          expect(sidebar).to have_css("button.ai-new-question-button")
+          expect(ai_pm_homepage).to have_new_question_button
+
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_new_question_button
         end
 
         it "redirect to the homepage when 'new question' is clicked" do
           topic_page.visit_topic(pm)
           expect(sidebar).to be_visible
-          sidebar.find("button.ai-new-question-button").click
+          ai_pm_homepage.click_new_question_button
           expect(ai_pm_homepage).to have_homepage
         end
 
@@ -232,6 +233,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           Fabricate(:post, topic: pm, user: user_2, post_number: 4)
           Fabricate(:topic_allowed_user, topic: pm, user: user_2)
           sign_in(user_2)
+
           topic_page.visit_topic(pm)
 
           expect(sidebar).to be_visible
@@ -244,11 +246,16 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           Fabricate(:post, topic: pm, user: user_2, post_number: 4)
           Fabricate(:topic_allowed_user, topic: pm, user: user_2)
           sign_in(user_2)
-
           visit "/"
           header.click_bot_button
           expect(ai_pm_homepage).to have_homepage
           expect(sidebar).to have_no_section_link(pm.title)
+        end
+
+        it "renders empty state in sidebar with no bot PM history" do
+          sign_in(user_2)
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_empty_state
         end
 
         it "Allows choosing persona and LLM" do
@@ -325,7 +332,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
         it "displays the new question button in the menu when viewing a PM" do
           ai_pm_homepage.visit
           header_dropdown.open
-          expect(ai_pm_homepage).to have_no_new_question_button
+          expect(ai_pm_homepage).to have_new_question_button
 
           topic_page.visit_topic(pm)
           header_dropdown.open
