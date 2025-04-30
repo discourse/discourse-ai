@@ -304,10 +304,9 @@ body.has-ai-conversations-sidebar {
     }
 
     .ai-bot-conversations__uploads-container {
-      width: 100%;
+      width: 80%;
       max-width: var(--input-max-width);
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
       gap: 0.5em;
     }
