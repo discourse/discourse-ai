@@ -208,11 +208,11 @@ RSpec.describe "AI Bot - Homepage", type: :system do
       )
     end
 
-    it "displays 'enter question' button on conversations homepage" do
+    it "displays 'new question' button on the topic page" do
       ai_pm_homepage.visit
       expect(sidebar).to have_css(
         "button.ai-new-question-button",
-        text: I18n.t("js.discourse_ai.ai_bot.conversations.enter_question"),
+        text: I18n.t("js.discourse_ai.ai_bot.conversations.new"),
       )
     end
 
