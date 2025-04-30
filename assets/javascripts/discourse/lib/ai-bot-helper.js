@@ -1,10 +1,28 @@
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getOwnerWithFallback } from "discourse/lib/get-owner";
 import Composer from "discourse/models/composer";
 import { i18n } from "discourse-i18n";
 import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
 
 const MAX_PERSONA_USER_ID = -1200;
+
+let enabledChatBotIds;
+
+export function isGPTBot(user) {
+  if (!user) {
+    return;
+  }
+
+  if (!enabledChatBotIds) {
+    const currentUser = getOwnerWithFallback(this).lookup(
+      "service:current-user"
+    );
+    enabledChatBotIds = currentUser.ai_enabled_chat_bots.map((bot) => bot.id);
+  }
+
+  return enabledChatBotIds.includes(user.id);
+}
 
 export function isPostFromAiBot(post, currentUser) {
   return (

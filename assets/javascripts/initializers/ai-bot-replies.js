@@ -1,19 +1,19 @@
 import { hbs } from "ember-cli-htmlbars";
+import { withSilencedDeprecations } from "discourse/lib/deprecated";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
+import AiPersonaFlair from "../discourse/components/post/ai-persona-flair";
 import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
 import AiShareButton from "../discourse/components/post-menu/ai-share-button";
-import { showShareConversationModal } from "../discourse/lib/ai-bot-helper";
+import {
+  isGPTBot,
+  showShareConversationModal,
+} from "../discourse/lib/ai-bot-helper";
 import { streamPostText } from "../discourse/lib/ai-streamer/progress-handlers";
 
-let enabledChatBotIds = [];
 let allowDebug = false;
-
-function isGPTBot(user) {
-  return user && enabledChatBotIds.includes(user.id);
-}
 
 function attachHeaderIcon(api) {
   api.headerIcons.add("ai", AiBotHeaderIcon);
@@ -53,28 +53,28 @@ function initializeAIBotReplies(api) {
 }
 
 function initializePersonaDecorator(api) {
-  let topicController = null;
+  api.renderAfterWrapperOutlet("post-meta-data-poster-name", AiPersonaFlair);
+
+  withSilencedDeprecations("discourse.post-stream-widget-overrides", () =>
+    initializeWidgetPersonaDecorator(api)
+  );
+}
+
+function initializeWidgetPersonaDecorator(api) {
   api.decorateWidget(`poster-name:after`, (dec) => {
     if (!isGPTBot(dec.attrs.user)) {
       return;
     }
-    // this is hacky and will need to change
-    // trouble is we need to get the model for the topic
-    // and it is not available in the decorator
-    // long term this will not be a problem once we remove widgets and
-    // have a saner structure for our model
-    topicController =
-      topicController || api.container.lookup("controller:topic");
 
     return dec.widget.attach("persona-flair", {
-      topicController,
+      personaName: dec.model?.topic?.ai_persona_name,
     });
   });
 
   registerWidgetShim(
     "persona-flair",
     "span.persona-flair",
-    hbs`{{@data.topicController.model.ai_persona_name}}`
+    hbs`{{@data.personaName}}`
   );
 }
 
@@ -159,16 +159,16 @@ export default {
     const user = container.lookup("service:current-user");
 
     if (user?.ai_enabled_chat_bots) {
-      enabledChatBotIds = user.ai_enabled_chat_bots.map((bot) => bot.id);
       allowDebug = user.can_debug_ai_bot_conversations;
-      withPluginApi("1.6.0", attachHeaderIcon);
-      withPluginApi("1.34.0", initializeAIBotReplies);
-      withPluginApi("1.6.0", initializePersonaDecorator);
-      withPluginApi("1.34.0", (api) => initializeDebugButton(api, container));
-      withPluginApi("1.34.0", (api) => initializeShareButton(api, container));
-      withPluginApi("1.22.0", (api) =>
-        initializeShareTopicButton(api, container)
-      );
+
+      withPluginApi((api) => {
+        attachHeaderIcon(api);
+        initializeAIBotReplies(api);
+        initializePersonaDecorator(api);
+        initializeDebugButton(api, container);
+        initializeShareButton(api, container);
+        initializeShareTopicButton(api, container);
+      });
     }
   },
 };
