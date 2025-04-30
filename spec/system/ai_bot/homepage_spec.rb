@@ -204,20 +204,12 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(header).to have_icon_in_bot_button(icon: "robot")
         end
 
-        it "displays 'new question' button on the topic page" do
+        it "displays 'new question' button on homepage and topic page" do
           topic_page.visit_topic(pm)
-          expect(sidebar).to have_css(
-            "button.ai-new-question-button",
-            text: I18n.t("js.discourse_ai.ai_bot.conversations.new"),
-          )
-        end
+          expect(ai_pm_homepage).to have_new_question_button
 
-        it "displays 'new question' button on the topic page" do
           ai_pm_homepage.visit
-          expect(sidebar).to have_css(
-            "button.ai-new-question-button",
-            text: I18n.t("js.discourse_ai.ai_bot.conversations.new"),
-          )
+          expect(ai_pm_homepage).to have_new_question_button
         end
 
         it "displays sidebar and 'new question' on the topic page" do
