@@ -61,28 +61,20 @@ function initializePersonaDecorator(api) {
 }
 
 function initializeWidgetPersonaDecorator(api) {
-  let topicController = null;
   api.decorateWidget(`poster-name:after`, (dec) => {
     if (!isGPTBot(dec.attrs.user)) {
       return;
     }
-    // this is hacky and will need to change
-    // trouble is we need to get the model for the topic
-    // and it is not available in the decorator
-    // long term this will not be a problem once we remove widgets and
-    // have a saner structure for our model
-    topicController =
-      topicController || api.container.lookup("controller:topic");
 
     return dec.widget.attach("persona-flair", {
-      topicController,
+      personaName: dec.model?.topic?.ai_persona_name,
     });
   });
 
   registerWidgetShim(
     "persona-flair",
     "span.persona-flair",
-    hbs`{{@data.topicController.model.ai_persona_name}}`
+    hbs`{{@data.personaName}}`
   );
 }
 
