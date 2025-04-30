@@ -1,7 +1,9 @@
 import Component from "@glimmer/component";
+import { hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
+import PluginOutlet from "discourse/components/plugin-outlet";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
@@ -56,12 +58,17 @@ export default class AiBotHeaderIcon extends Component {
   <template>
     {{#if this.showHeaderButton}}
       <li>
-        <DButton
-          @action={{this.onClick}}
-          @icon={{this.icon}}
-          title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
-          class="ai-bot-button icon btn-flat"
-        />
+        <PluginOutlet
+          @name="ai-bot-header-icon"
+          @outletArgs={{hash onClick=this.onClick icon=this.icon}}
+        >
+          <DButton
+            @action={{this.onClick}}
+            @icon={{this.icon}}
+            title={{i18n "discourse_ai.ai_bot.shortcut_title"}}
+            class="ai-bot-button icon btn-flat"
+          />
+        </PluginOutlet>
       </li>
     {{/if}}
   </template>
