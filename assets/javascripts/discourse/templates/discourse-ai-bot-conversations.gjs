@@ -1,4 +1,4 @@
-import { hash } from "@ember/helper";
+import { fn, hash } from "@ember/helper";
 import { on } from "@ember/modifier";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import RouteTemplate from "ember-route-template";
@@ -22,9 +22,37 @@ export default RouteTemplate(
           @name="ai-bot-conversations-above-input"
           @outletArgs={{hash
             updateInput=@controller.updateInputValue
-            submit=@controller.aiBotConversationsHiddenSubmit.submitToBot
+            submit=@controller.prepareAndSubmitToBot
           }}
         />
+
+        {{#if @controller.showUploadsContainer}}
+          <div class="ai-bot-conversations__uploads-container">
+            {{#each @controller.uploads as |upload|}}
+              <div class="ai-bot-upload">
+                <span class="ai-bot-upload__filename">{{upload.original_filename}}</span>
+                <DButton
+                  @icon="xmark"
+                  @action={{fn @controller.removeUpload upload}}
+                  class="btn-flat ai-bot-upload__remove"
+                />
+              </div>
+            {{/each}}
+
+            {{#each @controller.inProgressUploads as |upload|}}
+              <div class="ai-bot-upload ai-bot-upload--in-progress">
+                <span class="ai-bot-upload__filename">{{upload.fileName}}</span>
+                <span class="ai-bot-upload__progress">{{upload.progress}}%</span>
+                <DButton
+                  @icon="xmark"
+                  @action={{fn @controller.cancelUpload upload}}
+                  class="btn-flat ai-bot-upload__remove"
+                />
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
+
         <div class="ai-bot-conversations__input-wrapper">
           <textarea
             {{didInsert @controller.setTextArea}}
@@ -37,14 +65,32 @@ export default RouteTemplate(
             disabled={{@controller.loading}}
             rows="1"
           />
-          <DButton
-            @action={{@controller.aiBotConversationsHiddenSubmit.submitToBot}}
-            @icon="paper-plane"
-            @isLoading={{@controller.loading}}
-            @title="discourse_ai.ai_bot.conversations.header"
-            class="ai-bot-button btn-primary ai-conversation-submit"
-          />
+          <div class="ai-bot-conversations__buttons">
+            <DButton
+              @icon="upload"
+              @action={{@controller.openFileUpload}}
+              @title="discourse_ai.ai_bot.conversations.upload_files"
+              class="btn no-text ai-bot-upload-btn"
+            />
+            <DButton
+              @action={{@controller.prepareAndSubmitToBot}}
+              @icon="paper-plane"
+              @isLoading={{@controller.loading}}
+              @title="discourse_ai.ai_bot.conversations.header"
+              class="ai-bot-button btn-primary ai-conversation-submit"
+            />
+          </div>
         </div>
+
+        {{! Hidden file input element }}
+        <input
+          type="file"
+          id="ai-bot-file-uploader"
+          class="hidden-upload-field"
+          multiple="multiple"
+          {{didInsert @controller.registerFileInput}}
+        />
+
         <p class="ai-disclaimer">
           {{i18n "discourse_ai.ai_bot.conversations.disclaimer"}}
         </p>
