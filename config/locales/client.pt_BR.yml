@@ -138,6 +138,14 @@ pt_BR:
               label: "Temperatura"
     discourse_ai:
       title: "IA"
+      features:
+        back: "Voltar"
+        list:
+          header:
+            name: "Nome"
+            groups: "Grupos"
+          edit: "Editar"
+          set_up: "Configurar"
       modals:
         select_option: "Selecione uma opção..."
       spam:
@@ -334,7 +342,6 @@ pt_BR:
         name: "ID do modelo"
         provider: "Provedor"
         tokenizer: "Tokenizador"
-        max_prompt_tokens: "Quantidade de tokens para o prompt"
         url: "URL do serviço da hospedagem do modelo"
         api_key: "Chave de API do serviço da hospedagem do modelo"
         enabled_chat_bot: "Permitir seletor de bot de IA"
@@ -380,12 +387,8 @@ pt_BR:
           anthropic-claude-3-7-sonnet: "Modelo mais inteligente da Anthropic"
           anthropic-claude-3-5-haiku: "Rápido e econômico"
           anthropic-claude-3-opus: "Excelente para escrita e tarefas complexas"
-          google-gemini-1-5-pro: "Modelo multimodal médio capaz de executar uma ampla variedade de tarefas"
-          google-gemini-1-5-flash: "Modelo leve, rápido e econômico com raciocínio multimodal"
-          open_ai-gpt-4-turbo: "Modelo de alta inteligência da geração passada"
-          open_ai-gpt-4o: "Modelo de alta inteligência para tarefas completas de vários passos"
-          open_ai-gpt-4o-mini: "Modelo pequeno e acessível para tarefas leves"
-          open_ai-o1-mini: "Modelo de raciocínio econômico"
+          google-gemini-2-5-pro: "Modelo multimodal médio capaz de executar uma ampla variedade de tarefas"
+          google-gemini-2-0-flash: "Modelo leve, rápido e econômico com raciocínio multimodal"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Modelo multi-idioma leve e eficiente"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Modelo multifinalidade poderoso"
           mistral-mistral-large-latest: "Modelo mais poderoso da Mistral"
@@ -408,7 +411,6 @@ pt_BR:
           success: "Sucesso!"
           failure: "Erro retornado ao tentar entrar em contato com o modelo: %{error}"
         hints:
-          max_prompt_tokens: "Quantidade máxima de tokens para o prompt. Como a regra do polegar, deve ser 50% da janela de contexto do modelo."
           name: "Incluímos na chamada da API para especificar qual modelo será usado"
           vision_enabled: "Ative para a IA tentar entender as imagens. Depende do modelo usado na visão compatível. É compatível com os modelos mais recentes do Anthropic, Google e OpenAI."
           enabled_chat_bot: "Ative para os(as) usuários(as) podesem selecionar este modelo ao criar PM com bot de IA"

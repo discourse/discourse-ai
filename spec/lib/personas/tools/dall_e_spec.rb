@@ -50,12 +50,12 @@ RSpec.describe DiscourseAi::Personas::Tools::DallE do
     it "can generate correct info with azure" do
       _post = Fabricate(:post)
 
-      SiteSetting.ai_openai_dall_e_3_url = "https://test.azure.com/some_url"
+      SiteSetting.ai_openai_image_generation_url = "https://test.azure.com/some_url"
 
       data = [{ b64_json: base64_image, revised_prompt: "a pink cow 1" }]
 
       WebMock
-        .stub_request(:post, SiteSetting.ai_openai_dall_e_3_url)
+        .stub_request(:post, SiteSetting.ai_openai_image_generation_url)
         .with do |request|
           json = JSON.parse(request.body, symbolize_names: true)
 

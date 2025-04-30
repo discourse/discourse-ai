@@ -138,6 +138,14 @@ fi:
               label: "Lämpötila"
     discourse_ai:
       title: "Tekoäly"
+      features:
+        back: "Takaisin"
+        list:
+          header:
+            name: "Nimi"
+            groups: "Ryhmät"
+          edit: "Muokkaa"
+          set_up: "Määritä"
       modals:
         select_option: "Valitse vaihtoehto..."
       spam:
@@ -334,7 +342,6 @@ fi:
         name: "Mallin tunnus"
         provider: "Palveluntarjoaja"
         tokenizer: "Tokenisoija"
-        max_prompt_tokens: "Kehotteen tokenien määrä"
         url: "Mallia isännöivän palvelun URL-osoite"
         api_key: "Mallia isännöivän palvelun API-avain"
         enabled_chat_bot: "Salli tekoälybotin valitsin"
@@ -380,12 +387,8 @@ fi:
           anthropic-claude-3-7-sonnet: "Anthropicin älykkäin malli"
           anthropic-claude-3-5-haiku: "Nopea ja kustannustehokas"
           anthropic-claude-3-opus: "Erinomainen kirjoittamisessa ja monimutkaisissa tehtävissä"
-          google-gemini-1-5-pro: "Keskikokoinen multimodaalinen malli, joka pystyy suorittamaan monenlaisia tehtäviä"
-          google-gemini-1-5-flash: "Kevyt, nopea ja kustannustehokas multimodaalisella päättelyllä"
-          open_ai-gpt-4-turbo: "Edellisen sukupolven älykäs malli"
-          open_ai-gpt-4o: "Älykäs malli monimutkaisiin, monivaiheisiin tehtäviin"
-          open_ai-gpt-4o-mini: "Edullinen ja nopea pieni malli kevyisiin tehtäviin"
-          open_ai-o1-mini: "Kustannustehokas päättelymalli"
+          google-gemini-2-5-pro: "Keskikokoinen multimodaalinen malli, joka pystyy suorittamaan monenlaisia tehtäviä"
+          google-gemini-2-0-flash: "Kevyt, nopea ja kustannustehokas multimodaalisella päättelyllä"
           samba_nova-Meta-Llama-3-1-8B-Instruct: "Tehokas kevyt monikielinen malli"
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Tehokas monikäyttöinen malli"
           mistral-mistral-large-latest: "Mistralin tehokkain malli"
@@ -408,7 +411,6 @@ fi:
           success: "Onnistui!"
           failure: "Yritys ottaa yhteyttä malliin palautti tämän virheen: %{error}"
         hints:
-          max_prompt_tokens: "Kehotteen tokenien enimmäismäärä. Nyrkkisääntönä tämän pitäisi olla 50 % mallin konteksti-ikkunasta."
           name: "Sisällytämme tämän API-kutsuun määrittääksemme, mitä mallia käytämme"
           vision_enabled: "Jos tämä on käytössä, tekoäly yrittää ymmärtää kuvia. Tämä riippuu siitä, tukeeko käytettävä malli näköä. Anthropicin, Googlen ja OpenAI:n uusimmat mallit tukevat näköä."
           enabled_chat_bot: "Jos tämä on käytössä, käyttäjät voivat valita tämän mallin luodessaan yksityisviestejä tekoälybotin kanssa"

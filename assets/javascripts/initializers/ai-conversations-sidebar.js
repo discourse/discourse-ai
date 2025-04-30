@@ -1,7 +1,9 @@
 import { tracked } from "@glimmer/tracking";
+import { htmlSafe } from "@ember/template";
 import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
 import { bind } from "discourse/lib/decorators";
+import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { i18n } from "discourse-i18n";
 import AiBotSidebarNewConversation from "../discourse/components/ai-bot-sidebar-new-conversation";
@@ -27,13 +29,14 @@ export default {
       );
       const appEvents = api.container.lookup("service:app-events");
       const messageBus = api.container.lookup("service:message-bus");
+      const navigationMenu = api.container.lookup("service:navigationMenu");
 
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
           class AiConversationsSidebarPanel extends BaseCustomSidebarPanel {
             key = AI_CONVERSATIONS_PANEL;
             hidden = true;
-            displayHeader = true;
+            displayHeader = !navigationMenu.isHeaderDropdownMode;
             expandActiveSection = true;
           }
       );
@@ -85,6 +88,10 @@ export default {
             @tracked links = new TrackedArray();
             @tracked topics = [];
             @tracked hasMore = [];
+            @tracked loadedTodayLabel = false;
+            @tracked loadedSevenDayLabel = false;
+            @tracked loadedThirtyDayLabel = false;
+            @tracked loadedMonthLabels = new Set();
             page = 0;
             isFetching = false;
             totalTopicsCount = 0;
@@ -127,7 +134,15 @@ export default {
             }
 
             addNewPMToSidebar(topic) {
-              this.links = [new AiConversationLink(topic), ...this.links];
+              // Reset category labels since we're adding a new topic
+              this.loadedTodayLabel = false;
+              this.loadedSevenDayLabel = false;
+              this.loadedThirtyDayLabel = false;
+              this.loadedMonthLabels.clear();
+
+              this.topics = [topic, ...this.topics];
+              this.buildSidebarLinks();
+
               this.watchForTitleUpdate(topic);
             }
 
@@ -206,10 +221,82 @@ export default {
               this.fetchMessages(true);
             }
 
-            buildSidebarLinks() {
-              this.links = this.topics.map(
-                (topic) => new AiConversationLink(topic)
+            groupByDate(topic) {
+              const now = new Date();
+              const lastPostedAt = new Date(topic.last_posted_at);
+              const daysDiff = Math.round(
+                (now - lastPostedAt) / (1000 * 60 * 60 * 24)
               );
+
+              if (daysDiff <= 1 || !topic.last_posted_at) {
+                if (!this.loadedTodayLabel) {
+                  this.loadedTodayLabel = true;
+                  return {
+                    text: i18n("discourse_ai.ai_bot.conversations.today"),
+                    classNames: "date-heading",
+                    name: "date-heading-today",
+                  };
+                }
+              }
+              // Last 7 days group
+              else if (daysDiff <= 7) {
+                if (!this.loadedSevenDayLabel) {
+                  this.loadedSevenDayLabel = true;
+                  return {
+                    text: i18n("discourse_ai.ai_bot.conversations.last_7_days"),
+                    classNames: "date-heading",
+                    name: "date-heading-last-7-days",
+                  };
+                }
+              }
+              // Last 30 days group
+              else if (daysDiff <= 30) {
+                if (!this.loadedThirtyDayLabel) {
+                  this.loadedThirtyDayLabel = true;
+                  return {
+                    text: i18n(
+                      "discourse_ai.ai_bot.conversations.last_30_days"
+                    ),
+                    classNames: "date-heading",
+                    name: "date-heading-last-30-days",
+                  };
+                }
+              }
+              // Group by month for older conversations
+              else {
+                const month = lastPostedAt.getMonth();
+                const year = lastPostedAt.getFullYear();
+                const monthKey = `${year}-${month}`;
+
+                if (!this.loadedMonthLabels.has(monthKey)) {
+                  this.loadedMonthLabels.add(monthKey);
+
+                  const formattedDate = autoUpdatingRelativeAge(
+                    new Date(topic.last_posted_at)
+                  );
+
+                  return {
+                    text: htmlSafe(formattedDate),
+                    classNames: "date-heading",
+                    name: `date-heading-${monthKey}`,
+                  };
+                }
+              }
+            }
+
+            buildSidebarLinks() {
+              // Reset date header tracking
+              this.loadedTodayLabel = false;
+              this.loadedSevenDayLabel = false;
+              this.loadedThirtyDayLabel = false;
+              this.loadedMonthLabels.clear();
+
+              this.links = [...this.topics].flatMap((topic) => {
+                const dateLabel = this.groupByDate(topic);
+                return dateLabel
+                  ? [dateLabel, new AiConversationLink(topic)]
+                  : [new AiConversationLink(topic)];
+              });
             }
 
             watchForTitleUpdate(topic) {

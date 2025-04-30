@@ -34,6 +34,13 @@ sw:
             canned_reply:
               label: "Jibu"
     discourse_ai:
+      features:
+        back: "Iliyopita"
+        list:
+          header:
+            name: "Jina"
+            groups: "Makundi"
+          edit: "Hariri"
       modals:
         select_option: "Chagua chaguo moja..."
       spam:

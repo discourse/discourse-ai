@@ -75,11 +75,10 @@ fi:
     ai_embeddings_semantic_related_include_closed_topics: "Sisällytä suljetut ketjut semanttisiin hakutuloksiin"
     ai_embeddings_semantic_search_hyde_model: "Malli, jota käytetään avainsanojen laajentamiseen parempien tulosten saamiseksi semanttisen haun aikana"
     ai_embeddings_per_post_enabled: Luo upotukset jokaiselle viestille
-    ai_summarization_enabled: "Ota ketjun yhteenvetomoduuli käyttöön."
-    ai_summarization_model: "Yhteenvetoon käytettävä malli."
+    ai_summarization_model: "Yhteenvetoon käytettävä malli"
     ai_custom_summarization_allowed_groups: "Ryhmät, jotka voivat luoda uusia yhteenvetoja."
     ai_pm_summarization_allowed_groups: "Ryhmät voivat luoda ja tarkastella yhteenvetoja yksityisviesteissä."
-    ai_summary_gists_enabled: "Luo lyhyitä yhteenvetoja ketjujen uusimmista vastauksista automaattisesti."
+    ai_summary_gists_enabled: "Luo lyhyitä yhteenvetoja ketjujen uusimmista vastauksista automaattisesti"
     ai_summary_gists_allowed_groups: "Ryhmät voivat nähdä yhteenvetoja kuumien ketjujen luettelossa."
     ai_summary_backfill_maximum_topics_per_hour: "Täydennettävien ketjujen yhteenvetojen määrä tunnissa."
     ai_bot_enabled: "Ota tekoälybottimoduuli käyttöön."

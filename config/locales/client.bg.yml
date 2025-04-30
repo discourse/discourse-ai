@@ -34,6 +34,13 @@ bg:
             canned_reply:
               label: "Отговорете"
     discourse_ai:
+      features:
+        back: "Назад"
+        list:
+          header:
+            name: "Име "
+            groups: "Групи"
+          edit: "Редактирай"
       modals:
         select_option: "Изберете опция..."
       spam:

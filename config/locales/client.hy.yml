@@ -34,6 +34,13 @@ hy:
             canned_reply:
               label: "Պատասխանել"
     discourse_ai:
+      features:
+        back: "Ետ"
+        list:
+          header:
+            name: "Անուն"
+            groups: "Խմբեր"
+          edit: "Խմբագրել"
       modals:
         select_option: "Ընտրել..."
       spam:

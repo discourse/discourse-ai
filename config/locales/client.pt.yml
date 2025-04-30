@@ -34,6 +34,13 @@ pt:
             canned_reply:
               label: "Responder"
     discourse_ai:
+      features:
+        back: "Retroceder"
+        list:
+          header:
+            name: "Nome"
+            groups: "Grupos"
+          edit: "Editar"
       modals:
         select_option: "Selecione uma opção..."
       spam:

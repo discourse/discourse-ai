@@ -71,6 +71,11 @@ module DiscourseAi
             thread_title = m.thread&.title if include_thread_titles && m.thread_id
             mapped_message = "(#{thread_title})\n#{m.message}" if thread_title
 
+            if m.uploads.present?
+              mapped_message =
+                "#{mapped_message} -- uploaded(#{m.uploads.map(&:short_url).join(", ")})"
+            end
+
             builder.push(
               type: :user,
               content: mapped_message,
