@@ -105,232 +105,236 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     sign_in(user)
   end
 
-  context "when `ai_enable_experimental_bot_ux` is enabled" do
-    it "renders landing page on bot click" do
-      visit "/"
-      header.click_bot_button
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to be_visible
-    end
+  %w[enabled disabled].each do |value|
+    before { SiteSetting.glimmer_post_stream_mode = value }
 
-    it "displays error when message is too short" do
-      visit "/"
-      header.click_bot_button
+    context "when glimmer_post_stream_mode=#{value}" do
+      context "when `ai_enable_experimental_bot_ux` is enabled" do
+        it "renders landing page on bot click" do
+          visit "/"
+          header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to be_visible
+        end
 
-      ai_pm_homepage.input.fill_in(with: "a")
-      ai_pm_homepage.submit
-      expect(ai_pm_homepage).to have_too_short_dialog
-      dialog.click_yes
-      expect(composer).to be_closed
-    end
+        it "displays error when message is too short" do
+          visit "/"
+          header.click_bot_button
 
-    it "hides default content in the sidebar" do
-      visit "/"
-      header.click_bot_button
+          ai_pm_homepage.input.fill_in(with: "a")
+          ai_pm_homepage.submit
+          expect(ai_pm_homepage).to have_too_short_dialog
+          dialog.click_yes
+          expect(composer).to be_closed
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_no_tags_section
-      expect(sidebar).to have_no_section("categories")
-      expect(sidebar).to have_no_section("messages")
-      expect(sidebar).to have_no_section("chat-dms")
-      expect(sidebar).to have_no_section("chat-channels")
-      expect(sidebar).to have_no_section("user-threads")
-    end
+        it "hides default content in the sidebar" do
+          visit "/"
+          header.click_bot_button
 
-    it "shows the bot conversation in the sidebar" do
-      visit "/"
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_no_tags_section
+          expect(sidebar).to have_no_section("categories")
+          expect(sidebar).to have_no_section("messages")
+          expect(sidebar).to have_no_section("chat-dms")
+          expect(sidebar).to have_no_section("chat-channels")
+          expect(sidebar).to have_no_section("user-threads")
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_section("ai-conversations-history")
-      expect(sidebar).to have_section_link("Today")
-      expect(sidebar).to have_section_link(pm.title)
-      expect(sidebar).to have_no_css("button.ai-new-question-button")
-    end
+        it "shows the bot conversation in the sidebar" do
+          visit "/"
+          header.click_bot_button
 
-    it "displays last_7_days label in the sidebar" do
-      pm.update!(last_posted_at: Time.zone.now - 5.days)
-      visit "/"
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_section("ai-conversations-history")
+          expect(sidebar).to have_section_link("Today")
+          expect(sidebar).to have_section_link(pm.title)
+          expect(sidebar).to have_no_css("button.ai-new-question-button")
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_section_link("Last 7 days")
-    end
+        it "displays last_7_days label in the sidebar" do
+          pm.update!(last_posted_at: Time.zone.now - 5.days)
+          visit "/"
+          header.click_bot_button
 
-    it "displays last_30_days label in the sidebar" do
-      pm.update!(last_posted_at: Time.zone.now - 28.days)
-      visit "/"
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_section_link("Last 7 days")
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_section_link("Last 30 days")
-    end
+        it "displays last_30_days label in the sidebar" do
+          pm.update!(last_posted_at: Time.zone.now - 28.days)
+          visit "/"
+          header.click_bot_button
 
-    it "displays month and year label in the sidebar for older conversations" do
-      pm.update!(last_posted_at: "2024-04-10 15:39:11.406192000 +00:00")
-      visit "/"
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_section_link("Last 30 days")
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_section_link("Apr 2024")
-    end
+        it "displays month and year label in the sidebar for older conversations" do
+          pm.update!(last_posted_at: "2024-04-10 15:39:11.406192000 +00:00")
+          visit "/"
+          header.click_bot_button
 
-    it "navigates to the bot conversation when clicked" do
-      visit "/"
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_section_link("Apr 2024")
+        end
 
-      expect(ai_pm_homepage).to have_homepage
-      ai_pm_homepage.click_fist_sidebar_conversation
-      expect(topic_page).to have_topic_title(pm.title)
-    end
+        it "navigates to the bot conversation when clicked" do
+          visit "/"
+          header.click_bot_button
 
-    it "displays the shuffle icon when on homepage or bot PM" do
-      visit "/"
-      expect(header).to have_icon_in_bot_button(icon: "robot")
-      header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          ai_pm_homepage.click_fist_sidebar_conversation
+          expect(topic_page).to have_topic_title(pm.title)
+        end
 
-      expect(header).to have_icon_in_bot_button(icon: "shuffle")
+        it "displays the shuffle icon when on homepage or bot PM" do
+          visit "/"
+          expect(header).to have_icon_in_bot_button(icon: "robot")
+          header.click_bot_button
 
-      # Go to a PM and assert that the icon is still shuffle
-      ai_pm_homepage.click_fist_sidebar_conversation
-      expect(header).to have_icon_in_bot_button(icon: "shuffle")
+          expect(header).to have_icon_in_bot_button(icon: "shuffle")
 
-      # Go back home and assert that the icon is now robot again
-      header.click_bot_button
-      expect(header).to have_icon_in_bot_button(icon: "robot")
-    end
+          # Go to a PM and assert that the icon is still shuffle
+          ai_pm_homepage.click_fist_sidebar_conversation
+          expect(header).to have_icon_in_bot_button(icon: "shuffle")
 
-    it "displays sidebar and 'new question' on the topic page" do
-      topic_page.visit_topic(pm)
-      expect(sidebar).to be_visible
-      expect(sidebar).to have_css("button.ai-new-question-button")
-    end
+          # Go back home and assert that the icon is now robot again
+          header.click_bot_button
+          expect(header).to have_icon_in_bot_button(icon: "robot")
+        end
 
-    it "redirect to the homepage when 'new question' is clicked" do
-      topic_page.visit_topic(pm)
-      expect(sidebar).to be_visible
-      sidebar.find("button.ai-new-question-button").click
-      expect(ai_pm_homepage).to have_homepage
-    end
+        it "displays sidebar and 'new question' on the topic page" do
+          topic_page.visit_topic(pm)
+          expect(sidebar).to be_visible
+          expect(sidebar).to have_css("button.ai-new-question-button")
+        end
 
-    it "can send a new message to the bot" do
-      topic_page.visit_topic(pm)
-      topic_page.click_reply_button
-      expect(composer).to be_opened
+        it "redirect to the homepage when 'new question' is clicked" do
+          topic_page.visit_topic(pm)
+          expect(sidebar).to be_visible
+          sidebar.find("button.ai-new-question-button").click
+          expect(ai_pm_homepage).to have_homepage
+        end
 
-      pause_test
+        it "can send a new message to the bot" do
+          topic_page.visit_topic(pm)
+          topic_page.click_reply_button
+          expect(composer).to be_opened
 
-      composer.fill_in(with: "Hello bot replying to you")
-      composer.submit
-      expect(page).to have_content("Hello bot replying to you")
-    end
+          composer.fill_in(with: "Hello bot replying to you")
+          composer.submit
+          expect(page).to have_content("Hello bot replying to you")
+        end
 
-    it "does not render custom sidebar on non-authored bot pms" do
-      # Include user_2 in the PM by creating a new post and topic_allowed_user association
-      Fabricate(:post, topic: pm, user: user_2, post_number: 4)
-      Fabricate(:topic_allowed_user, topic: pm, user: user_2)
-      sign_in(user_2)
-      topic_page.visit_topic(pm)
+        it "does not render custom sidebar on non-authored bot pms" do
+          # Include user_2 in the PM by creating a new post and topic_allowed_user association
+          Fabricate(:post, topic: pm, user: user_2, post_number: 4)
+          Fabricate(:topic_allowed_user, topic: pm, user: user_2)
+          sign_in(user_2)
+          topic_page.visit_topic(pm)
 
-      expect(sidebar).to be_visible
-      expect(sidebar).to have_no_section("ai-conversations-history")
-      expect(sidebar).to have_no_css("button.ai-new-question-button")
-    end
+          expect(sidebar).to be_visible
+          expect(sidebar).to have_no_section("ai-conversations-history")
+          expect(sidebar).to have_no_css("button.ai-new-question-button")
+        end
 
-    it "does not include non-authored bot pms in sidebar" do
-      # Include user_2 in the PM by creating a new post and topic_allowed_user association
-      Fabricate(:post, topic: pm, user: user_2, post_number: 4)
-      Fabricate(:topic_allowed_user, topic: pm, user: user_2)
-      sign_in(user_2)
+        it "does not include non-authored bot pms in sidebar" do
+          # Include user_2 in the PM by creating a new post and topic_allowed_user association
+          Fabricate(:post, topic: pm, user: user_2, post_number: 4)
+          Fabricate(:topic_allowed_user, topic: pm, user: user_2)
+          sign_in(user_2)
 
-      visit "/"
-      header.click_bot_button
-      expect(ai_pm_homepage).to have_homepage
-      expect(sidebar).to have_no_section_link(pm.title)
-    end
+          visit "/"
+          header.click_bot_button
+          expect(ai_pm_homepage).to have_homepage
+          expect(sidebar).to have_no_section_link(pm.title)
+        end
 
-    it "Allows choosing persona and LLM" do
-      ai_pm_homepage.visit
+        it "Allows choosing persona and LLM" do
+          ai_pm_homepage.visit
 
-      ai_pm_homepage.persona_selector.expand
-      ai_pm_homepage.persona_selector.select_row_by_name(persona.name)
-      ai_pm_homepage.persona_selector.collapse
+          ai_pm_homepage.persona_selector.expand
+          ai_pm_homepage.persona_selector.select_row_by_name(persona.name)
+          ai_pm_homepage.persona_selector.collapse
 
-      ai_pm_homepage.llm_selector.expand
-      ai_pm_homepage.llm_selector.select_row_by_name(claude_2_dup.display_name)
-      ai_pm_homepage.llm_selector.collapse
-    end
+          ai_pm_homepage.llm_selector.expand
+          ai_pm_homepage.llm_selector.select_row_by_name(claude_2_dup.display_name)
+          ai_pm_homepage.llm_selector.collapse
+        end
 
-    it "renders back to forum link" do
-      ai_pm_homepage.visit
-      expect(ai_pm_homepage).to have_sidebar_back_link
-    end
+        it "renders back to forum link" do
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_sidebar_back_link
+        end
 
-    context "with hamburger menu" do
-      before { SiteSetting.navigation_menu = "header dropdown" }
-      it "keeps robot icon in the header and doesn't display sidebar back link" do
-        visit "/"
-        expect(header).to have_icon_in_bot_button(icon: "robot")
-        header.click_bot_button
-        expect(ai_pm_homepage).to have_homepage
-        expect(header).to have_icon_in_bot_button(icon: "robot")
-        expect(ai_pm_homepage).to have_no_sidebar_back_link
+        context "with hamburger menu" do
+          before { SiteSetting.navigation_menu = "header dropdown" }
+          it "keeps robot icon in the header and doesn't display sidebar back link" do
+            visit "/"
+            expect(header).to have_icon_in_bot_button(icon: "robot")
+            header.click_bot_button
+            expect(ai_pm_homepage).to have_homepage
+            expect(header).to have_icon_in_bot_button(icon: "robot")
+            expect(ai_pm_homepage).to have_no_sidebar_back_link
+          end
+
+          it "still renders the sidebar" do
+            visit "/"
+            header.click_bot_button
+            expect(ai_pm_homepage).to have_homepage
+            expect(sidebar).to be_visible
+            expect(header_dropdown).to be_visible
+          end
+        end
       end
 
-      it "still renders the sidebar" do
-        visit "/"
-        header.click_bot_button
-        expect(ai_pm_homepage).to have_homepage
-        expect(sidebar).to be_visible
-        expect(header_dropdown).to be_visible
+      context "when `ai_enable_experimental_bot_ux` is disabled" do
+        before { SiteSetting.ai_enable_experimental_bot_ux = false }
+
+        it "opens composer on bot click" do
+          visit "/"
+          header.click_bot_button
+
+          expect(ai_pm_homepage).to have_no_homepage
+          expect(composer).to be_opened
+        end
+
+        it "does not render sidebar when navigation menu is set to header on pm" do
+          SiteSetting.navigation_menu = "header dropdown"
+          topic_page.visit_topic(pm)
+
+          expect(ai_pm_homepage).to have_no_homepage
+          expect(sidebar).to be_not_visible
+          expect(header_dropdown).to be_visible
+        end
+
+        it "shows default content in the sidebar" do
+          topic_page.visit_topic(pm)
+
+          expect(sidebar).to have_section("categories")
+          expect(sidebar).to have_section("messages")
+          expect(sidebar).to have_section("chat-dms")
+          expect(sidebar).to have_no_css("button.ai-new-question-button")
+        end
       end
-    end
-  end
 
-  context "when `ai_enable_experimental_bot_ux` is disabled" do
-    before { SiteSetting.ai_enable_experimental_bot_ux = false }
+      context "with header dropdown on mobile", mobile: true do
+        before { SiteSetting.navigation_menu = "header dropdown" }
 
-    it "opens composer on bot click" do
-      visit "/"
-      header.click_bot_button
+        it "displays the new question button in the menu when viewing a PM" do
+          ai_pm_homepage.visit
+          header_dropdown.open
+          expect(ai_pm_homepage).to have_no_new_question_button
 
-      expect(ai_pm_homepage).to have_no_homepage
-      expect(composer).to be_opened
-    end
+          topic_page.visit_topic(pm)
+          header_dropdown.open
+          ai_pm_homepage.click_new_question_button
 
-    it "does not render sidebar when navigation menu is set to header on pm" do
-      SiteSetting.navigation_menu = "header dropdown"
-      topic_page.visit_topic(pm)
-
-      expect(ai_pm_homepage).to have_no_homepage
-      expect(sidebar).to be_not_visible
-      expect(header_dropdown).to be_visible
-    end
-
-    it "shows default content in the sidebar" do
-      topic_page.visit_topic(pm)
-
-      expect(sidebar).to have_section("categories")
-      expect(sidebar).to have_section("messages")
-      expect(sidebar).to have_section("chat-dms")
-      expect(sidebar).to have_no_css("button.ai-new-question-button")
-    end
-  end
-
-  context "with header dropdown on mobile", mobile: true do
-    before { SiteSetting.navigation_menu = "header dropdown" }
-
-    it "displays the new question button in the menu when viewing a PM" do
-      ai_pm_homepage.visit
-      header_dropdown.open
-      expect(ai_pm_homepage).to have_no_new_question_button
-
-      topic_page.visit_topic(pm)
-      header_dropdown.open
-      ai_pm_homepage.click_new_question_button
-
-      # Hamburger sidebar is closed
-      expect(header_dropdown).to have_no_dropdown_visible
+          # Hamburger sidebar is closed
+          expect(header_dropdown).to have_no_dropdown_visible
+        end
+      end
     end
   end
 end
