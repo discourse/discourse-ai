@@ -9,6 +9,7 @@ import { SEARCH_TYPE_DEFAULT } from "discourse/controllers/full-page-search";
 import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
 import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { isValidSearchTerm, translateResults } from "discourse/lib/search";
 import { i18n } from "discourse-i18n";
 import DTooltip from "float-kit/components/d-tooltip";
@@ -193,6 +194,7 @@ export default class AiFullPageSearch extends Component {
 
         this.AiResults = model.posts;
       })
+      .catch(popupAjaxError)
       .finally(() => {
         this.searching = false;
       });
