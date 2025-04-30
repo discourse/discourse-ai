@@ -46,11 +46,19 @@ module DiscourseAi
         end
 
         hijack do
-          semantic_search
-            .search_for_topics(query, _page = 1, hyde: !skip_hyde)
-            .each { |topic_post| grouped_results.add(topic_post) }
+          begin
+            semantic_search
+              .search_for_topics(query, _page = 1, hyde: !skip_hyde)
+              .each { |topic_post| grouped_results.add(topic_post) }
 
-          render_serialized(grouped_results, GroupedSearchResultSerializer, result: grouped_results)
+            render_serialized(
+              grouped_results,
+              GroupedSearchResultSerializer,
+              result: grouped_results,
+            )
+          rescue Discourse::InvalidAccess
+            render_json_error(I18n.t("invalid_access"), status: 403)
+          end
         end
       end
 
