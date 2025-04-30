@@ -17,7 +17,9 @@ export default RouteTemplate(
       />
 
       <div class="ai-bot-conversations__content-wrapper">
-        <h1>{{i18n "discourse_ai.ai_bot.conversations.header"}}</h1>
+        <div class="ai-bot-conversations__title">
+          {{i18n "discourse_ai.ai_bot.conversations.header"}}
+        </div>
         <PluginOutlet
           @name="ai-bot-conversations-above-input"
           @outletArgs={{hash
@@ -30,11 +32,13 @@ export default RouteTemplate(
           <div class="ai-bot-conversations__uploads-container">
             {{#each @controller.uploads as |upload|}}
               <div class="ai-bot-upload">
-                <span class="ai-bot-upload__filename">{{upload.original_filename}}</span>
+                <span class="ai-bot-upload__filename">
+                  {{upload.original_filename}}
+                </span>
                 <DButton
                   @icon="xmark"
                   @action={{fn @controller.removeUpload upload}}
-                  class="btn-flat ai-bot-upload__remove"
+                  class="btn-transparent ai-bot-upload__remove"
                 />
               </div>
             {{/each}}
@@ -42,7 +46,9 @@ export default RouteTemplate(
             {{#each @controller.inProgressUploads as |upload|}}
               <div class="ai-bot-upload ai-bot-upload--in-progress">
                 <span class="ai-bot-upload__filename">{{upload.fileName}}</span>
-                <span class="ai-bot-upload__progress">{{upload.progress}}%</span>
+                <span class="ai-bot-upload__progress">
+                  {{upload.progress}}%
+                </span>
                 <DButton
                   @icon="xmark"
                   @action={{fn @controller.cancelUpload upload}}
@@ -54,6 +60,12 @@ export default RouteTemplate(
         {{/if}}
 
         <div class="ai-bot-conversations__input-wrapper">
+          <DButton
+            @icon="upload"
+            @action={{@controller.openFileUpload}}
+            @title="discourse_ai.ai_bot.conversations.upload_files"
+            class="btn btn-transparent ai-bot-upload-btn"
+          />
           <textarea
             {{didInsert @controller.setTextArea}}
             {{on "input" @controller.updateInputValue}}
@@ -65,21 +77,13 @@ export default RouteTemplate(
             disabled={{@controller.loading}}
             rows="1"
           />
-          <div class="ai-bot-conversations__buttons">
-            <DButton
-              @icon="upload"
-              @action={{@controller.openFileUpload}}
-              @title="discourse_ai.ai_bot.conversations.upload_files"
-              class="btn no-text ai-bot-upload-btn"
-            />
-            <DButton
-              @action={{@controller.prepareAndSubmitToBot}}
-              @icon="paper-plane"
-              @isLoading={{@controller.loading}}
-              @title="discourse_ai.ai_bot.conversations.header"
-              class="ai-bot-button btn-primary ai-conversation-submit"
-            />
-          </div>
+          <DButton
+            @action={{@controller.prepareAndSubmitToBot}}
+            @icon="paper-plane"
+            @isLoading={{@controller.loading}}
+            @title="discourse_ai.ai_bot.conversations.header"
+            class="ai-bot-button btn-primary ai-conversation-submit"
+          />
         </div>
 
         {{! Hidden file input element }}
