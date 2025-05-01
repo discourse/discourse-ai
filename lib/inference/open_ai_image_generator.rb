@@ -42,8 +42,7 @@ module ::DiscourseAi
 
         raise api_responses[0] if api_responses.all? { |resp| resp.is_a?(StandardError) }
 
-        api_responses =
-          api_responses.filter { |response| !response.is_a?(StandardError) }
+        api_responses = api_responses.filter { |response| !response.is_a?(StandardError) }
 
         create_uploads_from_responses(api_responses, user_id, for_private_message, title)
       end
