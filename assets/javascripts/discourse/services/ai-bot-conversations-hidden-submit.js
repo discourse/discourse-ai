@@ -4,6 +4,7 @@ import Service, { service } from "@ember/service";
 import { tracked } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getUploadMarkdown } from "discourse/lib/uploads";
 import { i18n } from "discourse-i18n";
 
 export default class AiBotConversationsHiddenSubmit extends Service {
@@ -60,16 +61,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       rawContent += "\n\n";
 
       this.uploads.forEach((upload) => {
-        const isImage = /jpeg|jpg|png|webp/.test(upload.extension);
-        const displayName = upload.original_filename || upload.filename;
-        const uploadMarkdown = isImage
-          ? `![${displayName}|${upload.width}x${upload.height}](${
-              upload.short_url || upload.url
-            })`
-          : `[${displayName}|${upload.filesize || "unknown"}](${
-              upload.short_url || upload.url
-            })`;
-
+        const uploadMarkdown = getUploadMarkdown(upload);
         rawContent += uploadMarkdown + "\n";
       });
     }
