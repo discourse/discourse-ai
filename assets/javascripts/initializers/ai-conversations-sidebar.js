@@ -319,7 +319,7 @@ export default {
 
               // force Glimmer to re-render that one link
               this.links = this.links.map((link) =>
-                link.topic.id === topic.id
+                link?.topic?.id === topic.id
                   ? new AiConversationLink(topic)
                   : link
               );

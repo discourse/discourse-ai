@@ -131,6 +131,10 @@ RSpec.describe "AI Bot - Homepage", type: :system do
             expect(topic_page).to have_content("Here are two image attachments")
             expect(page).to have_css(".cooked img", count: 2)
           end
+
+          find(".ai-new-question-button").click
+          expect(ai_pm_homepage).to have_homepage
+          expect(page).to have_no_css(".ai-bot-upload")
         end
 
         it "allows removing an upload before submission" do

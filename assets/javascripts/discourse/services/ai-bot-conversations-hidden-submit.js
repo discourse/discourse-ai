@@ -3,7 +3,6 @@ import { next } from "@ember/runloop";
 import Service, { service } from "@ember/service";
 import { tracked } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { i18n } from "discourse-i18n";
 
@@ -89,8 +88,6 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       });
 
       this.router.transitionTo(response.post_url);
-    } catch (e) {
-      popupAjaxError(e);
     } finally {
       this.loading = false;
     }
