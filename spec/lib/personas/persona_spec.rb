@@ -212,7 +212,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
       SiteSetting.ai_google_custom_search_cx = "abc123"
 
       # should be ordered by priority and then alpha
-      expect(DiscourseAi::Personas::Persona.all(user: user)).to eq(
+      expect(DiscourseAi::Personas::Persona.all(user: user).map(&:superclass)).to eq(
         [
           DiscourseAi::Personas::General,
           DiscourseAi::Personas::Artist,
@@ -226,7 +226,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
       )
 
       # it should allow staff access to WebArtifactCreator
-      expect(DiscourseAi::Personas::Persona.all(user: admin)).to eq(
+      expect(DiscourseAi::Personas::Persona.all(user: admin).map(&:superclass)).to eq(
         [
           DiscourseAi::Personas::General,
           DiscourseAi::Personas::Artist,
@@ -245,7 +245,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
       SiteSetting.ai_google_custom_search_api_key = ""
       SiteSetting.ai_artifact_security = "disabled"
 
-      expect(DiscourseAi::Personas::Persona.all(user: admin)).to contain_exactly(
+      expect(DiscourseAi::Personas::Persona.all(user: admin).map(&:superclass)).to contain_exactly(
         DiscourseAi::Personas::General,
         DiscourseAi::Personas::SqlHelper,
         DiscourseAi::Personas::SettingsExplorer,
@@ -258,7 +258,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
         DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General],
       ).update!(enabled: false)
 
-      expect(DiscourseAi::Personas::Persona.all(user: user)).to contain_exactly(
+      expect(DiscourseAi::Personas::Persona.all(user: user).map(&:superclass)).to contain_exactly(
         DiscourseAi::Personas::SqlHelper,
         DiscourseAi::Personas::SettingsExplorer,
         DiscourseAi::Personas::Creative,
