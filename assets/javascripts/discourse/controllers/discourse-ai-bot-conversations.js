@@ -41,6 +41,7 @@ export default class DiscourseAiBotConversations extends Controller {
       });
     }
   };
+
   init() {
     super.init(...arguments);
 
