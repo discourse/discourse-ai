@@ -40,6 +40,11 @@ module ::DiscourseAi
             output_format: output_format,
           )
 
+        raise api_responses[0] if api_responses.all? { |resp| resp.is_a?(StandardError) }
+
+        api_responses =
+          api_responses.filter_map { |response| response.is_a?(StandardError) ? nil : response }
+
         create_uploads_from_responses(api_responses, user_id, for_private_message, title)
       end
 
@@ -151,11 +156,16 @@ module ::DiscourseAi
               )
             rescue => e
               attempts += 1
-              sleep 2
-              retry if attempts < 3
-              Discourse.warn_exception(e, message: "Failed to generate image for prompt #{prompt}")
+              # to keep tests speedy
+              if !Rails.env.test?
+                retry if attempts < 3
+              end
+              Discourse.warn_exception(
+                e,
+                message: "Failed to generate image for prompt #{prompt}\n",
+              )
               puts "Error generating image for prompt: #{prompt} #{e}" if Rails.env.development?
-              nil
+              e
             end
           end
         end
