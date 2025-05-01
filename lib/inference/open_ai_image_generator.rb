@@ -213,14 +213,16 @@ module ::DiscourseAi
           )
         rescue => e
           attempts += 1
-          sleep 2
-          retry if attempts < 3
-          if Rails.env.development? || Rails.env.test?
+          if !Rails.env.test?
+            sleep 2
+            retry if attempts < 3
+          end
+          if Rails.env.development?
             puts "Error editing image(s) with prompt: #{prompt} #{e}"
             p e
           end
           Discourse.warn_exception(e, message: "Failed to edit image(s) with prompt #{prompt}")
-          nil
+          raise e
         end
       end
 
