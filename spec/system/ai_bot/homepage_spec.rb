@@ -97,7 +97,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     pm.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD] = "t"
     pm.save!
 
-    SiteSetting.ai_enable_experimental_bot_ux = true
+    SiteSetting.ai_bot_enabled_dedicated_ux = true
     SiteSetting.ai_bot_enabled = true
     SiteSetting.navigation_menu = "sidebar"
     Jobs.run_immediately!
@@ -109,7 +109,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     before { SiteSetting.glimmer_post_stream_mode = value }
 
     context "when glimmer_post_stream_mode=#{value}" do
-      context "when `ai_enable_experimental_bot_ux` is enabled" do
+      context "when `ai_bot_enable_dedicated_ux` is enabled" do
         it "allows uploading files to a new conversation" do
           ai_pm_homepage.visit
           expect(ai_pm_homepage).to have_homepage
@@ -342,8 +342,8 @@ RSpec.describe "AI Bot - Homepage", type: :system do
         end
       end
 
-      context "when `ai_enable_experimental_bot_ux` is disabled" do
-        before { SiteSetting.ai_enable_experimental_bot_ux = false }
+      context "when `ai_bot_enable_dedicated_ux` is disabled" do
+        before { SiteSetting.ai_bot_enable_dedicated_ux = false }
 
         it "opens composer on bot click" do
           visit "/"

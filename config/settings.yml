@@ -386,7 +386,8 @@ discourse_ai:
   ai_rag_images_enabled:
     default: false
     hidden: true
-  ai_enable_experimental_bot_ux:
-    default: false
+
+  ai_bot_enable_dedicated_ux:
+    default: true
     client: true
 

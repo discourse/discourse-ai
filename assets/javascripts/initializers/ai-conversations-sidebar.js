@@ -16,7 +16,7 @@ export default {
   initialize() {
     withPluginApi((api) => {
       const siteSettings = api.container.lookup("service:site-settings");
-      if (!siteSettings.ai_enable_experimental_bot_ux) {
+      if (!siteSettings.ai_bot_enable_dedicated_ux) {
         return;
       }
 
