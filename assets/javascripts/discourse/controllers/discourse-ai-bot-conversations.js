@@ -139,9 +139,6 @@ export default class DiscourseAiBotConversations extends Controller {
   @action
   setTextArea(element) {
     this.textarea = element;
-    if (this.textarea) {
-      this.textarea.addEventListener("paste", this._handlePaste);
-    }
   }
 
   @action

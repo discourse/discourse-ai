@@ -227,6 +227,7 @@ body.has-ai-conversations-sidebar {
       --input-min-height: 2.5em;
       display: flex;
       align-items: end;
+      flex-wrap: wrap;
       width: 100%;
 
       @include viewport.from(sm) {
@@ -259,7 +260,7 @@ body.has-ai-conversations-sidebar {
       }
 
       #ai-bot-conversations-input {
-        width: 100%;
+        flex-grow: 1;
         margin: 0;
         resize: none;
         max-height: 30vh;
@@ -304,12 +305,12 @@ body.has-ai-conversations-sidebar {
     }
 
     .ai-bot-conversations__uploads-container {
-      width: 80%;
-      max-width: var(--input-max-width);
+      width: 100%;
       display: flex;
       flex-wrap: wrap;
       gap: 0.5em;
       padding-bottom: 1em;
+      margin-top: 0.5em;
     }
 
     .ai-bot-upload {
