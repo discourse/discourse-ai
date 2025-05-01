@@ -78,11 +78,10 @@ hr:
         description: "Opis"
         summary: "Sažetak"
         save: "Spremi"
+        remove_parameter: "Ukloni"
         parameter_required: "Potrebno"
         edit: "Uredi"
         delete: "Pobriši"
-        next:
-          title: "Sljedeći"
       llms:
         display_name: "Ime"
         save: "Spremi"
@@ -146,6 +145,10 @@ hr:
           previous_log: "Predhodno"
         share_modal:
           copy: "Kopija"
+        conversations:
+          today: "Danas"
+          last_7_days: "Zadnjih 7 dana"
+          last_30_days: "Zadnjih 30 dana"
       sentiments:
         sentiment_analysis:
           filter_types:

@@ -313,7 +313,7 @@ ja:
         script: "スクリプト"
         parameters: "パラメーター"
         save: "保存"
-        add_parameter: "パラメーターを追加"
+        remove_parameter: "削除"
         parameter_required: "必須"
         parameter_enum: "列挙型"
         parameter_name: "パラメーター名"
@@ -324,10 +324,7 @@ ja:
         test: "テストを実行"
         delete: "削除"
         saved: "ツールが保存されました"
-        presets: "プリセットを選択..."
         confirm_delete: "このツールを削除してもよろしいですか？"
-        next:
-          title: "次へ"
         test_modal:
           title: "AI ツールのテスト"
           run: "テストを実行"
@@ -559,6 +556,7 @@ ja:
         collapse_view_label: "全画面表示を終了 (ESC または「戻る」ボタン)"
         click_to_run_label: "アーティファクトを実行"
       ai_bot:
+        llm: "モデル"
         pm_warning: "AI チャットボットのメッセージは、モデレーターによって定期的に監視されます。"
         cancel_streaming: "返信を停止する"
         default_pm_prefix: "[無題の AI ボット PM]"
@@ -607,6 +605,10 @@ ja:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "今日"
+          last_7_days: "過去 7 日間"
+          last_30_days: "過去 30 日間"
       sentiments:
         dashboard:
           title: "センチメント"

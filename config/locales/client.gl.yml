@@ -76,11 +76,10 @@ gl:
         description: "Descrición"
         summary: "Resumo"
         save: "Gardar"
+        remove_parameter: "Retirar"
         parameter_required: "Obrigatorio"
         edit: "Editar"
         delete: "Eliminar"
-        next:
-          title: "Seguinte"
       llms:
         display_name: "Nome"
         save: "Gardar"
@@ -139,6 +138,8 @@ gl:
           previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
+        conversations:
+          today: "Hoxe"
       sentiments:
         sentiment_analysis:
           filter_types:

@@ -317,7 +317,7 @@ ru:
         script: "Скрипт"
         parameters: "Параметры"
         save: "Сохранить"
-        add_parameter: "Добавить параметр"
+        remove_parameter: "Отозвать"
         parameter_required: "Обязательное"
         parameter_enum: "Перечисление"
         parameter_name: "Название параметра"
@@ -328,10 +328,7 @@ ru:
         test: "Запустить тест"
         delete: "Удалить"
         saved: "Инструмент сохранен"
-        presets: "Выберите пресет..."
         confirm_delete: "Действительно удалить этот инструмент?"
-        next:
-          title: "Далее"
         test_modal:
           title: "Тест AI-инструмента"
           run: "Запустить тест"
@@ -570,6 +567,7 @@ ru:
         collapse_view_label: "Выйти из полноэкранного режима (кнопка ESC или «Назад»)"
         click_to_run_label: "Запустить артефакт"
       ai_bot:
+        llm: "Модель"
         pm_warning: "Сообщения чат-бота с AI регулярно отслеживаются модераторами."
         cancel_streaming: "Прекратить отвечать"
         default_pm_prefix: "[Личные сообщения от AI-бота без названия]"
@@ -618,6 +616,10 @@ ru:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Сегодня"
+          last_7_days: "За последние 7 дней"
+          last_30_days: "За последние 30 дней"
       sentiments:
         dashboard:
           title: "Настроение"

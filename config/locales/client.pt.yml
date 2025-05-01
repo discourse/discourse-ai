@@ -76,11 +76,10 @@ pt:
         description: "Descrição"
         summary: "Resumo"
         save: "Guardar"
+        remove_parameter: "Remover"
         parameter_required: "Necessário"
         edit: "Editar"
         delete: "Eliminar"
-        next:
-          title: "Próximo"
       llms:
         display_name: "Nome"
         save: "Guardar"
@@ -139,6 +138,10 @@ pt:
           previous_log: "Anterior"
         share_modal:
           copy: "Copiar"
+        conversations:
+          today: "Hoje"
+          last_7_days: "Últimos 7 Dias"
+          last_30_days: "Últimos 30 Dias"
       sentiments:
         sentiment_analysis:
           filter_types:

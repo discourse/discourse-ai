@@ -52,7 +52,6 @@ ru:
     ai_nsfw_flag_threshold_porn: "Пороговое значение, при котором изображение, отнесенное к категории «порно», определяется как NSFW-контент."
     ai_nsfw_flag_threshold_sexy: "Пороговое значение, при котором изображение, отнесенное к категории «сексуальное», определяется как NSFW-контент."
     ai_nsfw_models: "Модели, используемые для оценки NSFW-контента."
-    ai_openai_api_key: "API-ключ для API OpenAI. Используется ТОЛЬКО для Dall-E. Для GPT используйте вкладку конфигурации LLM"
     ai_helper_enabled: "Включить AI-помощника"
     composer_ai_helper_allowed_groups: "Для пользователей в этих группах будет отображаться кнопка AI-помощника в редакторе."
     ai_helper_allowed_in_pm: "Включить AI-помощник для редактора в личных сообщениях."
@@ -358,6 +357,8 @@ ru:
         time: "Время по часовому поясу %{timezone} — %{time}"
         summarize: "Получена сводка: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Найдена %{count} категория"

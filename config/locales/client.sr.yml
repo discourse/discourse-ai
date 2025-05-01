@@ -69,11 +69,10 @@ sr:
         description: "Opis"
         summary: "Rezime"
         save: "Sačuvaj"
+        remove_parameter: "Ukloni"
         parameter_required: "Potrebno"
         edit: "Izmeni"
         delete: "Obriši"
-        next:
-          title: "Dalje"
       llms:
         display_name: "Ime foruma"
         save: "Sačuvaj"
@@ -118,6 +117,10 @@ sr:
           previous_log: "Prethodno"
         share_modal:
           copy: "Kopija"
+        conversations:
+          today: "Danas"
+          last_7_days: "Последњих 7 дана"
+          last_30_days: "Последњих 30 дана"
       sentiments:
         sentiment_analysis:
           filter_types:

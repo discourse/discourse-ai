@@ -52,7 +52,6 @@ nl:
     ai_nsfw_flag_threshold_porn: "Drempelwaarde voor een als porno geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_flag_threshold_sexy: "Drempelwaarde voor een als sexy geclassificeerde afbeelding om als NSFW te worden beschouwd."
     ai_nsfw_models: "Te gebruiken modellen voor NVWW-inferentie."
-    ai_openai_api_key: "API-sleutel voor OpenAI-API. ALLEEN gebruikt Dall-E. Gebruik voor GPT het tabblad LLM-configuratie"
     ai_helper_enabled: "Schakel de AI-helper in."
     composer_ai_helper_allowed_groups: "Gebruikers in deze groepen zien de AI-hulpknop in de editor."
     ai_helper_allowed_in_pm: "Schakel de AI-hulp van de editor in in PB's."
@@ -358,6 +357,8 @@ nl:
         time: "De tijd in %{timezone} is %{time}"
         summarize: "Samengevat: <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "%{count} categorie gevonden"

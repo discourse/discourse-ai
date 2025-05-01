@@ -212,7 +212,7 @@ uk:
         script: "Скрипт"
         parameters: "Параметри"
         save: "Зберегти"
-        add_parameter: "Додати параметр"
+        remove_parameter: "Вилучити"
         parameter_required: "Обов'язкові"
         parameter_enum: "Перерахунок"
         enum_value: "Значення переліку"
@@ -220,10 +220,7 @@ uk:
         edit: "Редагувати"
         delete: "Видалити"
         saved: "Інструмент збережено"
-        presets: "Виберіть попереднє налаштування..."
         confirm_delete: "Ви впевнені, що хочете видалити цей інструмент?"
-        next:
-          title: "Далі"
       llms:
         short_title: "LLMs"
         no_llms: "Ще немає LLM"
@@ -373,6 +370,7 @@ uk:
         quick_search:
           suffix: "у всіх темах і повідомленнях з ШІ"
       ai_bot:
+        llm: "Модель"
         pm_warning: "Повідомлення чат-ботів ШІ регулярно контролюються модераторами."
         cancel_streaming: "Зупинити відповідь"
         default_pm_prefix: "[ПП від ШІ-бота без назви]"
@@ -415,6 +413,10 @@ uk:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Сьогодні"
+          last_7_days: "Останні 7 днів"
+          last_30_days: "Останні 30 днів"
       sentiments:
         dashboard:
           title: "Почуття"

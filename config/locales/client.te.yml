@@ -71,11 +71,10 @@ te:
         description: "వివరణ"
         summary: "సారాంశం"
         save: "సేవ్ చేయండి"
+        remove_parameter: "తొలగించు"
         parameter_required: "అవసరం"
         edit: "సవరించండి"
         delete: "తొలగించండి"
-        next:
-          title: "తదుపరి"
       llms:
         display_name: "పేరు"
         save: "సేవ్ చేయండి"
@@ -134,6 +133,8 @@ te:
           previous_log: "గత"
         share_modal:
           copy: "నకలు"
+        conversations:
+          today: "ఈరోజు"
       sentiments:
         sentiment_analysis:
           filter_types:

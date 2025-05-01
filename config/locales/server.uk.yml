@@ -258,6 +258,8 @@ uk:
         time: "Час у %{timezone} %{time}"
         summarize: "Підсумок <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "Знайдено %{count} категорію"

@@ -81,11 +81,10 @@ sk:
         summary: "Zhrnutie"
         script: "Skript"
         save: "Uložiť"
+        remove_parameter: "Odstrániť"
         parameter_required: "Povinné"
         edit: "Upraviť"
         delete: "Odstrániť"
-        next:
-          title: "Ďalej"
       llms:
         display_name: "Meno"
         save: "Uložiť"
@@ -151,6 +150,10 @@ sk:
           previous_log: "Predchádzajúci"
         share_modal:
           copy: "Kopírovať"
+        conversations:
+          today: "Dnes"
+          last_7_days: "Posledných 7 dní"
+          last_30_days: "Posledných 30 dní"
       sentiments:
         sentiment_analysis:
           filter_types:

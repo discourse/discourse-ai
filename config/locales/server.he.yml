@@ -54,6 +54,9 @@ he:
     ai_nsfw_flag_threshold_porn: "סף לתמונה שמוגדרת כארוטית כדי שתיחשב פוגענית."
     ai_nsfw_flag_threshold_sexy: "סף לתמונה שמוגדרת כמינית כדי שתיחשב פוגענית."
     ai_nsfw_models: "מודלים לשימוש להסקת פוגענות."
+    ai_openai_api_key: "מפתח API ל־API של OpenAI. משמש רק ליצירת ועריכת תמונות. בשביל GPT יש להשתמש בלשונית הגדרת ה־LLM."
+    ai_openai_image_generation_url: "כתובת ל־API ליצירת תמונות מבית OpenAI"
+    ai_openai_image_edit_url: "כתובת ל־API לעריכת תמונות מבית OpenAI"
     ai_helper_enabled: "הפעלת מסייע הבינה המלאכותית."
     composer_ai_helper_allowed_groups: "משתמשים בקבוצות אלו יראו כפתור מסייע בינה מלאכותית במחבר ההודעות."
     ai_helper_allowed_in_pm: "הפעלת מסייע הבינה המלאכותית בכותב ההודעות בהודעות הפרטיות."
@@ -268,6 +271,9 @@ he:
         artist:
           name: אמן
           description: "בוט בינה מלאכותית שמתמחה ביצירת תמונות"
+        designer:
+          name: מעצב
+          description: "בוט בינה מלאכותית שמתמחה ביצירת ועריכת תמונות"
         sql_helper:
           name: מסייע SQL
           description: "בוט בינה מלאכותית שמתמחה בסיוע בכתיבת שאילתות SQL במופע ה־Discourse הזה"
@@ -348,6 +354,8 @@ he:
         dall_e: "יצירת תמונה"
         search_meta_discourse: "חיפוש ב־Meta Discrouse"
         javascript_evaluator: "שערוך JavaScript"
+        create_image: "יצירת תמונה"
+        edit_image: "עריכת תמונה"
       tool_help:
         read_artifact: "לקרוא תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         update_artifact: "עדכון תוצר דפדפני באמצעות בוט הבינה המלאכותית"
@@ -364,6 +372,8 @@ he:
         time: "איתור זמן באזורי זמן שונים"
         summary: "סיכום נושא"
         image: "יצירת תמונה באמצעות Stable Diffusion"
+        create_image: "יצירת תמונה עם מודל התמונות של GPT מבית OpenAI"
+        edit_image: "עריכת תמונה עם מודל התמונות של GPT מבית OpenAI"
         google: "חיפוש שאילתה ב־Google"
         read: "הצגת נושא ציבורי בפורום"
         setting_context: "חיפוש הקשר הגדרות אתר"
@@ -386,6 +396,8 @@ he:
         time: "השעה ב־%{timezone} היא %{time}"
         summarize: "<a href='%{url}'>%{title}</a> סוכם"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "נמצאה קטגוריה"

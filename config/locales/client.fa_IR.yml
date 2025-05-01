@@ -102,11 +102,10 @@ fa_IR:
         description: "توضیح"
         summary: "خلاصه"
         save: "ذخیره"
+        remove_parameter: "پاک کردن"
         parameter_required: "مورد نیاز"
         edit: "ویرایش"
         delete: "حذف"
-        next:
-          title: "بعدی"
       llms:
         display_name: "نام"
         save: "ذخیره"
@@ -176,6 +175,7 @@ fa_IR:
           model_name: "نام مدل"
         semantic_search: "موضوعات (معنایی)"
       ai_bot:
+        llm: "مدل"
         cancel_streaming: "توقف پاسخ"
         conversation_shared: "گفتگو کپی شد"
         debug_ai_modal:
@@ -191,6 +191,10 @@ fa_IR:
           gpt-3:
             5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
+        conversations:
+          today: "امروز"
+          last_7_days: "۷ روز گذشته"
+          last_30_days: "۳۰ روز گذشته"
       sentiments:
         sentiment_analysis:
           filter_types:

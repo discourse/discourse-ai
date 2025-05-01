@@ -68,11 +68,10 @@ be:
         description: "Апісанне"
         summary: "вынік"
         save: "Захаваць"
+        remove_parameter: "выдаліць"
         parameter_required: "абавязковыя"
         edit: "Рэдагаваць"
         delete: "Выдаліць"
-        next:
-          title: "Далей"
       llms:
         display_name: "імя"
         save: "Захаваць"
@@ -117,6 +116,8 @@ be:
           next_log: "Далей"
         share_modal:
           copy: "капіяваць"
+        conversations:
+          today: "сёння"
       sentiments:
         sentiment_analysis:
           filter_types:

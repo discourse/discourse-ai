@@ -114,11 +114,10 @@ lt:
         description: "Aprašymas"
         summary: "Santrauka"
         save: "Išsaugoti"
+        remove_parameter: "Pašalinti"
         parameter_required: "Privalomi"
         edit: "Redaguoti"
         delete: "Pašalinti"
-        next:
-          title: "Kitas"
       llms:
         display_name: "Vardas"
         save: "Išsaugoti"
@@ -178,6 +177,7 @@ lt:
           google: "Google"
           fake: "Išskirtinės"
       ai_bot:
+        llm: "Modelis"
         debug_ai_modal:
           request: "Užklausa"
           response: "Atsakymas"
@@ -188,6 +188,10 @@ lt:
           copy: "Kopijuoti"
         bot_names:
           claude-2: "Claude 2"
+        conversations:
+          today: "Šiandien"
+          last_7_days: "Paskutinės 7 dienos"
+          last_30_days: "Paskutinės 30 dienų"
       sentiments:
         sentiment_analysis:
           filter_types:

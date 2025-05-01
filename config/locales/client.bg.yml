@@ -74,11 +74,10 @@ bg:
         description: "Описание"
         summary: "Сумарно"
         save: "Запази "
+        remove_parameter: "Премахване"
         parameter_required: "Задъжителни"
         edit: "Редактирай"
         delete: "Изтрий"
-        next:
-          title: "Напред"
       llms:
         display_name: "Име"
         save: "Запази "
@@ -133,6 +132,10 @@ bg:
           previous_log: "Предишни"
         share_modal:
           copy: "Копирай"
+        conversations:
+          today: "Днес"
+          last_7_days: "Последните 7 дни"
+          last_30_days: "Последните 30 дни"
       sentiments:
         sentiment_analysis:
           filter_types:

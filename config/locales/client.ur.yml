@@ -77,11 +77,10 @@ ur:
         description: "تفصیل"
         summary: "Summary"
         save: "محفوظ کریں"
+        remove_parameter: "خارج کریں"
         parameter_required: "درکار"
         edit: "ترمیم کریں"
         delete: "مٹائیں"
-        next:
-          title: "اگلا"
       llms:
         display_name: "نام"
         save: "محفوظ کریں"
@@ -142,6 +141,10 @@ ur:
           previous_log: "پچھلی"
         share_modal:
           copy: "کاپی"
+        conversations:
+          today: "آج"
+          last_7_days: "پچھلے 7 دن"
+          last_30_days: "پچھلے 30 دن"
       sentiments:
         sentiment_analysis:
           filter_types:

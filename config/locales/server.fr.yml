@@ -52,7 +52,6 @@ fr:
     ai_nsfw_flag_threshold_porn: "Seuil pour qu'une image classée comme pornographique soit considérée comme NSFW."
     ai_nsfw_flag_threshold_sexy: "Seuil pour qu'une image classée comme sexy soit considérée comme NSFW."
     ai_nsfw_models: "Modèles à utiliser pour l'inférence NSFW."
-    ai_openai_api_key: "Clé API pour l'API OpenAI. Utilisée UNIQUEMENT pour Dall-E. Pour GPT, utilisez l'onglet de configuration LLM"
     ai_helper_enabled: "Activer l'assistant IA."
     composer_ai_helper_allowed_groups: "Les utilisateurs de ces groupes verront le bouton d'assistance IA dans le compositeur."
     ai_helper_allowed_in_pm: "Activez l'assistant IA du compositeur dans les messages privés."
@@ -358,6 +357,8 @@ fr:
         time: "L'heure (%{timezone}) est %{time}"
         summarize: "Résumé de <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           one: "%{count} catégorie trouvée"

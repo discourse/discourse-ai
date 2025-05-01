@@ -78,11 +78,10 @@ hu:
         description: "Leírás"
         summary: "Összefoglaló"
         save: "Mentés"
+        remove_parameter: "Eltávolítás"
         parameter_required: "Kötelező"
         edit: "Szerkesztés"
         delete: "Törlés"
-        next:
-          title: "Tovább"
       llms:
         display_name: "Név"
         save: "Mentés"
@@ -149,6 +148,10 @@ hu:
           previous_log: "Vissza"
         share_modal:
           copy: "Másolás"
+        conversations:
+          today: "Ma"
+          last_7_days: "Elmúlt 7 nap"
+          last_30_days: "Elmúlt 30 nap"
       sentiments:
         sentiment_analysis:
           filter_types:

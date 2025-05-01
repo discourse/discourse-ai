@@ -71,11 +71,10 @@ et:
         description: "Kirjeldus"
         summary: "Kokkuvõte"
         save: "Salvesta"
+        remove_parameter: "Eemalda"
         parameter_required: "Nõutud"
         edit: "Muuda"
         delete: "Kustuta"
-        next:
-          title: "Järgmine"
       llms:
         display_name: "Nimi"
         save: "Salvesta"
@@ -131,6 +130,8 @@ et:
           previous_log: "Eelmine"
         share_modal:
           copy: "Kopeeri"
+        conversations:
+          today: "Täna"
       sentiments:
         sentiment_analysis:
           filter_types:

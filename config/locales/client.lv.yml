@@ -73,11 +73,10 @@ lv:
         description: "Apraksts"
         summary: "Kopsavilkums"
         save: "Saglabāt"
+        remove_parameter: "Atcelt"
         parameter_required: "Nepieciešams"
         edit: "Rediģēt"
         delete: "Dzēst"
-        next:
-          title: "Nākamais"
       llms:
         display_name: "Vārds"
         save: "Saglabāt"
@@ -129,6 +128,10 @@ lv:
           previous_log: "Iepriekšējais"
         share_modal:
           copy: "Kopēt"
+        conversations:
+          today: "Šodien"
+          last_7_days: "Pēdējās 7 dienas"
+          last_30_days: "Pēdējās 30 dienas"
       sentiments:
         sentiment_analysis:
           filter_types:

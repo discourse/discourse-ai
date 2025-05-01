@@ -315,7 +315,7 @@ tr_TR:
         script: "Komut Dosyası"
         parameters: "Parametreler"
         save: "Kaydet"
-        add_parameter: "Parametre ekle"
+        remove_parameter: "Kaldır"
         parameter_required: "Gerekli"
         parameter_enum: "Numaralandırma"
         parameter_name: "Parametre adı"
@@ -326,10 +326,7 @@ tr_TR:
         test: "Testi çalıştır"
         delete: "Sil"
         saved: "Araç kaydedildi"
-        presets: "Ön ayar seçin..."
         confirm_delete: "Bu aracı silmek istediğinizden emin misiniz?"
-        next:
-          title: "Sonraki"
         test_modal:
           title: "YZ aracını test edin"
           run: "Testi çalıştır"
@@ -565,6 +562,7 @@ tr_TR:
         collapse_view_label: "Tam Ekrandan Çık (ESC veya Geri tuşu)"
         click_to_run_label: "Artifact'i çalıştır"
       ai_bot:
+        llm: "Model"
         pm_warning: "YZ sohbet robotu mesajları moderatörler tarafından düzenli olarak izlenir."
         cancel_streaming: "Yanıtı durdur"
         default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
@@ -613,6 +611,10 @@ tr_TR:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Bugün"
+          last_7_days: "Son 7 gün"
+          last_30_days: "Son 30 gün"
       sentiments:
         dashboard:
           title: "Duyarlılık"

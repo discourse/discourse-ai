@@ -75,11 +75,10 @@ vi:
         description: "Mô tả"
         summary: "Tóm tắt"
         save: "Lưu lại"
+        remove_parameter: "Xoá"
         parameter_required: "Bắt buộc"
         edit: "Sửa"
         delete: "Xóa"
-        next:
-          title: "Kế tiếp"
       llms:
         display_name: "Tên"
         save: "Lưu lại"
@@ -143,6 +142,10 @@ vi:
           previous_log: "Trước"
         share_modal:
           copy: "Sao chép"
+        conversations:
+          today: "Hôm nay"
+          last_7_days: "7 ngày qua"
+          last_30_days: "30 ngày qua"
       sentiments:
         sentiment_analysis:
           filter_types:

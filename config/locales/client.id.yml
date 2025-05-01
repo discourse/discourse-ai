@@ -140,6 +140,7 @@ id:
         description: "Deskripsi"
         summary: "Ringkasan"
         save: "Simpan"
+        remove_parameter: "Hapus"
         edit: "Ubah"
         delete: "Hapus"
       llms:
@@ -219,6 +220,7 @@ id:
         quick_search:
           suffix: "di semua topik dan posting dengan AI"
       ai_bot:
+        llm: "Model"
         pm_warning: "Pesan chatbot AI dipantau secara berkala oleh moderator."
         cancel_streaming: "Berhenti membalas"
         default_pm_prefix: "[PM bot AI tanpa judul]"
@@ -243,6 +245,9 @@ id:
           claude-3-sonnet: "Claude 3 Soneta"
           claude-3-haiku: "Claude 3 Haiku"
           claude-2: "Claude 2"
+        conversations:
+          last_7_days: "7 hari terakhir"
+          last_30_days: "30 hari terakhir"
       sentiments:
         sentiment_analysis:
           filter_types:

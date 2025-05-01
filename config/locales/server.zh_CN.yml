@@ -52,7 +52,6 @@ zh_CN:
     ai_nsfw_flag_threshold_porn: "分类为色情作品的图片被视为 NSFW 的阈值。"
     ai_nsfw_flag_threshold_sexy: "分类为性感的图片被视为 NSFW 的阈值。"
     ai_nsfw_models: "用于 NSFW 推断的模型。"
-    ai_openai_api_key: "OpenAI API 的 API 密钥。仅用于 Dall-E。对于 GPT，请使用 LLM 配置标签页"
     ai_helper_enabled: "启用 AI 助手。"
     composer_ai_helper_allowed_groups: "这些群组中的用户将在编辑器中看到 AI 助手按钮。"
     ai_helper_allowed_in_pm: "在私信中启用编辑器的 AI 助手。"
@@ -356,6 +355,8 @@ zh_CN:
         time: "%{timezone} 的时间为 %{time}"
         summarize: "已总结 <a href='%{url}'>%{title}</a>"
         dall_e: "%{prompt}"
+        create_image: "%{prompt}"
+        edit_image: "%{prompt}"
         image: "%{prompt}"
         categories:
           other: "找到 %{count} 个类别"

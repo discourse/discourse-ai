@@ -315,7 +315,7 @@ fi:
         script: "Skripti"
         parameters: "Parametrit"
         save: "Tallenna"
-        add_parameter: "Lisää parametri"
+        remove_parameter: "Poista"
         parameter_required: "Pakollinen"
         parameter_enum: "Enum"
         parameter_name: "Parametrin nimi"
@@ -326,10 +326,7 @@ fi:
         test: "Suorita testi"
         delete: "Poista"
         saved: "Työkalu tallennettu"
-        presets: "Valitse esiasetus..."
         confirm_delete: "Oletko varma, että haluat poistaa tämän työkalun?"
-        next:
-          title: "Seuraava"
         test_modal:
           title: "Testaa tekoälytyökalua"
           run: "Suorita testi"
@@ -564,6 +561,7 @@ fi:
         collapse_view_label: "Poistu koko näytön tilasta (Esc- tai Takaisin-painike)"
         click_to_run_label: "Suorita artefakti"
       ai_bot:
+        llm: "Malli"
         pm_warning: "Valvojat tarkkailevat säännöllisesti tekoälychatbotin viestejä"
         cancel_streaming: "Lopeta vastaus"
         default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
@@ -612,6 +610,10 @@ fi:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
+        conversations:
+          today: "Tänään"
+          last_7_days: "Viimeiset 7 päivää"
+          last_30_days: "Viimeiset 30 päivää"
       sentiments:
         dashboard:
           title: "Tunne"
