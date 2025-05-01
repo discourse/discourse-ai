@@ -128,7 +128,8 @@ module DiscourseAi
       end
 
       def id
-        @ai_persona&.id || self.class.system_personas[self.class]
+        @ai_persona&.id || self.class.system_personas[self.class.superclass] ||
+          self.class.system_personas[self.class]
       end
 
       def tools

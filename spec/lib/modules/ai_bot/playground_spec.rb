@@ -785,7 +785,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(last_post.user_id).to eq(persona.user_id)
 
       expect(last_post.custom_fields[DiscourseAi::AiBot::POST_AI_LLM_NAME_FIELD]).to eq(
-        gpt_35_turbo.name,
+        gpt_35_turbo.display_name,
       )
     end
 

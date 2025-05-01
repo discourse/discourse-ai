@@ -226,12 +226,19 @@ class AiPersona < ActiveRecord::Base
 
     persona_class = DiscourseAi::Personas::Persona.system_personas_by_id[self.id]
     if persona_class
-      instance_attributes.each do |key, value|
-        # description/name are localized
-        persona_class.define_singleton_method(key) { value } if key != :description && key != :name
-      end
-      persona_class.define_method(:options) { options }
-      return persona_class
+      return(
+        # we need a new copy so we don't leak information
+        # across sites
+        Class.new(persona_class) do
+          # required for localization
+          define_singleton_method(:to_s) { persona_class.to_s }
+          instance_attributes.each do |key, value|
+            # description/name are localized
+            define_singleton_method(key) { value } if key != :description && key != :name
+          end
+          define_method(:options) { options }
+        end
+      )
     end
 
     ai_persona_id = self.id
