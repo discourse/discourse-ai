@@ -39,7 +39,7 @@ export default class AiBotHeaderIcon extends Component {
   get clickShouldRouteOutOfConversations() {
     return (
       !this.navigationMenu.isHeaderDropdownMode &&
-      this.siteSettings.ai_enable_experimental_bot_ux &&
+      this.siteSettings.ai_bot_enable_dedicated_ux &&
       this.sidebarState.currentPanel?.key === AI_CONVERSATIONS_PANEL
     );
   }
@@ -50,7 +50,7 @@ export default class AiBotHeaderIcon extends Component {
       return this.router.transitionTo(`discovery.${defaultHomepage()}`);
     }
 
-    if (this.siteSettings.ai_enable_experimental_bot_ux) {
+    if (this.siteSettings.ai_bot_enable_dedicated_ux) {
       return this.router.transitionTo("discourse-ai-bot-conversations");
     }
 

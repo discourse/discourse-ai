@@ -97,7 +97,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     pm.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD] = "t"
     pm.save!
 
-    SiteSetting.ai_enable_experimental_bot_ux = true
+    SiteSetting.ai_bot_enable_dedicated_ux = true
     SiteSetting.ai_bot_enabled = true
     SiteSetting.navigation_menu = "sidebar"
     Jobs.run_immediately!
@@ -109,7 +109,53 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     before { SiteSetting.glimmer_post_stream_mode = value }
 
     context "when glimmer_post_stream_mode=#{value}" do
-      context "when `ai_enable_experimental_bot_ux` is enabled" do
+      context "when `ai_bot_enable_dedicated_ux` is enabled" do
+        it "allows uploading files to a new conversation" do
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_homepage
+
+          file_path_1 = file_from_fixtures("logo.png", "images").path
+          file_path_2 = file_from_fixtures("logo.jpg", "images").path
+
+          attach_file([file_path_1, file_path_2]) do
+            find(".ai-bot-upload-btn", visible: true).click
+          end
+
+          expect(page).to have_css(".ai-bot-upload", count: 2)
+
+          ai_pm_homepage.input.fill_in(with: "Here are two image attachments")
+
+          responses = ["hello user", "topic title"]
+          DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+            ai_pm_homepage.submit
+            expect(topic_page).to have_content("Here are two image attachments")
+            expect(page).to have_css(".cooked img", count: 2)
+          end
+        end
+
+        it "allows removing an upload before submission" do
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_homepage
+
+          file_path = file_from_fixtures("logo.png", "images").path
+          attach_file([file_path]) { find(".ai-bot-upload-btn", visible: true).click }
+
+          expect(page).to have_css(".ai-bot-upload", count: 1)
+
+          find(".ai-bot-upload__remove").click
+
+          expect(page).to have_no_css(".ai-bot-upload")
+
+          ai_pm_homepage.input.fill_in(with: "Message without attachments")
+
+          responses = ["hello user", "topic title"]
+          DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+            ai_pm_homepage.submit
+            expect(topic_page).to have_content("Message without attachments")
+            expect(page).to have_no_css(".cooked img")
+          end
+        end
+
         it "renders landing page on bot click" do
           visit "/"
           header.click_bot_button
@@ -296,8 +342,8 @@ RSpec.describe "AI Bot - Homepage", type: :system do
         end
       end
 
-      context "when `ai_enable_experimental_bot_ux` is disabled" do
-        before { SiteSetting.ai_enable_experimental_bot_ux = false }
+      context "when `ai_bot_enable_dedicated_ux` is disabled" do
+        before { SiteSetting.ai_bot_enable_dedicated_ux = false }
 
         it "opens composer on bot click" do
           visit "/"

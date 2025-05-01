@@ -4,6 +4,7 @@ import Service, { service } from "@ember/service";
 import { tracked } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import { getUploadMarkdown } from "discourse/lib/uploads";
 import { i18n } from "discourse-i18n";
 
 export default class AiBotConversationsHiddenSubmit extends Service {
@@ -17,6 +18,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   personaId;
   targetUsername;
+  uploads = [];
 
   inputValue = "";
 
@@ -25,7 +27,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     this.composer.destroyDraft();
     this.composer.close();
     next(() => {
-      document.getElementById("custom-homepage-input").focus();
+      document.getElementById("ai-bot-conversations-input").focus();
     });
   }
 
@@ -41,14 +43,34 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       });
     }
 
+    // Don't submit if there are still uploads in progress
+    if (document.querySelector(".ai-bot-upload--in-progress")) {
+      return this.dialog.alert({
+        message: i18n("discourse_ai.ai_bot.conversations.uploads_in_progress"),
+      });
+    }
+
     this.loading = true;
     const title = i18n("discourse_ai.ai_bot.default_pm_prefix");
+
+    // Prepare the raw content with any uploads appended
+    let rawContent = this.inputValue;
+
+    // Append upload markdown if we have uploads
+    if (this.uploads && this.uploads.length > 0) {
+      rawContent += "\n\n";
+
+      this.uploads.forEach((upload) => {
+        const uploadMarkdown = getUploadMarkdown(upload);
+        rawContent += uploadMarkdown + "\n";
+      });
+    }
 
     try {
       const response = await ajax("/posts.json", {
         method: "POST",
         data: {
-          raw: this.inputValue,
+          raw: rawContent,
           title,
           archetype: "private_message",
           target_recipients: this.targetUsername,
@@ -56,11 +78,16 @@ export default class AiBotConversationsHiddenSubmit extends Service {
         },
       });
 
+      // Reset uploads after successful submission
+      this.uploads = [];
+      this.inputValue = "";
+
       this.appEvents.trigger("discourse-ai:bot-pm-created", {
         id: response.topic_id,
         slug: response.topic_slug,
         title,
       });
+
       this.router.transitionTo(response.post_url);
     } catch (e) {
       popupAjaxError(e);
