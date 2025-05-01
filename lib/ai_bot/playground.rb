@@ -459,7 +459,7 @@ module DiscourseAi
               post_type: post_type,
               skip_guardian: true,
               custom_fields: {
-                DiscourseAi::AiBot::POST_AI_LLM_NAME_FIELD => bot.llm.llm_model.name,
+                DiscourseAi::AiBot::POST_AI_LLM_NAME_FIELD => bot.llm.llm_model.display_name,
               },
             )
 
