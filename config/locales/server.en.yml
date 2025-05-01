@@ -113,7 +113,7 @@ en:
     ai_discord_search_mode: "Select the search mode to use for Discord search"
     ai_discord_search_persona: "The persona to use for Discord search."
     ai_discord_allowed_guilds: "Discord guilds (servers) where the bot is allowed to search"
-    ai_enable_experimental_bot_ux: "Enable experimental bot UI that allows for a more dedicated experience"
+    ai_bot_enable_dedicated_ux: "Allow for full screen bot interface, instead of a PM"
 
   reviewables:
     reasons:
