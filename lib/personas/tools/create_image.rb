@@ -30,7 +30,7 @@ module DiscourseAi
         end
 
         def chain_next_response?
-          false
+          !!@error
         end
 
         def invoke
@@ -42,14 +42,20 @@ module DiscourseAi
 
           results = nil
 
-          results =
-            DiscourseAi::Inference::OpenAiImageGenerator.create_uploads!(
-              max_prompts,
-              model: "gpt-image-1",
-              user_id: bot_user.id,
-            )
+          begin
+            results =
+              DiscourseAi::Inference::OpenAiImageGenerator.create_uploads!(
+                max_prompts,
+                model: "gpt-image-1",
+                user_id: bot_user.id,
+              )
+          rescue => e
+            @error = e
+            return { prompts: max_prompts, error: e.message }
+          end
 
           if results.blank?
+            @error = true
             return { prompts: max_prompts, error: "Something went wrong, could not generate image" }
           end
 

@@ -37,7 +37,7 @@ module DiscourseAi
         end
 
         def chain_next_response?
-          false
+          !!@error
         end
 
         def image_urls
@@ -50,19 +50,24 @@ module DiscourseAi
           return { prompt: prompt, error: "No valid images provided" } if image_urls.blank?
 
           sha1s = image_urls.map { |url| Upload.sha1_from_short_url(url) }.compact
-
           uploads = Upload.where(sha1: sha1s).order(created_at: :asc).limit(10).to_a
 
           return { prompt: prompt, error: "No valid images provided" } if uploads.blank?
 
-          result =
-            DiscourseAi::Inference::OpenAiImageGenerator.create_edited_upload!(
-              uploads,
-              prompt,
-              user_id: bot_user.id,
-            )
+          begin
+            result =
+              DiscourseAi::Inference::OpenAiImageGenerator.create_edited_upload!(
+                uploads,
+                prompt,
+                user_id: bot_user.id,
+              )
+          rescue => e
+            @error = e
+            return { prompt: prompt, error: e.message }
+          end
 
           if result.blank?
+            @error = true
             return { prompt: prompt, error: "Something went wrong, could not generate image" }
           end
 

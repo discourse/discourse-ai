@@ -35,6 +35,27 @@ RSpec.describe DiscourseAi::Personas::Tools::EditImage do
   end
 
   describe "#process" do
+    it "can reject generation of images and return a proper error to llm" do
+      error_message = {
+        error: {
+          message:
+            "Your request was rejected as a result of our safety system. Your request may contain content that is not allowed by our safety system.",
+          type: "user_error",
+          param: nil,
+          code: "moderation_blocked",
+        },
+      }
+
+      WebMock.stub_request(:post, "https://api.openai.com/v1/images/edits").to_return(
+        status: 400,
+        body: error_message.to_json,
+      )
+
+      info = edit_image.invoke(&progress_blk).to_json
+      expect(info).to include("Your request was rejected as a result of our safety system.")
+      expect(edit_image.chain_next_response?).to eq(true)
+    end
+
     it "can edit an image with the GPT image model" do
       data = [{ b64_json: base64_image, revised_prompt: "image with rainbow added in background" }]
 
