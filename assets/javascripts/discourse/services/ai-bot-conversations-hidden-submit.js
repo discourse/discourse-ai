@@ -3,7 +3,6 @@ import { next } from "@ember/runloop";
 import Service, { service } from "@ember/service";
 import { tracked } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { getUploadMarkdown } from "discourse/lib/uploads";
 import { i18n } from "discourse-i18n";
 
@@ -13,6 +12,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
   @service composer;
   @service dialog;
   @service router;
+  @service siteSettings;
 
   @tracked loading = false;
 
@@ -33,10 +33,14 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   @action
   async submitToBot() {
-    if (this.inputValue.length < 10) {
+    if (
+      this.inputValue.length <
+      this.siteSettings.min_personal_message_post_length
+    ) {
       return this.dialog.alert({
         message: i18n(
-          "discourse_ai.ai_bot.conversations.min_input_length_message"
+          "discourse_ai.ai_bot.conversations.min_input_length_message",
+          { count: this.siteSettings.min_personal_message_post_length }
         ),
         didConfirm: () => this.focusInput(),
         didCancel: () => this.focusInput(),
@@ -89,8 +93,6 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       });
 
       this.router.transitionTo(response.post_url);
-    } catch (e) {
-      popupAjaxError(e);
     } finally {
       this.loading = false;
     }

@@ -20,7 +20,11 @@ module PageObjects
       def has_too_short_dialog?
         page.find(
           ".dialog-content",
-          text: I18n.t("js.discourse_ai.ai_bot.conversations.min_input_length_message"),
+          text:
+            I18n.t(
+              "js.discourse_ai.ai_bot.conversations.min_input_length_message",
+              count: SiteSetting.min_personal_message_post_length,
+            ),
         )
       end
 

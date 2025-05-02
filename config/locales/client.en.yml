@@ -726,7 +726,9 @@ en:
           disclaimer: "Generative AI can make mistakes. Verify important information."
           placeholder: "Ask a question..."
           new: "New Question"
-          min_input_length_message: "Message must be longer than 10 characters"
+          min_input_length_message:
+            one: "Message must be 1 character or longer"
+            other: "Message must be %{count} characters or longer"
           messages_sidebar_title: "Conversations"
           today: "Today"
           last_7_days: "Last 7 days"

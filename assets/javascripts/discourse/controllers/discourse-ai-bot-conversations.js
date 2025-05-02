@@ -3,6 +3,7 @@ import Controller from "@ember/controller";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import { service } from "@ember/service";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import UppyUpload from "discourse/lib/uppy/uppy-upload";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
 import { clipboardHelpers } from "discourse/lib/utilities";
@@ -172,10 +173,15 @@ export default class DiscourseAiBotConversations extends Controller {
   }
 
   @action
-  prepareAndSubmitToBot() {
+  async prepareAndSubmitToBot() {
     // Pass uploads to the service before submitting
     this.aiBotConversationsHiddenSubmit.uploads = this.uploads;
-    this.aiBotConversationsHiddenSubmit.submitToBot();
+    try {
+      await this.aiBotConversationsHiddenSubmit.submitToBot();
+      this.uploads.clear();
+    } catch (error) {
+      popupAjaxError(error);
+    }
   }
 
   _autoExpandTextarea() {
