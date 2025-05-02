@@ -12,6 +12,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
   @service composer;
   @service dialog;
   @service router;
+  @service siteSettings;
 
   @tracked loading = false;
 
@@ -32,10 +33,14 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   @action
   async submitToBot() {
-    if (this.inputValue.length < 10) {
+    if (
+      this.inputValue.length <
+      this.siteSettings.min_personal_message_post_length
+    ) {
       return this.dialog.alert({
         message: i18n(
-          "discourse_ai.ai_bot.conversations.min_input_length_message"
+          "discourse_ai.ai_bot.conversations.min_input_length_message",
+          { count: this.siteSettings.min_personal_message_post_length }
         ),
         didConfirm: () => this.focusInput(),
         didCancel: () => this.focusInput(),

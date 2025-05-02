@@ -177,7 +177,7 @@ export default class DiscourseAiBotConversations extends Controller {
     // Pass uploads to the service before submitting
     this.aiBotConversationsHiddenSubmit.uploads = this.uploads;
     try {
-      await this.aiBotConversationsHiddenSubmit.prepareAndSubmitToBot();
+      await this.aiBotConversationsHiddenSubmit.submitToBot();
       this.uploads.clear();
     } catch (error) {
       popupAjaxError(error);
