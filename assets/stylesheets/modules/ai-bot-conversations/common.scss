@@ -156,6 +156,7 @@ body.has-ai-conversations-sidebar {
   }
 
   .ai-bot-conversations {
+    --input-max-width: 46em;
     display: flex;
     flex-direction: column;
     height: calc(100dvh - var(--header-offset) - 5em);
@@ -227,39 +228,56 @@ body.has-ai-conversations-sidebar {
       --input-min-height: 2.5em;
       display: flex;
       align-items: end;
-      flex-wrap: wrap;
       width: 100%;
+      border: 1px solid var(--primary-low);
+      border-radius: var(--d-input-border-radius);
 
       @include viewport.from(sm) {
-        --input-max-width: 46em;
         width: 80%;
         max-width: var(--input-max-width);
       }
 
+      &:focus-within {
+        border-color: var(--tertiary);
+      }
+
       .ai-conversation-submit {
-        margin-left: 0.5em;
-        height: var(--input-min-height);
+        .d-icon {
+          color: var(--primary-medium);
+          padding: 0.5em;
+        }
+
+        &:hover,
+        &:focus-visible {
+          .d-icon {
+            color: var(--primary-medium);
+          }
+        }
       }
 
       .ai-bot-upload-btn {
         min-height: var(--input-min-height);
-        align-self: stretch;
-        background: transparent;
-        border: 1px solid var(--primary-low);
-        border-right: none;
-        border-radius: var(--d-button-border-radius) 0 0
-          var(--d-button-border-radius);
+        border: none;
 
+        .d-icon {
+          background: var(--primary-low);
+          padding: 0.5em;
+          border-radius: 100%;
+        }
+
+        &:hover,
         &:focus-visible {
-          border-color: var(--tertiary);
-
-          + #ai-bot-conversations-input {
-            border-left-color: var(--tertiary);
+          .d-icon {
+            color: var(--primary);
           }
         }
       }
 
       #ai-bot-conversations-input {
+        --scrollbarBg: transparent;
+        --scrollbarThumbBg: var(--primary-low);
+        --scrollbarWidth: 10px;
+        box-sizing: border-box;
         flex-grow: 1;
         margin: 0;
         resize: none;
@@ -267,11 +285,57 @@ body.has-ai-conversations-sidebar {
         min-height: var(--input-min-height);
         border-radius: 0 var(--d-button-border-radius)
           var(--d-button-border-radius) 0;
-        border: 1px solid var(--primary-low);
+        border: none;
+        padding-block: 0.8em;
+        padding-inline: 0;
+        scrollbar-color: var(--scrollbarThumbBg) var(--scrollbarBg);
+        scrollbar-width: thin;
+        transition: scrollbar-color 0.25s ease-in-out;
+
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--scrollbarThumbBg);
+          border-radius: calc(var(--scrollbarWidth) / 2);
+          border: calc(var(--scrollbarWidth) / 4) solid var(--secondary);
+        }
+
+        &::-webkit-scrollbar-track {
+          background-color: transparent;
+        }
+
+        &::-webkit-scrollbar {
+          width: var(--scrollbarWidth);
+        }
+
+        &::-moz-scrollbar-thumb {
+          background-color: var(--scrollbarThumbBg);
+          border-radius: calc(var(--scrollbarWidth) / 2);
+          border: calc(var(--scrollbarWidth) / 4) solid var(--secondary);
+        }
+
+        &::-moz-scrollbar-track {
+          background-color: transparent;
+        }
+
+        &::-moz-scrollbar {
+          width: var(--scrollbarWidth);
+        }
 
         &:focus-visible {
           outline: none;
           border-color: var(--tertiary);
+        }
+
+        &:not(:placeholder-shown) + .ai-conversation-submit {
+          will-change: scale;
+
+          &:hover,
+          &:focus-visible {
+            transform: scale(1.2);
+          }
+
+          .d-icon {
+            color: var(--tertiary);
+          }
         }
       }
     }
@@ -280,7 +344,7 @@ body.has-ai-conversations-sidebar {
       text-align: center;
       font-size: var(--font-down-1);
       color: var(--primary-700);
-      margin-top: 0;
+      margin: 0;
 
       @include viewport.from(sm) {
         width: 80%;
@@ -309,8 +373,11 @@ body.has-ai-conversations-sidebar {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5em;
-      padding-bottom: 1em;
-      margin-top: 0.5em;
+
+      @include viewport.from(sm) {
+        width: 80%;
+        max-width: var(--input-max-width);
+      }
     }
 
     .ai-bot-upload {
