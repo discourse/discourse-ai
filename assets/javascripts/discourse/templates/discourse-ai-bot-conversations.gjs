@@ -51,7 +51,7 @@ export default RouteTemplate(
             @icon="paper-plane"
             @isLoading={{@controller.loading}}
             @title="discourse_ai.ai_bot.conversations.header"
-            class="ai-bot-button btn-primary ai-conversation-submit"
+            class="ai-bot-button btn-transparent ai-conversation-submit"
           />
           <input
             type="file"
@@ -60,44 +60,42 @@ export default RouteTemplate(
             multiple="multiple"
             {{didInsert @controller.registerFileInput}}
           />
-
-          {{#if @controller.showUploadsContainer}}
-            <div class="ai-bot-conversations__uploads-container">
-              {{#each @controller.uploads as |upload|}}
-                <div class="ai-bot-upload">
-                  <span class="ai-bot-upload__filename">
-                    {{upload.original_filename}}
-                  </span>
-                  <DButton
-                    @icon="xmark"
-                    @action={{fn @controller.removeUpload upload}}
-                    class="btn-transparent ai-bot-upload__remove"
-                  />
-                </div>
-              {{/each}}
-
-              {{#each @controller.inProgressUploads as |upload|}}
-                <div class="ai-bot-upload ai-bot-upload--in-progress">
-                  <span
-                    class="ai-bot-upload__filename"
-                  >{{upload.fileName}}</span>
-                  <span class="ai-bot-upload__progress">
-                    {{upload.progress}}%
-                  </span>
-                  <DButton
-                    @icon="xmark"
-                    @action={{fn @controller.cancelUpload upload}}
-                    class="btn-flat ai-bot-upload__remove"
-                  />
-                </div>
-              {{/each}}
-            </div>
-          {{/if}}
         </div>
 
         <p class="ai-disclaimer">
           {{i18n "discourse_ai.ai_bot.conversations.disclaimer"}}
         </p>
+
+        {{#if @controller.showUploadsContainer}}
+          <div class="ai-bot-conversations__uploads-container">
+            {{#each @controller.uploads as |upload|}}
+              <div class="ai-bot-upload">
+                <span class="ai-bot-upload__filename">
+                  {{upload.original_filename}}
+                </span>
+                <DButton
+                  @icon="xmark"
+                  @action={{fn @controller.removeUpload upload}}
+                  class="btn-transparent ai-bot-upload__remove"
+                />
+              </div>
+            {{/each}}
+
+            {{#each @controller.inProgressUploads as |upload|}}
+              <div class="ai-bot-upload ai-bot-upload--in-progress">
+                <span class="ai-bot-upload__filename">{{upload.fileName}}</span>
+                <span class="ai-bot-upload__progress">
+                  {{upload.progress}}%
+                </span>
+                <DButton
+                  @icon="xmark"
+                  @action={{fn @controller.cancelUpload upload}}
+                  class="btn-flat ai-bot-upload__remove"
+                />
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
       </div>
     </div>
   </template>
