@@ -3,91 +3,49 @@
 module DiscourseAi
   module Completions
     class StructuredOutput
-      def initialize(property_names)
-        @raw_response = +""
-        @state = :awaiting_key
-        @current_key = +""
-        @escape = false
-
-        @full_output =
-          property_names.reduce({}) do |memo, pn|
-            memo[pn.to_sym] = +""
-            memo
+      def initialize(json_schema_properties)
+        @property_names = json_schema_properties.keys.map(&:to_sym)
+        @property_cursors =
+          json_schema_properties.reduce({}) do |m, (k, prop)|
+            m[k.to_sym] = 0 if prop[:type] == "string"
+            m
           end
 
-        # Partial output is what we processed in the last chunk.
-        @partial_output_proto = @full_output.deep_dup
-        @last_chunk_output = @full_output.deep_dup
+        @tracked = {}
+
+        @partial_json_tracker = JsonStreamingTracker.new(self)
       end
 
-      attr_reader :full_output, :last_chunk_output
+      attr_reader :last_chunk_buffer
 
       def <<(raw)
-        @raw_response << raw
+        @partial_json_tracker << raw
+      end
 
-        @last_chunk_output = @partial_output_proto.deep_dup
+      def read_latest_buffered_chunk
+        @property_names.reduce({}) do |memo, pn|
+          if @tracked[pn].present?
+            # This means this property is a string and we want to return unread chunks.
+            if @property_cursors[pn].present?
+              unread = @tracked[pn][@property_cursors[pn]..]
 
-        raw.each_char do |char|
-          case @state
-          when :awaiting_key
-            if char == "\""
-              @current_key = +""
-              @state = :parsing_key
-              @escape = false
-            end
-          when :parsing_key
-            if char == "\""
-              @state = :awaiting_colon
+              memo[pn] = unread if unread.present?
+              @property_cursors[pn] = @tracked[pn].length
             else
-              @current_key << char
+              # Ints and bools are always returned as is.
+              memo[pn] = @tracked[pn]
             end
-          when :awaiting_colon
-            @state = :awaiting_value if char == ":"
-          when :awaiting_value
-            if char == '"'
-              @escape = false
-              @state = :parsing_value
-            end
-          when :parsing_value
-            if @escape
-              # Don't add escape sequence until we know what it is
-              unescaped = unescape_char(char)
-              @full_output[@current_key.to_sym] << unescaped
-              @last_chunk_output[@current_key.to_sym] << unescaped
-
-              @escape = false
-            elsif char == "\\"
-              @escape = true
-            elsif char == "\""
-              @state = :awaiting_key_or_end
-            else
-              @full_output[@current_key.to_sym] << char
-              @last_chunk_output[@current_key.to_sym] << char
-            end
-          when :awaiting_key_or_end
-            @state = :awaiting_key if char == ","
-            # End of object or whitespace ignored here
-          else
-            next
           end
+
+          memo
         end
       end
 
-      private
+      def notify_progress(key, value)
+        key_sym = key.to_sym
+        return if !@property_names.include?(key_sym)
 
-      def unescape_char(char)
-        chars = {
-          '"' => '"',
-          '\\' => '\\',
-          "/" => "/",
-          "b" => "\b",
-          "f" => "\f",
-          "n" => "\n",
-          "r" => "\r",
-          "t" => "\t",
-        }
-
-        chars[char] || char
+        @tracked[key_sym] = value
       end
     end
   end

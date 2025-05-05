@@ -73,6 +73,7 @@ module DiscourseAi
           LlmQuota.check_quotas!(@llm_model, user)
           start_time = Time.now
 
+          @forced_json_through_prefill = false
           @partial_tool_calls = partial_tool_calls
           @output_thinking = output_thinking
 
@@ -109,12 +110,12 @@ module DiscourseAi
           structured_output = nil
 
           if model_params[:response_format].present?
-            response_structure =
-              model_params[:response_format].dig(:json_schema, :schema, :required)
+            schema_properties =
+              model_params[:response_format].dig(:json_schema, :schema, :properties)
 
-            if response_structure.present?
+            if schema_properties.present?
               structured_output =
-                DiscourseAi::Completions::StructuredOutput.new(response_structure.map(&:to_sym))
+                DiscourseAi::Completions::StructuredOutput.new(schema_properties)
             end
           end
 
@@ -134,6 +135,10 @@ module DiscourseAi
             request_body = prepare_payload(prompt, model_params, dialect).to_json
 
             request = prepare_request(request_body)
+
+            # Some providers rely on prefill to return structured outputs, so the start
+            # of the JSON won't be included in the response. Supply it to keep JSON valid.
+            structured_output << +"{" if structured_output && @forced_json_through_prefill
 
             http.request(request) do |response|
               if response.code.to_i != 200

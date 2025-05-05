@@ -144,6 +144,7 @@ module DiscourseAi
             if model_params[:response_format].present?
               prefilled_message << " " if !prefilled_message.empty?
               prefilled_message << "{"
+              @forced_json_through_prefill = true
             end
 
             if !prefilled_message.empty?

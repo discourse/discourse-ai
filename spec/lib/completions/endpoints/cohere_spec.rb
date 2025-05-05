@@ -330,7 +330,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
 
     body = <<~TEXT
       {"is_finished":false,"event_type":"stream-start","generation_id":"eb889b0f-c27d-45ea-98cf-567bdb7fc8bf"}
-      {"is_finished":false,"event_type":"text-generation","text":"\\""}
+      {"is_finished":false,"event_type":"text-generation","text":"{\\""}
       {"is_finished":false,"event_type":"text-generation","text":"key"}
       {"is_finished":false,"event_type":"text-generation","text":"\\":\\""}
       {"is_finished":false,"event_type":"text-generation","text":"Hello!"}
@@ -366,6 +366,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     )
     expect(parsed_body[:message]).to eq("user1: thanks")
 
-    expect(structured_output.full_output).to eq({ key: "Hello!" })
+    expect(structured_output.read_latest_buffered_chunk).to eq({ key: "Hello!" })
   end
 end

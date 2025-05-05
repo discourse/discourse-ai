@@ -607,7 +607,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
         expect(JSON.parse(request.body)).to eq(expected)
 
-        expect(structured_output.full_output).to eq({ key: "Hello!" })
+        expect(structured_output.read_latest_buffered_chunk).to eq({ key: "Hello!" })
       end
     end
   end

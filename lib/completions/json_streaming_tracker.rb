@@ -2,11 +2,11 @@
 
 module DiscourseAi
   module Completions
-    class ToolCallProgressTracker
-      attr_reader :current_key, :current_value, :tool_call
+    class JsonStreamingTracker
+      attr_reader :current_key, :current_value, :stream_consumer
 
-      def initialize(tool_call)
-        @tool_call = tool_call
+      def initialize(stream_consumer)
+        @stream_consumer = stream_consumer
         @current_key = nil
         @current_value = nil
         @parser = DiscourseAi::Completions::JsonStreamingParser.new
@@ -18,7 +18,7 @@ module DiscourseAi
 
         @parser.value do |v|
           if @current_key
-            tool_call.notify_progress(@current_key, v)
+            stream_consumer.notify_progress(@current_key, v)
             @current_key = nil
           end
         end
@@ -39,7 +39,7 @@ module DiscourseAi
 
         if @parser.state == :start_string && @current_key
           # this is is worth notifying
-          tool_call.notify_progress(@current_key, @parser.buf)
+          stream_consumer.notify_progress(@current_key, @parser.buf)
         end
 
         @current_key = nil if @parser.state == :end_value

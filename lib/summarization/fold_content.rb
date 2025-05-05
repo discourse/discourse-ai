@@ -115,10 +115,13 @@ module DiscourseAi
           Proc.new do |partial, cancel, _, type|
             if type == :structured_output
               json_summary_schema_key = bot.persona.response_format&.first.to_h
-              partial_summary = partial[json_summary_schema_key[:key].to_sym]
+              partial_summary =
+                partial.read_latest_buffered_chunk[json_summary_schema_key[:key].to_sym]
 
-              summary << partial_summary
-              on_partial_blk.call(partial_summary, cancel) if on_partial_blk
+              if partial_summary.present?
+                summary << partial_summary
+                on_partial_blk.call(partial_summary, cancel) if on_partial_blk
+              end
             elsif type.blank?
               # Assume response is a regular completion.
               summary << partial

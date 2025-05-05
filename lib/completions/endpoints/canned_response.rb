@@ -90,11 +90,11 @@ module DiscourseAi
         end
 
         def as_structured_output(response)
-          keys = model_params[:response_format].dig(:json_schema, :schema, :properties)&.keys
-          return response if keys.blank?
+          schema_properties = model_params[:response_format].dig(:json_schema, :schema, :properties)
+          return response if schema_properties.blank?
 
-          output = DiscourseAi::Completions::StructuredOutput.new(keys)
-          output << { keys.first => response }.to_json
+          output = DiscourseAi::Completions::StructuredOutput.new(schema_properties)
+          output << { schema_properties.keys.first => response }.to_json
 
           output
         end

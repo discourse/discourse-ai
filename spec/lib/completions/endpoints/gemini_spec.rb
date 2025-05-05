@@ -487,7 +487,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         structured_response = partial
       end
 
-      expect(structured_response.full_output).to eq({ key: "Hello!" })
+      expect(structured_response.read_latest_buffered_chunk).to eq({ key: "Hello!" })
 
       parsed = JSON.parse(req_body, symbolize_names: true)
 
