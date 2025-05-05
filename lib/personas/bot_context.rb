@@ -50,6 +50,7 @@ module DiscourseAi
         @site_description = site_description
         @time = time
         @feature_name = feature_name
+        @resource_url = resource_url
 
         if post
           @post_id = post.id
