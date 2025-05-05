@@ -10,9 +10,6 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
 
   before { SiteSetting.ai_summarization_enabled = true }
 
-  before { DiscourseAi::Completions::Endpoints::Fake.delays = [] }
-  after { DiscourseAi::Completions::Endpoints::Fake.reset! }
-
   describe "#summarize" do
     before do
       # Make sure each content fits in a single chunk.
