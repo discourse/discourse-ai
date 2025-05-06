@@ -3,6 +3,7 @@ import Controller from "@ember/controller";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import { service } from "@ember/service";
+import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import UppyUpload from "discourse/lib/uppy/uppy-upload";
 import UppyMediaOptimization from "discourse/lib/uppy-media-optimization-plugin";
@@ -15,7 +16,7 @@ export default class DiscourseAiBotConversations extends Controller {
   @service site;
   @service siteSettings;
 
-  @tracked uploads = [];
+  @tracked uploads = new TrackedArray();
   // Don't track this directly - we'll get it from uppyUpload
 
   textarea = null;
@@ -45,8 +46,6 @@ export default class DiscourseAiBotConversations extends Controller {
 
   init() {
     super.init(...arguments);
-
-    this.uploads = [];
 
     this.uppyUpload = new UppyUpload(getOwner(this), {
       id: "ai-bot-file-uploader",
@@ -85,7 +84,7 @@ export default class DiscourseAiBotConversations extends Controller {
       },
 
       uploadDone: (upload) => {
-        this.uploads.pushObject(upload);
+        this.uploads.push(upload);
       },
 
       // Fix: Don't try to set inProgressUploads directly
@@ -162,7 +161,7 @@ export default class DiscourseAiBotConversations extends Controller {
 
   @action
   removeUpload(upload) {
-    this.uploads.removeObject(upload);
+    this.uploads = new TrackedArray(this.uploads.filter((u) => u !== upload));
   }
 
   @action
@@ -178,7 +177,7 @@ export default class DiscourseAiBotConversations extends Controller {
     this.aiBotConversationsHiddenSubmit.uploads = this.uploads;
     try {
       await this.aiBotConversationsHiddenSubmit.submitToBot();
-      this.uploads.clear();
+      this.uploads = new TrackedArray();
     } catch (error) {
       popupAjaxError(error);
     }
