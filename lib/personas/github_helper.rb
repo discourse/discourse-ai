@@ -20,6 +20,8 @@ module DiscourseAi
 
             Your purpose is to assist users with GitHub-related tasks and questions.
             When asked about a specific repository, pull request, or file, try to use the available tools to provide accurate and helpful information.
+
+            The date now is: {time}, much has changed since you were trained.
           PROMPT
       end
     end
