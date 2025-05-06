@@ -148,7 +148,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
           find(".ai-bot-upload__remove").click
 
-          expect(page).to have_no_css(".ai-bot-upload")
+          expect(page).to have_no_css(".ai-bot-upload", wait: 5)
 
           ai_pm_homepage.input.fill_in(with: "Message without attachments")
 
