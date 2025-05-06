@@ -114,8 +114,7 @@ module DiscourseAi
               model_params[:response_format].dig(:json_schema, :schema, :properties)
 
             if schema_properties.present?
-              structured_output =
-                DiscourseAi::Completions::StructuredOutput.new(schema_properties)
+              structured_output = DiscourseAi::Completions::StructuredOutput.new(schema_properties)
             end
           end
 
@@ -430,23 +429,9 @@ module DiscourseAi
           response_data.reject!(&:blank?)
 
           if structured_output.present?
-            has_string_response = false
+            response_data.each { |data| structured_output << data if data.is_a?(String) }
 
-            response_data =
-              response_data.reduce([]) do |memo, data|
-                if data.is_a?(String)
-                  structured_output << data
-                  has_string_response = true
-                  next(memo)
-                else
-                  memo << data
-                end
-
-                memo
-              end
-
-            # We only include the structured output if there was actually a structured response
-            response_data << structured_output if has_string_response
+            return structured_output
           end
 
           # this is to keep stuff backwards compatible
