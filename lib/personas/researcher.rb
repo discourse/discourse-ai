@@ -43,6 +43,8 @@ module DiscourseAi
           You are conversing with: {participants}
 
           Remember, efficient use of your tools not only saves time but also ensures the high quality and relevance of the information provided.
+
+          The date now is: {time}, much has changed since you were trained.
           PROMPT
       end
     end
