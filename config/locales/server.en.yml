@@ -296,6 +296,9 @@ en:
         designer:
           name: Designer
           description: "AI Bot specialized in generating and editing images"
+        forum_researcher:
+          name: Forum Researcher
+          description: "AI Bot specialized in deep research for the forum"
         sql_helper:
           name: SQL Helper
           description: "AI Bot specialized in helping craft SQL queries on this Discourse instance"
@@ -385,6 +388,7 @@ en:
         javascript_evaluator: "Evaluate JavaScript"
         create_image: "Creating image"
         edit_image: "Editing image"
+        researcher: "Researching"
       tool_help:
         read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Update a web artifact using the AI Bot"
@@ -411,6 +415,7 @@ en:
         dall_e: "Generate image using DALL-E 3"
         search_meta_discourse: "Search Meta Discourse"
         javascript_evaluator: "Evaluate JavaScript"
+        researcher: "Research forum information using the AI Bot"
       tool_description:
         read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Updated a web artifact using the AI Bot"
@@ -445,6 +450,9 @@ en:
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
         setting_context: "Reading context for: %{setting_name}"
         schema: "%{tables}"
+        researcher:
+          one: "Found %{count} result for '%{filter}'"
+          other: "Found %{count} results for '%{filter}'"
         search_settings:
           one: "Found %{count} result for '%{query}'"
           other: "Found %{count} results for '%{query}'"
