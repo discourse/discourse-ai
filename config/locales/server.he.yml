@@ -109,6 +109,8 @@ he:
       flagged_by_toxicity: תוסף הבינה המלאכותית סימן את זה לאחר סיווג כרעיל.
       flagged_by_nsfw: תוסף הבינה המלאכותית סימן את זה לאחר סיווג לפחות אחת התמונות כפוגעניות.
   reports:
+    sentiment_analysis:
+      title: "ניתוח הבעות"
     overall_sentiment:
       title: "רגש כללי"
       description: 'התרשים משווה את מספר הפוסטים שמסווגים כחיוביים או שליליים. אלו מחושבים כאשר ניקוד חיובי או שלילי הוא גדול מסף הניקוד המוגדר. משמעות הדבר היא שפוסטים נייטרליים לא מופיעים. הודעות אישיות מוחרגות גם כן. מסווגות באמצעות „cardiffnlp/twitter-roberta-base-sentiment-latest”'
@@ -252,6 +254,7 @@ he:
     spam_detection:
       flag_reason: "סומן כספאם ע״י <a href='%{url}'>בינה מלאכותית של Discourse</a>"
       silence_reason: "המשתמש הושתק אוטומטית על ידי <a href='%{url}'>בינה מלאכותית של Discourse</a>"
+      invalid_error_type: "סוג השגיאה שסופק לא תקין"
       unexpected: "אירעה שגיאה בלתי צפויה"
     ai_bot:
       reply_error: "נראה שהמערכת שלך נתקלה בקשיים לא צפויים בעת הניסיון להשיב, עמך הסליחה.\n\n[details='פרטי השגיאה']\n%{details}\n[/details]"
@@ -295,6 +298,10 @@ he:
         web_artifact_creator:
           name: "יוצר תוצרים דפדפניים"
           description: "בוט בינה מלאכותית שמתמחה ביצירת תוצרים אינטרנטיים אינטראקטיביים"
+        summarizer:
+          name: "מסכם"
+        short_summarizer:
+          name: "מסכם (מקוצר)"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"

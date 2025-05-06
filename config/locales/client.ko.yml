@@ -70,6 +70,10 @@ ko:
         enabled: "활성화?"
         allowed_groups: "허용 된 그룹"
         delete: "삭제하기"
+        response_format:
+          open_modal: "편집"
+          modal:
+            key_title: "키"
       rag:
         uploads:
           title: "업로드된 파일"

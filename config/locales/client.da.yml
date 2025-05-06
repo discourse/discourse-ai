@@ -69,6 +69,10 @@ da:
         enabled: "Aktiveret?"
         allowed_groups: "Tilladte grupper"
         delete: "Slet"
+        response_format:
+          open_modal: "Rediger"
+          modal:
+            key_title: "Nøgle"
       rag:
         uploads:
           title: "Overførsler"

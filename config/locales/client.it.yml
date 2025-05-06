@@ -284,6 +284,10 @@ it:
         rag_conversation_chunks: "Cerca blocchi di conversazione"
         rag_conversation_chunks_help: "Il numero di blocchi da utilizzare per le ricerche del modello RAG. Aumenta per aumentare la quantità di contesto che l'IA può utilizzare."
         persona_description: "I personaggi sono una potente funzionalità che ti consente di personalizzare il comportamento del motore IA nel tuo forum Discourse. Agiscono come un \"messaggio di sistema\" che guida le risposte e le interazioni dell'IA, aiutando a creare un'esperienza utente più personalizzata e coinvolgente."
+        response_format:
+          open_modal: "Modifica"
+          modal:
+            key_title: "Chiave"
       rag:
         options:
           rag_chunk_tokens: "Carica token di blocco"

@@ -284,6 +284,10 @@ pt_BR:
         rag_conversation_chunks: "Pesquisar pedaços de conversa"
         rag_conversation_chunks_help: "O número de pedaços a serem usados para pesquisas de modelo RAG. Aumente para incrementar a quantidade de contexto que a IA pode usar."
         persona_description: "Personas são um recurso poderoso que permite personalizar o comportamento da engine de IA no seu fórum do Discourse. Atuam como uma \"mensagem de sistema\" que orienta as respostas e as interações da IA, ajudando a criar uma experiência mais personzalidada e envolvente para o(a) usuário(a)."
+        response_format:
+          open_modal: "Editar"
+          modal:
+            key_title: "Chave"
       rag:
         options:
           rag_chunk_tokens: "Enviar tokens de pedaço"

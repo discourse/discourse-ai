@@ -68,6 +68,10 @@ sv:
         enabled: "Aktiverad?"
         allowed_groups: "Tillåtna grupper"
         delete: "Radera"
+        response_format:
+          open_modal: "Redigera"
+          modal:
+            key_title: "Key"
       rag:
         uploads:
           title: "Uppladdningar"

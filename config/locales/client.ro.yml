@@ -67,6 +67,8 @@ ro:
         save: "Salvare"
         enabled: "Activat?"
         delete: "Șterge"
+        response_format:
+          open_modal: "Modifică"
       rag:
         uploads:
           title: "Urcări"

@@ -61,6 +61,10 @@ bs_BA:
         enabled: "Omogućen?"
         allowed_groups: "Dozvoljene grupe"
         delete: "Delete"
+        response_format:
+          open_modal: "Edit"
+          modal:
+            key_title: "Ključ"
       rag:
         uploads:
           title: "Uploads"

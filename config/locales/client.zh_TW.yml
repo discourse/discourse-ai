@@ -65,6 +65,10 @@ zh_TW:
         save: "保存"
         enabled: "啟用?"
         delete: "刪除"
+        response_format:
+          open_modal: "編輯"
+          modal:
+            key_title: "金鑰"
       rag:
         uploads:
           title: "上傳檔案"

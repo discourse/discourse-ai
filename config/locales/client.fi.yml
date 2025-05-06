@@ -284,6 +284,10 @@ fi:
         rag_conversation_chunks: "Hakukeskustelulohkot"
         rag_conversation_chunks_help: "RAG-mallin hauissa käytettävien lohkojen määrä. Lisää kontekstin määrää, jota tekoäly voi käyttää, kasvattamalla arvoa."
         persona_description: "Personat ovat tehokas ominaisuus, jonka avulla voit mukauttaa tekoälymoduulin toimintaa Discourse-foorumillasi. Ne toimivat \"järjestelmäviestinä\", joka ohjaa tekoälyn vastauksia ja vuorovaikutusta ja auttaa luomaan personoidumman ja kiinnostavamman käyttökokemuksen."
+        response_format:
+          open_modal: "Muokkaa"
+          modal:
+            key_title: "Avain"
       rag:
         options:
           rag_chunk_tokens: "Latauslohkotokenit"

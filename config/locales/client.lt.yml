@@ -104,6 +104,10 @@ lt:
         save: "Išsaugoti"
         enabled: "Galimas?"
         delete: "Pašalinti"
+        response_format:
+          open_modal: "Redaguoti"
+          modal:
+            key_title: "Raktas"
       rag:
         uploads:
           title: "Įkėlimai"

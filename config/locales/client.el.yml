@@ -67,6 +67,10 @@ el:
         enabled: "Ενεργοποιημένο;"
         allowed_groups: "Επιτρεπόμενες ομάδες"
         delete: "Σβήσιμο"
+        response_format:
+          open_modal: "Επεξεργασία"
+          modal:
+            key_title: "Κλειδί"
       rag:
         uploads:
           title: "Μεταφορτώσεις"

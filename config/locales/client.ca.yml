@@ -64,6 +64,10 @@ ca:
         save: "Desa"
         enabled: "Activat?"
         delete: "Suprimeix"
+        response_format:
+          open_modal: "Edita"
+          modal:
+            key_title: "Clau"
       rag:
         uploads:
           title: "Càrregues"

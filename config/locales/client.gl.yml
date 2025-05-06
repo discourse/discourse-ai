@@ -66,6 +66,10 @@ gl:
         enabled: "Activado?"
         allowed_groups: "Grupos permitidos"
         delete: "Eliminar"
+        response_format:
+          open_modal: "Editar"
+          modal:
+            key_title: "Chave"
       rag:
         uploads:
           title: "Cargas"

@@ -284,6 +284,10 @@ fr:
         rag_conversation_chunks: "Rechercher des morceaux de conversation"
         rag_conversation_chunks_help: "Le nombre de segments à utiliser pour les recherches de modèles RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser."
         persona_description: "Les personnages sont une fonctionnalité puissante qui vous permet de personnaliser le comportement du moteur d'IA dans votre forum Discourse. Ils agissent comme un « message système » qui guide les réponses et les interactions de l'IA, en contribuant ainsi à créer une expérience utilisateur plus personnalisée et plus interactive."
+        response_format:
+          open_modal: "Modifier"
+          modal:
+            key_title: "Clé"
       rag:
         options:
           rag_chunk_tokens: "Téléverser des jetons de morceaux"

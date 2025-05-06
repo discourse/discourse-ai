@@ -284,6 +284,10 @@ tr_TR:
         rag_conversation_chunks: "Konuşma parçalarını ara"
         rag_conversation_chunks_help: "RAG modeli aramaları için kullanılacak parça sayısı. YZ'nin kullanabileceği bağlam miktarını artırmak için artırın."
         persona_description: "Kişilikler, Discourse forumunuzdaki YZ motorunun davranışını özelleştirmenize olanak tanıyan güçlü bir özelliktir. YZ'nin yanıtlarını ve etkileşimlerini yönlendiren bir \"sistem mesajı\" olarak hareket ederek daha kişiselleştirilmiş ve ilgi çekici bir kullanıcı deneyimi oluşturmaya yardımcı olurlar."
+        response_format:
+          open_modal: "Düzenle"
+          modal:
+            key_title: "Anahtar"
       rag:
         options:
           rag_chunk_tokens: "Parça token'ı yükle"

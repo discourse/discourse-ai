@@ -131,6 +131,8 @@ id:
         delete: "Hapus"
         temperature: "Temperatur"
         top_p: "Top P"
+        response_format:
+          open_modal: "Ubah"
       rag:
         uploads:
           uploading: "Mengunggah..."

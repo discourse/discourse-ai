@@ -61,6 +61,10 @@ hy:
         save: "Պահպանել"
         enabled: "Միացվա՞ծ է:"
         delete: "Ջնջել"
+        response_format:
+          open_modal: "Խմբագրել"
+          modal:
+            key_title: "Բանալի"
       rag:
         uploads:
           title: "Վերբեռնումներ"

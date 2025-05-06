@@ -58,6 +58,8 @@ be:
         user: карыстальнік
         save: "Захаваць"
         delete: "выдаляць"
+        response_format:
+          open_modal: "рэдагаваць"
       rag:
         uploads:
           title: "Загрузкі"

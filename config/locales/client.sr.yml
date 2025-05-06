@@ -60,6 +60,8 @@ sr:
         enabled: "Omgućeno"
         allowed_groups: "Dozvoljene grupe"
         delete: "Obriši"
+        response_format:
+          open_modal: "Izmeni"
       rag:
         uploads:
           uploading: "Uploading..."

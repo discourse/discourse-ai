@@ -282,6 +282,10 @@ ja:
         rag_conversation_chunks: "会話チャンクを検索"
         rag_conversation_chunks_help: "RAG モデル検索に使用するチャンクの数。値を増やすと、AI が使用できるコンテキストの量が増えます。"
         persona_description: "ペルソナは、Discourse フォーラムの AI エンジンの動作をカスタマイズできる強力な機能です。AI の応答と対話を誘導する「システムメッセージ」として機能し、よりパーソナライズされた魅力的なユーザーエクスペリエンスの作成に役立ちます。"
+        response_format:
+          open_modal: "編集"
+          modal:
+            key_title: "キー"
       rag:
         options:
           rag_chunk_tokens: "チャンクトークンをアップロード"
