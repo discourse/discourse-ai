@@ -34,7 +34,30 @@ module DiscourseAi
 
         search_string = search_terms.join(" ").to_s
 
-        results = ::Search.execute(search_string, search_type: :full_page, guardian: guardian)
+        begin
+          results = ::Search.execute(search_string, search_type: :full_page, guardian: guardian)
+        rescue Discourse::InvalidAccess => e
+          return(
+            {
+              args: {
+                search_query: search_query,
+                category: category,
+                user: user,
+                order: order,
+                max_posts: max_posts,
+                tags: tags,
+                before: before,
+                after: after,
+                status: status,
+                max_results: max_results,
+              }.compact,
+              rows: [],
+              instruction: I18n.t("invalid_access"),
+              error: e.message,
+            }
+          )
+        end
+
         results_limit = max_results
 
         should_try_semantic_search =
