@@ -137,7 +137,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(page).to have_no_css(".ai-bot-upload")
         end
 
-        it "allows removing an upload before submission" do
+        it "allows removing an upload before submission", video: true, trace: true do
           ai_pm_homepage.visit
           expect(ai_pm_homepage).to have_homepage
 
@@ -146,7 +146,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
           expect(page).to have_css(".ai-bot-upload", count: 1)
 
-          expect(page).to have_css(".ai-bot-upload__remove")
           find(".ai-bot-upload__remove").click
 
           expect(page).to have_no_css(".ai-bot-upload")
