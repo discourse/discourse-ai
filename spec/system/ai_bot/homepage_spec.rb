@@ -146,6 +146,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
           expect(page).to have_css(".ai-bot-upload", count: 1)
 
+          expect(page).to have_css(".ai-bot-upload__remove")
           find(".ai-bot-upload__remove").click
 
           expect(page).to have_no_css(".ai-bot-upload")
