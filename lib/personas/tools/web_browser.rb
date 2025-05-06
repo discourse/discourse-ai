@@ -45,6 +45,9 @@ module DiscourseAi
           end
 
           { url: url, error: "Failed to retrieve the web page" }
+        rescue StandardError
+          # keeping information opaque for now just in case
+          { url: url, error: "Failed to retrieve the web page" }
         end
 
         def description_args
