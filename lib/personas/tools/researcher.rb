@@ -41,8 +41,8 @@ module DiscourseAi
 
           def custom_system_message
             <<~TEXT
-            Use the researcher tool to analyze patterns and extract insights from forum content.
-            For complex research tasks, start with a dry run to gauge the scope before processing.
+              Use the researcher tool to analyze patterns and extract insights from forum content.
+              For complex research tasks, start with a dry run to gauge the scope before processing.
             TEXT
           end
 
@@ -54,26 +54,14 @@ module DiscourseAi
         def invoke
           @last_filter = parameters[:filter] || ""
           goal = parameters[:goal] || ""
-          dry_run = parameters[:dry_run].nil? ? true : parameters[:dry_run]
 
-          yield(I18n.t("discourse_ai.ai_bot.researching", filter: @last_filter, goal: goal))
+          #dry_run = parameters[:dry_run].nil? ? true : parameters[:dry_run]
+          #yield(I18n.t("discourse_ai.ai_bot.researching", filter: @last_filter, goal: goal))
 
-          # Parse the filter string to extract components
-          filter_components = parse_filter(@last_filter)
+          filter = DiscourseAi::Utils::Research::Filter.new(@last_filter)
 
-          # Determine max results
-          max_results = calculate_max_results(llm)
-
-          # In a real implementation, we would query the database here
-          # For now, just simulate the behavior
-          if dry_run
-            @result_count = simulate_count(filter_components)
-            { count: @result_count, filter: @last_filter, goal: goal, dry_run: true }
-          else
-            results = perform_research(filter_components, goal, max_results)
-            @result_count = results[:rows]&.length || 0
-            results
-          end
+          @result_count = filter.search.count
+          { dry_run: true, goal: goal, filter: @last_filter, number_of_results: @result_count }
         end
 
         protected
@@ -83,15 +71,6 @@ module DiscourseAi
         end
 
         private
-
-        def parse_filter(filter_string)
-          # This would parse the filter string into components
-          # For example, extracting username, date ranges, categories, tags, etc.
-          # Simplified implementation for now
-          components = {}
-          components[:raw] = filter_string
-          components
-        end
 
         def simulate_count(filter_components)
           # In a real implementation, this would query the database to get a count
