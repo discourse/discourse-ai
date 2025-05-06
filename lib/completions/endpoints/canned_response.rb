@@ -68,6 +68,7 @@ module DiscourseAi
           end
 
           response = response.first if response.is_a?(Array) && response.length == 1
+
           response
         end
 
