@@ -34,7 +34,12 @@ module DiscourseAi
         end
 
         def prepare_payload(prompt, model_params, dialect)
-          payload = default_options.merge(model_params).merge(messages: prompt)
+          payload =
+            default_options.merge(model_params.except(:response_format)).merge(messages: prompt)
+
+          if model_params[:response_format].present?
+            payload[:response_format] = { type: "json_object" }
+          end
 
           payload[:stream] = true if @streaming_mode
 

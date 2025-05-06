@@ -116,8 +116,13 @@ module DiscourseAi
           payload = nil
 
           if dialect.is_a?(DiscourseAi::Completions::Dialects::Claude)
-            payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
+            payload =
+              default_options(dialect).merge(model_params.except(:response_format)).merge(
+                messages: prompt.messages,
+              )
             payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
+
+            prefilled_message = +""
 
             if prompt.has_tools?
               payload[:tools] = prompt.tools
@@ -128,14 +133,22 @@ module DiscourseAi
                   # payload[:tool_choice] = { type: "none" }
 
                   # prefill prompt to nudge LLM to generate a response that is useful, instead of trying to call a tool
-                  payload[:messages] << {
-                    role: "assistant",
-                    content: dialect.no_more_tool_calls_text,
-                  }
+                  prefilled_message << dialect.no_more_tool_calls_text
                 else
                   payload[:tool_choice] = { type: "tool", name: prompt.tool_choice }
                 end
               end
+            end
+
+            # Prefill prompt to force JSON output.
+            if model_params[:response_format].present?
+              prefilled_message << " " if !prefilled_message.empty?
+              prefilled_message << "{"
+              @forced_json_through_prefill = true
+            end
+
+            if !prefilled_message.empty?
+              payload[:messages] << { role: "assistant", content: prefilled_message }
             end
           elsif dialect.is_a?(DiscourseAi::Completions::Dialects::Nova)
             payload = prompt.to_payload(default_options(dialect).merge(model_params))

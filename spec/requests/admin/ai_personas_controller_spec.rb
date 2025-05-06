@@ -185,6 +185,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           default_llm_id: llm_model.id,
           question_consolidator_llm_id: llm_model.id,
           forced_tool_count: 2,
+          response_format: [{ key: "summary", type: "string" }],
         }
       end
 
@@ -209,6 +210,9 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona_json["allow_chat_channel_mentions"]).to eq(true)
           expect(persona_json["allow_chat_direct_messages"]).to eq(true)
           expect(persona_json["question_consolidator_llm_id"]).to eq(llm_model.id)
+          expect(persona_json["response_format"].map { |rf| rf["key"] }).to contain_exactly(
+            "summary",
+          )
 
           persona = AiPersona.find(persona_json["id"])
 

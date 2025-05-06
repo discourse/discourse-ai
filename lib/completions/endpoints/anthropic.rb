@@ -88,10 +88,16 @@ module DiscourseAi
         def prepare_payload(prompt, model_params, dialect)
           @native_tool_support = dialect.native_tool_support?
 
-          payload = default_options(dialect).merge(model_params).merge(messages: prompt.messages)
+          payload =
+            default_options(dialect).merge(model_params.except(:response_format)).merge(
+              messages: prompt.messages,
+            )
 
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode
+
+          prefilled_message = +""
+
           if prompt.has_tools?
             payload[:tools] = prompt.tools
             if dialect.tool_choice.present?
@@ -100,14 +106,22 @@ module DiscourseAi
 
                 # prefill prompt to nudge LLM to generate a response that is useful.
                 # without this LLM (even 3.7) can get confused and start text preambles for a tool calls.
-                payload[:messages] << {
-                  role: "assistant",
-                  content: dialect.no_more_tool_calls_text,
-                }
+                prefilled_message << dialect.no_more_tool_calls_text
               else
                 payload[:tool_choice] = { type: "tool", name: prompt.tool_choice }
               end
             end
+          end
+
+          # Prefill prompt to force JSON output.
+          if model_params[:response_format].present?
+            prefilled_message << " " if !prefilled_message.empty?
+            prefilled_message << "{"
+            @forced_json_through_prefill = true
+          end
+
+          if !prefilled_message.empty?
+            payload[:messages] << { role: "assistant", content: prefilled_message }
           end
 
           payload

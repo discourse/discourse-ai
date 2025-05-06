@@ -72,6 +72,8 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
 
   persona.tools = tools.map { |name, value| [name, value] }
 
+  persona.response_format = instance.response_format
+
   persona.system_prompt = instance.system_prompt
   persona.top_p = instance.top_p
   persona.temperature = instance.temperature

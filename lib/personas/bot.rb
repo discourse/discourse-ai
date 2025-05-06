@@ -64,10 +64,13 @@ module DiscourseAi
 
         user = context.user
 
-        llm_kwargs = { user: user }
+        llm_kwargs = llm_args.dup
+        llm_kwargs[:user] = user
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
-        llm_kwargs[:max_tokens] = llm_args[:max_tokens] if llm_args[:max_tokens].present?
+        llm_kwargs[:response_format] = build_json_schema(
+          persona.response_format,
+        ) if persona.response_format.present?
 
         needs_newlines = false
         tools_ran = 0
@@ -148,6 +151,8 @@ module DiscourseAi
                       raw_context << partial
                       current_thinking << partial
                     end
+                  elsif partial.is_a?(DiscourseAi::Completions::StructuredOutput)
+                    update_blk.call(partial, cancel, nil, :structured_output)
                   else
                     update_blk.call(partial, cancel)
                   end
@@ -174,6 +179,10 @@ module DiscourseAi
         end
 
         embed_thinking(raw_context)
+      end
+
+      def returns_json?
+        persona.response_format.present?
       end
 
       private
@@ -300,6 +309,30 @@ module DiscourseAi
         end
 
         placeholder
+      end
+
+      def build_json_schema(response_format)
+        properties =
+          response_format
+            .to_a
+            .reduce({}) do |memo, format|
+              memo[format[:key].to_sym] = { type: format[:type] }
+              memo
+            end
+
+        {
+          type: "json_schema",
+          json_schema: {
+            name: "reply",
+            schema: {
+              type: "object",
+              properties: properties,
+              required: properties.keys.map(&:to_s),
+              additionalProperties: false,
+            },
+            strict: true,
+          },
+        }
       end
     end
   end

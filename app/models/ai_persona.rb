@@ -325,9 +325,11 @@ class AiPersona < ActiveRecord::Base
   end
 
   def system_persona_unchangeable
+    error_msg = I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona")
+
     if top_p_changed? || temperature_changed? || system_prompt_changed? || name_changed? ||
          description_changed?
-      errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
+      errors.add(:base, error_msg)
     elsif tools_changed?
       old_tools = tools_change[0]
       new_tools = tools_change[1]
@@ -335,9 +337,12 @@ class AiPersona < ActiveRecord::Base
       old_tool_names = old_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
       new_tool_names = new_tools.map { |t| t.is_a?(Array) ? t[0] : t }.to_set
 
-      if old_tool_names != new_tool_names
-        errors.add(:base, I18n.t("discourse_ai.ai_bot.personas.cannot_edit_system_persona"))
-      end
+      errors.add(:base, error_msg) if old_tool_names != new_tool_names
+    elsif response_format_changed?
+      old_format = response_format_change[0].map { |f| f["key"] }.to_set
+      new_format = response_format_change[1].map { |f| f["key"] }.to_set
+
+      errors.add(:base, error_msg) if old_format != new_format
     end
   end
 
@@ -395,6 +400,7 @@ end
 #  rag_llm_model_id             :bigint
 #  default_llm_id               :bigint
 #  question_consolidator_llm_id :bigint
+#  response_format              :jsonb
 #
 # Indexes
 #
