@@ -137,7 +137,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(page).to have_no_css(".ai-bot-upload")
         end
 
-        it "allows removing an upload before submission", video: true, trace: true do
+        it "allows removing an upload before submission" do
           ai_pm_homepage.visit
           expect(ai_pm_homepage).to have_homepage
 
@@ -145,7 +145,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           attach_file([file_path]) { find(".ai-bot-upload-btn", visible: true).click }
           expect(page).to have_css(".ai-bot-upload", count: 1)
 
-          # TODO: for some reason this line fails in playwright
           find(".ai-bot-upload__remove").click
 
           expect(page).to have_no_css(".ai-bot-upload")
