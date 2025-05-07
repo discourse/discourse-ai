@@ -42,6 +42,7 @@ module DiscourseAi
             result = { system: system, messages: messages }
             result[:inferenceConfig] = inference_config if inference_config.present?
             result[:toolConfig] = tool_config if tool_config.present?
+            result[:response_format] = { type: "json_object" } if options[:response_format].present?
 
             result
           end

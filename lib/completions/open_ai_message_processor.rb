@@ -59,7 +59,7 @@ module DiscourseAi::Completions
         if id.present? && name.present?
           @tool_arguments = +""
           @tool = ToolCall.new(id: id, name: name)
-          @streaming_parser = ToolCallProgressTracker.new(self) if @partial_tool_calls
+          @streaming_parser = JsonStreamingTracker.new(self) if @partial_tool_calls
         end
 
         @tool_arguments << arguments.to_s

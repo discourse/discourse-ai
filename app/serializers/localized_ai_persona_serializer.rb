@@ -30,7 +30,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allow_chat_direct_messages,
              :allow_topic_mentions,
              :allow_personal_messages,
-             :force_default_llm
+             :force_default_llm,
+             :response_format
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

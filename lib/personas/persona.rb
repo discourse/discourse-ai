@@ -160,6 +160,10 @@ module DiscourseAi
         {}
       end
 
+      def response_format
+        nil
+      end
+
       def available_tools
         self
           .class

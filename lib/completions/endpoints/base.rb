@@ -73,6 +73,7 @@ module DiscourseAi
           LlmQuota.check_quotas!(@llm_model, user)
           start_time = Time.now
 
+          @forced_json_through_prefill = false
           @partial_tool_calls = partial_tool_calls
           @output_thinking = output_thinking
 
@@ -106,6 +107,17 @@ module DiscourseAi
 
           prompt = dialect.translate
 
+          structured_output = nil
+
+          if model_params[:response_format].present?
+            schema_properties =
+              model_params[:response_format].dig(:json_schema, :schema, :properties)
+
+            if schema_properties.present?
+              structured_output = DiscourseAi::Completions::StructuredOutput.new(schema_properties)
+            end
+          end
+
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
@@ -122,6 +134,10 @@ module DiscourseAi
             request_body = prepare_payload(prompt, model_params, dialect).to_json
 
             request = prepare_request(request_body)
+
+            # Some providers rely on prefill to return structured outputs, so the start
+            # of the JSON won't be included in the response. Supply it to keep JSON valid.
+            structured_output << +"{" if structured_output && @forced_json_through_prefill
 
             http.request(request) do |response|
               if response.code.to_i != 200
@@ -140,10 +156,17 @@ module DiscourseAi
               xml_stripper =
                 DiscourseAi::Completions::XmlTagStripper.new(to_strip) if to_strip.present?
 
-              if @streaming_mode && xml_stripper
+              if @streaming_mode
                 blk =
                   lambda do |partial, cancel|
-                    partial = xml_stripper << partial if partial.is_a?(String)
+                    if partial.is_a?(String)
+                      partial = xml_stripper << partial if xml_stripper
+
+                      if structured_output.present?
+                        structured_output << partial
+                        partial = structured_output
+                      end
+                    end
                     orig_blk.call(partial, cancel) if partial
                   end
               end
@@ -167,6 +190,7 @@ module DiscourseAi
                     xml_stripper: xml_stripper,
                     partials_raw: partials_raw,
                     response_raw: response_raw,
+                    structured_output: structured_output,
                   )
                 return response_data
               end
@@ -373,7 +397,8 @@ module DiscourseAi
           xml_tool_processor:,
           xml_stripper:,
           partials_raw:,
-          response_raw:
+          response_raw:,
+          structured_output:
         )
           response_raw << response.read_body
           response_data = decode(response_raw)
@@ -402,6 +427,12 @@ module DiscourseAi
           end
 
           response_data.reject!(&:blank?)
+
+          if structured_output.present?
+            response_data.each { |data| structured_output << data if data.is_a?(String) }
+
+            return structured_output
+          end
 
           # this is to keep stuff backwards compatible
           response_data = response_data.first if response_data.length == 1

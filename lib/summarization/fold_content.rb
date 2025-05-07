@@ -29,18 +29,10 @@ module DiscourseAi
 
         summary = fold(truncated_content, user, &on_partial_blk)
 
-        clean_summary = Nokogiri::HTML5.fragment(summary).css("ai")&.first&.text || summary
-
         if persist_summaries
-          AiSummary.store!(
-            strategy,
-            llm_model,
-            clean_summary,
-            truncated_content,
-            human: user&.human?,
-          )
+          AiSummary.store!(strategy, llm_model, summary, truncated_content, human: user&.human?)
         else
-          AiSummary.new(summarized_text: clean_summary)
+          AiSummary.new(summarized_text: summary)
         end
       end
 
@@ -118,9 +110,20 @@ module DiscourseAi
           )
 
         summary = +""
+
         buffer_blk =
-          Proc.new do |partial, cancel, placeholder, type|
-            if type.blank?
+          Proc.new do |partial, cancel, _, type|
+            if type == :structured_output
+              json_summary_schema_key = bot.persona.response_format&.first.to_h
+              partial_summary =
+                partial.read_latest_buffered_chunk[json_summary_schema_key[:key].to_sym]
+
+              if partial_summary.present?
+                summary << partial_summary
+                on_partial_blk.call(partial_summary, cancel) if on_partial_blk
+              end
+            elsif type.blank?
+              # Assume response is a regular completion.
               summary << partial
               on_partial_blk.call(partial, cancel) if on_partial_blk
             end
@@ -153,12 +156,6 @@ module DiscourseAi
         ].join(" ")
 
         item
-      end
-
-      def text_only_update(&on_partial_blk)
-        Proc.new do |partial, cancel, placeholder, type|
-          on_partial_blk.call(partial, cancel) if type.blank?
-        end
       end
     end
   end

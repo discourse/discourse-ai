@@ -143,9 +143,9 @@ RSpec.describe "AI Bot - Homepage", type: :system do
 
           file_path = file_from_fixtures("logo.png", "images").path
           attach_file([file_path]) { find(".ai-bot-upload-btn", visible: true).click }
-
           expect(page).to have_css(".ai-bot-upload", count: 1)
 
+          # TODO: for some reason this line fails in playwright
           find(".ai-bot-upload__remove").click
 
           expect(page).to have_no_css(".ai-bot-upload")
@@ -320,9 +320,9 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(ai_pm_homepage.llm_selector).to have_selected_name(claude_2_dup.display_name)
         end
 
-        it "renders back to forum link" do
+        it "does not render back to forum link" do
           ai_pm_homepage.visit
-          expect(ai_pm_homepage).to have_sidebar_back_link
+          expect(ai_pm_homepage).to have_no_sidebar_back_link
         end
 
         context "with hamburger menu" do

@@ -81,7 +81,7 @@ module DiscourseAi
         end
 
         def self.delays
-          @delays ||= Array.new(10) { rand * 6 }
+          @delays ||= Array.new(10) { Rails.env.test? ? 0 : rand(0..5) }
         end
 
         def self.delays=(delays)

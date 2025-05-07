@@ -10,9 +10,6 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
 
   before { SiteSetting.ai_summarization_enabled = true }
 
-  before { DiscourseAi::Completions::Endpoints::Fake.delays = [] }
-  after { DiscourseAi::Completions::Endpoints::Fake.reset! }
-
   describe "#summarize" do
     before do
       # Make sure each content fits in a single chunk.
@@ -26,17 +23,17 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
       llm_model.update!(max_prompt_tokens: model_tokens)
     end
 
-    let(:single_summary) { "this is a summary" }
+    let(:summary) { "this is a summary" }
 
     fab!(:user)
 
     it "summarizes the content" do
       result =
-        DiscourseAi::Completions::Llm.with_prepared_responses([single_summary]) do |spy|
+        DiscourseAi::Completions::Llm.with_prepared_responses([summary]) do |spy|
           summarizer.summarize(user).tap { expect(spy.completions).to eq(1) }
         end
 
-      expect(result.summarized_text).to eq(single_summary)
+      expect(result.summarized_text).to eq(summary)
     end
   end
 

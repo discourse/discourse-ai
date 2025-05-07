@@ -15,6 +15,7 @@ class TestPersona < DiscourseAi::Personas::Persona
       {site_description}
       {participants}
       {time}
+      {resource_url}
     PROMPT
   end
 end
@@ -35,6 +36,8 @@ RSpec.describe DiscourseAi::Personas::Persona do
     AiPersona.persona_cache.flush!
   end
 
+  let(:resource_url) { "https://path-to-resource" }
+
   let(:context) do
     DiscourseAi::Personas::BotContext.new(
       site_url: Discourse.base_url,
@@ -42,6 +45,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
       site_description: "test site description",
       time: Time.zone.now,
       participants: topic_with_users.allowed_users.map(&:username).join(", "),
+      resource_url: resource_url,
     )
   end
 
@@ -60,6 +64,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
     expect(system_message).to include("test site description")
     expect(system_message).to include("joe, jane")
     expect(system_message).to include(Time.zone.now.to_s)
+    expect(system_message).to include(resource_url)
 
     tools = rendered.tools
 

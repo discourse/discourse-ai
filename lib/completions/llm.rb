@@ -304,6 +304,8 @@ module DiscourseAi
       # @param feature_context { Hash - Optional } - The feature context to use for the completion.
       # @param partial_tool_calls { Boolean - Optional } - If true, the completion will return partial tool calls.
       # @param output_thinking { Boolean - Optional } - If true, the completion will return the thinking output for thinking models.
+      # @param response_format { Hash - Optional } - JSON schema passed to the API as the desired structured output.
+      # @param [Experimental] extra_model_params { Hash - Optional } - Other params that are not available accross models. e.g. response_format JSON schema.
       #
       # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
       #
@@ -321,6 +323,7 @@ module DiscourseAi
         feature_context: nil,
         partial_tool_calls: false,
         output_thinking: false,
+        response_format: nil,
         extra_model_params: nil,
         &partial_read_blk
       )
@@ -336,6 +339,7 @@ module DiscourseAi
             feature_context: feature_context,
             partial_tool_calls: partial_tool_calls,
             output_thinking: output_thinking,
+            response_format: response_format,
             extra_model_params: extra_model_params,
           },
         )
@@ -344,6 +348,7 @@ module DiscourseAi
 
         model_params[:temperature] = temperature if temperature
         model_params[:top_p] = top_p if top_p
+        model_params[:response_format] = response_format if response_format
         model_params.merge!(extra_model_params) if extra_model_params
 
         if prompt.is_a?(String)

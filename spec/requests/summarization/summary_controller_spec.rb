@@ -74,6 +74,7 @@ RSpec.describe DiscourseAi::Summarization::SummaryController do
 
       it "returns a summary" do
         summary_text = "This is a summary"
+
         DiscourseAi::Completions::Llm.with_prepared_responses([summary_text]) do
           get "/discourse-ai/summarization/t/#{topic.id}.json"
 
