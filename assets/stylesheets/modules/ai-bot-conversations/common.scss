@@ -437,7 +437,11 @@ body.has-ai-conversations-sidebar {
   }
 
   .topic-footer-main-buttons {
-    button:not(.share-ai-conversation-button, .topic-admin-menu-trigger) {
+    button:not(
+        .create,
+        .share-ai-conversation-button,
+        .topic-admin-menu-trigger
+      ) {
       display: none;
     }
   }
