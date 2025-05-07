@@ -92,6 +92,10 @@ fa_IR:
         save: "ذخیره"
         enabled: "فعال شده؟"
         delete: "حذف"
+        response_format:
+          open_modal: "ویرایش"
+          modal:
+            key_title: "کلید"
       rag:
         uploads:
           title: "بارگذاری‌ها"

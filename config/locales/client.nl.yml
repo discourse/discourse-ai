@@ -284,6 +284,10 @@ nl:
         rag_conversation_chunks: "Conversatiechunks zoeken"
         rag_conversation_chunks_help: "Het te gebruiken aantal chunks voor zoeken door het RAG-model. Verhoog dit om de hoeveelheid context te vergroten die de AI kan gebruiken."
         persona_description: "Persona's zijn een krachtige functie waarmee je het gedrag van de AI-engine kunt aanpassen in je Discourse-forum. Ze fungeren als een 'systeembericht' dat de reacties en interacties van de AI stuurt, waardoor je een persoonlijkere en boeiendere gebruikerservaring creëert."
+        response_format:
+          open_modal: "Bewerken"
+          modal:
+            key_title: "Sleutel"
       rag:
         options:
           rag_chunk_tokens: "Uploadchunktokens"

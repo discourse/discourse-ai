@@ -64,6 +64,8 @@ nb_NO:
         save: "Lagre"
         enabled: "Aktivert?"
         delete: "Slett"
+        response_format:
+          open_modal: "Endre"
       rag:
         uploads:
           title: "Opplastinger"

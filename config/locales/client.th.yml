@@ -63,6 +63,8 @@ th:
         save: "บันทึก"
         enabled: "เปิดใช้"
         delete: "ลบ"
+        response_format:
+          open_modal: "แก้ไข"
       rag:
         uploads:
           title: "อัปโหลด"

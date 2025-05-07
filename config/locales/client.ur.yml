@@ -67,6 +67,10 @@ ur:
         save: "محفوظ کریں"
         enabled: "فعال؟"
         delete: "مٹائیں"
+        response_format:
+          open_modal: "ترمیم کریں"
+          modal:
+            key_title: "کی"
       rag:
         uploads:
           title: "اَپ لوڈز"

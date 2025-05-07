@@ -68,6 +68,10 @@ hr:
         enabled: "Omogućeno?"
         allowed_groups: "Dopuštene grupe"
         delete: "Pobriši"
+        response_format:
+          open_modal: "Uredi"
+          modal:
+            key_title: "Ključ"
       rag:
         uploads:
           title: "Prijenosi"

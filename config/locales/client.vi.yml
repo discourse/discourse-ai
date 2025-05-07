@@ -65,6 +65,10 @@ vi:
         save: "Lưu lại"
         enabled: "Kích hoạt"
         delete: "Xóa"
+        response_format:
+          open_modal: "Sửa"
+          modal:
+            key_title: "Phím"
       rag:
         uploads:
           title: "Tải lên"

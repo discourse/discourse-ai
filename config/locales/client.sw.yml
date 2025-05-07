@@ -61,6 +61,8 @@ sw:
         save: "Hifadhi"
         enabled: "Imeruhusiwa?"
         delete: "Futa"
+        response_format:
+          open_modal: "Hariri"
       rag:
         uploads:
           title: "Upakiaji"

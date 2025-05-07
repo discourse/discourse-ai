@@ -63,6 +63,8 @@ lv:
         save: "Saglabāt"
         enabled: "Ieslēgts?"
         delete: "Dzēst"
+        response_format:
+          open_modal: "Rediģēt"
       rag:
         uploads:
           title: "Augšupielādes"

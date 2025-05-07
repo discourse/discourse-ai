@@ -284,6 +284,10 @@ es:
         rag_conversation_chunks: "Buscar fragmentos de conversación"
         rag_conversation_chunks_help: "El número de fragmentos a utilizar para las búsquedas del modelo RAG. Aumentar para incrementar la cantidad de contexto que puede utilizar la IA."
         persona_description: "Las personas son una potente característica que te permite personalizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «mensaje del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más personalizada y atractiva."
+        response_format:
+          open_modal: "Editar"
+          modal:
+            key_title: "Clave"
       rag:
         options:
           rag_chunk_tokens: "Cargar tokens de fragmentos"

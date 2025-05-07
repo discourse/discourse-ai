@@ -65,6 +65,10 @@ bg:
         save: "Запази "
         enabled: "Да е включен?"
         delete: "Изтрий"
+        response_format:
+          open_modal: "Редактирай"
+          modal:
+            key_title: "Ключ"
       rag:
         uploads:
           uploading: "Качва се..."

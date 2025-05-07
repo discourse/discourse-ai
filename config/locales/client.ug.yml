@@ -68,6 +68,10 @@ ug:
         save: "ساقلا"
         enabled: "قوزغىتىلدى؟"
         delete: "ئۆچۈر"
+        response_format:
+          open_modal: "تەھرىر"
+          modal:
+            key_title: "ئاچقۇچ"
       rag:
         uploads:
           title: "يۈكلەنمە"

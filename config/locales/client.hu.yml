@@ -68,6 +68,10 @@ hu:
         save: "Mentés"
         enabled: "Engedélyezve?"
         delete: "Törlés"
+        response_format:
+          open_modal: "Szerkesztés"
+          modal:
+            key_title: "Kulcs"
       rag:
         uploads:
           title: "Feltöltések"

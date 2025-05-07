@@ -67,6 +67,10 @@ cs:
         save: "Uložit"
         enabled: "Zapnuto?"
         delete: "Smazat"
+        response_format:
+          open_modal: "Upravit"
+          modal:
+            key_title: "Klíč"
       rag:
         uploads:
           title: "Nahrané soubory"

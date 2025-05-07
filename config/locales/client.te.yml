@@ -61,6 +61,10 @@ te:
         save: "భద్రపరుచు"
         enabled: "ప్రారంభించబడిందా?"
         delete: "తొలగించు"
+        response_format:
+          open_modal: "సవరించండి"
+          modal:
+            key_title: "కీ"
       rag:
         uploads:
           title: "అప్‌లోడ్‌లు"

@@ -319,6 +319,10 @@ de:
         rag_conversation_chunks: "Unterhaltungs-Chunks durchsuchen"
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         persona_description: "Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Erlebnis für Benutzer zu schaffen."
+        response_format:
+          open_modal: "Bearbeiten"
+          modal:
+            key_title: "Schlüssel"
         list:
           enabled: "KI-Bot?"
         ai_bot:
@@ -697,7 +701,6 @@ de:
           disclaimer: "Generative KI kann Fehler machen. Überprüfe wichtige Informationen."
           placeholder: "Stell eine Frage ..."
           new: "Neue Frage"
-          min_input_length_message: "Die Nachricht muss länger als 10 Zeichen sein"
           messages_sidebar_title: "Unterhaltungen"
           today: "Heute"
           last_7_days: "Letzte 7 Tage"

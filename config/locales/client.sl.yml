@@ -65,6 +65,8 @@ sl:
         enabled: "Vključeno?"
         allowed_groups: "Dovoljene skupine"
         delete: "Izbriši"
+        response_format:
+          open_modal: "Uredi"
       rag:
         uploads:
           title: "Prenosi"

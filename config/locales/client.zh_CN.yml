@@ -298,6 +298,10 @@ zh_CN:
         rag_conversation_chunks: "搜索对话分块"
         rag_conversation_chunks_help: "为 RAG 模型搜索使用的分块数。增加分块数会增加 AI 可以使用的上下文数量。"
         persona_description: "角色是一种强大的功能，可以让您自定义 Discourse 论坛中 AI 引擎的行为。它们充当“系统消息”，指导 AI 的回答和互动，帮助创造更加个性化、引人入胜的用户体验。"
+        response_format:
+          open_modal: "编辑"
+          modal:
+            key_title: "键"
         list:
           enabled: "AI 机器人？"
         ai_bot:

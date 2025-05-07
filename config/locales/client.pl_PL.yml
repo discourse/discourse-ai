@@ -277,6 +277,10 @@ pl_PL:
         priority_help: "Priorytetowe persony są wyświetlane użytkownikom na górze listy person. Jeśli wiele person ma priorytet, zostaną one posortowane alfabetycznie."
         tool_options: "Opcje narzędzi"
         rag_conversation_chunks: "Przeszukuj fragmenty konwersacji"
+        response_format:
+          open_modal: "Edytuj"
+          modal:
+            key_title: "Klucz"
         list:
           enabled: "Bot AI?"
         ai_bot:

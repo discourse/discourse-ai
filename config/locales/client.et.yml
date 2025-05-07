@@ -61,6 +61,8 @@ et:
         save: "Salvesta"
         enabled: "Sisse lülitatud?"
         delete: "Kustuta"
+        response_format:
+          open_modal: "Muuda"
       rag:
         uploads:
           title: "Üleslaadimised"

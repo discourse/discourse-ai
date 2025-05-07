@@ -61,6 +61,8 @@ sq:
         save: "Ruaj"
         enabled: "Aktivizuar?"
         delete: "Fshij"
+        response_format:
+          open_modal: "Redaktoni"
       rag:
         uploads:
           uploading: "Duke ngarkuar..."
