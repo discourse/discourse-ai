@@ -52,7 +52,7 @@ export default class AiBotHeaderIcon extends Component {
     }
 
     if (this.siteSettings.ai_bot_enable_dedicated_ux) {
-      this.appEvents.trigger("ai-bot:click-header-icon");
+      this.appEvents.trigger("discourse-ai:bot-header-icon-clicked");
       return this.router.transitionTo("discourse-ai-bot-conversations");
     }
 
