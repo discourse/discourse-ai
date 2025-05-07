@@ -127,14 +127,15 @@ class DiscourseAi::Utils::ImageToText
       messages = [
         {
           type: :user,
-          content:
+          content: [
             "The following text was extracted from an image using OCR. Please enhance, correct, and structure this content while maintaining the original text:\n\n#{raw_text}",
-          upload_ids: [page.id],
+            { upload_id: page.id },
+          ],
         },
       ]
     else
       messages = [
-        { type: :user, content: "Please OCR the content in the image.", upload_ids: [page.id] },
+        { type: :user, content: ["Please OCR the content in the image.", { upload_id: page.id }] },
       ]
     end
     prompt = DiscourseAi::Completions::Prompt.new(system_message, messages: messages)
