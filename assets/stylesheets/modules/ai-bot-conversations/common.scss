@@ -389,6 +389,10 @@ body.has-ai-conversations-sidebar {
       color: var(--primary-high);
       font-size: var(--font-down-2);
 
+      &__progress {
+        margin-left: 0.5em;
+      }
+
       &:hover,
       &:focus-visible {
         .d-icon {
