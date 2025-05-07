@@ -113,18 +113,9 @@ body.has-ai-conversations-sidebar {
   }
 
   #topic-footer-buttons {
-    width: calc(100% - 6.5em);
-    margin-top: 0;
-
-    @include viewport.until(md) {
-      max-width: unset;
-      width: 100%;
-    }
-
-    @include viewport.from(xl) {
-      width: 100%;
-      max-width: 51em;
-    }
+    margin-top: 1em;
+    width: 100%;
+    max-width: 50.5em;
 
     .topic-footer-main-buttons {
       justify-content: flex-end;
@@ -151,10 +142,6 @@ body.has-ai-conversations-sidebar {
     }
   }
 
-  .topic-footer-main-buttons {
-    margin-left: calc(var(--topic-avatar-width) - 1.15em);
-  }
-
   .ai-bot-conversations {
     --input-max-width: 46em;
     display: flex;
@@ -169,12 +156,25 @@ body.has-ai-conversations-sidebar {
       &__selection-wrapper {
         display: flex;
         flex-direction: column;
+        min-width: 0;
+
+        @include viewport.until(sm) {
+          .select-kit-header-wrapper {
+            font-size: var(--font-down-1);
+          }
+        }
 
         label {
           font-size: var(--font-down-1);
           font-weight: 300;
           margin-left: 1em;
           margin-bottom: 0;
+        }
+
+        .name {
+          display: block;
+
+          @include ellipsis;
         }
       }
 
@@ -231,6 +231,10 @@ body.has-ai-conversations-sidebar {
       width: 100%;
       border: 1px solid var(--primary-low);
       border-radius: var(--d-input-border-radius);
+
+      &:has(textarea[disabled]) {
+        background: var(--primary-very-low);
+      }
 
       @include viewport.from(sm) {
         width: 80%;
@@ -291,6 +295,8 @@ body.has-ai-conversations-sidebar {
         scrollbar-color: var(--scrollbarThumbBg) var(--scrollbarBg);
         scrollbar-width: thin;
         transition: scrollbar-color 0.25s ease-in-out;
+        height: 100%;
+        line-height: var(--line-height-large);
 
         &::-webkit-scrollbar-thumb {
           background-color: var(--scrollbarThumbBg);
@@ -422,6 +428,17 @@ body.has-ai-conversations-sidebar {
     .d-icon {
       font-size: var(--font-down-1);
       margin-right: 0.15em;
+    }
+  }
+
+  // hide extra buttons
+  .timeline-container .topic-timeline .timeline-footer-controls {
+    display: none;
+  }
+
+  .topic-footer-main-buttons {
+    button:not(.share-ai-conversation-button, .topic-admin-menu-trigger) {
+      display: none;
     }
   }
 }
