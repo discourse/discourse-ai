@@ -10,6 +10,7 @@ import { composeAiBotMessage } from "../lib/ai-bot-helper";
 import { AI_CONVERSATIONS_PANEL } from "../services/ai-conversations-sidebar-manager";
 
 export default class AiBotHeaderIcon extends Component {
+  @service appEvents;
   @service composer;
   @service currentUser;
   @service navigationMenu;
@@ -51,6 +52,7 @@ export default class AiBotHeaderIcon extends Component {
     }
 
     if (this.siteSettings.ai_bot_enable_dedicated_ux) {
+      this.appEvents.trigger("ai-bot:click-header-icon");
       return this.router.transitionTo("discourse-ai-bot-conversations");
     }
 
