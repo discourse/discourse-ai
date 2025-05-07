@@ -533,6 +533,8 @@ en:
           disable_streaming: "Disable streaming completions (convert streaming to non streaming requests)"
           reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
           enable_reasoning: "Enable reasoning (only applicable to Sonnet 3.7)"
+          enable_thinking: "Enable thinking (only on applicable models eg: flash 2.5)"
+          thinking_tokens: "Number of tokens used for thinking"
           reasoning_tokens: "Number of tokens used for reasoning"
           disable_temperature: "Disable temperature (some thinking models don't support temperature)"
           disable_top_p: "Disable top P (some thinking models don't support top P)"

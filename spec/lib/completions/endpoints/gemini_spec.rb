@@ -153,6 +153,84 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     }
   end
 
+  it "correctly configures thinking when enabled" do
+    model.update!(provider_params: { enable_thinking: "true", thinking_tokens: "10000" })
+
+    response = gemini_mock.response("Using thinking mode").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate("Hello", user: user)
+
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    # Verify thinking config is properly set with the token limit
+    expect(parsed.dig(:generationConfig, :thinkingConfig)).to eq({ thinkingBudget: 10_000 })
+  end
+
+  it "clamps thinking tokens within allowed limits" do
+    model.update!(provider_params: { enable_thinking: "true", thinking_tokens: "30000" })
+
+    response = gemini_mock.response("Thinking tokens clamped").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate("Hello", user: user)
+
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    # Verify thinking tokens are clamped to 24_576
+    expect(parsed.dig(:generationConfig, :thinkingConfig)).to eq({ thinkingBudget: 24_576 })
+  end
+
+  it "does not add thinking config when disabled" do
+    model.update!(provider_params: { enable_thinking: false, thinking_tokens: "10000" })
+
+    response = gemini_mock.response("No thinking mode").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate("Hello", user: user)
+
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    # Verify thinking config is not present
+    expect(parsed.dig(:generationConfig, :thinkingConfig)).to be_nil
+  end
+
   # by default gemini is meant to use AUTO mode, however new experimental models
   # appear to require this to be explicitly set
   it "Explicitly specifies tool config" do

@@ -94,6 +94,12 @@ module DiscourseAi
             end
           end
 
+          if llm_model.lookup_custom_param("enable_thinking")
+            thinking_tokens = llm_model.lookup_custom_param("thinking_tokens").to_i
+            thinking_tokens = thinking_tokens.clamp(0, 24_576)
+            payload[:generationConfig][:thinkingConfig] = { thinkingBudget: thinking_tokens }
+          end
+
           payload
         end
 
