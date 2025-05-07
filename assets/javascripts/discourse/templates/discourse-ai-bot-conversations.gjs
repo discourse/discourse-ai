@@ -90,7 +90,7 @@ export default RouteTemplate(
                 <DButton
                   @icon="xmark"
                   @action={{fn @controller.cancelUpload upload}}
-                  class="btn-flat ai-bot-upload__remove"
+                  class="btn-flat ai-bot-upload__cancel"
                 />
               </div>
             {{/each}}
