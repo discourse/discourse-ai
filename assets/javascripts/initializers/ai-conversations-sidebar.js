@@ -93,8 +93,8 @@ export default {
             @tracked loadedSevenDayLabel = false;
             @tracked loadedThirtyDayLabel = false;
             @tracked loadedMonthLabels = new Set();
+            @tracked isFetching = false;
             page = 0;
-            isFetching = false;
             totalTopicsCount = 0;
 
             constructor() {
@@ -123,7 +123,9 @@ export default {
             }
 
             get emptyStateComponent() {
-              return AiBotSidebarEmptyState;
+              if (!this.isFetching) {
+                return AiBotSidebarEmptyState;
+              }
             }
 
             get text() {
