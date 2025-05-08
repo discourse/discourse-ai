@@ -3,6 +3,10 @@
 module DiscourseAi
   module Personas
     class ForumResearcher < Persona
+      def self.default_enabled
+        false
+      end
+
       def tools
         [Tools::Researcher]
       end

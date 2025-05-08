@@ -4,6 +4,10 @@ module DiscourseAi
   module Personas
     class Persona
       class << self
+        def default_enabled
+          true
+        end
+
         def rag_conversation_chunks
           10
         end

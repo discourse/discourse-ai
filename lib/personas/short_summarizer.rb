@@ -3,6 +3,10 @@
 module DiscourseAi
   module Personas
     class ShortSummarizer < Persona
+      def self.default_enabled
+        false
+      end
+
       def system_prompt
         <<~PROMPT.strip
           You are an advanced summarization bot. Analyze a given conversation and produce a concise,
@@ -23,7 +27,7 @@ module DiscourseAi
             <output>
               {"summary": "xx"}
             </output>
-          
+
           Where "xx" is replaced by the summary.
         PROMPT
       end
