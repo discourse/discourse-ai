@@ -417,3 +417,28 @@ discourse_ai:
     default: false
     client: false
     hidden: true
+
+  inferred_concepts_enabled:
+    default: false
+    client: true
+    description: "Enable the inferred concepts system that automatically generates and applies concepts to topics"
+  inferred_concepts_daily_topics_limit:
+    default: 20
+    client: false
+    description: "Maximum number of topics to process each day for concept generation"
+  inferred_concepts_min_posts:
+    default: 5
+    client: false
+    description: "Minimum number of posts a topic must have to be considered for concept generation"
+  inferred_concepts_min_likes:
+    default: 10
+    client: false
+    description: "Minimum number of likes a topic must have to be considered for concept generation"
+  inferred_concepts_min_views:
+    default: 100
+    client: false
+    description: "Minimum number of views a topic must have to be considered for concept generation"
+  inferred_concepts_lookback_days:
+    default: 30
+    client: false
+    description: "Only consider topics created within this many days for concept generation"
