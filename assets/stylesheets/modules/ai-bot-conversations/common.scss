@@ -14,7 +14,8 @@ body.has-ai-conversations-sidebar {
     display: none;
   }
 
-  .sidebar-wrapper {
+  .sidebar-wrapper,
+  .hamburger-dropdown-wrapper {
     .ai-conversations-panel {
       padding-top: 1em;
     }
