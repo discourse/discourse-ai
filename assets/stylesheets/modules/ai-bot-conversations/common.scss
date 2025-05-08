@@ -7,7 +7,20 @@
 
 body.has-ai-conversations-sidebar {
   .ai-new-question-button {
-    margin: 1.8em 1rem 0;
+    width: 100%;
+
+    &__wrapper {
+      background: var(--secondary);
+      margin: 1.8em 1em 0;
+
+      .mobile-view & {
+        padding: 1em;
+        position: sticky;
+        top: 0;
+        margin: -0.5em 0 0; // avoid shift when sticking
+        z-index: 1;
+      }
+    }
   }
 
   .sidebar-toggle-all-sections {
@@ -16,10 +29,6 @@ body.has-ai-conversations-sidebar {
 
   .sidebar-wrapper,
   .hamburger-dropdown-wrapper {
-    .ai-conversations-panel {
-      padding-top: 1em;
-    }
-
     // ai related sidebar content
     [data-section-name="ai-conversations-history"] {
       .sidebar-section-header-wrapper {
