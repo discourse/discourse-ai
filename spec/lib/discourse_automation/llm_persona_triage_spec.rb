@@ -6,9 +6,7 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
   fab!(:user)
   fab!(:bot_user) { Fabricate(:user) }
 
-  fab!(:llm_model) do
-    Fabricate(:llm_model, provider: "anthropic", name: "claude-3-opus", enabled_chat_bot: true)
-  end
+  fab!(:llm_model) { Fabricate(:anthropic_model, name: "claude-3-opus", enabled_chat_bot: true) }
 
   fab!(:ai_persona) do
     persona =
@@ -25,7 +23,9 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
     persona
   end
 
-  let(:automation) { Fabricate(:automation, script: "llm_persona_triage", enabled: true) }
+  let(:automation) do
+    Fabricate(:automation, name: "my automation", script: "llm_persona_triage", enabled: true)
+  end
 
   def add_automation_field(name, value, type: "text")
     automation.fields.create!(
@@ -49,12 +49,40 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
   it "can respond to a post using the specified persona" do
     post = Fabricate(:post, raw: "This is a test post that needs triage")
 
-    response_text = "I've analyzed your post and can help with that."
+    response_text = "I analyzed your post and can help with that."
 
-    DiscourseAi::Completions::Llm.with_prepared_responses([response_text]) do
-      automation.running_in_background!
-      automation.trigger!({ "post" => post })
-    end
+    body = (<<~STRING).strip
+      event: message_start
+      data: {"type": "message_start", "message": {"id": "msg_1nZdL29xx5MUA1yADyHTEsnR8uuvGzszyY", "type": "message", "role": "assistant", "content": [], "model": "claude-3-opus-20240229", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 25, "output_tokens": 1}}}
+
+      event: content_block_start
+      data: {"type": "content_block_start", "index":0, "content_block": {"type": "text", "text": ""}}
+
+      event: ping
+      data: {"type": "ping"}
+
+      event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "#{response_text}"}}
+
+      event: content_block_stop
+      data: {"type": "content_block_stop", "index": 0}
+
+      event: message_delta
+      data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence":null, "usage":{"output_tokens": 15}}}
+
+      event: message_stop
+      data: {"type": "message_stop"}
+    STRING
+
+    stub_request(:post, "https://api.anthropic.com/v1/messages").to_return(body: body)
+
+    automation.running_in_background!
+    automation.trigger!({ "post" => post })
+
+    log = AiApiAuditLog.last
+    expect(log).to be_present
+    expect(log.user_id).to eq(post.user_id)
+    expect(log.feature_name).to eq("automation - #{automation.name}")
 
     topic = post.topic.reload
     last_post = topic.posts.order(:post_number).last
