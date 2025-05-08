@@ -8,6 +8,7 @@ module DiscourseAi
           persona_id: persona_id,
           whisper: whisper,
           silent_mode: silent_mode,
+          feature_name: "automation - #{automation&.name}",
         )
       rescue => e
         Discourse.warn_exception(
