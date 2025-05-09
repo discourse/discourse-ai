@@ -13,6 +13,8 @@ export default class AiTitleSuggestion extends Component {
   }
 
   <template>
-    <AiTitleSuggester @composer={{@outletArgs.composer}} @topicState="new" />
+    {{#unless @outletArgs.composer.disableTitleInput}}
+      <AiTitleSuggester @composer={{@outletArgs.composer}} @topicState="new" />
+    {{/unless}}
   </template>
 }
