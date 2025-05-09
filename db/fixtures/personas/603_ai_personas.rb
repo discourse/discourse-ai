@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 summarization_personas = [DiscourseAi::Personas::Summarizer, DiscourseAi::Personas::ShortSummarizer]
+concepts_personas = [DiscourseAi::Personas::ConceptFinder, DiscourseAi::Personas::ConceptMatcher]
+
+disabled_personas = summarization_personas + concepts_personas
 
 def from_setting(setting_name)
   DB.query_single(
@@ -33,7 +36,7 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
 
-    persona.enabled = !summarization_personas.include?(persona_class)
+    persona.enabled = disabled_personas.exclude?(persona_class)
     persona.priority = true if persona_class == DiscourseAi::Personas::General
   end
 
