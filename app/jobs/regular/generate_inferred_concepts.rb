@@ -14,7 +14,7 @@ module Jobs
     def execute(args = {})
       return if args[:item_ids].blank? || args[:item_type].blank?
 
-      unless %w[topics posts].include?(args[:item_type])
+      if %w[topics posts].exclude?(args[:item_type])
         Rails.logger.error("Invalid item_type for GenerateInferredConcepts: #{args[:item_type]}")
         return
       end

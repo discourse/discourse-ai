@@ -8,7 +8,6 @@ module DiscourseAi
           You are an advanced concept matching system that determines which concepts from a provided list are relevant to a piece of content.
           Your job is to analyze the content and determine which concepts from the list apply to it.
 
-          #{concepts_text}
           Guidelines for matching concepts:
           - Only select concepts that are clearly relevant to the content
           - The content must substantially discuss or relate to the concept
@@ -20,7 +19,6 @@ module DiscourseAi
           - If no concepts from the list match the content, return an empty array
 
           The list of available concepts is:
-
           {inferred_concepts}
 
           Format your response as a JSON object with a single key named "matching_concepts", which has an array of concept strings from the provided list.
