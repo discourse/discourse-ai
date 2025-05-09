@@ -4,7 +4,7 @@ module DiscourseAi
   module InferredConcepts
     class Finder
       # Identifies potential concepts from provided content
-      # Returns an array of concept names (strings) 
+      # Returns an array of concept names (strings)
       def self.identify_concepts(content)
         return [] if content.blank?
 
@@ -13,28 +13,29 @@ module DiscourseAi
         persona = DiscourseAi::Personas::ConceptFinder.new
         context = DiscourseAi::Personas::BotContext.new(
           messages: [{ type: :user, content: content }],
-          user: Discourse.system_user
+          user: Discourse.system_user.
+            inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
         )
-        
+
         prompt = persona.craft_prompt(context)
         response = llm.completion(prompt, extract_json: true)
-        
+
         return [] unless response.success?
-        
+
         concepts = response.parsed_output["concepts"]
         concepts || []
       end
-      
+
       # Creates or finds concepts in the database from provided names
       # Returns an array of InferredConcept instances
       def self.create_or_find_concepts(concept_names)
         return [] if concept_names.blank?
-        
+
         concept_names.map do |name|
           InferredConcept.find_or_create_by(name: name)
         end
       end
-      
+
       # Finds candidate topics to use for concept generation
       #
       # @param limit [Integer] Maximum number of topics to return
