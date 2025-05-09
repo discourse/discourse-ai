@@ -325,6 +325,7 @@ module DiscourseAi
         output_thinking: false,
         response_format: nil,
         extra_model_params: nil,
+        cancel_manager: nil,
         &partial_read_blk
       )
         self.class.record_prompt(
@@ -378,6 +379,7 @@ module DiscourseAi
           feature_context: feature_context,
           partial_tool_calls: partial_tool_calls,
           output_thinking: output_thinking,
+          cancel_manager: cancel_manager,
           &partial_read_blk
         )
       end

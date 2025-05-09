@@ -55,6 +55,7 @@ module DiscourseAi
         unless context.is_a?(BotContext)
           raise ArgumentError, "context must be an instance of BotContext"
         end
+        context.cancel_manager ||= DiscourseAi::Completions::CancelManager.new
         current_llm = llm
         prompt = persona.craft_prompt(context, llm: current_llm)
 
@@ -91,6 +92,7 @@ module DiscourseAi
               feature_name: context.feature_name,
               partial_tool_calls: allow_partial_tool_calls,
               output_thinking: true,
+              cancel_manager: context.cancel_manager,
               **llm_kwargs,
             ) do |partial, cancel|
               tool =

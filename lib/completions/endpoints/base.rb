@@ -68,10 +68,16 @@ module DiscourseAi
           feature_context: nil,
           partial_tool_calls: false,
           output_thinking: false,
+          cancel_manager: nil,
           &blk
         )
           LlmQuota.check_quotas!(@llm_model, user)
           start_time = Time.now
+
+          if cancel_manager && cancel_manager.cancelled?
+            # nothing to do
+            return
+          end
 
           @forced_json_through_prefill = false
           @partial_tool_calls = partial_tool_calls
@@ -90,6 +96,7 @@ module DiscourseAi
                 feature_context: feature_context,
                 partial_tool_calls: partial_tool_calls,
                 output_thinking: output_thinking,
+                cancel_manager: cancel_manager,
               )
 
             wrapped = result
@@ -118,6 +125,9 @@ module DiscourseAi
             end
           end
 
+          cancel_manager_callback = nil
+          cancelled = false
+
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
@@ -126,6 +136,14 @@ module DiscourseAi
             open_timeout: TIMEOUT,
             write_timeout: TIMEOUT,
           ) do |http|
+            if cancel_manager
+              cancel_manager_callback =
+                lambda do
+                  cancelled = true
+                  http.finish
+                end
+              cancel_manager.add_callback(cancel_manager_callback)
+            end
             response_data = +""
             response_raw = +""
 
@@ -196,7 +214,6 @@ module DiscourseAi
               end
 
               begin
-                cancelled = false
                 cancel = -> do
                   cancelled = true
                   http.finish
@@ -224,8 +241,6 @@ module DiscourseAi
                     partials.each { |inner_partial| blk.call(inner_partial, cancel) }
                   end
                 end
-              rescue IOError, StandardError
-                raise if !cancelled
               end
               if xml_stripper
                 stripped = xml_stripper.finish
@@ -292,6 +307,12 @@ module DiscourseAi
                 )
               end
             end
+          end
+        rescue IOError, StandardError
+          raise if !cancelled
+        ensure
+          if cancel_manager && cancel_manager_callback
+            cancel_manager.remove_callback(cancel_manager_callback)
           end
         end
 
