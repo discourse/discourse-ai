@@ -229,13 +229,13 @@
     padding-right: 2em;
   }
 
-  .category-chooser {
+  .category-chooser:not(.is-disabled) {
     .select-kit-header-wrapper {
       padding-right: 1.5em;
     }
   }
 
-  .mini-tag-chooser {
+  .mini-tag-chooser:not(.is-disabled) {
     .multi-select-header {
       padding-right: 2em;
     }
@@ -314,7 +314,7 @@
   }
 
   .showing-ai-suggestions {
-    #reply-title {
+    #reply-title:not([disabled]) {
       padding-right: 2em;
     }
   }

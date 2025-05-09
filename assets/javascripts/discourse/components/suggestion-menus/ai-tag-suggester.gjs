@@ -16,6 +16,7 @@ import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
 export default class AiTagSuggester extends Component {
   @service siteSettings;
   @service toasts;
+  @service composer;
 
   @tracked loading = false;
   @tracked suggestions = null;
@@ -24,6 +25,10 @@ export default class AiTagSuggester extends Component {
   @tracked content = null;
 
   get showSuggestionButton() {
+    if (this.composer.disableTagsChooser) {
+      return false;
+    }
+
     const composerFields = document.querySelector(".composer-fields");
     this.content = this.args.composer?.reply;
     const showTrigger =
