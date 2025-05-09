@@ -4,44 +4,64 @@ module Jobs
   class GenerateInferredConcepts < ::Jobs::Base
     sidekiq_options queue: 'low'
 
-    # Process a batch of topics to generate new concepts (without applying them to topics)
+    # Process items to generate new concepts
     #
     # @param args [Hash] Contains job arguments
-    # @option args [Array<Integer>] :topic_ids Required - List of topic IDs to process
-    # @option args [Integer] :batch_size (100) Number of topics to process in each batch
+    # @option args [String] :item_type Required - Type of items to process ('topics' or 'posts')
+    # @option args [Array<Integer>] :item_ids Required - List of item IDs to process
+    # @option args [Integer] :batch_size (100) Number of items to process in each batch
+    # @option args [Boolean] :match_only (false) Only match against existing concepts without generating new ones
     def execute(args = {})
-      return if args[:topic_ids].blank?
+      return if args[:item_ids].blank? || args[:item_type].blank?
       
-      # Process topics in smaller batches to avoid memory issues
+      unless ['topics', 'posts'].include?(args[:item_type])
+        Rails.logger.error("Invalid item_type for GenerateInferredConcepts: #{args[:item_type]}")
+        return
+      end
+      
+      # Process items in smaller batches to avoid memory issues
       batch_size = args[:batch_size] || 100
       
-      # Get the list of topic IDs
-      topic_ids = args[:topic_ids]
+      # Get the list of item IDs
+      item_ids = args[:item_ids]
+      match_only = args[:match_only] || false
       
-      # Process topics in batches
-      topic_ids.each_slice(batch_size) do |batch_topic_ids|
-        process_batch(batch_topic_ids)
+      # Process items in batches
+      item_ids.each_slice(batch_size) do |batch_item_ids|
+        process_batch(batch_item_ids, args[:item_type], match_only)
       end
     end
     
     private
     
-    def process_batch(topic_ids)
-      topics = Topic.where(id: topic_ids)
+    def process_batch(item_ids, item_type, match_only)
+      klass = item_type.singularize.classify.constantize
+      items = klass.where(id: item_ids)
       
-      topics.each do |topic|
+      items.each do |item|
         begin
-          process_topic(topic)
+          process_item(item, item_type, match_only)
         rescue => e
-          Rails.logger.error("Error generating concepts from topic #{topic.id}: #{e.message}\n#{e.backtrace.join("\n")}")
+          Rails.logger.error("Error generating concepts from #{item_type.singularize} #{item.id}: #{e.message}\n#{e.backtrace.join("\n")}")
         end
       end
     end
     
-    def process_topic(topic)
+    def process_item(item, item_type, match_only)
       # Use the Manager method that handles both identifying and creating concepts
-      # Pass the topic object directly
-      DiscourseAi::InferredConcepts::Manager.generate_concepts_from_topic(topic)
+      if match_only
+        if item_type == 'topics'
+          DiscourseAi::InferredConcepts::Manager.match_topic_to_concepts(item)
+        else # posts
+          DiscourseAi::InferredConcepts::Manager.match_post_to_concepts(item)
+        end
+      else
+        if item_type == 'topics'
+          DiscourseAi::InferredConcepts::Manager.analyze_topic(item)
+        else # posts
+          DiscourseAi::InferredConcepts::Manager.analyze_post(item)
+        end
+      end
     end
   end
 end

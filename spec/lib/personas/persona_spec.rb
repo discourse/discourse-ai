@@ -17,6 +17,7 @@ class TestPersona < DiscourseAi::Personas::Persona
       {participants}
       {time}
       {resource_url}
+      {inferred_concepts}
     PROMPT
   end
 end
@@ -38,6 +39,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
   end
 
   let(:resource_url) { "https://path-to-resource" }
+  let(:inferred_concepts) { %w[bulbassaur charmander squirtle] }
 
   let(:context) do
     DiscourseAi::Personas::BotContext.new(
@@ -47,6 +49,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
       time: Time.zone.now,
       participants: topic_with_users.allowed_users.map(&:username).join(", "),
       resource_url: resource_url,
+      inferred_concepts: inferred_concepts,
     )
   end
 
@@ -66,6 +69,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
     expect(system_message).to include("joe, jane")
     expect(system_message).to include(Time.zone.now.to_s)
     expect(system_message).to include(resource_url)
+    expect(system_message).to include(inferred_concepts)
 
     tools = rendered.tools
 
