@@ -154,10 +154,7 @@ module DiscourseAi
         return [] if content.blank? || concept_list.blank?
 
         # Prepare user message with only the content
-        user_message = <<~MESSAGE
-          Content to analyze:
-          #{content}
-        MESSAGE
+        user_message = content
 
         # Use the ConceptMatcher persona to match concepts
         llm = DiscourseAi::Completions::Llm.default_llm
@@ -166,6 +163,7 @@ module DiscourseAi
           DiscourseAi::Personas::BotContext.new(
             messages: [{ type: :user, content: user_message }],
             user: Discourse.system_user,
+            inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
           )
 
         prompt = persona.craft_prompt(context)
