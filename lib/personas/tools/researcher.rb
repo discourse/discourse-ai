@@ -101,9 +101,12 @@ module DiscourseAi
             )
 
           results = []
-          llm.generate(prompt, user: post.user, feature_name: context.feature_name) do |partial|
-            results << partial
-          end
+          llm.generate(
+            prompt,
+            user: post.user,
+            feature_name: context.feature_name,
+            cancel_manager: context.cancel_manager,
+          ) { |partial| results << partial }
 
           blk.call(".")
           results.join

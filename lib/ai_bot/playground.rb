@@ -471,6 +471,13 @@ module DiscourseAi
 
           redis_stream_key = "gpt_cancel:#{reply_post.id}"
           Discourse.redis.setex(redis_stream_key, MAX_STREAM_DELAY_SECONDS, 1)
+
+          context.cancel_manager = DiscourseAi::Completions::CancelManager.new
+          context
+            .cancel_manager
+            .start_monitor(delay: 0.2) do
+              context.cancel_manager.cancel! if !Discourse.redis.get(redis_stream_key)
+            end
         end
 
         context.skip_tool_details ||= !bot.persona.class.tool_details
@@ -568,6 +575,8 @@ module DiscourseAi
         end
         raise e
       ensure
+        context.cancel_manager.stop_monitor if context&.cancel_manager
+
         # since we are skipping validations and jobs we
         # may need to fix participant count
         if reply_post && reply_post.topic && reply_post.topic.private_message? &&
@@ -649,7 +658,7 @@ module DiscourseAi
           payload,
           user_ids: bot_reply_post.topic.allowed_user_ids,
           max_backlog_size: 2,
-          max_backlog_age: 60,
+          max_backlog_age: MAX_STREAM_DELAY_SECONDS,
         )
       end
     end

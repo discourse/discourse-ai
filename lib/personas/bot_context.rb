@@ -16,7 +16,8 @@ module DiscourseAi
                     :channel_id,
                     :context_post_ids,
                     :feature_name,
-                    :resource_url
+                    :resource_url,
+                    :cancel_manager
 
       def initialize(
         post: nil,
