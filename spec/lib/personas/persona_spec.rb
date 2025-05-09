@@ -39,7 +39,7 @@ RSpec.describe DiscourseAi::Personas::Persona do
   end
 
   let(:resource_url) { "https://path-to-resource" }
-  let(:inferred_concepts) { %w[bulbassaur charmander squirtle] }
+  let(:inferred_concepts) { %w[bulbassaur charmander squirtle].join(", ") }
 
   let(:context) do
     DiscourseAi::Personas::BotContext.new(
