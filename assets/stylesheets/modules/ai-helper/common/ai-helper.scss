@@ -11,8 +11,31 @@
       text-decoration: line-through;
     }
 
+    mark {
+      background-color: var(--highlight-low);
+    }
+
     .preview-area {
       height: 200px;
+    }
+  }
+
+  // TODO: cleanup and scope to inline-diff class
+  .composer-ai-helper-modal__suggestion .cooked {
+    ins,
+    del {
+      text-decoration: none;
+    }
+
+    mark {
+      background-color: var(--highlight-low) !important;
+      border-bottom: 2px solid var(--highlight-high) !important;
+
+      ins,
+      del {
+        background: transparent;
+        text-decoration: none;
+      }
     }
   }
 
