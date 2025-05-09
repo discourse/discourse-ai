@@ -15,6 +15,9 @@ import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
 import SmoothStreamer from "../../lib/smooth-streamer";
 import AiIndicatorWave from "../ai-indicator-wave";
+import { cancel, later } from "@ember/runloop";
+
+const WORD_TYPING_DELAY = 200;
 
 export default class ModalDiffModal extends Component {
   @service currentUser;
@@ -23,11 +26,18 @@ export default class ModalDiffModal extends Component {
   @tracked loading = false;
   @tracked diff;
   @tracked suggestion = "";
-  @tracked
-  smoothStreamer = new SmoothStreamer(
-    () => this.suggestion,
-    (newValue) => (this.suggestion = newValue)
-  );
+  @tracked isStreaming = false;
+  @tracked lastResultText = "";
+  // @tracked
+  // smoothStreamer = new SmoothStreamer(
+  //   () => this.suggestion,
+  //   (newValue) => (this.suggestion = newValue)
+  // );
+  @tracked words = [];
+  originalWords = [];
+  diffedSuggestion = "";
+  typingTimer = null;
+  currentWordIndex = 0;
 
   constructor() {
     super(...arguments);
@@ -46,35 +56,92 @@ export default class ModalDiffModal extends Component {
     this.messageBus.subscribe(channel, this.updateResult);
   }
 
+  compareText(oldText = "", newText = "") {
+    const oldWords = oldText.trim().split(/\s+/);
+    const newWords = newText.trim().split(/\s+/);
+
+    const diff = [];
+    let i = 0;
+
+    while (i < newWords.length) {
+      const oldWord = oldWords[i];
+      const newWord = newWords[i];
+
+      let wordHTML;
+      if (oldWord === undefined) {
+        wordHTML = `<ins>${newWord}</ins>`;
+      } else if (oldWord !== newWord) {
+        wordHTML = `<del>${oldWord}</del> <ins>${newWord}</ins>`;
+      } else {
+        wordHTML = newWord;
+      }
+
+      if (i === newWords.length - 1) {
+        wordHTML = `<mark class="highlight">${wordHTML}</mark>`;
+      }
+
+      diff.push(wordHTML);
+      i++;
+    }
+
+    return diff.join(" ");
+  }
+
   @action
   async updateResult(result) {
-    if (result) {
-      this.loading = false;
+    this.loading = false;
+
+    const newText = result.result;
+    const diffText = newText.slice(this.lastResultText.length).trim();
+    const newWords = diffText.split(/\s+/).filter(Boolean);
+
+    if (newWords.length > 0) {
+      this.words.push(...newWords);
+      if (!this.typingTimer) {
+        this.streamNextWord();
+      }
     }
-    await this.smoothStreamer.updateResult(result, "result");
+
+    this.lastResultText = newText;
 
     if (result.done) {
-      this.diff = result.diff;
+      this.isStreaming = false;
+    } else {
+      this.isStreaming = true;
     }
+  }
 
-    const mdTablePromptId = this.currentUser?.ai_helper_prompts.find(
-      (prompt) => prompt.name === "markdown_table"
-    ).id;
+  startStreamingWords() {
+    if (this.suggestion === "") {
+      this.suggestion = "";
+    }
+    this.streamNextWord();
+  }
 
-    // Markdown table prompt looks better with
-    // before/after results than diff
-    // despite having `type: diff`
-    if (this.args.model.mode === mdTablePromptId) {
-      this.diff = null;
+  streamNextWord() {
+    if (this.currentWordIndex < this.words.length) {
+      this.suggestion += this.words[this.currentWordIndex] + " ";
+      this.diff = this.compareText(
+        this.args.model.selectedText,
+        this.suggestion
+      );
+
+      this.currentWordIndex++;
+      this.typingTimer = later(this, this.streamNextWord, WORD_TYPING_DELAY);
+    } else {
+      this.typingTimer = null;
     }
   }
 
   @action
   async suggestChanges() {
-    this.smoothStreamer.resetStreaming();
+    // this.smoothStreamer.resetStreaming();
     this.diff = null;
     this.suggestion = "";
     this.loading = true;
+    this.lastResultText = "";
+    this.words = [];
+    this.currentWordIndex = 0;
 
     try {
       return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
@@ -123,10 +190,12 @@ export default class ModalDiffModal extends Component {
               class={{concatClass
                 "composer-ai-helper-modal__suggestion"
                 "streamable-content"
-                (if this.smoothStreamer.isStreaming "streaming" "")
               }}
             >
-              {{#if this.smoothStreamer.isStreaming}}
+              <CookText @rawText={{this.diff}} class="cooked" />
+              {{!-- <div class="composer-ai-helper-modal__old-value">
+                {{@model.selectedText}}
+              {{!-- {{#if this.smoothStreamer.isStreaming}}
                 <CookText
                   @rawText={{this.smoothStreamer.renderedText}}
                   class="cooked"
@@ -145,7 +214,7 @@ export default class ModalDiffModal extends Component {
                     />
                   </div>
                 {{/if}}
-              {{/if}}
+              {{/if}} --}}
             </div>
           {{/if}}
         </div>
