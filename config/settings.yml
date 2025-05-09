@@ -442,3 +442,11 @@ discourse_ai:
     default: 30
     client: false
     description: "Only consider topics created within this many days for concept generation"
+  inferred_concepts_daily_posts_limit:
+    default: 30
+    client: false
+    description: "Maximum number of posts to process each day for concept generation"
+  inferred_concepts_post_min_likes:
+    default: 5
+    client: false
+    description: "Minimum number of likes a post must have to be considered for concept generation"

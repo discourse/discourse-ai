@@ -4,6 +4,16 @@ module DiscourseAi
   module Personas
     class ConceptFinder < Persona
       def system_prompt
+        existing_concepts = DiscourseAi::InferredConcepts::Manager.list_concepts(limit: 100)
+        existing_concepts_text = ""
+
+        existing_concepts_text = <<~CONCEPTS if existing_concepts.present?
+            The following concepts already exist in the system:
+            #{existing_concepts.join(", ")}
+
+            You can reuse these existing concepts if they apply to the content, or suggest new concepts.
+          CONCEPTS
+
         <<~PROMPT.strip
           You are an advanced concept tagging system that identifies key concepts, themes, and topics from provided text.
           Your job is to extract meaningful labels that can be used to categorize content.
@@ -16,7 +26,7 @@ module DiscourseAi
           - Ensure concepts are relevant to the core content
           - Do not include proper nouns unless they represent key technologies or methodologies
           - Maintain the original language of the text being analyzed
-
+          #{existing_concepts_text}
           Format your response as a JSON object with a single key named "concepts", which has an array of concept strings as the value.
           Your output should be in the following format:
             <o>

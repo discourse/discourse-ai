@@ -330,6 +330,12 @@ en:
         short_summarizer:
           name: "Summarizer (short form)"
           description: "Default persona used to power AI short summaries for topic lists' items"
+        concept_finder:
+          name: "Concept Finder"
+          description: "AI Bot specialized in identifying concepts and themes in content"
+        concept_matcher:
+          name: "Concept Matcher"
+          description: "AI Bot specialized in matching content against existing concepts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"

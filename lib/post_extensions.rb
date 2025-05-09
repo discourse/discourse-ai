@@ -11,6 +11,8 @@ module DiscourseAi
                -> { where(classification_type: "sentiment") },
                class_name: "ClassificationResult",
                as: :target
+
+      has_and_belongs_to_many :inferred_concepts
     end
   end
 end
