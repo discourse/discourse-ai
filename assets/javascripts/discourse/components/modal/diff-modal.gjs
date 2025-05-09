@@ -33,9 +33,9 @@ export default class ModalDiffModal extends Component {
   //   () => this.suggestion,
   //   (newValue) => (this.suggestion = newValue)
   // );
+  @tracked finalDiff = "";
   @tracked words = [];
   originalWords = [];
-  diffedSuggestion = "";
   typingTimer = null;
   currentWordIndex = 0;
 
@@ -102,23 +102,20 @@ export default class ModalDiffModal extends Component {
       }
     }
 
+    if (result.done) {
+      this.finalDiff = result.diff;
+    }
+
     this.lastResultText = newText;
 
-    if (result.done) {
-      this.isStreaming = false;
-    } else {
-      this.isStreaming = true;
-    }
-  }
-
-  startStreamingWords() {
-    if (this.suggestion === "") {
-      this.suggestion = "";
-    }
-    this.streamNextWord();
+    this.isStreaming = !result.done;
   }
 
   streamNextWord() {
+    if (this.currentWordIndex === this.words.length) {
+      this.diff = this.finalDiff;
+    }
+
     if (this.currentWordIndex < this.words.length) {
       this.suggestion += this.words[this.currentWordIndex] + " ";
       this.diff = this.compareText(
