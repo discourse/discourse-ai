@@ -11,11 +11,12 @@ module DiscourseAi
         # Use the ConceptFinder persona to identify concepts
         llm = DiscourseAi::Completions::Llm.default_llm
         persona = DiscourseAi::Personas::ConceptFinder.new
-        context = DiscourseAi::Personas::BotContext.new(
-          messages: [{ type: :user, content: content }],
-          user: Discourse.system_user.
+        context =
+          DiscourseAi::Personas::BotContext.new(
+            messages: [{ type: :user, content: content }],
+            user: Discourse.system_user,
             inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
-        )
+          )
 
         prompt = persona.craft_prompt(context)
         response = llm.completion(prompt, extract_json: true)
@@ -31,9 +32,7 @@ module DiscourseAi
       def self.create_or_find_concepts(concept_names)
         return [] if concept_names.blank?
 
-        concept_names.map do |name|
-          InferredConcept.find_or_create_by(name: name)
-        end
+        concept_names.map { |name| InferredConcept.find_or_create_by(name: name) }
       end
 
       # Finds candidate topics to use for concept generation
@@ -55,12 +54,13 @@ module DiscourseAi
         category_ids: nil,
         created_after: 30.days.ago
       )
-        query = Topic.where(
-          "topics.posts_count >= ? AND topics.views >= ? AND topics.like_count >= ?",
-          min_posts,
-          min_views,
-          min_likes
-        )
+        query =
+          Topic.where(
+            "topics.posts_count >= ? AND topics.views >= ? AND topics.like_count >= ?",
+            min_posts,
+            min_views,
+            min_likes,
+          )
 
         # Apply additional filters
         query = query.where("topics.id NOT IN (?)", exclude_topic_ids) if exclude_topic_ids.present?
@@ -79,10 +79,11 @@ module DiscourseAi
         query = query.where("topics.id NOT IN (#{topics_with_concepts})")
 
         # Score and order topics by engagement (combination of views, likes, and posts)
-        query = query.select(
-          "topics.*,
-          (topics.like_count * 2 + topics.posts_count * 3 + topics.views * 0.1) AS engagement_score"
-        ).order("engagement_score DESC")
+        query =
+          query.select(
+            "topics.*,
+          (topics.like_count * 2 + topics.posts_count * 3 + topics.views * 0.1) AS engagement_score",
+          ).order("engagement_score DESC")
 
         # Return limited number of topics
         query.limit(limit)
