@@ -27,8 +27,7 @@ module DiscourseAi
                 },
                 {
                   name: "dry_run",
-                  description:
-                    "When true, only count matching items without processing data (default: true)",
+                  description: "When true, only count matching items without processing data",
                   type: "boolean",
                 },
               ],
@@ -51,20 +50,85 @@ module DiscourseAi
           end
         end
 
-        def invoke
+        def invoke(&blk)
           @last_filter = parameters[:filter] || ""
+          post = Post.find_by(id: context.post_id)
           goal = parameters[:goal] || ""
-
-          #dry_run = parameters[:dry_run].nil? ? true : parameters[:dry_run]
-          #yield(I18n.t("discourse_ai.ai_bot.researching", filter: @last_filter, goal: goal))
+          dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
 
           filter = DiscourseAi::Utils::Research::Filter.new(@last_filter)
 
           @result_count = filter.search.count
-          { dry_run: true, goal: goal, filter: @last_filter, number_of_results: @result_count }
+
+          if dry_run
+            { dry_run: true, goal: goal, filter: @last_filter, number_of_results: @result_count }
+          else
+            process_filter(filter, goal, post, &blk)
+          end
         end
 
         protected
+
+        MIN_TOKENS_FOR_RESEARCH = 8000
+        def process_filter(filter, goal, post, &blk)
+          if llm.max_prompt_tokens < MIN_TOKENS_FOR_RESEARCH
+            raise ArgumentError,
+                  "LLM max tokens too low for research. Minimum is #{MIN_TOKENS_FOR_RESEARCH}."
+          end
+          formatter =
+            DiscourseAi::Utils::Research::LlmFormatter.new(
+              filter,
+              max_tokens_per_batch: llm.max_prompt_tokens - 2000,
+              tokenizer: llm.tokenizer,
+            )
+
+          results = []
+
+          formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goal, post, &blk) }
+          { dry_run: false, goal: goal, filter: @last_filter, results: results }
+        end
+
+        def run_inference(chunk_text, goal, post, &blk)
+          system_prompt = goal_system_prompt(goal)
+          user_prompt = goal_user_prompt(goal, chunk_text)
+
+          prompt =
+            DiscourseAi::Completions::Prompt.new(
+              system_prompt,
+              messages: [{ type: :user, content: user_prompt }],
+              post_id: post.id,
+              topic_id: post.topic_id,
+            )
+
+          results = []
+          llm.generate(prompt, user: post.user, feature_name: context.feature_name) do |partial|
+            results << partial
+          end
+
+          blk.call(".")
+          results.join
+        end
+
+        def goal_system_prompt(goal)
+          <<~TEXT
+            You are a researcher tool designed to analyze and extract information from forum content.
+            Your task is to process the provided content and extract relevant information based on the specified goal.
+
+            Your goal is: #{goal}
+          TEXT
+        end
+
+        def goal_user_prompt(goal, chunk_text)
+          <<~TEXT
+            Here is the content to analyze:
+
+            {{{
+            #{chunk_text}
+            }}}
+
+            Your goal is: #{goal}
+           TEXT
+        end
 
         def description_args
           { count: @result_count || 0, filter: @last_filter || "" }

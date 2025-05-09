@@ -47,8 +47,9 @@ module DiscourseAi
           end
         end
 
-        attr_accessor :custom_raw, :parameters
-        attr_reader :tool_call_id, :persona_options, :bot_user, :llm, :context
+        # llm being public makes it a bit easier to test
+        attr_accessor :custom_raw, :parameters, :llm
+        attr_reader :tool_call_id, :persona_options, :bot_user, :context
 
         def initialize(
           parameters,

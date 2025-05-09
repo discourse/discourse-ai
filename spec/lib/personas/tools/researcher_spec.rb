@@ -64,5 +64,42 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
 
       expect(researcher.options[:max_results]).to eq(50)
     end
+
+    it "returns correct results for non-dry-run with filtered posts" do
+      # Stage 2 topics, each with 2 posts
+      topics = Array.new(2) { Fabricate(:topic, category: category, tags: [tag_research]) }
+      topics.flat_map do |topic|
+        [
+          Fabricate(:post, topic: topic, raw: "Relevant content 1", user: user),
+          Fabricate(:post, topic: topic, raw: "Relevant content 2", user: admin),
+        ]
+      end
+
+      # Filter to posts by user in research-category
+      researcher =
+        described_class.new(
+          {
+            filter: "category:research-category @#{user.username}",
+            goal: "find relevant content",
+            dry_run: false,
+          },
+          bot_user: bot_user,
+          llm: llm,
+          context: DiscourseAi::Personas::BotContext.new(user: user, post: post),
+        )
+
+      responses = 10.times.map { |i| ["Found: Relevant content #{i + 1}"] }
+      results = nil
+
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
+        researcher.llm = llm_model.to_llm
+        results = researcher.invoke(&progress_blk)
+      end
+
+      expect(results[:dry_run]).to eq(false)
+      expect(results[:goal]).to eq("find relevant content")
+      expect(results[:filter]).to eq("category:research-category @#{user.username}")
+      expect(results[:results].first).to include("Found: Relevant content 1")
+    end
   end
 end
