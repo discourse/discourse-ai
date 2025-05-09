@@ -16,7 +16,8 @@ module DiscourseAi
                     :channel_id,
                     :context_post_ids,
                     :feature_name,
-                    :resource_url
+                    :resource_url,
+                    :inferred_concepts
 
       def initialize(
         post: nil,
@@ -33,7 +34,8 @@ module DiscourseAi
         channel_id: nil,
         context_post_ids: nil,
         feature_name: "bot",
-        resource_url: nil
+        resource_url: nil,
+        inferred_concepts: []
       )
         @participants = participants
         @user = user
@@ -52,7 +54,7 @@ module DiscourseAi
         @resource_url = resource_url
 
         @feature_name = feature_name
-        @resource_url = resource_url
+        @inferred_concepts = inferred_concepts
 
         if post
           @post_id = post.id
@@ -64,7 +66,15 @@ module DiscourseAi
       end
 
       # these are strings that can be safely interpolated into templates
-      TEMPLATE_PARAMS = %w[time site_url site_title site_description participants resource_url]
+      TEMPLATE_PARAMS = %w[
+        time
+        site_url
+        site_title
+        site_description
+        participants
+        resource_url
+        inferred_concepts
+      ]
 
       def lookup_template_param(key)
         public_send(key.to_sym) if TEMPLATE_PARAMS.include?(key)
@@ -110,6 +120,7 @@ module DiscourseAi
           skip_tool_details: @skip_tool_details,
           feature_name: @feature_name,
           resource_url: @resource_url,
+          inferred_concepts: @inferred_concepts,
         }
       end
     end
