@@ -4,6 +4,10 @@ module DiscourseAi
   module Personas
     class Persona
       class << self
+        def default_enabled
+          true
+        end
+
         def rag_conversation_chunks
           10
         end
@@ -47,6 +51,7 @@ module DiscourseAi
             Summarizer => -11,
             ShortSummarizer => -12,
             Designer => -13,
+            ForumResearcher => -14,
           }
         end
 
@@ -99,6 +104,7 @@ module DiscourseAi
             Tools::GithubSearchFiles,
             Tools::WebBrowser,
             Tools::JavascriptEvaluator,
+            Tools::Researcher,
           ]
 
           if SiteSetting.ai_artifact_security.in?(%w[lax strict])

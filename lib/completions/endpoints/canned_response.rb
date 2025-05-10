@@ -30,7 +30,8 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil,
           partial_tool_calls: false,
-          output_thinking: false
+          output_thinking: false,
+          cancel_manager: nil
         )
           @dialect = dialect
           @model_params = model_params

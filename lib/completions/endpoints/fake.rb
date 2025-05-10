@@ -122,7 +122,8 @@ module DiscourseAi
           feature_name: nil,
           feature_context: nil,
           partial_tool_calls: false,
-          output_thinking: false
+          output_thinking: false,
+          cancel_manager: nil
         )
           last_call = { dialect: dialect, user: user, model_params: model_params }
           self.class.last_call = last_call
