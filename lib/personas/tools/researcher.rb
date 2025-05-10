@@ -20,9 +20,9 @@ module DiscourseAi
                   type: "string",
                 },
                 {
-                  name: "goal",
+                  name: "goals",
                   description:
-                    "The specific information you want to extract or analyze from the filtered content",
+                    "The specific information you want to extract or analyze from the filtered content, you may specify multiple goals",
                   type: "string",
                 },
                 {
@@ -53,7 +53,7 @@ module DiscourseAi
         def invoke(&blk)
           @last_filter = parameters[:filter] || ""
           post = Post.find_by(id: context.post_id)
-          goal = parameters[:goal] || ""
+          goals = parameters[:goals] || ""
           dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
 
           filter = DiscourseAi::Utils::Research::Filter.new(@last_filter)
@@ -61,16 +61,16 @@ module DiscourseAi
           @result_count = filter.search.count
 
           if dry_run
-            { dry_run: true, goal: goal, filter: @last_filter, number_of_results: @result_count }
+            { dry_run: true, goals: goals, filter: @last_filter, number_of_results: @result_count }
           else
-            process_filter(filter, goal, post, &blk)
+            process_filter(filter, goals, post, &blk)
           end
         end
 
         protected
 
         MIN_TOKENS_FOR_RESEARCH = 8000
-        def process_filter(filter, goal, post, &blk)
+        def process_filter(filter, goals, post, &blk)
           if llm.max_prompt_tokens < MIN_TOKENS_FOR_RESEARCH
             raise ArgumentError,
                   "LLM max tokens too low for research. Minimum is #{MIN_TOKENS_FOR_RESEARCH}."
@@ -84,13 +84,13 @@ module DiscourseAi
 
           results = []
 
-          formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goal, post, &blk) }
-          { dry_run: false, goal: goal, filter: @last_filter, results: results }
+          formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
+          { dry_run: false, goals: goals, filter: @last_filter, results: results }
         end
 
-        def run_inference(chunk_text, goal, post, &blk)
-          system_prompt = goal_system_prompt(goal)
-          user_prompt = goal_user_prompt(goal, chunk_text)
+        def run_inference(chunk_text, goals, post, &blk)
+          system_prompt = goal_system_prompt(goals)
+          user_prompt = goal_user_prompt(goals, chunk_text)
 
           prompt =
             DiscourseAi::Completions::Prompt.new(
@@ -112,16 +112,16 @@ module DiscourseAi
           results.join
         end
 
-        def goal_system_prompt(goal)
+        def goal_system_prompt(goals)
           <<~TEXT
             You are a researcher tool designed to analyze and extract information from forum content.
             Your task is to process the provided content and extract relevant information based on the specified goal.
 
-            Your goal is: #{goal}
+            Your goal is: #{goals}
           TEXT
         end
 
-        def goal_user_prompt(goal, chunk_text)
+        def goal_user_prompt(goals, chunk_text)
           <<~TEXT
             Here is the content to analyze:
 
@@ -129,7 +129,7 @@ module DiscourseAi
             #{chunk_text}
             }}}
 
-            Your goal is: #{goal}
+            Your goal is: #{goals}
            TEXT
         end
 
@@ -145,7 +145,7 @@ module DiscourseAi
           rand(10..100)
         end
 
-        def perform_research(filter_components, goal, max_results)
+        def perform_research(filter_components, goals, max_results)
           # This would perform the actual research based on the filter and goal
           # For now, return a simplified result structure
           format_results([], %w[content url author date])
