@@ -71,6 +71,7 @@ module DiscourseAi
           ai_embeddings_semantic_search_enabled: :ai_embeddings_semantic_search_hyde_model,
           ai_helper_enabled: :ai_helper_model,
           ai_summarization_enabled: :ai_summarization_model,
+          ai_translation_enabled: :ai_translation_model,
         }
       end
 
