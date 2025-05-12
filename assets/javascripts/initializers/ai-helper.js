@@ -50,6 +50,7 @@ function initializeAiHelperTrigger(api) {
             mode,
             selectedText: selectedText(toolbarEvent),
             toolbarEvent,
+            showResultAsDiff: true,
           },
         });
       },

@@ -66,6 +66,7 @@ export default class ModalDiffModal extends Component {
   async suggestChanges() {
     this.smoothStreamer.resetStreaming();
     this.diffStreamer.reset();
+    this.loading = true;
 
     try {
       return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
