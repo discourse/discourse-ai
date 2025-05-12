@@ -123,6 +123,9 @@ export default class AiComposerHelperMenu extends Component {
       });
     }
 
+    const showResultAsDiff =
+      option.prompt_type === "diff" && option.name !== "markdown_table";
+
     return this.modal.show(ModalDiffModal, {
       model: {
         mode: option.id,
@@ -130,6 +133,7 @@ export default class AiComposerHelperMenu extends Component {
         revert: this.undoAiAction,
         toolbarEvent: this.args.data.toolbarEvent,
         customPromptValue: this.customPromptValue,
+        showResultAsDiff,
       },
     });
   }
