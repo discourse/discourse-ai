@@ -56,7 +56,7 @@ export default class ModalDiffModal extends Component {
     this.messageBus.subscribe(channel, this.updateResult);
   }
 
-  compareText(oldText = "", newText = "") {
+  compareText(oldText = "", newText = "", opts = {}) {
     const oldWords = oldText.trim().split(/\s+/);
     const newWords = newText.trim().split(/\s+/);
 
@@ -76,7 +76,7 @@ export default class ModalDiffModal extends Component {
         wordHTML = newWord;
       }
 
-      if (i === newWords.length - 1) {
+      if (i === newWords.length - 1 && opts.markLastWord) {
         wordHTML = `<mark class="highlight">${wordHTML}</mark>`;
       }
 
@@ -103,24 +103,28 @@ export default class ModalDiffModal extends Component {
     }
 
     if (result.done) {
-      this.finalDiff = result.diff;
+      // this.finalDiff = result.diff;
     }
 
     this.lastResultText = newText;
-
     this.isStreaming = !result.done;
   }
 
   streamNextWord() {
     if (this.currentWordIndex === this.words.length) {
-      this.diff = this.finalDiff;
+      this.diff = this.compareText(
+        this.args.model.selectedText,
+        this.suggestion,
+        { markLastWord: false }
+      );
     }
 
     if (this.currentWordIndex < this.words.length) {
       this.suggestion += this.words[this.currentWordIndex] + " ";
       this.diff = this.compareText(
         this.args.model.selectedText,
-        this.suggestion
+        this.suggestion,
+        { markLastWord: true }
       );
 
       this.currentWordIndex++;
@@ -153,8 +157,6 @@ export default class ModalDiffModal extends Component {
       });
     } catch (e) {
       popupAjaxError(e);
-    } finally {
-      this.loading = false;
     }
   }
 
@@ -189,7 +191,8 @@ export default class ModalDiffModal extends Component {
                 "streamable-content"
               }}
             >
-              <CookText @rawText={{this.diff}} class="cooked" />
+              {{!-- <CookText @rawText={{this.diff}} class="cooked" /> --}}
+              {{htmlSafe this.diff}}
               {{!-- <div class="composer-ai-helper-modal__old-value">
                 {{@model.selectedText}}
               {{!-- {{#if this.smoothStreamer.isStreaming}}

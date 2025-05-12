@@ -21,10 +21,18 @@
   }
 
   // TODO: cleanup and scope to inline-diff class
-  .composer-ai-helper-modal__suggestion .cooked {
+  .composer-ai-helper-modal__suggestion.streamable-content {
     ins,
     del {
       text-decoration: none;
+    }
+
+    ins {
+      background-color: var(--success-low);
+    }
+
+    del {
+      background-color: var(--danger-low);
     }
 
     mark {
