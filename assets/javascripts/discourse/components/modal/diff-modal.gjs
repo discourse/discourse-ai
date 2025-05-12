@@ -13,6 +13,7 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
 import { i18n } from "discourse-i18n";
+import DiffStreamer from "../../lib/diff-streamer";
 import SmoothStreamer from "../../lib/smooth-streamer";
 import AiIndicatorWave from "../ai-indicator-wave";
 
@@ -21,7 +22,7 @@ export default class ModalDiffModal extends Component {
   @service messageBus;
 
   @tracked loading = false;
-  @tracked diff;
+  @tracked diffStreamer = new DiffStreamer(this.args.model.selectedText);
   @tracked suggestion = "";
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -32,6 +33,20 @@ export default class ModalDiffModal extends Component {
   constructor() {
     super(...arguments);
     this.suggestChanges();
+  }
+
+  get isStreaming() {
+    return this.diffStreamer.isStreaming || this.smoothStreamer.isStreaming;
+  }
+
+  get primaryBtnLabel() {
+    return this.loading
+      ? i18n("discourse_ai.ai_helper.context_menu.loading")
+      : i18n("discourse_ai.ai_helper.context_menu.confirm");
+  }
+
+  get primaryBtnDisabled() {
+    return this.loading || this.isStreaming;
   }
 
   @bind
@@ -48,35 +63,22 @@ export default class ModalDiffModal extends Component {
 
   @action
   async updateResult(result) {
-    if (result) {
-      this.loading = false;
-    }
-    await this.smoothStreamer.updateResult(result, "result");
+    this.loading = false;
 
-    if (result.done) {
-      this.diff = result.diff;
-    }
-
-    const mdTablePromptId = this.currentUser?.ai_helper_prompts.find(
-      (prompt) => prompt.name === "markdown_table"
-    ).id;
-
-    // Markdown table prompt looks better with
-    // before/after results than diff
-    // despite having `type: diff`
-    if (this.args.model.mode === mdTablePromptId) {
-      this.diff = null;
+    if (this.args.model.showResultAsDiff) {
+      this.diffStreamer.updateResult(result, "result");
+    } else {
+      this.smoothStreamer.updateResult(result, "result");
     }
   }
 
   @action
   async suggestChanges() {
     this.smoothStreamer.resetStreaming();
-    this.diff = null;
-    this.suggestion = "";
-    this.loading = true;
+    this.diffStreamer.reset();
 
     try {
+      this.loading = true;
       return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
         method: "POST",
         data: {
@@ -89,8 +91,6 @@ export default class ModalDiffModal extends Component {
       });
     } catch (e) {
       popupAjaxError(e);
-    } finally {
-      this.loading = false;
     }
   }
 
@@ -102,6 +102,13 @@ export default class ModalDiffModal extends Component {
       this.args.model.toolbarEvent.replaceText(
         this.args.model.selectedText,
         this.suggestion
+      );
+    }
+
+    if (this.args.model.showResultAsDiff && this.diffStreamer.suggestion) {
+      this.args.model.toolbarEvent.replaceText(
+        this.args.model.selectedText,
+        this.diffStreamer.suggestion
       );
     }
   }
@@ -123,17 +130,18 @@ export default class ModalDiffModal extends Component {
               class={{concatClass
                 "composer-ai-helper-modal__suggestion"
                 "streamable-content"
-                (if this.smoothStreamer.isStreaming "streaming" "")
+                (if this.isStreaming "streaming")
+                (if @model.showResultAsDiff "inline-diff")
               }}
             >
-              {{#if this.smoothStreamer.isStreaming}}
-                <CookText
-                  @rawText={{this.smoothStreamer.renderedText}}
-                  class="cooked"
-                />
+              {{#if @model.showResultAsDiff}}
+                {{htmlSafe this.diffStreamer.diff}}
               {{else}}
-                {{#if this.diff}}
-                  {{htmlSafe this.diff}}
+                {{#if this.smoothStreamer.isStreaming}}
+                  <CookText
+                    @rawText={{this.smoothStreamer.renderedText}}
+                    class="cooked"
+                  />
                 {{else}}
                   <div class="composer-ai-helper-modal__old-value">
                     {{@model.selectedText}}
@@ -152,32 +160,27 @@ export default class ModalDiffModal extends Component {
       </:body>
 
       <:footer>
-        {{#if this.loading}}
-          <DButton
-            class="btn-primary"
-            @label="discourse_ai.ai_helper.context_menu.loading"
-            @disabled={{true}}
-          >
+        <DButton
+          class="btn-primary confirm"
+          @disabled={{this.primaryBtnDisabled}}
+          @action={{this.triggerConfirmChanges}}
+          @translatedLabel={{this.primaryBtnLabel}}
+        >
+          {{#if this.loading}}
             <AiIndicatorWave @loading={{this.loading}} />
-          </DButton>
-        {{else}}
-          <DButton
-            class="btn-primary confirm"
-            @action={{this.triggerConfirmChanges}}
-            @label="discourse_ai.ai_helper.context_menu.confirm"
-          />
-          <DButton
-            class="btn-flat discard"
-            @action={{@closeModal}}
-            @label="discourse_ai.ai_helper.context_menu.discard"
-          />
-          <DButton
-            class="regenerate"
-            @icon="arrows-rotate"
-            @action={{this.suggestChanges}}
-            @label="discourse_ai.ai_helper.context_menu.regen"
-          />
-        {{/if}}
+          {{/if}}
+        </DButton>
+        <DButton
+          class="btn-flat discard"
+          @action={{@closeModal}}
+          @label="discourse_ai.ai_helper.context_menu.discard"
+        />
+        <DButton
+          class="regenerate"
+          @icon="arrows-rotate"
+          @action={{this.suggestChanges}}
+          @label="discourse_ai.ai_helper.context_menu.regen"
+        />
       </:footer>
     </DModal>
   </template>

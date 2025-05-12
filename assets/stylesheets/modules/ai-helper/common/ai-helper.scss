@@ -3,12 +3,31 @@
   .inline-diff {
     ins {
       background-color: var(--success-low);
-      text-decoration: underline;
+      text-decoration: none;
     }
 
     del {
       background-color: var(--danger-low);
       text-decoration: line-through;
+    }
+
+    mark {
+      background-color: var(--highlight-low);
+      border-bottom: 2px solid var(--highlight-high);
+
+      ins,
+      del {
+        background: transparent;
+        text-decoration: none;
+      }
+    }
+
+    .same-word {
+      color: var(--primary);
+    }
+
+    .ghost {
+      color: var(--primary-low-mid);
     }
 
     .preview-area {
