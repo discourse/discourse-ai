@@ -330,6 +330,13 @@ en:
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Maximum number of results"
+            description: "Maximum number of results to include in a filter"
+          include_private:
+            name: "Include private"
+            description: "Include private topics in the filters"
         create_artifact:
           creator_llm:
             name: "LLM"

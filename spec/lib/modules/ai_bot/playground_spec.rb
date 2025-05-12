@@ -1159,8 +1159,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = third_post.topic.posts.order(:id).last
 
-      # not Hello123, we cancelled at 1 which means we may get 2 and then be done
-      expect(last_post.raw).to eq("Hello12")
+      # not Hello123, we cancelled at 1
+      expect(last_post.raw).to eq("Hello1")
     end
   end
 

@@ -66,6 +66,7 @@ module DiscourseAi
             Rails.logger.warn("DiscourseAI: CancelManager monitor thread did not stop in time")
             monitor_thread.kill if monitor_thread.alive?
           end
+          @monitor_thread = nil
         end
       end
 
@@ -83,6 +84,15 @@ module DiscourseAi
 
       def cancel!
         @cancelled = true
+        monitor_thread = @monitor_thread
+        if monitor_thread && monitor_thread != Thread.current
+          monitor_thread.wakeup
+          monitor_thread.join(2)
+          if monitor_thread.alive?
+            Rails.logger.warn("DiscourseAI: CancelManager monitor thread did not stop in time")
+            monitor_thread.kill if monitor_thread.alive?
+          end
+        end
         @callbacks.each do |cb|
           begin
             cb.call
