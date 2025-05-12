@@ -102,17 +102,19 @@ export default class DiffStreamer {
     const diff = [];
     let i = 0;
 
-    while (i < newWords.length) {
+    while (i < oldWords.length) {
       const oldWord = oldWords[i];
       const newWord = newWords[i];
 
-      let wordHTML;
-      if (oldWord === undefined) {
-        wordHTML = `<ins>${newWord}</ins>`;
+      let wordHTML = "";
+      let originalWordHTML = `<span class="ghost">${oldWord}</span>`;
+
+      if (newWord === undefined) {
+        wordHTML = originalWordHTML;
+      } else if (oldWord === newWord) {
+        wordHTML = `<span class="same-word">${newWord}</span>`;
       } else if (oldWord !== newWord) {
         wordHTML = `<del>${oldWord}</del> <ins>${newWord}</ins>`;
-      } else {
-        wordHTML = newWord;
       }
 
       if (i === newWords.length - 1 && opts.markLastWord) {

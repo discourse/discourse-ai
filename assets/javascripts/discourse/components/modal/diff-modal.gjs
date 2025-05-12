@@ -39,6 +39,16 @@ export default class ModalDiffModal extends Component {
     return this.diffStreamer.isStreaming || this.smoothStreamer.isStreaming;
   }
 
+  get primaryBtnLabel() {
+    return this.loading
+      ? i18n("discourse_ai.ai_helper.context_menu.loading")
+      : i18n("discourse_ai.ai_helper.context_menu.confirm");
+  }
+
+  get primaryBtnDisabled() {
+    return this.loading || this.isStreaming;
+  }
+
   @bind
   subscribe() {
     const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
@@ -66,9 +76,9 @@ export default class ModalDiffModal extends Component {
   async suggestChanges() {
     this.smoothStreamer.resetStreaming();
     this.diffStreamer.reset();
-    this.loading = true;
 
     try {
+      this.loading = true;
       return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
         method: "POST",
         data: {
@@ -150,33 +160,27 @@ export default class ModalDiffModal extends Component {
       </:body>
 
       <:footer>
-        {{#if this.loading}}
-          <DButton
-            class="btn-primary"
-            @label="discourse_ai.ai_helper.context_menu.loading"
-            @disabled={{true}}
-          >
+        <DButton
+          class="btn-primary confirm"
+          @disabled={{this.primaryBtnDisabled}}
+          @action={{this.triggerConfirmChanges}}
+          @translatedLabel={{this.primaryBtnLabel}}
+        >
+          {{#if this.loading}}
             <AiIndicatorWave @loading={{this.loading}} />
-          </DButton>
-        {{else}}
-          <DButton
-            class="btn-primary confirm"
-            @disabled={{this.isStreaming}}
-            @action={{this.triggerConfirmChanges}}
-            @label="discourse_ai.ai_helper.context_menu.confirm"
-          />
-          <DButton
-            class="btn-flat discard"
-            @action={{@closeModal}}
-            @label="discourse_ai.ai_helper.context_menu.discard"
-          />
-          <DButton
-            class="regenerate"
-            @icon="arrows-rotate"
-            @action={{this.suggestChanges}}
-            @label="discourse_ai.ai_helper.context_menu.regen"
-          />
-        {{/if}}
+          {{/if}}
+        </DButton>
+        <DButton
+          class="btn-flat discard"
+          @action={{@closeModal}}
+          @label="discourse_ai.ai_helper.context_menu.discard"
+        />
+        <DButton
+          class="regenerate"
+          @icon="arrows-rotate"
+          @action={{this.suggestChanges}}
+          @label="discourse_ai.ai_helper.context_menu.regen"
+        />
       </:footer>
     </DModal>
   </template>
