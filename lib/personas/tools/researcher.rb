@@ -56,6 +56,9 @@ module DiscourseAi
           goals = parameters[:goals] || ""
           dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
 
+          return { error: "No goals provided" } if goals.blank?
+          return { error: "No filter provided" } if @last_filter.blank?
+
           filter = DiscourseAi::Utils::Research::Filter.new(@last_filter)
 
           @result_count = filter.search.count

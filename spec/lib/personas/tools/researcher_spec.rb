@@ -24,16 +24,16 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
     it "returns filter information and result count" do
       researcher =
         described_class.new(
-          { filter: "tag:research after:2023", goal: "analyze post patterns" },
+          { filter: "tag:research after:2023", goals: "analyze post patterns", dry_run: true },
           bot_user: bot_user,
           llm: llm,
-          context: DiscourseAi::Personas::BotContext.new(user: user),
+          context: DiscourseAi::Personas::BotContext.new(user: user, post: post),
         )
 
       results = researcher.invoke(&progress_blk)
 
       expect(results[:filter]).to eq("tag:research after:2023")
-      expect(results[:goal]).to eq("analyze post patterns")
+      expect(results[:goals]).to eq("analyze post patterns")
       expect(results[:dry_run]).to eq(true)
       expect(results[:number_of_results]).to be > 0
       expect(researcher.last_filter).to eq("tag:research after:2023")
@@ -42,13 +42,11 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
 
     it "handles empty filters" do
       researcher =
-        described_class.new({ goal: "analyze all content" }, bot_user: bot_user, llm: llm)
+        described_class.new({ goals: "analyze all content" }, bot_user: bot_user, llm: llm)
 
       results = researcher.invoke(&progress_blk)
 
-      expect(results[:filter]).to eq("")
-      expect(results[:goal]).to eq("analyze all content")
-      expect(researcher.last_filter).to eq("")
+      expect(results[:error]).to eq("No filter provided")
     end
 
     it "accepts max_results option" do
@@ -80,7 +78,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
         described_class.new(
           {
             filter: "category:research-category @#{user.username}",
-            goal: "find relevant content",
+            goals: "find relevant content",
             dry_run: false,
           },
           bot_user: bot_user,
@@ -97,7 +95,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
       end
 
       expect(results[:dry_run]).to eq(false)
-      expect(results[:goal]).to eq("find relevant content")
+      expect(results[:goals]).to eq("find relevant content")
       expect(results[:filter]).to eq("category:research-category @#{user.username}")
       expect(results[:results].first).to include("Found: Relevant content 1")
     end
