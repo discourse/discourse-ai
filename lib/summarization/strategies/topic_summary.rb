@@ -44,20 +44,7 @@ module DiscourseAi
           input =
             contents.map { |item| "(#{item[:id]} #{item[:poster]} said: #{item[:text]} " }.join
 
-          messages = []
-          messages << {
-            type: :user,
-            content:
-              "Here are the posts inside <input></input> XML tags:\n\n<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>\n\nGenerate a concise, coherent summary of the text above maintaining the original language.",
-          }
-
-          messages << {
-            type: :model,
-            content:
-              "Two users are sharing their feelings toward Mondays. [user1](#{resource_path}/1) hates them, while [user2](#{resource_path}/2) loves them.",
-          }
-
-          messages << { type: :user, content: <<~TEXT.strip }
+          [{ type: :user, content: <<~TEXT.strip }]
             #{content_title.present? ? "The discussion title is: " + content_title + ".\n" : ""}
             Here are the posts, inside <input></input> XML tags:
 
@@ -67,8 +54,6 @@ module DiscourseAi
 
             Generate a concise, coherent summary of the text above maintaining the original language.
           TEXT
-
-          messages
         end
 
         private

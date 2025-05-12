@@ -225,6 +225,10 @@ module DiscourseAi
           permitted[:response_format] = permit_response_format(response_format)
         end
 
+        if examples = params.dig(:ai_persona, :examples)
+          permitted[:examples] = permit_examples(examples)
+        end
+
         permitted
       end
 
@@ -250,6 +254,12 @@ module DiscourseAi
             false
           end
         end
+      end
+
+      def permit_examples(examples)
+        return [] if !examples.is_a?(Array)
+
+        examples.map { |example_arr| example_arr.take(2).map(&:to_s) }
       end
     end
   end

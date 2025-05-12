@@ -186,6 +186,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           question_consolidator_llm_id: llm_model.id,
           forced_tool_count: 2,
           response_format: [{ key: "summary", type: "string" }],
+          examples: [%w[user_msg1 assistant_msg1], %w[user_msg2 assistant_msg2]],
         }
       end
 
@@ -213,6 +214,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona_json["response_format"].map { |rf| rf["key"] }).to contain_exactly(
             "summary",
           )
+          expect(persona_json["examples"]).to eq(valid_attributes[:examples])
 
           persona = AiPersona.find(persona_json["id"])
 

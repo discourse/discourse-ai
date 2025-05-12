@@ -1,90 +1,79 @@
 # frozen_string_literal: true
 
 RSpec.describe AiPersona do
+  subject(:basic_persona) do
+    AiPersona.new(
+      name: "test",
+      description: "test",
+      system_prompt: "test",
+      tools: [],
+      allowed_group_ids: [],
+    )
+  end
+
   fab!(:llm_model)
   fab!(:seeded_llm_model) { Fabricate(:llm_model, id: -1) }
 
   it "validates context settings" do
-    persona =
-      AiPersona.new(
-        name: "test",
-        description: "test",
-        system_prompt: "test",
-        tools: [],
-        allowed_group_ids: [],
-      )
+    expect(basic_persona.valid?).to eq(true)
 
-    expect(persona.valid?).to eq(true)
+    basic_persona.max_context_posts = 0
+    expect(basic_persona.valid?).to eq(false)
+    expect(basic_persona.errors[:max_context_posts]).to eq(["must be greater than 0"])
 
-    persona.max_context_posts = 0
-    expect(persona.valid?).to eq(false)
-    expect(persona.errors[:max_context_posts]).to eq(["must be greater than 0"])
+    basic_persona.max_context_posts = 1
+    expect(basic_persona.valid?).to eq(true)
 
-    persona.max_context_posts = 1
-    expect(persona.valid?).to eq(true)
-
-    persona.max_context_posts = nil
-    expect(persona.valid?).to eq(true)
+    basic_persona.max_context_posts = nil
+    expect(basic_persona.valid?).to eq(true)
   end
 
   it "validates tools" do
-    persona =
-      AiPersona.new(
-        name: "test",
-        description: "test",
-        system_prompt: "test",
-        tools: [],
-        allowed_group_ids: [],
-      )
-
     Fabricate(:ai_tool, id: 1)
     Fabricate(:ai_tool, id: 2, name: "Archie search", tool_name: "search")
 
-    expect(persona.valid?).to eq(true)
+    expect(basic_persona.valid?).to eq(true)
 
-    persona.tools = %w[search image_generation]
-    expect(persona.valid?).to eq(true)
+    basic_persona.tools = %w[search image_generation]
+    expect(basic_persona.valid?).to eq(true)
 
-    persona.tools = %w[search image_generation search]
-    expect(persona.valid?).to eq(false)
-    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+    basic_persona.tools = %w[search image_generation search]
+    expect(basic_persona.valid?).to eq(false)
+    expect(basic_persona.errors[:tools]).to eq(["Can not have duplicate tools"])
 
-    persona.tools = [["custom-1", { test: "test" }, false], ["custom-2", { test: "test" }, false]]
-    expect(persona.valid?).to eq(true)
-    expect(persona.errors[:tools]).to eq([])
+    basic_persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-2", { test: "test" }, false],
+    ]
+    expect(basic_persona.valid?).to eq(true)
+    expect(basic_persona.errors[:tools]).to eq([])
 
-    persona.tools = [["custom-1", { test: "test" }, false], ["custom-1", { test: "test" }, false]]
-    expect(persona.valid?).to eq(false)
-    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+    basic_persona.tools = [
+      ["custom-1", { test: "test" }, false],
+      ["custom-1", { test: "test" }, false],
+    ]
+    expect(basic_persona.valid?).to eq(false)
+    expect(basic_persona.errors[:tools]).to eq(["Can not have duplicate tools"])
 
-    persona.tools = [
+    basic_persona.tools = [
       ["custom-1", { test: "test" }, false],
       ["custom-2", { test: "test" }, false],
       "image_generation",
     ]
-    expect(persona.valid?).to eq(true)
-    expect(persona.errors[:tools]).to eq([])
+    expect(basic_persona.valid?).to eq(true)
+    expect(basic_persona.errors[:tools]).to eq([])
 
-    persona.tools = [
+    basic_persona.tools = [
       ["custom-1", { test: "test" }, false],
       ["custom-2", { test: "test" }, false],
       "Search",
     ]
-    expect(persona.valid?).to eq(false)
-    expect(persona.errors[:tools]).to eq(["Can not have duplicate tools"])
+    expect(basic_persona.valid?).to eq(false)
+    expect(basic_persona.errors[:tools]).to eq(["Can not have duplicate tools"])
   end
 
   it "allows creation of user" do
-    persona =
-      AiPersona.create!(
-        name: "test",
-        description: "test",
-        system_prompt: "test",
-        tools: [],
-        allowed_group_ids: [],
-      )
-
-    user = persona.create_user!
+    user = basic_persona.create_user!
     expect(user.username).to eq("test_bot")
     expect(user.name).to eq("Test")
     expect(user.bot?).to be(true)
@@ -223,25 +212,17 @@ RSpec.describe AiPersona do
   end
 
   it "validates allowed seeded model" do
-    persona =
-      AiPersona.new(
-        name: "test",
-        description: "test",
-        system_prompt: "test",
-        tools: [],
-        allowed_group_ids: [],
-        default_llm_id: seeded_llm_model.id,
-      )
+    basic_persona.default_llm_id = seeded_llm_model.id
 
     SiteSetting.ai_bot_allowed_seeded_models = ""
 
-    expect(persona.valid?).to eq(false)
-    expect(persona.errors[:default_llm]).to include(
+    expect(basic_persona.valid?).to eq(false)
+    expect(basic_persona.errors[:default_llm]).to include(
       I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"),
     )
 
     SiteSetting.ai_bot_allowed_seeded_models = "-1"
-    expect(persona.valid?).to eq(true)
+    expect(basic_persona.valid?).to eq(true)
   end
 
   it "does not leak caches between sites" do
@@ -268,6 +249,7 @@ RSpec.describe AiPersona do
         system_prompt: "system persona",
         tools: %w[Search Time],
         response_format: [{ key: "summary", type: "string" }],
+        examples: [%w[user_msg1 assistant_msg1], %w[user_msg2 assistant_msg2]],
         system: true,
       )
     end
@@ -302,6 +284,40 @@ RSpec.describe AiPersona do
           ActiveRecord::RecordInvalid,
         )
       end
+
+      it "doesn't accept changes to examples" do
+        other_examples = [%w[user_msg1 assistant_msg1]]
+
+        expect { system_persona.update!(examples: other_examples) }.to raise_error(
+          ActiveRecord::RecordInvalid,
+        )
+      end
+    end
+  end
+
+  describe "validates examples format" do
+    it "doesn't accept examples that are not arrays" do
+      basic_persona.examples = [1]
+
+      expect(basic_persona.valid?).to eq(false)
+      expect(basic_persona.errors[:examples].first).to eq(
+        I18n.t("discourse_ai.personas.malformed_examples"),
+      )
+    end
+
+    it "doesn't accept examples that don't come in pairs" do
+      basic_persona.examples = [%w[user_msg1]]
+
+      expect(basic_persona.valid?).to eq(false)
+      expect(basic_persona.errors[:examples].first).to eq(
+        I18n.t("discourse_ai.personas.malformed_examples"),
+      )
+    end
+
+    it "works when example is well formatted" do
+      basic_persona.examples = [%w[user_msg1 assistant1]]
+
+      expect(basic_persona.valid?).to eq(true)
     end
   end
 end

@@ -17,6 +17,7 @@ import AdminUser from "admin/models/admin-user";
 import GroupChooser from "select-kit/components/group-chooser";
 import AiPersonaResponseFormatEditor from "../components/modal/ai-persona-response-format-editor";
 import AiLlmSelector from "./ai-llm-selector";
+import AiPersonaCollapsableExample from "./ai-persona-example";
 import AiPersonaToolOptions from "./ai-persona-tool-options";
 import AiToolSelector from "./ai-tool-selector";
 import RagOptionsFk from "./rag-options-fk";
@@ -230,6 +231,12 @@ export default class PersonaEditor extends Component {
     return this.allTools.filter((tool) => tools.includes(tool.id));
   }
 
+  @action
+  addExamplesPair(form, data) {
+    const newExamples = [...data.examples, ["", ""]];
+    form.set("examples", newExamples);
+  }
+
   mapToolOptions(currentOptions, toolNames) {
     const updatedOptions = Object.assign({}, currentOptions);
 
@@ -421,6 +428,32 @@ export default class PersonaEditor extends Component {
             <field.Input @type="number" step="any" lang="en" />
           </form.Field>
         {{/unless}}
+
+        <form.Section
+          @title={{i18n "discourse_ai.ai_persona.examples.title"}}
+          @subtitle={{i18n "discourse_ai.ai_persona.examples.examples_help"}}
+        >
+          {{#unless data.system}}
+            <form.Container>
+              <form.Button
+                @action={{fn this.addExamplesPair form data}}
+                @label="discourse_ai.ai_persona.examples.new"
+                class="ai-persona-editor__new_example"
+              />
+            </form.Container>
+          {{/unless}}
+
+          {{#if (gt data.examples.length 0)}}
+            <form.Collection @name="examples" as |exCollection exCollectionIdx|>
+              <AiPersonaCollapsableExample
+                @examplesCollection={{exCollection}}
+                @exampleNumber={{exCollectionIdx}}
+                @system={{data.system}}
+                @form={{form}}
+              />
+            </form.Collection>
+          {{/if}}
+        </form.Section>
 
         <form.Section @title={{i18n "discourse_ai.ai_persona.ai_tools"}}>
           <form.Field

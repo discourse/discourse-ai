@@ -164,6 +164,10 @@ module DiscourseAi
         nil
       end
 
+      def examples
+        []
+      end
+
       def available_tools
         self
           .class
@@ -173,11 +177,7 @@ module DiscourseAi
       end
 
       def craft_prompt(context, llm: nil)
-        system_insts =
-          system_prompt.gsub(/\{(\w+)\}/) do |match|
-            found = context.lookup_template_param(match[1..-2])
-            found.nil? ? match : found.to_s
-          end
+        system_insts = replace_placeholders(system_prompt, context)
 
         prompt_insts = <<~TEXT.strip
           #{system_insts}
@@ -206,10 +206,21 @@ module DiscourseAi
 
         prompt_insts << fragments_guidance if fragments_guidance.present?
 
+        post_system_examples = []
+
+        if examples.present?
+          examples.flatten.each_with_index do |e, idx|
+            post_system_examples << {
+              content: replace_placeholders(e, context),
+              type: (idx + 1).odd? ? :user : :model,
+            }
+          end
+        end
+
         prompt =
           DiscourseAi::Completions::Prompt.new(
             prompt_insts,
-            messages: context.messages,
+            messages: post_system_examples.concat(context.messages),
             topic_id: context.topic_id,
             post_id: context.post_id,
           )
@@ -238,6 +249,13 @@ module DiscourseAi
       end
 
       protected
+
+      def replace_placeholders(content, context)
+        content.gsub(/\{(\w+)\}/) do |match|
+          found = context.lookup_template_param(match[1..-2])
+          found.nil? ? match : found.to_s
+        end
+      end
 
       def tool_instance(tool_call, bot_user:, llm:, context:, existing_tools:)
         function_id = tool_call.id

@@ -13,6 +13,7 @@ class AiPersona < ActiveRecord::Base
   validate :system_persona_unchangeable, on: :update, if: :system
   validate :chat_preconditions
   validate :allowed_seeded_model, if: :default_llm_id
+  validate :well_formated_examples
   validates :max_context_posts, numericality: { greater_than: 0 }, allow_nil: true
   # leaves some room for growth but sets a maximum to avoid memory issues
   # we may want to revisit this in the future
@@ -265,6 +266,7 @@ class AiPersona < ActiveRecord::Base
       define_method(:top_p) { @ai_persona&.top_p }
       define_method(:system_prompt) { @ai_persona&.system_prompt || "You are a helpful bot." }
       define_method(:uploads) { @ai_persona&.uploads }
+      define_method(:examples) { @ai_persona&.examples }
     end
   end
 
@@ -343,6 +345,11 @@ class AiPersona < ActiveRecord::Base
       new_format = response_format_change[1].map { |f| f["key"] }.to_set
 
       errors.add(:base, error_msg) if old_format != new_format
+    elsif examples_changed?
+      old_examples = examples_change[0].flatten.to_set
+      new_examples = examples_change[1].flatten.to_set
+
+      errors.add(:base, error_msg) if old_examples != new_examples
     end
   end
 
@@ -362,6 +369,17 @@ class AiPersona < ActiveRecord::Base
     return if SiteSetting.ai_bot_allowed_seeded_models_map.include?(default_llm.id.to_s)
 
     errors.add(:default_llm, I18n.t("discourse_ai.llm.configuration.invalid_seeded_model"))
+  end
+
+  def well_formated_examples
+    return if examples.blank?
+
+    if examples.is_a?(Array) &&
+         examples.all? { |e| e.is_a?(Array) && e.length == 2 && e.all?(&:present?) }
+      return
+    end
+
+    errors.add(:examples, I18n.t("discourse_ai.personas.malformed_examples"))
   end
 end
 
@@ -401,6 +419,7 @@ end
 #  default_llm_id               :bigint
 #  question_consolidator_llm_id :bigint
 #  response_format              :jsonb
+#  examples                     :jsonb
 #
 # Indexes
 #

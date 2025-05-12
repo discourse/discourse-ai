@@ -495,6 +495,9 @@ en:
         other: "We couldn't delete this model because %{settings} are using it. Update the settings and try again."
       cannot_edit_builtin: "You can't edit a built-in model."
 
+    personas:
+      malformed_examples: "The given examples have the wrong format."
+
     embeddings:
       delete_failed: "This model is currently in use. Update the `ai embeddings selected model` first."
       cannot_edit_builtin: "You can't edit a built-in model."
