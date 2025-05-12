@@ -94,7 +94,7 @@ module DiscourseAi
               output_thinking: true,
               cancel_manager: context.cancel_manager,
               **llm_kwargs,
-            ) do |partial, cancel|
+            ) do |partial|
               tool =
                 persona.find_tool(
                   partial,
@@ -111,7 +111,7 @@ module DiscourseAi
                 if tool_call.partial?
                   if tool.class.allow_partial_tool_calls?
                     tool.partial_invoke
-                    update_blk.call("", cancel, tool.custom_raw, :partial_tool)
+                    update_blk.call("", tool.custom_raw, :partial_tool)
                   end
                   next
                 end
@@ -119,7 +119,7 @@ module DiscourseAi
                 tool_found = true
                 # a bit hacky, but extra newlines do no harm
                 if needs_newlines
-                  update_blk.call("\n\n", cancel)
+                  update_blk.call("\n\n")
                   needs_newlines = false
                 end
 
@@ -127,7 +127,6 @@ module DiscourseAi
                   tool: tool,
                   raw_context: raw_context,
                   current_llm: current_llm,
-                  cancel: cancel,
                   update_blk: update_blk,
                   prompt: prompt,
                   context: context,
@@ -146,7 +145,7 @@ module DiscourseAi
                 else
                   if partial.is_a?(DiscourseAi::Completions::Thinking)
                     if partial.partial? && partial.message.present?
-                      update_blk.call(partial.message, cancel, nil, :thinking)
+                      update_blk.call(partial.message, nil, :thinking)
                     end
                     if !partial.partial?
                       # this will be dealt with later
@@ -154,9 +153,9 @@ module DiscourseAi
                       current_thinking << partial
                     end
                   elsif partial.is_a?(DiscourseAi::Completions::StructuredOutput)
-                    update_blk.call(partial, cancel, nil, :structured_output)
+                    update_blk.call(partial, nil, :structured_output)
                   else
-                    update_blk.call(partial, cancel)
+                    update_blk.call(partial)
                   end
                 end
               end
@@ -217,14 +216,13 @@ module DiscourseAi
         tool:,
         raw_context:,
         current_llm:,
-        cancel:,
         update_blk:,
         prompt:,
         context:,
         current_thinking:
       )
         tool_call_id = tool.tool_call_id
-        invocation_result_json = invoke_tool(tool, cancel, context, &update_blk).to_json
+        invocation_result_json = invoke_tool(tool, context, &update_blk).to_json
 
         tool_call_message = {
           type: :tool_call,
@@ -258,27 +256,27 @@ module DiscourseAi
         raw_context << [invocation_result_json, tool_call_id, "tool", tool.name]
       end
 
-      def invoke_tool(tool, cancel, context, &update_blk)
+      def invoke_tool(tool, context, &update_blk)
         show_placeholder = !context.skip_tool_details && !tool.class.allow_partial_tool_calls?
 
-        update_blk.call("", cancel, build_placeholder(tool.summary, "")) if show_placeholder
+        update_blk.call("", build_placeholder(tool.summary, "")) if show_placeholder
 
         result =
           tool.invoke do |progress, render_raw|
             if render_raw
-              update_blk.call("", cancel, tool.custom_raw, :partial_invoke)
+              update_blk.call("", tool.custom_raw, :partial_invoke)
               show_placeholder = false
             elsif show_placeholder
               placeholder = build_placeholder(tool.summary, progress)
-              update_blk.call("", cancel, placeholder)
+              update_blk.call("", placeholder)
             end
           end
 
         if show_placeholder
           tool_details = build_placeholder(tool.summary, tool.details, custom_raw: tool.custom_raw)
-          update_blk.call(tool_details, cancel, nil, :tool_details)
+          update_blk.call(tool_details, nil, :tool_details)
         elsif tool.custom_raw.present?
-          update_blk.call(tool.custom_raw, cancel, nil, :custom_raw)
+          update_blk.call(tool.custom_raw, nil, :custom_raw)
         end
 
         result

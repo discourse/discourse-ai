@@ -6,16 +6,23 @@
 module DiscourseAi
   module AiBot
     class ChatStreamer
-      attr_accessor :cancel
       attr_reader :reply,
                   :guardian,
                   :thread_id,
                   :force_thread,
                   :in_reply_to_id,
                   :channel,
-                  :cancelled
+                  :cancel_manager
 
-      def initialize(message:, channel:, guardian:, thread_id:, in_reply_to_id:, force_thread:)
+      def initialize(
+        message:,
+        channel:,
+        guardian:,
+        thread_id:,
+        in_reply_to_id:,
+        force_thread:,
+        cancel_manager: nil
+      )
         @message = message
         @channel = channel
         @guardian = guardian
@@ -35,6 +42,8 @@ module DiscourseAi
             guardian: guardian,
             thread_id: thread_id,
           )
+
+        @cancel_manager = cancel_manager
       end
 
       def <<(partial)
@@ -111,8 +120,7 @@ module DiscourseAi
 
           streaming = ChatSDK::Message.stream(message_id: reply.id, raw: buffer, guardian: guardian)
           if !streaming
-            cancel.call
-            @cancelled = true
+            @cancel_manager.cancel! if @cancel_manager
           end
         end
       end

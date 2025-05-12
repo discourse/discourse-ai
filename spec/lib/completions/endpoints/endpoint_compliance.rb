@@ -188,9 +188,11 @@ class EndpointsCompliance
     mock.stub_streamed_simple_call(dialect.translate) do
       completion_response = +""
 
-      endpoint.perform_completion!(dialect, user) do |partial, cancel|
+      cancel_manager = DiscourseAi::Completions::CancelManager.new
+
+      endpoint.perform_completion!(dialect, user, cancel_manager: cancel_manager) do |partial|
         completion_response << partial
-        cancel.call if completion_response.split(" ").length == 2
+        cancel_manager.cancel! if completion_response.split(" ").length == 2
       end
 
       expect(AiApiAuditLog.count).to eq(1)
@@ -212,12 +214,14 @@ class EndpointsCompliance
     prompt = generic_prompt(tools: [mock.tool])
     a_dialect = dialect(prompt: prompt)
 
+    cancel_manager = DiscourseAi::Completions::CancelManager.new
+
     mock.stub_streamed_tool_call(a_dialect.translate) do
       buffered_partial = []
 
-      endpoint.perform_completion!(a_dialect, user) do |partial, cancel|
+      endpoint.perform_completion!(a_dialect, user, cancel_manager: cancel_manager) do |partial|
         buffered_partial << partial
-        cancel.call if partial.is_a?(DiscourseAi::Completions::ToolCall)
+        cancel_manager if partial.is_a?(DiscourseAi::Completions::ToolCall)
       end
 
       expect(buffered_partial).to eq([mock.invocation_response])
