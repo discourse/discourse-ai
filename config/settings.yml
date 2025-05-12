@@ -391,3 +391,9 @@ discourse_ai:
     default: true
     client: true
 
+  ai_translation_model:
+    default: ""
+    type: enum
+    allow_any: false
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
