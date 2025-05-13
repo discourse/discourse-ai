@@ -57,6 +57,22 @@ module DiscourseAi
           end
         end
 
+        register_filter(/\Atopic_before:(.*)\z/i) do |relation, date_str, _|
+          if date = Filter.word_to_date(date_str)
+            relation.where("topics.created_at < ?", date)
+          else
+            relation
+          end
+        end
+
+        register_filter(/\Atopic_after:(.*)\z/i) do |relation, date_str, _|
+          if date = Filter.word_to_date(date_str)
+            relation.where("topics.created_at > ?", date)
+          else
+            relation
+          end
+        end
+
         # Category filter
         register_filter(/\Acategory:([a-zA-Z0-9_\-]+)\z/i) do |relation, slug, _|
           category = Category.find_by("LOWER(slug) = LOWER(?)", slug)

@@ -13,12 +13,7 @@ module DiscourseAi
               description:
                 "Analyze and extract information from content across the forum based on specified filters",
               parameters: [
-                {
-                  name: "filter",
-                  description:
-                    "Filter string to target specific content. Supports user (@username), date ranges (after:YYYY-MM-DD, before:YYYY-MM-DD), categories (category:name), tags (tag:name), groups (group:name). Multiple filters can be combined with spaces. Example: '@sam after:2023-01-01 tag:feature'",
-                  type: "string",
-                },
+                { name: "filter", description: filter_description, type: "string" },
                 {
                   name: "goals",
                   description:
@@ -34,23 +29,35 @@ module DiscourseAi
             }
           end
 
+          def filter_description
+            <<~TEXT
+              Filter string to target specific content.
+              - Supports user (@username)
+              - date ranges (after:YYYY-MM-DD, before:YYYY-MM-DD for posts; topic_after:YYYY-MM-DD, topic_before:YYYY-MM-DD for topics)
+              - categories (category:name)
+              - tags (tag:name)
+              - groups (group:name).
+
+              Multiple filters can be combined with spaces. Example: '@sam after:2023-01-01 tag:feature'
+            TEXT
+          end
+
           def name
             "researcher"
           end
 
-          def custom_system_message
-            <<~TEXT
-              Use the researcher tool to analyze patterns and extract insights from forum content.
-              For complex research tasks, start with a dry run to gauge the scope before processing.
-            TEXT
-          end
-
           def accepted_options
-            [option(:max_results, type: :integer), option(:include_private, type: :boolean)]
+            [
+              option(:max_results, type: :integer),
+              option(:include_private, type: :boolean),
+              option(:max_tokens_per_post, type: :integer),
+            ]
           end
         end
 
         def invoke(&blk)
+          max_results = options[:max_results] || 1000
+
           @filter = parameters[:filter] || ""
           @goals = parameters[:goals] || ""
           @dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
@@ -62,7 +69,15 @@ module DiscourseAi
           return { error: "No goals provided" } if goals.blank?
           return { error: "No filter provided" } if @filter.blank?
 
-          filter = DiscourseAi::Utils::Research::Filter.new(@filter)
+          guardian = nil
+          guardian = Guardian.new(context.user) if options[:include_private]
+
+          filter =
+            DiscourseAi::Utils::Research::Filter.new(
+              @filter,
+              limit: max_results,
+              guardian: guardian,
+            )
           @result_count = filter.search.count
 
           blk.call details
@@ -99,6 +114,7 @@ module DiscourseAi
               filter,
               max_tokens_per_batch: llm.max_prompt_tokens - 2000,
               tokenizer: llm.tokenizer,
+              max_tokens_per_post: options[:max_tokens_per_post] || 2000,
             )
 
           results = []

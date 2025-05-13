@@ -337,6 +337,9 @@ en:
           include_private:
             name: "Include private"
             description: "Include private topics in the filters"
+          max_tokens_per_post:
+            name: "Maximum tokens per post"
+            description: "Maximum number of tokens to use for each post in the filter"
         create_artifact:
           creator_llm:
             name: "LLM"

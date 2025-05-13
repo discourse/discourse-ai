@@ -4,10 +4,11 @@ module DiscourseAi
   module Utils
     module Research
       class LlmFormatter
-        def initialize(filter, max_tokens_per_batch:, tokenizer:)
+        def initialize(filter, max_tokens_per_batch:, tokenizer:, max_tokens_per_post:)
           @filter = filter
           @max_tokens_per_batch = max_tokens_per_batch
           @tokenizer = tokenizer
+          @max_tokens_per_post = max_tokens_per_post
           @to_process = filter_to_hash
         end
 
@@ -160,10 +161,27 @@ module DiscourseAi
         def format_post(post)
           text = +"---\n"
           text << "## Post by #{post.user&.username} - #{format_date(post.created_at)}\n\n"
-          text << "#{post.raw}\n"
+          text << "#{truncate_if_needed(post.raw)}\n"
           text << "Likes: #{post.like_count}\n" if post.like_count.to_i > 0
           text << "Post url: /t/-/#{post.topic_id}/#{post.post_number}\n\n"
           text
+        end
+
+        def truncate_if_needed(content)
+          tokens_count = estimate_tokens(content)
+
+          return content if tokens_count <= @max_tokens_per_post
+
+          half_limit = @max_tokens_per_post / 2
+          token_ids = @tokenizer.encode(content)
+
+          first_half_ids = token_ids[0...half_limit]
+          last_half_ids = token_ids[-half_limit..-1]
+
+          first_text = @tokenizer.decode(first_half_ids)
+          last_text = @tokenizer.decode(last_half_ids)
+
+          "#{first_text}\n\n... elided #{tokens_count - @max_tokens_per_post} tokens ...\n\n#{last_text}"
         end
 
         def format_omitted_posts(count, position)
