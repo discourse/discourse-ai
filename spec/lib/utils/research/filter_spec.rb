@@ -91,5 +91,47 @@ describe DiscourseAi::Utils::Research::Filter do
         expect(filter.search.pluck(:id)).to contain_exactly(feature_bug_post.id)
       end
     end
+
+    describe "full text keyword searching" do
+      before_all { SearchIndexer.enable }
+      fab!(:post_with_apples) do
+        Fabricate(:post, raw: "This post contains apples", topic: feature_topic, user: user)
+      end
+
+      fab!(:post_with_bananas) do
+        Fabricate(:post, raw: "This post mentions bananas", topic: bug_topic, user: user)
+      end
+
+      fab!(:post_with_both) do
+        Fabricate(
+          :post,
+          raw: "This post has apples and bananas",
+          topic: feature_bug_topic,
+          user: user,
+        )
+      end
+
+      fab!(:post_with_none) do
+        Fabricate(:post, raw: "No fruits here", topic: no_tag_topic, user: user)
+      end
+
+      it "correctly filters posts by full text keywords" do
+        filter = described_class.new("keywords:apples")
+        expect(filter.search.pluck(:id)).to contain_exactly(post_with_apples.id, post_with_both.id)
+
+        filter = described_class.new("keywords:bananas")
+        expect(filter.search.pluck(:id)).to contain_exactly(post_with_bananas.id, post_with_both.id)
+
+        filter = described_class.new("keywords:apples,bananas")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          post_with_apples.id,
+          post_with_bananas.id,
+          post_with_both.id,
+        )
+
+        filter = described_class.new("keywords:oranges")
+        expect(filter.search.count).to eq(0)
+      end
+    end
   end
 end

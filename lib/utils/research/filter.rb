@@ -88,6 +88,27 @@ module DiscourseAi
           end
         end
 
+        register_filter(/\Akeywords?:(.*)\z/i) do |relation, keywords_param, _|
+          if keywords_param.blank?
+            relation
+          else
+            keywords = keywords_param.split(",").map(&:strip).reject(&:blank?)
+            if keywords.empty?
+              relation
+            else
+              # Build a ts_query string joined by | (OR)
+              ts_query = keywords.map { |kw| kw.gsub(/['\\]/, " ") }.join(" | ")
+              relation =
+                relation.joins("JOIN post_search_data ON post_search_data.post_id = posts.id")
+              relation.where(
+                "post_search_data.search_data @@ to_tsquery(?, ?)",
+                ::Search.ts_config,
+                ts_query,
+              )
+            end
+          end
+        end
+
         register_filter(/\A(?:categories?|category):(.*)\z/i) do |relation, category_param, _|
           if category_param.include?(",")
             category_names = category_param.split(",").map(&:strip)

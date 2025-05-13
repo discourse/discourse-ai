@@ -38,6 +38,7 @@ module DiscourseAi
               - tags (tag:tag1,tag2)
               - groups (group:group1,group2).
               - status (status:open, status:closed, status:archived, status:noreplies, status:single_user)
+              - keywords (keywords:keyword1,keyword2) - specific words to search for in posts
 
               If multiple tags or categories are specified, they are treated as OR conditions.
 
