@@ -253,6 +253,7 @@ module DiscourseAi
                 LlmQuota.log_usage(@llm_model, user, log.request_tokens, log.response_tokens)
                 if Rails.env.development? && !ENV["DISCOURSE_AI_NO_DEBUG"]
                   puts "#{self.class.name}: request_tokens #{log.request_tokens} response_tokens #{log.response_tokens}"
+                  puts "raw response: #{response_raw}"
                 end
               end
               if log && (logger = Thread.current[:llm_audit_log])
