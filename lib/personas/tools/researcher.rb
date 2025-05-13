@@ -34,9 +34,12 @@ module DiscourseAi
               Filter string to target specific content.
               - Supports user (@username)
               - date ranges (after:YYYY-MM-DD, before:YYYY-MM-DD for posts; topic_after:YYYY-MM-DD, topic_before:YYYY-MM-DD for topics)
-              - categories (category:name)
-              - tags (tag:name)
-              - groups (group:name).
+              - categories (category:category1,category2)
+              - tags (tag:tag1,tag2)
+              - groups (group:group1,group2).
+              - status (status:open, status:closed, status:archived, status:noreplies, status:single_user)
+
+              If multiple tags or categories are specified, they are treated as OR conditions.
 
               Multiple filters can be combined with spaces. Example: '@sam after:2023-01-01 tag:feature'
             TEXT

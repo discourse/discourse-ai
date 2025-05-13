@@ -73,33 +73,43 @@ module DiscourseAi
           end
         end
 
-        # Category filter
-        register_filter(/\Acategory:([a-zA-Z0-9_\-]+)\z/i) do |relation, slug, _|
-          category = Category.find_by("LOWER(slug) = LOWER(?)", slug)
-          if category
-            category_ids = [category.id]
-            category_ids +=
-              Category.subcategory_ids(category.id) if category.subcategory_ids.present?
-            relation.where("topics.category_id IN (?)", category_ids)
+        register_filter(/\A(?:tags?|tag):(.*)\z/i) do |relation, tag_param, _|
+          if tag_param.include?(",")
+            tag_names = tag_param.split(",").map(&:strip)
+            tag_ids = Tag.where(name: tag_names).pluck(:id)
+            return relation.where("1 = 0") if tag_ids.empty?
+            relation.where(topic_id: TopicTag.where(tag_id: tag_ids).select(:topic_id))
           else
-            relation.where("1 = 0") # No results if category doesn't exist
+            if tag = Tag.find_by(name: tag_param)
+              relation.where(topic_id: TopicTag.where(tag_id: tag.id).select(:topic_id))
+            else
+              relation.where("1 = 0")
+            end
           end
         end
 
-        # Tag filter
-        register_filter(/\Atag:([a-zA-Z0-9_\-]+)\z/i) do |relation, name, _|
-          tag = Tag.find_by_name(name)
-          if tag
-            relation.joins("INNER JOIN topic_tags ON topic_tags.topic_id = topics.id").where(
-              "topic_tags.tag_id = ?",
-              tag.id,
-            )
+        register_filter(/\A(?:categories?|category):(.*)\z/i) do |relation, category_param, _|
+          if category_param.include?(",")
+            category_names = category_param.split(",").map(&:strip)
+
+            found_category_ids = []
+            category_names.each do |name|
+              category = Category.find_by(slug: name) || Category.find_by(name: name)
+              found_category_ids << category.id if category
+            end
+
+            return relation.where("1 = 0") if found_category_ids.empty?
+            relation.where(topic_id: Topic.where(category_id: found_category_ids).select(:id))
           else
-            relation.where("1 = 0") # No results if tag doesn't exist
+            if category =
+                 Category.find_by(slug: category_param) || Category.find_by(name: category_param)
+              relation.where(topic_id: Topic.where(category_id: category.id).select(:id))
+            else
+              relation.where("1 = 0")
+            end
           end
         end
 
-        # User filter
         register_filter(/\A\@(\w+)\z/i) do |relation, username, filter|
           user = User.find_by(username_lower: username.downcase)
           if user
@@ -109,7 +119,6 @@ module DiscourseAi
           end
         end
 
-        # Posted by current user
         register_filter(/\Ain:posted\z/i) do |relation, _, filter|
           if filter.guardian.user
             relation.where("posts.user_id = ?", filter.guardian.user.id)
