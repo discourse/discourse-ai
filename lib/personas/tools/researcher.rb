@@ -4,7 +4,7 @@ module DiscourseAi
   module Personas
     module Tools
       class Researcher < Tool
-        attr_reader :last_filter, :result_count
+        attr_reader :filter, :result_count, :goals, :dry_run
 
         class << self
           def signature
@@ -51,23 +51,39 @@ module DiscourseAi
         end
 
         def invoke(&blk)
-          @last_filter = parameters[:filter] || ""
+          @filter = parameters[:filter] || ""
+          @goals = parameters[:goals] || ""
+          @dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
+
           post = Post.find_by(id: context.post_id)
           goals = parameters[:goals] || ""
           dry_run = parameters[:dry_run].nil? ? false : parameters[:dry_run]
 
           return { error: "No goals provided" } if goals.blank?
-          return { error: "No filter provided" } if @last_filter.blank?
+          return { error: "No filter provided" } if @filter.blank?
 
-          filter = DiscourseAi::Utils::Research::Filter.new(@last_filter)
-
+          filter = DiscourseAi::Utils::Research::Filter.new(@filter)
           @result_count = filter.search.count
 
+          blk.call details
+
           if dry_run
-            { dry_run: true, goals: goals, filter: @last_filter, number_of_results: @result_count }
+            { dry_run: true, goals: goals, filter: @filter, number_of_results: @result_count }
           else
             process_filter(filter, goals, post, &blk)
           end
+        end
+
+        def details
+          if @dry_run
+            I18n.t("discourse_ai.ai_bot.tool_description.researcher_dry_run", description_args)
+          else
+            I18n.t("discourse_ai.ai_bot.tool_description.researcher", description_args)
+          end
+        end
+
+        def description_args
+          { count: @result_count || 0, filter: @filter || "", goals: @goals || "" }
         end
 
         protected
@@ -88,7 +104,7 @@ module DiscourseAi
           results = []
 
           formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
-          { dry_run: false, goals: goals, filter: @last_filter, results: results }
+          { dry_run: false, goals: goals, filter: @filter, results: results }
         end
 
         def run_inference(chunk_text, goals, post, &blk)
@@ -111,7 +127,9 @@ module DiscourseAi
             cancel_manager: context.cancel_manager,
           ) { |partial| results << partial }
 
-          blk.call(".")
+          @progress_dots ||= 0
+          @progress_dots += 1
+          blk.call(details + "\n\n#{"." * @progress_dots}")
           results.join
         end
 
@@ -134,37 +152,6 @@ module DiscourseAi
 
             Your goal is: #{goals}
            TEXT
-        end
-
-        def description_args
-          { count: @result_count || 0, filter: @last_filter || "" }
-        end
-
-        private
-
-        def simulate_count(filter_components)
-          # In a real implementation, this would query the database to get a count
-          # For now, return a simulated count
-          rand(10..100)
-        end
-
-        def perform_research(filter_components, goals, max_results)
-          # This would perform the actual research based on the filter and goal
-          # For now, return a simplified result structure
-          format_results([], %w[content url author date])
-        end
-
-        def calculate_max_results(llm)
-          max_results = options[:max_results].to_i
-          return [max_results, 100].min if max_results > 0
-
-          if llm.max_prompt_tokens > 30_000
-            50
-          elsif llm.max_prompt_tokens > 10_000
-            30
-          else
-            15
-          end
         end
       end
     end

@@ -457,9 +457,12 @@ en:
           other: "Found %{count} <a href='%{url}'>results</a> for '%{query}'"
         setting_context: "Reading context for: %{setting_name}"
         schema: "%{tables}"
+        researcher_dry_run:
+          one: "Proposed research: %{goals}\n\nFound %{count} result for '%{filter}'"
+          other: "Proposed research: %{goals}\n\nFound %{count} result for '%{filter}'"
         researcher:
-          one: "Found %{count} result for '%{filter}'"
-          other: "Found %{count} results for '%{filter}'"
+          one: "Researching: %{goals}\n\nFound %{count} result for '%{filter}'"
+          other: "Researching: %{goals}\n\nFound %{count} result for '%{filter}'"
         search_settings:
           one: "Found %{count} result for '%{query}'"
           other: "Found %{count} results for '%{query}'"

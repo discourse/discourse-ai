@@ -89,10 +89,16 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
       responses = 10.times.map { |i| ["Found: Relevant content #{i + 1}"] }
       results = nil
 
+      last_progress = nil
+      progress_blk = Proc.new { |response| last_progress = response }
+
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
         researcher.llm = llm_model.to_llm
         results = researcher.invoke(&progress_blk)
       end
+
+      expect(last_progress).to include("find relevant content")
+      expect(last_progress).to include("category:research-category")
 
       expect(results[:dry_run]).to eq(false)
       expect(results[:goals]).to eq("find relevant content")
