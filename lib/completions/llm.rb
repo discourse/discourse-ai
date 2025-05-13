@@ -307,7 +307,7 @@ module DiscourseAi
       # @param response_format { Hash - Optional } - JSON schema passed to the API as the desired structured output.
       # @param [Experimental] extra_model_params { Hash - Optional } - Other params that are not available accross models. e.g. response_format JSON schema.
       #
-      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
+      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response.
       #
       # @returns String | ToolCall - Completion result.
       # if multiple tools or a tool and a message come back, the result will be an array of ToolCall / String objects.

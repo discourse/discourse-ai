@@ -18,7 +18,7 @@ module DiscourseAi
       attr_reader :bot, :strategy
 
       # @param user { User } - User object used for auditing usage.
-      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
+      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
       # This method doesn't care if we already have an up to date summary. It always regenerate.
@@ -77,7 +77,7 @@ module DiscourseAi
 
       # @param items { Array<Hash> } - Content to summarize. Structure will be: { poster: who wrote the content, id: a way to order content, text: content }
       # @param user { User } - User object used for auditing usage.
-      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response alongside a cancel function.
+      # @param &on_partial_blk { Block - Optional } - The passed block will get called with the LLM partial response.
       # Note: The block is only called with results of the final summary, not intermediate summaries.
       #
       # The summarization algorithm.
@@ -112,7 +112,7 @@ module DiscourseAi
         summary = +""
 
         buffer_blk =
-          Proc.new do |partial, cancel, _, type|
+          Proc.new do |partial, _, type|
             if type == :structured_output
               json_summary_schema_key = bot.persona.response_format&.first.to_h
               partial_summary =
@@ -120,12 +120,12 @@ module DiscourseAi
 
               if partial_summary.present?
                 summary << partial_summary
-                on_partial_blk.call(partial_summary, cancel) if on_partial_blk
+                on_partial_blk.call(partial_summary) if on_partial_blk
               end
             elsif type.blank?
               # Assume response is a regular completion.
               summary << partial
-              on_partial_blk.call(partial, cancel) if on_partial_blk
+              on_partial_blk.call(partial) if on_partial_blk
             end
           end
 
