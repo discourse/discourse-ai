@@ -31,7 +31,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allow_topic_mentions,
              :allow_personal_messages,
              :force_default_llm,
-             :response_format
+             :response_format,
+             :examples
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object

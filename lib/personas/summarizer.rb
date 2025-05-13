@@ -32,6 +32,15 @@ module DiscourseAi
       def response_format
         [{ key: "summary", type: "string" }]
       end
+
+      def examples
+        [
+          [
+            "Here are the posts inside <input></input> XML tags:\n\n<input>1) user1 said: I love Mondays 2) user2 said: I hate Mondays</input>\n\nGenerate a concise, coherent summary of the text above maintaining the original language.",
+            "Two users are sharing their feelings toward Mondays. [user1]({resource_url}/1) hates them, while [user2]({resource_url}/2) loves them.",
+          ],
+        ]
+      end
     end
   end
 end

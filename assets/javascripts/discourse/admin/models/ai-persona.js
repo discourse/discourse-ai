@@ -34,6 +34,7 @@ const CREATE_ATTRIBUTES = [
   "allow_chat_channel_mentions",
   "allow_chat_direct_messages",
   "response_format",
+  "examples",
 ];
 
 const SYSTEM_ATTRIBUTES = [
@@ -61,7 +62,6 @@ const SYSTEM_ATTRIBUTES = [
   "allow_topic_mentions",
   "allow_chat_channel_mentions",
   "allow_chat_direct_messages",
-  "response_format",
 ];
 
 export default class AiPersona extends RestModel {
@@ -154,6 +154,7 @@ export default class AiPersona extends RestModel {
     this.populateTools(attrs);
     attrs.forced_tool_count = this.forced_tool_count || -1;
     attrs.response_format = attrs.response_format || [];
+    attrs.examples = attrs.examples || [];
 
     return attrs;
   }

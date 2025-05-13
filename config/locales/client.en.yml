@@ -330,6 +330,14 @@ en:
           modal:
             root_title: "Response structure"
             key_title: "Key"
+        examples:
+          title: Examples
+          examples_help: Simulate previous interactions with the LLM and ground it to produce better result.
+          new: New example
+          remove: Delete example
+          collapsable_title: "Example #%{number}"
+          user: "User message"
+          model: "Model response"
 
         list:
           enabled: "AI Bot?"

@@ -74,6 +74,8 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
 
   persona.response_format = instance.response_format
 
+  persona.examples = instance.examples
+
   persona.system_prompt = instance.system_prompt
   persona.top_p = instance.top_p
   persona.temperature = instance.temperature

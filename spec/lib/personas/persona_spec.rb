@@ -8,6 +8,7 @@ class TestPersona < DiscourseAi::Personas::Persona
       DiscourseAi::Personas::Tools::Image,
     ]
   end
+
   def system_prompt
     <<~PROMPT
       {site_url}
@@ -443,6 +444,29 @@ RSpec.describe DiscourseAi::Personas::Persona do
           expect(crafted_system_prompt).to include("fragment-n2")
 
           expect(crafted_system_prompt).not_to include("fragment-n10") # Fragment #10 not included
+        end
+      end
+
+      context "when the persona has examples" do
+        fab!(:examples_persona) do
+          Fabricate(
+            :ai_persona,
+            examples: [["User message", "assistant response"]],
+            allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+          )
+        end
+
+        it "includes them before the context messages" do
+          custom_persona =
+            DiscourseAi::Personas::Persona.find_by(id: examples_persona.id, user: user).new
+
+          post_system_prompt_msgs = custom_persona.craft_prompt(with_cc).messages.last(3)
+
+          expect(post_system_prompt_msgs).to contain_exactly(
+            { content: "User message", type: :user },
+            { content: "assistant response", type: :model },
+            { content: "Tell me the time", type: :user },
+          )
         end
       end
     end
