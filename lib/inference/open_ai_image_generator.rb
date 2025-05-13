@@ -21,7 +21,8 @@ module ::DiscourseAi
         moderation: "low",
         output_compression: nil,
         output_format: nil,
-        title: nil
+        title: nil,
+        cancel_manager: nil
       )
         # Get the API responses in parallel threads
         api_responses =
@@ -38,6 +39,7 @@ module ::DiscourseAi
             moderation: moderation,
             output_compression: output_compression,
             output_format: output_format,
+            cancel_manager: cancel_manager,
           )
 
         raise api_responses[0] if api_responses.all? { |resp| resp.is_a?(StandardError) }
@@ -58,7 +60,8 @@ module ::DiscourseAi
         user_id:,
         for_private_message: false,
         n: 1,
-        quality: nil
+        quality: nil,
+        cancel_manager: nil
       )
         api_response =
           edit_images(
@@ -70,6 +73,7 @@ module ::DiscourseAi
             api_url: api_url,
             n: n,
             quality: quality,
+            cancel_manager: cancel_manager,
           )
 
         create_uploads_from_responses([api_response], user_id, for_private_message).first
@@ -124,7 +128,8 @@ module ::DiscourseAi
         background:,
         moderation:,
         output_compression:,
-        output_format:
+        output_format:,
+        cancel_manager:
       )
         prompts = [prompts] unless prompts.is_a?(Array)
         prompts = prompts.take(4) # Limit to 4 prompts max
@@ -152,18 +157,21 @@ module ::DiscourseAi
                 moderation: moderation,
                 output_compression: output_compression,
                 output_format: output_format,
+                cancel_manager: cancel_manager,
               )
             rescue => e
               attempts += 1
               # to keep tests speedy
-              if !Rails.env.test?
+              if !Rails.env.test? && !cancel_manager&.canceled?
                 retry if attempts < 3
               end
-              Discourse.warn_exception(
-                e,
-                message: "Failed to generate image for prompt #{prompt}\n",
-              )
-              puts "Error generating image for prompt: #{prompt} #{e}" if Rails.env.development?
+              if !cancel_manager&.canceled?
+                Discourse.warn_exception(
+                  e,
+                  message: "Failed to generate image for prompt #{prompt}\n",
+                )
+                puts "Error generating image for prompt: #{prompt} #{e}" if Rails.env.development?
+              end
               e
             end
           end
@@ -181,7 +189,8 @@ module ::DiscourseAi
         api_key: nil,
         api_url: nil,
         n: 1,
-        quality: nil
+        quality: nil,
+        cancel_manager: nil
       )
         images = [images] if !images.is_a?(Array)
 
@@ -209,8 +218,10 @@ module ::DiscourseAi
             api_url: api_url,
             n: n,
             quality: quality,
+            cancel_manager: cancel_manager,
           )
         rescue => e
+          raise e if cancel_manager&.canceled?
           attempts += 1
           if !Rails.env.test?
             sleep 2
@@ -238,7 +249,8 @@ module ::DiscourseAi
         background: nil,
         moderation: nil,
         output_compression: nil,
-        output_format: nil
+        output_format: nil,
+        cancel_manager: nil
       )
         api_key ||= SiteSetting.ai_openai_api_key
         api_url ||= SiteSetting.ai_openai_image_generation_url
@@ -276,6 +288,7 @@ module ::DiscourseAi
 
         # Store original prompt for upload metadata
         original_prompt = prompt
+        cancel_manager_callback = nil
 
         FinalDestination::HTTP.start(
           uri.host,
@@ -287,6 +300,11 @@ module ::DiscourseAi
         ) do |http|
           request = Net::HTTP::Post.new(uri, headers)
           request.body = payload.to_json
+
+          if cancel_manager
+            cancel_manager_callback = lambda { http.finish }
+            cancel_manager.add_callback(cancel_manager_callback)
+          end
 
           json = nil
           http.request(request) do |response|
@@ -300,6 +318,10 @@ module ::DiscourseAi
           end
           json
         end
+      ensure
+        if cancel_manager && cancel_manager_callback
+          cancel_manager.remove_callback(cancel_manager_callback)
+        end
       end
 
       def self.perform_edit_api_call!(
@@ -310,7 +332,8 @@ module ::DiscourseAi
         api_key:,
         api_url:,
         n: 1,
-        quality: nil
+        quality: nil,
+        cancel_manager: nil
       )
         uri = URI(api_url)
 
@@ -403,6 +426,7 @@ module ::DiscourseAi
 
         # Store original prompt for upload metadata
         original_prompt = prompt
+        cancel_manager_callback = nil
 
         FinalDestination::HTTP.start(
           uri.host,
@@ -414,6 +438,11 @@ module ::DiscourseAi
         ) do |http|
           request = Net::HTTP::Post.new(uri.path, headers)
           request.body = body.join
+
+          if cancel_manager
+            cancel_manager_callback = lambda { http.finish }
+            cancel_manager.add_callback(cancel_manager_callback)
+          end
 
           json = nil
           http.request(request) do |response|
@@ -428,6 +457,9 @@ module ::DiscourseAi
           json
         end
       ensure
+        if cancel_manager && cancel_manager_callback
+          cancel_manager.remove_callback(cancel_manager_callback)
+        end
         if files_to_delete.present?
           files_to_delete.each { |file| File.delete(file) if File.exist?(file) }
         end
