@@ -162,10 +162,10 @@ module ::DiscourseAi
             rescue => e
               attempts += 1
               # to keep tests speedy
-              if !Rails.env.test? && !cancel_manager&.canceled?
+              if !Rails.env.test? && !cancel_manager&.cancelled?
                 retry if attempts < 3
               end
-              if !cancel_manager&.canceled?
+              if !cancel_manager&.cancelled?
                 Discourse.warn_exception(
                   e,
                   message: "Failed to generate image for prompt #{prompt}\n",
@@ -221,7 +221,7 @@ module ::DiscourseAi
             cancel_manager: cancel_manager,
           )
         rescue => e
-          raise e if cancel_manager&.canceled?
+          raise e if cancel_manager&.cancelled?
           attempts += 1
           if !Rails.env.test?
             sleep 2

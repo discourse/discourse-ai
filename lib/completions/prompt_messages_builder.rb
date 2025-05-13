@@ -247,6 +247,10 @@ module DiscourseAi
         # 3. ensures we always interleave user and model messages
         last_type = nil
         messages.each do |message|
+          if message[:type] == :model && !message[:content]
+            message[:content] = "Reply cancelled by user."
+          end
+
           next if !last_type && message[:type] != :user
 
           if last_type == :tool_call && message[:type] != :tool

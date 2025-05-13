@@ -30,10 +30,13 @@ module DiscourseAi
             Thread.new do
               begin
                 loop do
-                  @mutex.synchronize { break if @stop_monitor }
+                  done = false
+                  @mutex.synchronize { done = true if @stop_monitor }
+                  break if done
                   sleep delay
-                  @mutex.synchronize { break if @stop_monitor }
-                  @mutex.synchronize { break if cancelled? }
+                  @mutex.synchronize { done = true if @stop_monitor }
+                  @mutex.synchronize { done = true if cancelled? }
+                  break if done
 
                   should_cancel = false
                   RailsMultisite::ConnectionManagement.with_connection(db) do
