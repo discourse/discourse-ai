@@ -139,14 +139,27 @@ module DiscourseAi
 
           # Add creation date
           header << "Created: #{format_date(topic.created_at)}\n"
-          header << "Topic url: /t/#{topic.id}\n\n"
+          header << "Topic url: /t/#{topic.id}\n"
+          header << "Status: #{format_topic_status(topic)}\n\n"
 
           header
         end
 
+        def format_topic_status(topic)
+          solved = topic.respond_to?(:solved) && topic.solved.present?
+          solved_text = solved ? " (solved)" : ""
+          if topic.archived?
+            "Archived#{solved_text}"
+          elsif topic.closed?
+            "Closed#{solved_text}"
+          else
+            "Open#{solved_text}"
+          end
+        end
+
         def format_post(post)
           text = +"---\n"
-          text << "## Post by #{post.user.username} - #{format_date(post.created_at)}\n\n"
+          text << "## Post by #{post.user&.username} - #{format_date(post.created_at)}\n\n"
           text << "#{post.raw}\n"
           text << "Likes: #{post.like_count}\n" if post.like_count.to_i > 0
           text << "Post url: /t/-/#{post.topic_id}/#{post.post_number}\n\n"
