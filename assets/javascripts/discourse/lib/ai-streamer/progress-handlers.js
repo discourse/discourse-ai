@@ -2,7 +2,7 @@ import { later } from "@ember/runloop";
 import PostUpdater from "./updaters/post-updater";
 
 const PROGRESS_INTERVAL = 40;
-const GIVE_UP_INTERVAL = 60000;
+const GIVE_UP_INTERVAL = 600000; // 10 minutes which is our max thinking time for now
 export const MIN_LETTERS_PER_INTERVAL = 6;
 const MAX_FLUSH_TIME = 800;
 
