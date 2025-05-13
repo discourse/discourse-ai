@@ -163,6 +163,31 @@ module DiscourseAi
           end
         end
 
+        register_filter(/\Amax_results:(\d+)\z/i) do |relation, limit_str, filter|
+          filter.limit_by_user!(limit_str.to_i)
+          relation
+        end
+
+        register_filter(/\Aorder:latest\z/i) do |relation, order_str, filter|
+          filter.set_order!(:latest_post)
+          relation
+        end
+
+        register_filter(/\Aorder:oldest\z/i) do |relation, order_str, filter|
+          filter.set_order!(:oldest_post)
+          relation
+        end
+
+        register_filter(/\Aorder:latest_topic\z/i) do |relation, order_str, filter|
+          filter.set_order!(:latest_topic)
+          relation
+        end
+
+        register_filter(/\Aorder:oldest_topic\z/i) do |relation, order_str, filter|
+          filter.set_order!(:oldest_topic)
+          relation
+        end
+
         def initialize(term, guardian: nil, limit: nil, offset: nil)
           @term = term.to_s
           @guardian = guardian || Guardian.new
@@ -170,8 +195,17 @@ module DiscourseAi
           @offset = offset
           @filters = []
           @valid = true
+          @order = :latest_post
 
           @term = process_filters(@term)
+        end
+
+        def set_order!(order)
+          @order = order
+        end
+
+        def limit_by_user!(limit)
+          @limit = limit if limit.to_i < @limit.to_i || @limit.nil?
         end
 
         def search
@@ -183,6 +217,16 @@ module DiscourseAi
 
           filtered = filtered.limit(@limit) if @limit.to_i > 0
           filtered = filtered.offset(@offset) if @offset.to_i > 0
+
+          if @order == :latest_post
+            filtered = filtered.order("posts.created_at DESC")
+          elsif @order == :oldest_post
+            filtered = filtered.order("posts.created_at ASC")
+          elsif @order == :latest_topic
+            filtered = filtered.order("topics.created_at DESC, posts.post_number DESC")
+          elsif @order == :oldest_topic
+            filtered = filtered.order("topics.created_at ASC, posts.post_number ASC")
+          end
 
           filtered
         end
@@ -199,13 +243,6 @@ module DiscourseAi
             .map do |(word, _)|
               next if word.blank?
 
-              # Check for order:xxx syntax
-              if word =~ /\Aorder:(\w+)\z/i
-                @order = $1.downcase.to_sym
-                next nil
-              end
-
-              # Check registered filters
               found = false
               self.class.registered_filters.each do |matcher, block|
                 if word =~ matcher

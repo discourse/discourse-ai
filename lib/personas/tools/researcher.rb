@@ -39,6 +39,8 @@ module DiscourseAi
               - groups (group:group1,group2).
               - status (status:open, status:closed, status:archived, status:noreplies, status:single_user)
               - keywords (keywords:keyword1,keyword2) - specific words to search for in posts
+              - max_results (max_results:10) the maximum number of results to return (optional)
+              - order (order:latest, order:oldest, order:latest_topic, order:oldest_topic) - the order of the results (optional)
 
               If multiple tags or categories are specified, they are treated as OR conditions.
 

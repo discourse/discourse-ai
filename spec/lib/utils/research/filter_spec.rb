@@ -92,6 +92,11 @@ describe DiscourseAi::Utils::Research::Filter do
       end
     end
 
+    it "can limit number of results" do
+      filter = described_class.new("category:Feedback max_results:1", limit: 5)
+      expect(filter.search.pluck(:id).length).to eq(1)
+    end
+
     describe "full text keyword searching" do
       before_all { SearchIndexer.enable }
       fab!(:post_with_apples) do
