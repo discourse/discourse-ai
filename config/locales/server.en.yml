@@ -306,8 +306,8 @@ en:
           name: Settings Explorer
           description: "AI Bot specialized in helping explore Discourse site settings"
         researcher:
-          name: Researcher
-          description: "AI Bot with Google access that can research information for you"
+          name: Web Researcher
+          description: "AI Bot with Google access that can both search and read web pages"
         creative:
           name: Creative
           description: "AI Bot with no external integrations specialized in creative tasks"
