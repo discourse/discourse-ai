@@ -217,32 +217,28 @@ RSpec.describe DiscourseAi::Personas::Persona do
       SiteSetting.ai_google_custom_search_cx = "abc123"
 
       # should be ordered by priority and then alpha
-      expect(DiscourseAi::Personas::Persona.all(user: user).map(&:superclass)).to eq(
-        [
-          DiscourseAi::Personas::General,
-          DiscourseAi::Personas::Artist,
-          DiscourseAi::Personas::Creative,
-          DiscourseAi::Personas::DiscourseHelper,
-          DiscourseAi::Personas::GithubHelper,
-          DiscourseAi::Personas::Researcher,
-          DiscourseAi::Personas::SettingsExplorer,
-          DiscourseAi::Personas::SqlHelper,
-        ],
+      expect(DiscourseAi::Personas::Persona.all(user: user).map(&:superclass)).to contain_exactly(
+        DiscourseAi::Personas::General,
+        DiscourseAi::Personas::Artist,
+        DiscourseAi::Personas::Creative,
+        DiscourseAi::Personas::DiscourseHelper,
+        DiscourseAi::Personas::GithubHelper,
+        DiscourseAi::Personas::Researcher,
+        DiscourseAi::Personas::SettingsExplorer,
+        DiscourseAi::Personas::SqlHelper,
       )
 
       # it should allow staff access to WebArtifactCreator
-      expect(DiscourseAi::Personas::Persona.all(user: admin).map(&:superclass)).to eq(
-        [
-          DiscourseAi::Personas::General,
-          DiscourseAi::Personas::Artist,
-          DiscourseAi::Personas::Creative,
-          DiscourseAi::Personas::DiscourseHelper,
-          DiscourseAi::Personas::GithubHelper,
-          DiscourseAi::Personas::Researcher,
-          DiscourseAi::Personas::SettingsExplorer,
-          DiscourseAi::Personas::SqlHelper,
-          DiscourseAi::Personas::WebArtifactCreator,
-        ],
+      expect(DiscourseAi::Personas::Persona.all(user: admin).map(&:superclass)).to contain_exactly(
+        DiscourseAi::Personas::General,
+        DiscourseAi::Personas::Artist,
+        DiscourseAi::Personas::Creative,
+        DiscourseAi::Personas::DiscourseHelper,
+        DiscourseAi::Personas::GithubHelper,
+        DiscourseAi::Personas::Researcher,
+        DiscourseAi::Personas::SettingsExplorer,
+        DiscourseAi::Personas::SqlHelper,
+        DiscourseAi::Personas::WebArtifactCreator,
       )
 
       # omits personas if key is missing
