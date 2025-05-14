@@ -90,14 +90,14 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
     end
 
-    context "with items specification" do
-      it "only allows items for array type parameters" do
+    context "with item_type specification" do
+      it "only allows item_type for array type parameters" do
         expect {
           described_class.new(
             name: "colors",
             description: "List of colors",
             type: :array,
-            items: :string,
+            item_type: :string,
           )
         }.not_to raise_error
 
@@ -106,9 +106,9 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
             name: "color",
             description: "A single color",
             type: :string,
-            items: :string,
+            item_type: :string,
           )
-        }.to raise_error(ArgumentError, /items can only be specified for array type/)
+        }.to raise_error(ArgumentError, /item_type can only be specified for array type/)
       end
     end
   end
@@ -179,7 +179,7 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
             name: "numbers",
             description: "List of numeric values",
             type: :array,
-            items: :integer,
+            item_type: :integer,
           )
 
         described_class.new(
@@ -311,7 +311,7 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
           name: "colors",
           description: "List of colors",
           type: :array,
-          items: :string,
+          item_type: :string,
           required: true,
         )
 
@@ -331,7 +331,7 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       param_hash = hash[:parameters].first
       expect(param_hash[:name]).to eq("colors")
       expect(param_hash[:type]).to eq(:array)
-      expect(param_hash[:items]).to eq(:string)
+      expect(param_hash[:item_type]).to eq(:string)
       expect(param_hash[:required]).to eq(true)
     end
   end

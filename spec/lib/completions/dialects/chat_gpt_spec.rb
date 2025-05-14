@@ -99,17 +99,21 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
     it "returns a list of available tools" do
       open_ai_tool_f = {
         function: {
-          description: context.tools.first[:description],
-          name: context.tools.first[:name],
+          description: context.tools.first.description,
+          name: context.tools.first.name,
           parameters: {
             properties:
-              context.tools.first[:parameters].reduce({}) do |memo, p|
-                memo[p[:name]] = { description: p[:description], type: p[:type] }
+              context
+                .tools
+                .first
+                .parameters
+                .reduce({}) do |memo, p|
+                  memo[p.name] = { description: p.description, type: p.type }
 
-                memo[p[:name]][:enum] = p[:enum] if p[:enum]
+                  memo[p.name][:enum] = p.enum if p.enum
 
-                memo
-              end,
+                  memo
+                end,
             required: %w[location unit],
             type: "object",
           },

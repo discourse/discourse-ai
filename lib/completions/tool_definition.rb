@@ -95,6 +95,23 @@ module DiscourseAi
         end
       end
 
+      def parameters_json_schema
+        properties = {}
+        required = []
+
+        result = { type: "object", properties: properties, required: required }
+
+        parameters.each do |param|
+          name = param.name
+          required << name if param.required
+          properties[name] = { type: param.type, description: param.description }
+          properties[name][:items] = { type: param.item_type } if param.item_type
+          properties[name][:enum] = param.enum if param.enum
+        end
+
+        result
+      end
+
       attr_reader :name, :description, :parameters
 
       def self.from_hash(hash)

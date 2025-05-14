@@ -10,28 +10,14 @@ module DiscourseAi
 
         def translated_tools
           raw_tools.map do |tool|
-            properties = {}
-            required = []
-
-            result = {
-              name: tool.name,
-              description: tool.description,
-              parameters: {
-                type: "object",
-                properties: properties,
-                required: required,
+            {
+              type: "function",
+              function: {
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters_json_schema,
               },
             }
-
-            tool.parameters.each do |param|
-              name = param.name
-              required << name if param.required
-              properties[name] = { type: param.type, description: param.description }
-              properties[name][:items] = { type: param.item_type } if param.item_type
-              properties[name][:enum] = param.enum if param.enum
-            end
-
-            { type: "function", function: result }
           end
         end
 
