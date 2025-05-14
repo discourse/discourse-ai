@@ -5,8 +5,8 @@ module DiscourseAi
     class Prompt
       INVALID_TURN = Class.new(StandardError)
 
-      attr_reader :messages
-      attr_accessor :tools, :topic_id, :post_id, :max_pixels, :tool_choice
+      attr_reader :messages, :tools
+      attr_accessor :topic_id, :post_id, :max_pixels, :tool_choice
 
       def initialize(
         system_message_text = nil,
@@ -37,8 +37,23 @@ module DiscourseAi
         @messages.each { |message| validate_message(message) }
         @messages.each_cons(2) { |last_turn, new_turn| validate_turn(last_turn, new_turn) }
 
-        @tools = tools
+        self.tools = tools
         @tool_choice = tool_choice
+      end
+
+      def tools=(tools)
+        raise ArgumentError, "tools must be an array" if !tools.is_a?(Array) && !tools.nil?
+
+        @tools =
+          tools.map do |tool|
+            if tool.is_a?(Hash)
+              ToolDefinition.from_hash(tool)
+            elsif tool.is_a?(ToolDefinition)
+              tool
+            else
+              raise ArgumentError, "tool must be a hash or a ToolDefinition was #{tool.class}"
+            end
+          end
       end
 
       # this new api tries to create symmetry between responses and prompts

@@ -9,25 +9,29 @@ module DiscourseAi
         end
 
         def translated_tools
-          raw_tools.map do |t|
-            tool = t.dup
+          raw_tools.map do |tool|
+            properties = {}
+            required = []
 
-            tool[:parameters] = t[:parameters]
-              .to_a
-              .reduce({ type: "object", properties: {}, required: [] }) do |memo, p|
-                name = p[:name]
-                memo[:required] << name if p[:required]
+            result = {
+              name: tool.name,
+              description: tool.description,
+              parameters: {
+                type: "object",
+                properties: properties,
+                required: required,
+              },
+            }
 
-                except = %i[name required item_type]
-                except << :enum if p[:enum].blank?
+            tool.parameters.each do |param|
+              name = param.name
+              required << name if param.required
+              properties[name] = { type: param.type, description: param.description }
+              properties[name][:items] = { type: param.item_type } if param.item_type
+              properties[name][:enum] = param.enum if param.enum
+            end
 
-                memo[:properties][name] = p.except(*except)
-
-                memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
-                memo
-              end
-
-            { type: "function", function: tool }
+            { type: "function", function: result }
           end
         end
 
