@@ -9,33 +9,37 @@ module DiscourseAi
         end
 
         def translated_tools
-          raw_tools.reduce(+"") do |tools, function|
+          result = +""
+
+          raw_tools.each do |tool|
             parameters = +""
-            if function[:parameters].present?
-              function[:parameters].each do |parameter|
+            if tool.parameters.present?
+              tool.parameters.each do |parameter|
                 parameters << <<~PARAMETER
                   <parameter>
-                  <name>#{parameter[:name]}</name>
-                  <type>#{parameter[:type]}</type>
-                  <description>#{parameter[:description]}</description>
-                  <required>#{parameter[:required]}</required>
+                  <name>#{parameter.name}</name>
+                  <type>#{parameter.type}</type>
+                  <description>#{parameter.description}</description>
+                  <required>#{parameter.required}</required>
                 PARAMETER
-                if parameter[:enum]
-                  parameters << "<options>#{parameter[:enum].join(",")}</options>\n"
+                if parameter.item_type
+                  parameters << "<array_item_type>#{parameter.item_type}</array_item_type>\n"
                 end
+                parameters << "<options>#{parameter.enum.join(",")}</options>\n" if parameter.enum
                 parameters << "</parameter>\n"
               end
             end
 
-            tools << <<~TOOLS
+            result << <<~TOOLS
               <tool_description>
-              <tool_name>#{function[:name]}</tool_name>
-              <description>#{function[:description]}</description>
+              <tool_name>#{tool.name}</tool_name>
+              <description>#{tool.description}</description>
               <parameters>
               #{parameters}</parameters>
               </tool_description>
             TOOLS
           end
+          result
         end
 
         def instructions
@@ -43,8 +47,7 @@ module DiscourseAi
 
           @instructions ||=
             begin
-              has_arrays =
-                raw_tools.any? { |tool| tool[:parameters]&.any? { |p| p[:type] == "array" } }
+              has_arrays = raw_tools.any? { |tool| tool.parameters&.any? { |p| p.type == "array" } }
 
               (<<~TEXT).strip
               #{tool_preamble(include_array_tip: has_arrays)}
