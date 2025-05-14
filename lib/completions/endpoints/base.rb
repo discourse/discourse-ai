@@ -68,10 +68,16 @@ module DiscourseAi
           feature_context: nil,
           partial_tool_calls: false,
           output_thinking: false,
+          cancel_manager: nil,
           &blk
         )
           LlmQuota.check_quotas!(@llm_model, user)
           start_time = Time.now
+
+          if cancel_manager && cancel_manager.cancelled?
+            # nothing to do
+            return
+          end
 
           @forced_json_through_prefill = false
           @partial_tool_calls = partial_tool_calls
@@ -90,15 +96,14 @@ module DiscourseAi
                 feature_context: feature_context,
                 partial_tool_calls: partial_tool_calls,
                 output_thinking: output_thinking,
+                cancel_manager: cancel_manager,
               )
 
             wrapped = result
             wrapped = [result] if !result.is_a?(Array)
-            cancelled_by_caller = false
-            cancel_proc = -> { cancelled_by_caller = true }
             wrapped.each do |partial|
-              blk.call(partial, cancel_proc)
-              break if cancelled_by_caller
+              blk.call(partial)
+              break cancel_manager&.cancelled?
             end
             return result
           end
@@ -118,6 +123,9 @@ module DiscourseAi
             end
           end
 
+          cancel_manager_callback = nil
+          cancelled = false
+
           FinalDestination::HTTP.start(
             model_uri.host,
             model_uri.port,
@@ -126,6 +134,14 @@ module DiscourseAi
             open_timeout: TIMEOUT,
             write_timeout: TIMEOUT,
           ) do |http|
+            if cancel_manager
+              cancel_manager_callback =
+                lambda do
+                  cancelled = true
+                  http.finish
+                end
+              cancel_manager.add_callback(cancel_manager_callback)
+            end
             response_data = +""
             response_raw = +""
 
@@ -158,7 +174,7 @@ module DiscourseAi
 
               if @streaming_mode
                 blk =
-                  lambda do |partial, cancel|
+                  lambda do |partial|
                     if partial.is_a?(String)
                       partial = xml_stripper << partial if xml_stripper
 
@@ -167,7 +183,7 @@ module DiscourseAi
                         partial = structured_output
                       end
                     end
-                    orig_blk.call(partial, cancel) if partial
+                    orig_blk.call(partial) if partial
                   end
               end
 
@@ -196,14 +212,6 @@ module DiscourseAi
               end
 
               begin
-                cancelled = false
-                cancel = -> do
-                  cancelled = true
-                  http.finish
-                end
-
-                break if cancelled
-
                 response.read_body do |chunk|
                   break if cancelled
 
@@ -216,16 +224,11 @@ module DiscourseAi
                     partials = [partial]
                     if xml_tool_processor && partial.is_a?(String)
                       partials = (xml_tool_processor << partial)
-                      if xml_tool_processor.should_cancel?
-                        cancel.call
-                        break
-                      end
+                      break if xml_tool_processor.should_cancel?
                     end
-                    partials.each { |inner_partial| blk.call(inner_partial, cancel) }
+                    partials.each { |inner_partial| blk.call(inner_partial) }
                   end
                 end
-              rescue IOError, StandardError
-                raise if !cancelled
               end
               if xml_stripper
                 stripped = xml_stripper.finish
@@ -233,13 +236,11 @@ module DiscourseAi
                   response_data << stripped
                   result = []
                   result = (xml_tool_processor << stripped) if xml_tool_processor
-                  result.each { |partial| blk.call(partial, cancel) }
+                  result.each { |partial| blk.call(partial) }
                 end
               end
-              if xml_tool_processor
-                xml_tool_processor.finish.each { |partial| blk.call(partial, cancel) }
-              end
-              decode_chunk_finish.each { |partial| blk.call(partial, cancel) }
+              xml_tool_processor.finish.each { |partial| blk.call(partial) } if xml_tool_processor
+              decode_chunk_finish.each { |partial| blk.call(partial) }
               return response_data
             ensure
               if log
@@ -292,6 +293,12 @@ module DiscourseAi
                 )
               end
             end
+          end
+        rescue IOError, StandardError
+          raise if !cancelled
+        ensure
+          if cancel_manager && cancel_manager_callback
+            cancel_manager.remove_callback(cancel_manager_callback)
           end
         end
 

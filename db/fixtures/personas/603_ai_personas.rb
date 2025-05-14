@@ -33,7 +33,7 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
 
-    persona.enabled = !summarization_personas.include?(persona_class)
+    persona.enabled = persona_class.default_enabled
     persona.priority = true if persona_class == DiscourseAi::Personas::General
   end
 

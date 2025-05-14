@@ -1136,14 +1136,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       split = body.split("|")
 
+      cancel_manager = DiscourseAi::Completions::CancelManager.new
+
       count = 0
       DiscourseAi::AiBot::PostStreamer.on_callback =
         proc do |callback|
           count += 1
-          if count == 2
-            last_post = third_post.topic.posts.order(:id).last
-            Discourse.redis.del("gpt_cancel:#{last_post.id}")
-          end
+          cancel_manager.cancel! if count == 2
           raise "this should not happen" if count > 2
         end
 
@@ -1155,13 +1154,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         )
         # we are going to need to use real data here cause we want to trigger the
         # base endpoint to cancel part way through
-        playground.reply_to(third_post)
+        playground.reply_to(third_post, cancel_manager: cancel_manager)
       end
 
       last_post = third_post.topic.posts.order(:id).last
 
-      # not Hello123, we cancelled at 1 which means we may get 2 and then be done
-      expect(last_post.raw).to eq("Hello12")
+      # not Hello123, we cancelled at 1
+      expect(last_post.raw).to eq("Hello1")
     end
   end
 

@@ -331,6 +331,7 @@ module DiscourseAi
               ),
             user: message.user,
             skip_tool_details: true,
+            cancel_manager: DiscourseAi::Completions::CancelManager.new,
           )
 
         reply = nil
@@ -347,15 +348,14 @@ module DiscourseAi
             thread_id: message.thread_id,
             in_reply_to_id: in_reply_to_id,
             force_thread: force_thread,
+            cancel_manager: context.cancel_manager,
           )
 
         new_prompts =
-          bot.reply(context) do |partial, cancel, placeholder, type|
+          bot.reply(context) do |partial, placeholder, type|
             # no support for tools or thinking by design
             next if type == :thinking || type == :tool_details || type == :partial_tool
-            streamer.cancel = cancel
             streamer << partial
-            break if streamer.cancelled
           end
 
         reply = streamer.reply
@@ -383,6 +383,7 @@ module DiscourseAi
         auto_set_title: true,
         silent_mode: false,
         feature_name: nil,
+        cancel_manager: nil,
         &blk
       )
         # this is a multithreading issue
@@ -471,16 +472,26 @@ module DiscourseAi
 
           redis_stream_key = "gpt_cancel:#{reply_post.id}"
           Discourse.redis.setex(redis_stream_key, MAX_STREAM_DELAY_SECONDS, 1)
+
+          cancel_manager ||= DiscourseAi::Completions::CancelManager.new
+          context.cancel_manager = cancel_manager
+          context
+            .cancel_manager
+            .start_monitor(delay: 0.2) do
+              context.cancel_manager.cancel! if !Discourse.redis.get(redis_stream_key)
+            end
+
+          context.cancel_manager.add_callback(
+            lambda { reply_post.update!(raw: reply, cooked: PrettyText.cook(reply)) },
+          )
         end
 
         context.skip_tool_details ||= !bot.persona.class.tool_details
-
         post_streamer = PostStreamer.new(delay: Rails.env.test? ? 0 : 0.5) if stream_reply
-
         started_thinking = false
 
         new_custom_prompts =
-          bot.reply(context) do |partial, cancel, placeholder, type|
+          bot.reply(context) do |partial, placeholder, type|
             if type == :thinking && !started_thinking
               reply << "<details><summary>#{I18n.t("discourse_ai.ai_bot.thinking")}</summary>"
               started_thinking = true
@@ -497,15 +508,6 @@ module DiscourseAi
 
             if blk && type != :tool_details && type != :partial_tool && type != :partial_invoke
               blk.call(partial)
-            end
-
-            if stream_reply && !Discourse.redis.get(redis_stream_key)
-              cancel&.call
-              reply_post.update!(raw: reply, cooked: PrettyText.cook(reply))
-              # we do not break out, cause if we do
-              # we will not get results from bot
-              # leading to broken context
-              # we need to trust it to cancel at the endpoint
             end
 
             if post_streamer
@@ -568,6 +570,8 @@ module DiscourseAi
         end
         raise e
       ensure
+        context.cancel_manager.stop_monitor if context&.cancel_manager
+
         # since we are skipping validations and jobs we
         # may need to fix participant count
         if reply_post && reply_post.topic && reply_post.topic.private_message? &&
@@ -649,7 +653,7 @@ module DiscourseAi
           payload,
           user_ids: bot_reply_post.topic.allowed_user_ids,
           max_backlog_size: 2,
-          max_backlog_age: 60,
+          max_backlog_age: MAX_STREAM_DELAY_SECONDS,
         )
       end
     end

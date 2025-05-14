@@ -151,7 +151,12 @@ module DiscourseAi
                 LlmModel.find_by(id: options[:creator_llm].to_i)&.to_llm
             ) || self.llm
 
-          llm.generate(prompt, user: user, feature_name: "create_artifact") do |partial_response|
+          llm.generate(
+            prompt,
+            user: user,
+            feature_name: "create_artifact",
+            cancel_manager: context.cancel_manager,
+          ) do |partial_response|
             response << partial_response
             yield partial_response
           end

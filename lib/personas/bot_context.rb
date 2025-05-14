@@ -16,7 +16,8 @@ module DiscourseAi
                     :channel_id,
                     :context_post_ids,
                     :feature_name,
-                    :resource_url
+                    :resource_url,
+                    :cancel_manager
 
       def initialize(
         post: nil,
@@ -33,7 +34,8 @@ module DiscourseAi
         channel_id: nil,
         context_post_ids: nil,
         feature_name: "bot",
-        resource_url: nil
+        resource_url: nil,
+        cancel_manager: nil
       )
         @participants = participants
         @user = user
@@ -53,6 +55,8 @@ module DiscourseAi
 
         @feature_name = feature_name
         @resource_url = resource_url
+
+        @cancel_manager = cancel_manager
 
         if post
           @post_id = post.id

@@ -60,6 +60,7 @@ module DiscourseAi
                 uploads,
                 prompt,
                 user_id: bot_user.id,
+                cancel_manager: context.cancel_manager,
               )
           rescue => e
             @error = e
