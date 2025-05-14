@@ -22,6 +22,7 @@ export default class ModalDiffModal extends Component {
   @service messageBus;
 
   @tracked loading = false;
+  @tracked finalResult = "";
   @tracked diffStreamer = new DiffStreamer(this.args.model.selectedText);
   @tracked suggestion = "";
   @tracked
@@ -65,6 +66,10 @@ export default class ModalDiffModal extends Component {
   async updateResult(result) {
     this.loading = false;
 
+    if (result.done) {
+      this.finalResult = result.result;
+    }
+
     if (this.args.model.showResultAsDiff) {
       this.diffStreamer.updateResult(result, "result");
     } else {
@@ -105,10 +110,14 @@ export default class ModalDiffModal extends Component {
       );
     }
 
-    if (this.args.model.showResultAsDiff && this.diffStreamer.suggestion) {
+    const finalResult =
+      this.finalResult?.length > 0
+        ? this.finalResult
+        : this.diffStreamer.suggestion;
+    if (this.args.model.showResultAsDiff && finalResult) {
       this.args.model.toolbarEvent.replaceText(
         this.args.model.selectedText,
-        this.diffStreamer.suggestion
+        finalResult
       );
     }
   }
