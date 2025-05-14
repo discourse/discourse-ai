@@ -140,6 +140,7 @@ export default class ModalDiffModal extends Component {
                 "composer-ai-helper-modal__suggestion"
                 "streamable-content"
                 (if this.isStreaming "streaming")
+                (if this.diffStreamer.isThinking "thinking")
                 (if @model.showResultAsDiff "inline-diff")
               }}
             >

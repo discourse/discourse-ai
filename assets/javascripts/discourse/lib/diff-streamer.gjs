@@ -12,6 +12,8 @@ export default class DiffStreamer {
   @tracked lastResultText = "";
   @tracked diff = "";
   @tracked suggestion = "";
+  @tracked isDone = false;
+  @tracked isThinking = false;
   typingTimer = null;
   currentWordIndex = 0;
 
@@ -35,6 +37,7 @@ export default class DiffStreamer {
     const newText = result[newTextKey];
     const diffText = newText.slice(this.lastResultText.length).trim();
     const newWords = diffText.split(/\s+/).filter(Boolean);
+    this.isDone = result?.done;
 
     if (newWords.length > 0) {
       this.isStreaming = true;
@@ -64,7 +67,12 @@ export default class DiffStreamer {
    * Highlights the current word if streaming is ongoing.
    */
   #streamNextWord() {
-    if (this.currentWordIndex === this.words.length) {
+    if (this.currentWordIndex === this.words.length && !this.isDone) {
+      this.isThinking = true;
+    }
+
+    if (this.currentWordIndex === this.words.length && this.isDone) {
+      this.isThinking = false;
       this.diff = this.#compareText(this.selectedText, this.suggestion, {
         markLastWord: false,
       });
@@ -72,6 +80,7 @@ export default class DiffStreamer {
     }
 
     if (this.currentWordIndex < this.words.length) {
+      this.isThinking = false;
       this.suggestion += this.words[this.currentWordIndex] + " ";
       this.diff = this.#compareText(this.selectedText, this.suggestion, {
         markLastWord: true,
