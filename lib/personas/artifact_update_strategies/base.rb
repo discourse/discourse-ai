@@ -14,7 +14,7 @@ module DiscourseAi
           artifact:,
           artifact_version:,
           instructions:,
-          cancel_manager:
+          cancel_manager: nil
         )
           @llm = llm
           @post = post
