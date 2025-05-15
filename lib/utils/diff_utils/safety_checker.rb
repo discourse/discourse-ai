@@ -37,11 +37,12 @@ module DiscourseAi
         end
 
         def unclosed_markdown_links?
-          open_bracket = @text.rindex("[")
-          close_bracket = @text.rindex("]")
-          open_paren = @text.rindex("(")
-          close_paren = @text.rindex(")")
-          open_bracket && open_paren && (close_bracket.nil? || close_paren.nil?)
+          open_brackets = @text.count("[")
+          close_brackets = @text.count("]")
+          open_parens = @text.count("(")
+          close_parens = @text.count(")")
+
+          open_brackets != close_brackets || open_parens != close_parens
         end
 
         def unclosed_raw_html_tag?
@@ -80,11 +81,9 @@ module DiscourseAi
         end
 
         def partial_emoji?
-          @text
-            .scan(/:[a-z0-9_+.-]*:?/i)
-            .any? do |match|
-              match.count(":") == 1 || (match[-1] != ":" && match =~ /:[a-z0-9_+-]+\.\z/i)
-            end
+          text = @text.gsub(/!\[.*?\]\(.*?\)/, "").gsub(%r{https?://[^\s]+}, "")
+          tokens = text.scan(/:[a-z0-9_+\-\.]+:?/i)
+          tokens.any? { |token| token.start_with?(":") && !token.end_with?(":") }
         end
       end
     end
