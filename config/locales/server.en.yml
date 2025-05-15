@@ -399,6 +399,7 @@ en:
         create_image: "Creating image"
         edit_image: "Editing image"
         researcher: "Researching"
+        researcher_dry_run: "Preparing research"
       tool_help:
         read_artifact: "Read a web artifact using the AI Bot"
         update_artifact: "Update a web artifact using the AI Bot"
@@ -461,11 +462,11 @@ en:
         setting_context: "Reading context for: %{setting_name}"
         schema: "%{tables}"
         researcher_dry_run:
-          one: "Proposed research: %{goals}\n\nFound %{count} result for '%{filter}'"
-          other: "Proposed research: %{goals}\n\nFound %{count} result for '%{filter}'"
+          one: "Proposed goals: %{goals}\n\nFound %{count} post matching '%{filter}'"
+          other: "Proposed goals: %{goals}\n\nFound %{count} posts matching '%{filter}'"
         researcher:
-          one: "Researching: %{goals}\n\nFound %{count} result for '%{filter}'"
-          other: "Researching: %{goals}\n\nFound %{count} result for '%{filter}'"
+          one: "Researching: %{goals}\n\nFound %{count} post matching '%{filter}'"
+          other: "Researching: %{goals}\n\nFound %{count} posts matching '%{filter}'"
         search_settings:
           one: "Found %{count} result for '%{query}'"
           other: "Found %{count} results for '%{query}'"

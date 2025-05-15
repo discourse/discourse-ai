@@ -76,6 +76,18 @@ describe DiscourseAi::Utils::Research::Filter do
         filter = described_class.new("category:Announcements")
         expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id, bug_post.id)
 
+        # it can tack on topics
+        filter =
+          described_class.new(
+            "category:Announcements topic:#{feature_bug_post.topic.id},#{no_tag_post.topic.id}",
+          )
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          feature_post.id,
+          bug_post.id,
+          feature_bug_post.id,
+          no_tag_post.id,
+        )
+
         filter = described_class.new("category:Announcements,Feedback")
         expect(filter.search.pluck(:id)).to contain_exactly(
           feature_post.id,

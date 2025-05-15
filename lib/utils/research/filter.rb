@@ -188,6 +188,23 @@ module DiscourseAi
           relation
         end
 
+        register_filter(/\Atopics?:(.*)\z/i) do |relation, topic_param, filter|
+          if topic_param.include?(",")
+            topic_ids = topic_param.split(",").map(&:strip).map(&:to_i).reject(&:zero?)
+            return relation.where("1 = 0") if topic_ids.empty?
+            filter.always_return_topic_ids!(topic_ids)
+            relation
+          else
+            topic_id = topic_param.to_i
+            if topic_id > 0
+              filter.always_return_topic_ids!([topic_id])
+              relation
+            else
+              relation.where("1 = 0") # No results if topic_id is invalid
+            end
+          end
+        end
+
         def initialize(term, guardian: nil, limit: nil, offset: nil)
           @term = term.to_s
           @guardian = guardian || Guardian.new
@@ -196,6 +213,7 @@ module DiscourseAi
           @filters = []
           @valid = true
           @order = :latest_post
+          @topic_ids = nil
 
           @term = process_filters(@term)
         end
@@ -204,15 +222,33 @@ module DiscourseAi
           @order = order
         end
 
+        def always_return_topic_ids!(topic_ids)
+          if @topic_ids
+            @topic_ids = @topic_ids + topic_ids
+          else
+            @topic_ids = topic_ids
+          end
+        end
+
         def limit_by_user!(limit)
           @limit = limit if limit.to_i < @limit.to_i || @limit.nil?
         end
 
         def search
           filtered = Post.secured(@guardian).joins(:topic).merge(Topic.secured(@guardian))
+          original_filtered = filtered
 
           @filters.each do |filter_block, match_data|
             filtered = filter_block.call(filtered, match_data, self)
+          end
+
+          if @topic_ids.present?
+            filtered =
+              original_filtered.where(
+                "posts.topic_id IN (?) OR posts.id IN (?)",
+                @topic_ids,
+                filtered.select("posts.id"),
+              )
           end
 
           filtered = filtered.limit(@limit) if @limit.to_i > 0
