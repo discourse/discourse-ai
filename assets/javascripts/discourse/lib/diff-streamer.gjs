@@ -108,22 +108,36 @@ export default class DiffStreamer {
     const oldWords = oldText.trim().split(/\s+/);
     const newWords = newText.trim().split(/\s+/);
 
+    // Track where the line breaks are in the original oldText
+    const lineBreakMap = (() => {
+      const lines = oldText.trim().split("\n");
+      const map = new Set();
+      let wordIndex = 0;
+
+      for (const line of lines) {
+        const wordsInLine = line.trim().split(/\s+/);
+        wordIndex += wordsInLine.length;
+        map.add(wordIndex - 1); // Mark the last word in each line
+      }
+
+      return map;
+    })();
+
     const diff = [];
     let i = 0;
 
-    while (i < oldWords.length) {
+    while (i < oldWords.length || i < newWords.length) {
       const oldWord = oldWords[i];
       const newWord = newWords[i];
 
       let wordHTML = "";
-      let originalWordHTML = `<span class="ghost">${oldWord}</span>`;
 
       if (newWord === undefined) {
-        wordHTML = originalWordHTML;
+        wordHTML = `<span class="ghost">${oldWord}</span>`;
       } else if (oldWord === newWord) {
         wordHTML = `<span class="same-word">${newWord}</span>`;
       } else if (oldWord !== newWord) {
-        wordHTML = `<del>${oldWord}</del> <ins>${newWord}</ins>`;
+        wordHTML = `<del>${oldWord ?? ""}</del> <ins>${newWord ?? ""}</ins>`;
       }
 
       if (i === newWords.length - 1 && opts.markLastWord) {
@@ -131,6 +145,12 @@ export default class DiffStreamer {
       }
 
       diff.push(wordHTML);
+
+      // Add a line break after this word if it ended a line in the original text
+      if (lineBreakMap.has(i)) {
+        diff.push("<br>");
+      }
+
       i++;
     }
 
