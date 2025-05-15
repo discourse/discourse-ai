@@ -69,11 +69,11 @@ RSpec.describe DiscourseAi::Personas::Persona do
 
     tools = rendered.tools
 
-    expect(tools.find { |t| t[:name] == "search" }).to be_present
-    expect(tools.find { |t| t[:name] == "tags" }).to be_present
+    expect(tools.find { |t| t.name == "search" }).to be_present
+    expect(tools.find { |t| t.name == "tags" }).to be_present
 
     # needs to be configured so it is not available
-    expect(tools.find { |t| t[:name] == "image" }).to be_nil
+    expect(tools.find { |t| t.name == "image" }).to be_nil
   end
 
   it "can parse string that are wrapped in quotes" do

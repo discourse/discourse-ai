@@ -28,7 +28,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::OpenRouter,
             ]
 
-            endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
+            endpoints << DiscourseAi::Completions::Endpoints::Ollama if !Rails.env.production?
 
             if Rails.env.test? || Rails.env.development?
               endpoints << DiscourseAi::Completions::Endpoints::Fake

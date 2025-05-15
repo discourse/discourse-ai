@@ -196,10 +196,11 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
               "inputSchema" => {
                 "json" => {
                   "type" => "object",
+                  "required" => ["timezone"],
                   "properties" => {
                     "timezone" => {
                       "type" => "string",
-                      "required" => true,
+                      "description" => "The timezone",
                     },
                   },
                 },
@@ -268,9 +269,10 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
                   properties: {
                     timezone: {
                       type: "string",
-                      required: true,
+                      description: "The timezone",
                     },
                   },
+                  required: ["timezone"],
                 },
               },
             },
