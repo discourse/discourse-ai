@@ -542,10 +542,23 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         <parameters>
         <location>Sydney</location>
         <unit>c</unit>
+        <is_it_hot>true</is_it_hot>
         </parameters>
         </invoke>
         </function_calls>
       XML
+
+      let(:weather_tool) do
+        {
+          name: "get_weather",
+          description: "get weather",
+          parameters: [
+            { name: "location", type: "string", description: "location", required: true },
+            { name: "unit", type: "string", description: "unit", required: true, enum: %w[c f] },
+            { name: "is_it_hot", type: "boolean", description: "is it hot" },
+          ],
+        }
+      end
 
       it "parses XML tool calls" do
         response = {
@@ -574,7 +587,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         body = nil
         open_ai_mock.stub_raw(response, body_blk: proc { |inner_body| body = inner_body })
 
-        dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: tools))
+        dialect = compliance.dialect(prompt: compliance.generic_prompt(tools: [weather_tool]))
         tool_call = endpoint.perform_completion!(dialect, user)
 
         body_parsed = JSON.parse(body, symbolize_names: true)
@@ -583,7 +596,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
         expect(body_parsed[:messages][0][:content]).to include("<function_calls>")
 
         expect(tool_call.name).to eq("get_weather")
-        expect(tool_call.parameters).to eq({ location: "Sydney", unit: "c" })
+        expect(tool_call.parameters).to eq({ location: "Sydney", unit: "c", is_it_hot: true })
       end
     end
 

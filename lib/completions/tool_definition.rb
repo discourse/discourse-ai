@@ -165,7 +165,7 @@ module DiscourseAi
         return result if !params.is_a?(Hash)
 
         @parameters.each do |param_def|
-          param_name = param_def.name
+          param_name = param_def.name.to_sym
 
           # Skip if parameter is not provided and not required
           next if !params.key?(param_name) && !param_def.required

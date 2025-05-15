@@ -132,13 +132,13 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
 
       it "converts numbers to strings" do
-        result = tool.coerce_parameters({ "name" => 123 })
-        expect(result["name"]).to eq("123")
+        result = tool.coerce_parameters(name: 123)
+        expect(result[:name]).to eq("123")
       end
 
       it "converts booleans to strings" do
-        result = tool.coerce_parameters({ "name" => true })
-        expect(result["name"]).to eq("true")
+        result = tool.coerce_parameters(name: true)
+        expect(result[:name]).to eq("true")
       end
     end
 
@@ -156,18 +156,18 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
 
       it "converts string numbers to floats" do
-        result = tool.coerce_parameters({ "price" => "42.99" })
-        expect(result["price"]).to eq(42.99)
+        result = tool.coerce_parameters(price: "42.99")
+        expect(result[:price]).to eq(42.99)
       end
 
       it "converts integers to floats" do
-        result = tool.coerce_parameters({ "price" => 42 })
-        expect(result["price"]).to eq(42.0)
+        result = tool.coerce_parameters(price: 42)
+        expect(result[:price]).to eq(42.0)
       end
 
       it "returns nil for invalid number strings" do
-        result = tool.coerce_parameters({ "price" => "not a number" })
-        expect(result["price"]).to be_nil
+        result = tool.coerce_parameters(price: "not a number")
+        expect(result[:price]).to be_nil
       end
     end
 
@@ -190,18 +190,18 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
 
       it "converts string elements to integers" do
-        result = tool.coerce_parameters({ "numbers" => %w[1 2 3] })
-        expect(result["numbers"]).to eq([1, 2, 3])
+        result = tool.coerce_parameters(numbers: %w[1 2 3])
+        expect(result[:numbers]).to eq([1, 2, 3])
       end
 
       it "parses JSON strings into arrays and converts elements" do
-        result = tool.coerce_parameters({ "numbers" => "[1, 2, 3]" })
-        expect(result["numbers"]).to eq([1, 2, 3])
+        result = tool.coerce_parameters(numbers: "[1, 2, 3]")
+        expect(result[:numbers]).to eq([1, 2, 3])
       end
 
       it "handles mixed type arrays appropriately" do
-        result = tool.coerce_parameters({ "numbers" => [1, "two", 3.5] })
-        expect(result["numbers"]).to eq([1, nil, 3])
+        result = tool.coerce_parameters(numbers: [1, "two", 3.5])
+        expect(result[:numbers]).to eq([1, nil, 3])
       end
     end
 
@@ -231,9 +231,9 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
 
       it "includes missing required parameters as nil" do
-        result = tool.coerce_parameters({ "optional_param" => "value" })
-        expect(result["required_param"]).to be_nil
-        expect(result["optional_param"]).to eq("value")
+        result = tool.coerce_parameters(optional_param: "value")
+        expect(result[:required_param]).to be_nil
+        expect(result[:optional_param]).to eq("value")
       end
 
       it "skips missing optional parameters" do
@@ -257,16 +257,16 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
       end
 
       it "preserves true/false values" do
-        result = tool.coerce_parameters({ "flag" => true })
-        expect(result["flag"]).to be true
+        result = tool.coerce_parameters(flag: true)
+        expect(result[:flag]).to be true
       end
 
       it "converts 'true'/'false' strings to booleans" do
-        result = tool.coerce_parameters({ "flag" => "true" })
-        expect(result["flag"]).to be true
+        result = tool.coerce_parameters({ flag: true })
+        expect(result[:flag]).to be true
 
-        result = tool.coerce_parameters({ "flag" => "False" })
-        expect(result["flag"]).to be false
+        result = tool.coerce_parameters({ flag: "False" })
+        expect(result[:flag]).to be false
       end
 
       it "returns nil for invalid boolean strings" do
