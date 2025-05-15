@@ -54,6 +54,7 @@ module DiscourseAi
             ForumResearcher => -14,
             ConceptFinder => -15,
             ConceptMatcher => -16,
+            ConceptDeduplicator => -17,
           }
         end
 
