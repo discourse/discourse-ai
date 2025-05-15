@@ -185,11 +185,9 @@ module DiscourseAi
           if (streamed_result.length > 10 && (Time.now - start > 0.3)) || Rails.env.test?
             sanitized = sanitize_result(streamed_result)
 
-            if DiscourseAi::Utils::DiffUtils::SafetyChecker.safe_to_stream?(sanitized)
-              payload = { result: sanitized, diff: streamed_diff, done: false }
-              publish_update(channel, payload, user)
-              start = Time.now
-            end
+            payload = { result: sanitized, diff: streamed_diff, done: false }
+            publish_update(channel, payload, user)
+            start = Time.now
           end
         end
 

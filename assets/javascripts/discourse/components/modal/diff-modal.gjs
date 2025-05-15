@@ -23,6 +23,7 @@ export default class ModalDiffModal extends Component {
 
   @tracked loading = false;
   @tracked finalResult = "";
+  @tracked showcasedDiff = "";
   @tracked diffStreamer = new DiffStreamer(this.args.model.selectedText);
   @tracked suggestion = "";
   @tracked
@@ -30,14 +31,11 @@ export default class ModalDiffModal extends Component {
     () => this.suggestion,
     (newValue) => (this.suggestion = newValue)
   );
+  @tracked isStreaming = false;
 
   constructor() {
     super(...arguments);
     this.suggestChanges();
-  }
-
-  get isStreaming() {
-    return this.diffStreamer.isStreaming || this.smoothStreamer.isStreaming;
   }
 
   get primaryBtnLabel() {
@@ -64,10 +62,23 @@ export default class ModalDiffModal extends Component {
 
   @action
   async updateResult(result) {
+    // TODO(@keegan)
+    // Temporarily we are removing the animation using the diff streamer
+    // and simply showing the diff streamed without a proper animation
+    // while we figure things out
+    // so that things are not too janky in the meantime.
     this.loading = false;
+    this.isStreaming = true;
 
     if (result.done) {
       this.finalResult = result.result;
+    }
+
+    this.showcasedDiff = result.diff;
+
+    if (result.done) {
+      this.loading = false;
+      this.isStreaming = false;
     }
 
     if (this.args.model.showResultAsDiff) {
@@ -140,12 +151,11 @@ export default class ModalDiffModal extends Component {
                 "composer-ai-helper-modal__suggestion"
                 "streamable-content"
                 (if this.isStreaming "streaming")
-                (if this.diffStreamer.isThinking "thinking")
                 (if @model.showResultAsDiff "inline-diff")
               }}
             >
               {{#if @model.showResultAsDiff}}
-                {{htmlSafe this.diffStreamer.diff}}
+                {{htmlSafe this.showcasedDiff}}
               {{else}}
                 {{#if this.smoothStreamer.isStreaming}}
                   <CookText
