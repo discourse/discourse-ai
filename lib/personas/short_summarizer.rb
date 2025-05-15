@@ -33,7 +33,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ key: "summary", type: "string" }]
+        [{ "key" => "summary", "type" => "string" }]
       end
     end
   end

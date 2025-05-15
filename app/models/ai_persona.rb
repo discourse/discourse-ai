@@ -266,6 +266,7 @@ class AiPersona < ActiveRecord::Base
       define_method(:top_p) { @ai_persona&.top_p }
       define_method(:system_prompt) { @ai_persona&.system_prompt || "You are a helpful bot." }
       define_method(:uploads) { @ai_persona&.uploads }
+      define_method(:response_format) { @ai_persona&.response_format }
       define_method(:examples) { @ai_persona&.examples }
     end
   end

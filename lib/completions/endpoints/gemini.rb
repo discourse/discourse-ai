@@ -87,9 +87,13 @@ module DiscourseAi
           if model_params.present?
             payload[:generationConfig].merge!(model_params.except(:response_format))
 
-            if model_params[:response_format].present?
-              # https://ai.google.dev/api/generate-content#generationconfig
-              payload[:generationConfig][:responseSchema] = model_params[:response_format]
+            # https://ai.google.dev/api/generate-content#generationconfig
+            gemini_schema = model_params[:response_format].dig(:json_schema, :schema)
+
+            if gemini_schema.present?
+              payload[:generationConfig][:responseSchema] = gemini_schema.except(
+                :additionalProperties,
+              )
               payload[:generationConfig][:responseMimeType] = "application/json"
             end
           end

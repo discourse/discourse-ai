@@ -565,12 +565,14 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         structured_response = partial
       end
 
-      expect(structured_response.read_latest_buffered_chunk).to eq({ key: "Hello!" })
+      expect(structured_response.read_buffered_property(:key)).to eq("Hello!")
 
       parsed = JSON.parse(req_body, symbolize_names: true)
 
       # Verify that schema is passed following Gemini API specs.
-      expect(parsed.dig(:generationConfig, :responseSchema)).to eq(schema)
+      expect(parsed.dig(:generationConfig, :responseSchema)).to eq(
+        schema.dig(:json_schema, :schema).except(:additionalProperties),
+      )
       expect(parsed.dig(:generationConfig, :responseMimeType)).to eq("application/json")
     end
   end

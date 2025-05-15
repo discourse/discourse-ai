@@ -316,7 +316,7 @@ module DiscourseAi
           response_format
             .to_a
             .reduce({}) do |memo, format|
-              memo[format[:key].to_sym] = { type: format[:type] }
+              memo[format["key"].to_sym] = { type: format["type"] }
               memo
             end
 
