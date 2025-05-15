@@ -22,7 +22,7 @@ module DiscourseAi
                 },
                 {
                   name: "dry_run",
-                  description: "When true, only count matching items without processing data",
+                  description: "When true, only count matching posts without processing data",
                   type: "boolean",
                 },
               ],
@@ -41,6 +41,7 @@ module DiscourseAi
               - keywords (keywords:keyword1,keyword2) - specific words to search for in posts
               - max_results (max_results:10) the maximum number of results to return (optional)
               - order (order:latest, order:oldest, order:latest_topic, order:oldest_topic) - the order of the results (optional)
+              - topic (topic:topic_id1,topic_id2) - add specific topics to the filter, topics will unconditionally be included
 
               If multiple tags or categories are specified, they are treated as OR conditions.
 
@@ -89,7 +90,7 @@ module DiscourseAi
           blk.call details
 
           if dry_run
-            { dry_run: true, goals: goals, filter: @filter, number_of_results: @result_count }
+            { dry_run: true, goals: goals, filter: @filter, number_of_posts: @result_count }
           else
             process_filter(filter, goals, post, &blk)
           end
@@ -100,6 +101,14 @@ module DiscourseAi
             I18n.t("discourse_ai.ai_bot.tool_description.researcher_dry_run", description_args)
           else
             I18n.t("discourse_ai.ai_bot.tool_description.researcher", description_args)
+          end
+        end
+
+        def summary
+          if @dry_run
+            I18n.t("discourse_ai.ai_bot.tool_summary.researcher_dry_run")
+          else
+            I18n.t("discourse_ai.ai_bot.tool_summary.researcher")
           end
         end
 

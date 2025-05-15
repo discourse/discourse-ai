@@ -35,7 +35,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
       expect(results[:filter]).to eq("tag:research after:2023")
       expect(results[:goals]).to eq("analyze post patterns")
       expect(results[:dry_run]).to eq(true)
-      expect(results[:number_of_results]).to be > 0
+      expect(results[:number_of_posts]).to be > 0
       expect(researcher.filter).to eq("tag:research after:2023")
       expect(researcher.result_count).to be > 0
     end
