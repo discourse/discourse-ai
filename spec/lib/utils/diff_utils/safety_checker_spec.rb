@@ -1,6 +1,4 @@
-# spec/lib/discourse_ai/utils/diff_utils/safety_checker_spec.rb
-
-require "rails_helper"
+# frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Utils::DiffUtils::SafetyChecker do
   describe "#safe?" do
@@ -73,10 +71,10 @@ RSpec.describe DiscourseAi::Utils::DiffUtils::SafetyChecker do
         it { is_expected.to eq(false) }
       end
 
-      # context "with partial emoji" do
-      #   let(:text) { "A partial emoji :smile" }
-      #   it { is_expected.to eq(false) }
-      # end
+      context "with partial emoji" do
+        let(:text) { "A partial emoji :smile" }
+        it { is_expected.to eq(false) }
+      end
     end
   end
 end
