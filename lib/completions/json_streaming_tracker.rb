@@ -24,6 +24,10 @@ module DiscourseAi
         end
       end
 
+      def broken?
+        @broken
+      end
+
       def <<(json)
         # llm could send broken json
         # in that case just deal with it later

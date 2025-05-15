@@ -845,7 +845,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         response_format: schema,
       ) { |partial, cancel| structured_output = partial }
 
-      expect(structured_output.read_latest_buffered_chunk).to eq({ key: "Hello!" })
+      expect(structured_output.read_buffered_property(:key)).to eq("Hello!")
 
       expected_body = {
         model: "claude-3-opus-20240229",

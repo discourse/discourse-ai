@@ -366,6 +366,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     )
     expect(parsed_body[:message]).to eq("user1: thanks")
 
-    expect(structured_output.read_latest_buffered_chunk).to eq({ key: "Hello!" })
+    expect(structured_output.read_buffered_property(:key)).to eq("Hello!")
   end
 end

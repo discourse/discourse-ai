@@ -116,7 +116,7 @@ module DiscourseAi
             if type == :structured_output
               json_summary_schema_key = bot.persona.response_format&.first.to_h
               partial_summary =
-                partial.read_latest_buffered_chunk[json_summary_schema_key[:key].to_sym]
+                partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
 
               if partial_summary.present?
                 summary << partial_summary
