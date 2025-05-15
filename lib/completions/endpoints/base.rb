@@ -28,7 +28,7 @@ module DiscourseAi
               DiscourseAi::Completions::Endpoints::OpenRouter,
             ]
 
-            endpoints << DiscourseAi::Completions::Endpoints::Ollama if Rails.env.development?
+            endpoints << DiscourseAi::Completions::Endpoints::Ollama if !Rails.env.production?
 
             if Rails.env.test? || Rails.env.development?
               endpoints << DiscourseAi::Completions::Endpoints::Fake
@@ -166,6 +166,7 @@ module DiscourseAi
               xml_tool_processor =
                 XmlToolProcessor.new(
                   partial_tool_calls: partial_tool_calls,
+                  tool_definitions: dialect.prompt.tools,
                 ) if xml_tools_enabled? && dialect.prompt.has_tools?
 
               to_strip = xml_tags_to_strip(dialect)

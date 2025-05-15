@@ -115,6 +115,6 @@ class DialectContext
           },
         ],
       },
-    ]
+    ].map { |tool| DiscourseAi::Completions::ToolDefinition.from_hash(tool) }
   end
 end

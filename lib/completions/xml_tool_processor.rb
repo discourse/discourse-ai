@@ -7,13 +7,14 @@
 module DiscourseAi
   module Completions
     class XmlToolProcessor
-      def initialize(partial_tool_calls: false)
+      def initialize(partial_tool_calls: false, tool_definitions: nil)
         @buffer = +""
         @function_buffer = +""
         @should_cancel = false
         @in_tool = false
         @partial_tool_calls = partial_tool_calls
         @partial_tools = [] if @partial_tool_calls
+        @tool_definitions = tool_definitions
       end
 
       def <<(text)
@@ -71,7 +72,7 @@ module DiscourseAi
 
         idx = -1
         parse_malformed_xml(@function_buffer).map do |tool|
-          ToolCall.new(
+          new_tool_call(
             id: "tool_#{idx += 1}",
             name: tool[:tool_name],
             parameters: tool[:parameters],
@@ -84,6 +85,13 @@ module DiscourseAi
       end
 
       private
+
+      def new_tool_call(id:, name:, parameters:)
+        if tool_def = @tool_definitions&.find { |d| d.name == name }
+          parameters = tool_def.coerce_parameters(parameters)
+        end
+        ToolCall.new(id:, name:, parameters:)
+      end
 
       def add_to_function_buffer(text)
         @function_buffer << text
@@ -119,7 +127,7 @@ module DiscourseAi
             current_tool = @partial_tools.last
             if !current_tool || current_tool.name != match[0].strip
               current_tool =
-                ToolCall.new(
+                new_tool_call(
                   id: "tool_#{@partial_tools.length}",
                   name: match[0].strip,
                   parameters: params,

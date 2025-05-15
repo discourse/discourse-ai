@@ -5,6 +5,7 @@ require_relative "dialect_context"
 RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
   fab!(:model) { Fabricate(:ollama_model) }
   let(:context) { DialectContext.new(described_class, model) }
+  let(:dialect_class) { DiscourseAi::Completions::Dialects::Dialect.dialect_for(model) }
 
   describe "#translate" do
     context "when native tool support is enabled" do
@@ -59,35 +60,49 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
   describe "#tools" do
     context "when native tools are enabled" do
       it "returns the translated tools from the OllamaTools class" do
-        tool = instance_double(DiscourseAi::Completions::Dialects::OllamaTools)
+        model.update!(provider_params: { enable_native_tool: true })
 
-        allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(true)
-        allow(tool).to receive(:translated_tools)
-        allow(DiscourseAi::Completions::Dialects::OllamaTools).to receive(:new).and_return(tool)
+        tool = { name: "noop", description: "do nothing" }
+        messages = [
+          { type: :user, content: "echo away" },
+          { type: :tool_call, content: "{}", name: "noop" },
+          { type: :tool, content: "{}", name: "noop" },
+        ]
+        prompt = DiscourseAi::Completions::Prompt.new("a bot", tools: [tool], messages: messages)
+        dialect = dialect_class.new(prompt, model)
 
-        context.dialect_tools
-
-        expect(DiscourseAi::Completions::Dialects::OllamaTools).to have_received(:new).with(
-          context.prompt.tools,
-        )
-        expect(tool).to have_received(:translated_tools)
+        expected = [
+          { role: "system", content: "a bot" },
+          { role: "user", content: "echo away" },
+          {
+            role: "assistant",
+            content: nil,
+            tool_calls: [{ type: "function", function: { name: "noop" } }],
+          },
+          { role: "tool", content: "{}", name: "noop" },
+        ]
+        expect(dialect.translate).to eq(expected)
       end
     end
 
     context "when native tools are disabled" do
       it "returns the translated tools from the XmlTools class" do
-        tool = instance_double(DiscourseAi::Completions::Dialects::XmlTools)
+        model.update!(provider_params: { enable_native_tool: false })
 
-        allow(model).to receive(:lookup_custom_param).with("enable_native_tool").and_return(false)
-        allow(tool).to receive(:translated_tools)
-        allow(DiscourseAi::Completions::Dialects::XmlTools).to receive(:new).and_return(tool)
+        tool = { name: "noop", description: "do nothing" }
+        messages = [
+          { type: :user, content: "echo away" },
+          { type: :tool_call, content: "{}", name: "noop" },
+          { type: :tool, content: "{}", name: "noop" },
+        ]
+        prompt = DiscourseAi::Completions::Prompt.new("a bot", tools: [tool], messages: messages)
+        dialect = dialect_class.new(prompt, model)
 
-        context.dialect_tools
+        expected = %w[system user assistant user]
+        roles = dialect.translate.map { |x| x[:role] }
 
-        expect(DiscourseAi::Completions::Dialects::XmlTools).to have_received(:new).with(
-          context.prompt.tools,
-        )
-        expect(tool).to have_received(:translated_tools)
+        # notice, no tool role
+        expect(roles).to eq(expected)
       end
     end
   end

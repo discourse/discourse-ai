@@ -5,34 +5,33 @@ require_relative "dialect_context"
 RSpec.describe DiscourseAi::Completions::Dialects::OllamaTools do
   describe "#translated_tools" do
     it "translates a tool from our generic format to the Ollama format" do
-      tools = [
-        {
-          name: "github_file_content",
-          description: "Retrieves the content of specified GitHub files",
-          parameters: [
-            {
-              name: "repo_name",
-              description: "The name of the GitHub repository (e.g., 'discourse/discourse')",
-              type: "string",
-              required: true,
-            },
-            {
-              name: "file_paths",
-              description: "The paths of the files to retrieve within the repository",
-              type: "array",
-              item_type: "string",
-              required: true,
-            },
-            {
-              name: "branch",
-              description: "The branch or commit SHA to retrieve the files from (default: 'main')",
-              type: "string",
-              required: false,
-            },
-          ],
-        },
-      ]
+      tool = {
+        name: "github_file_content",
+        description: "Retrieves the content of specified GitHub files",
+        parameters: [
+          {
+            name: "repo_name",
+            description: "The name of the GitHub repository (e.g., 'discourse/discourse')",
+            type: "string",
+            required: true,
+          },
+          {
+            name: "file_paths",
+            description: "The paths of the files to retrieve within the repository",
+            type: "array",
+            item_type: "string",
+            required: true,
+          },
+          {
+            name: "branch",
+            description: "The branch or commit SHA to retrieve the files from (default: 'main')",
+            type: "string",
+            required: false,
+          },
+        ],
+      }
 
+      tools = [DiscourseAi::Completions::ToolDefinition.from_hash(tool)]
       ollama_tools = described_class.new(tools)
 
       translated_tools = ollama_tools.translated_tools
@@ -49,16 +48,19 @@ RSpec.describe DiscourseAi::Completions::Dialects::OllamaTools do
                 properties: {
                   "repo_name" => {
                     description: "The name of the GitHub repository (e.g., 'discourse/discourse')",
-                    type: "string",
+                    type: :string,
                   },
                   "file_paths" => {
                     description: "The paths of the files to retrieve within the repository",
-                    type: "array",
+                    type: :array,
+                    items: {
+                      type: :string,
+                    },
                   },
                   "branch" => {
                     description:
                       "The branch or commit SHA to retrieve the files from (default: 'main')",
-                    type: "string",
+                    type: :string,
                   },
                 },
                 required: %w[repo_name file_paths],

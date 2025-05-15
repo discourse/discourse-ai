@@ -93,9 +93,23 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
       <parameters>
        <hello>world</hello>
        <test>value</test>
+       <bool>true</bool>
       </parameters>
       </invoke>
     XML
+
+    tool_definition =
+      DiscourseAi::Completions::ToolDefinition.from_hash(
+        name: "hello",
+        description: "hello world",
+        parameters: [
+          { name: "hello", type: "string", description: "hello" },
+          { name: "test", type: "string", description: "test" },
+          { name: "bool", type: "boolean", description: "bool" },
+        ],
+      )
+
+    processor = DiscourseAi::Completions::XmlToolProcessor.new(tool_definitions: [tool_definition])
 
     result = []
     result << (processor << "hello")
@@ -109,6 +123,7 @@ RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
         parameters: {
           hello: "world",
           test: "value",
+          bool: true,
         },
       )
     expect(result).to eq([["hello"], [" world"], [tool_call]])

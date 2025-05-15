@@ -38,27 +38,24 @@ module DiscourseAi
         end
 
         def translated_tools
-          raw_tools.map do |t|
-            tool = t.dup
+          raw_tools.map do |tool|
+            defs = {}
 
-            tool[:parameter_definitions] = t[:parameters]
-              .to_a
-              .reduce({}) do |memo, p|
-                name = p[:name]
-                memo[name] = {
-                  description: p[:description],
-                  type: cohere_type(p[:type], p[:item_type]),
-                  required: p[:required],
-                }
+            tool.parameters.each do |p|
+              name = p.name
+              defs[name] = {
+                description: p.description,
+                type: cohere_type(p.type, p.item_type),
+                required: p.required,
+              }
 
-                memo[name][:default] = p[:default] if p[:default]
-                memo
-              end
+              #defs[name][:default] = p.default if p.default
+            end
 
             {
-              name: tool[:name] == "search" ? "search_local" : tool[:name],
-              description: tool[:description],
-              parameter_definitions: tool[:parameter_definitions],
+              name: tool.name == "search" ? "search_local" : tool.name,
+              description: tool.description,
+              parameter_definitions: defs,
             }
           end
         end
@@ -72,6 +69,7 @@ module DiscourseAi
         attr_reader :raw_tools
 
         def cohere_type(type, item_type)
+          type = type.to_s
           case type
           when "string"
             "str"

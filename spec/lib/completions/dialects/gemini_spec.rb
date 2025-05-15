@@ -108,11 +108,11 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
               required: %w[location unit],
               properties: {
                 "location" => {
-                  type: "string",
+                  type: :string,
                   description: "the city name",
                 },
                 "unit" => {
-                  type: "string",
+                  type: :string,
                   description: "the unit of measurement celcius c or fahrenheit f",
                   enum: %w[c f],
                 },
@@ -121,7 +121,6 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
           },
         ],
       }
-
       expect(context.dialect_tools).to contain_exactly(gemini_tools)
     end
   end

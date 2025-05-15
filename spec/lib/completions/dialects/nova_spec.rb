@@ -84,29 +84,30 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
         dialect = nova_dialect_klass.new(prompt, llm_model)
         translated = dialect.translate
 
-        expect(translated.tool_config).to eq(
-          {
-            tools: [
-              {
-                toolSpec: {
-                  name: "get_weather",
-                  description: "Get the weather in a city",
-                  inputSchema: {
-                    json: {
-                      type: "object",
-                      properties: {
-                        "location" => {
-                          type: "string",
-                          required: true,
-                        },
+        expected = {
+          tools: [
+            {
+              toolSpec: {
+                name: "get_weather",
+                description: "Get the weather in a city",
+                inputSchema: {
+                  json: {
+                    type: "object",
+                    properties: {
+                      "location" => {
+                        type: :string,
+                        description: "the city name",
                       },
                     },
+                    required: ["location"],
                   },
                 },
               },
-            ],
-          },
-        )
+            },
+          ],
+        }
+
+        expect(translated.tool_config).to eq(expected)
       end
     end
 

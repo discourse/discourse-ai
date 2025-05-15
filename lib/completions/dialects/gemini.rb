@@ -47,22 +47,8 @@ module DiscourseAi
 
           translated_tools =
             prompt.tools.map do |t|
-              tool = t.slice(:name, :description)
-
-              if t[:parameters]
-                tool[:parameters] = t[:parameters].reduce(
-                  { type: "object", required: [], properties: {} },
-                ) do |memo, p|
-                  name = p[:name]
-                  memo[:required] << name if p[:required]
-
-                  memo[:properties][name] = p.except(:name, :required, :item_type)
-
-                  memo[:properties][name][:items] = { type: p[:item_type] } if p[:item_type]
-                  memo
-                end
-              end
-
+              tool = { name: t.name, description: t.description }
+              tool[:parameters] = t.parameters_json_schema if t.parameters
               tool
             end
 
