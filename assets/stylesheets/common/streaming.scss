@@ -79,3 +79,18 @@ article.streaming .cooked {
     }
   }
 }
+
+@keyframes mark-blink {
+  0%,
+  100% {
+    border-color: var(--highlight-high);
+  }
+
+  50% {
+    border-color: transparent;
+  }
+}
+
+.composer-ai-helper-modal__suggestion.thinking mark.highlight {
+  animation: mark-blink 1s step-start 0s infinite;
+}

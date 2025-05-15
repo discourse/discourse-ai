@@ -12,6 +12,8 @@ export default class DiffStreamer {
   @tracked lastResultText = "";
   @tracked diff = "";
   @tracked suggestion = "";
+  @tracked isDone = false;
+  @tracked isThinking = false;
   typingTimer = null;
   currentWordIndex = 0;
 
@@ -35,6 +37,7 @@ export default class DiffStreamer {
     const newText = result[newTextKey];
     const diffText = newText.slice(this.lastResultText.length).trim();
     const newWords = diffText.split(/\s+/).filter(Boolean);
+    this.isDone = result?.done;
 
     if (newWords.length > 0) {
       this.isStreaming = true;
@@ -64,7 +67,12 @@ export default class DiffStreamer {
    * Highlights the current word if streaming is ongoing.
    */
   #streamNextWord() {
-    if (this.currentWordIndex === this.words.length) {
+    if (this.currentWordIndex === this.words.length && !this.isDone) {
+      this.isThinking = true;
+    }
+
+    if (this.currentWordIndex === this.words.length && this.isDone) {
+      this.isThinking = false;
       this.diff = this.#compareText(this.selectedText, this.suggestion, {
         markLastWord: false,
       });
@@ -72,6 +80,7 @@ export default class DiffStreamer {
     }
 
     if (this.currentWordIndex < this.words.length) {
+      this.isThinking = false;
       this.suggestion += this.words[this.currentWordIndex] + " ";
       this.diff = this.#compareText(this.selectedText, this.suggestion, {
         markLastWord: true,
@@ -99,22 +108,36 @@ export default class DiffStreamer {
     const oldWords = oldText.trim().split(/\s+/);
     const newWords = newText.trim().split(/\s+/);
 
+    // Track where the line breaks are in the original oldText
+    const lineBreakMap = (() => {
+      const lines = oldText.trim().split("\n");
+      const map = new Set();
+      let wordIndex = 0;
+
+      for (const line of lines) {
+        const wordsInLine = line.trim().split(/\s+/);
+        wordIndex += wordsInLine.length;
+        map.add(wordIndex - 1); // Mark the last word in each line
+      }
+
+      return map;
+    })();
+
     const diff = [];
     let i = 0;
 
-    while (i < oldWords.length) {
+    while (i < oldWords.length || i < newWords.length) {
       const oldWord = oldWords[i];
       const newWord = newWords[i];
 
       let wordHTML = "";
-      let originalWordHTML = `<span class="ghost">${oldWord}</span>`;
 
       if (newWord === undefined) {
-        wordHTML = originalWordHTML;
+        wordHTML = `<span class="ghost">${oldWord}</span>`;
       } else if (oldWord === newWord) {
         wordHTML = `<span class="same-word">${newWord}</span>`;
       } else if (oldWord !== newWord) {
-        wordHTML = `<del>${oldWord}</del> <ins>${newWord}</ins>`;
+        wordHTML = `<del>${oldWord ?? ""}</del> <ins>${newWord ?? ""}</ins>`;
       }
 
       if (i === newWords.length - 1 && opts.markLastWord) {
@@ -122,6 +145,12 @@ export default class DiffStreamer {
       }
 
       diff.push(wordHTML);
+
+      // Add a line break after this word if it ended a line in the original text
+      if (lineBreakMap.has(i)) {
+        diff.push("<br>");
+      }
+
       i++;
     }
 
