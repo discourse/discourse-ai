@@ -9,8 +9,13 @@ module DiscourseAi
         return [] if content.blank?
 
         # Use the ConceptFinder persona to identify concepts
-        llm = DiscourseAi::Completions::Llm.default_llm
-        persona = DiscourseAi::Personas::ConceptFinder.new
+        persona =
+          AiPersona
+            .all_personas(enabled_only: false)
+            .find { |persona| persona.id == SiteSetting.inferred_concepts_generate_persona.to_i }
+            .new
+
+        llm = LlmModel.find(persona.class.default_llm_id)
         context =
           DiscourseAi::Personas::BotContext.new(
             messages: [{ type: :user, content: content }],
@@ -18,12 +23,11 @@ module DiscourseAi
             inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
           )
 
-        prompt = persona.craft_prompt(context)
-        response = llm.completion(prompt, extract_json: true)
+        bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
 
-        return [] unless response.success?
+        response = bot.reply(context)
 
-        concepts = response.parsed_output["concepts"]
+        concepts = JSON.parse(response[0][0]).dig("concepts")
         concepts || []
       end
 
@@ -68,7 +72,7 @@ module DiscourseAi
         query = query.where("topics.created_at >= ?", created_after) if created_after.present?
 
         # Exclude PM topics (if they exist in Discourse)
-        query = query.where(archetype: Topic.public_archetype)
+        query = query.where(archetype: Archetype.default)
 
         # Exclude topics that already have concepts
         topics_with_concepts = <<~SQL
@@ -133,6 +137,34 @@ module DiscourseAi
 
         # Return limited number of posts
         query.limit(limit)
+      end
+
+      # Deduplicate and standardize a list of concepts
+      # @param concept_names [Array<String>] List of concept names to deduplicate
+      # @return [Hash] Hash with deduplicated concepts and mapping
+      def self.deduplicate_concepts(concept_names)
+        return { deduplicated_concepts: [], mapping: {} } if concept_names.blank?
+
+        # Use the ConceptDeduplicator persona to deduplicate concepts
+        persona =
+          AiPersona
+            .all_personas(enabled_only: false)
+            .find { |persona| persona.id == SiteSetting.inferred_concepts_deduplicate_persona.to_i }
+            .new
+
+        llm = LlmModel.find(persona.class.default_llm_id)
+
+        # Create the input for the deduplicator
+        input = { type: :user, content: concept_names.join(", ") }
+
+        context =
+          DiscourseAi::Personas::BotContext.new(messages: [input], user: Discourse.system_user)
+
+        bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
+
+        response = bot.reply(context)
+
+        concepts = JSON.parse(response[0][0]).dig("streamlined_tags")
       end
     end
   end

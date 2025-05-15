@@ -14,6 +14,65 @@ module DiscourseAi
 
         query.pluck(:name)
       end
+
+      # Deduplicate concepts in batches by letter
+      # This method will:
+      # 1. Group concepts by first letter
+      # 2. Process each letter group separately through the deduplicator
+      # 3. Do a final pass with all deduplicated concepts
+      # @return [Hash] Statistics about the deduplication process
+      def self.deduplicate_concepts_by_letter(per_letter_batch: 50, full_pass_batch: 150)
+        # Get all concepts
+        all_concepts = list_concepts
+        return if all_concepts.empty?
+
+        letter_groups = Hash.new { |h, k| h[k] = [] }
+
+        # Group concepts by first letter
+        all_concepts.each do |concept|
+          first_char = concept[0]&.upcase
+
+          if first_char && first_char.match?(/[A-Z]/)
+            letter_groups[first_char] << concept
+          else
+            # Non-alphabetic or empty concepts go in a special group
+            letter_groups["#"] << concept
+          end
+        end
+
+        # Process each letter group
+        letter_deduplicated_concepts = []
+
+        letter_groups.each do |letter, concepts|
+          next if concepts.empty?
+
+          batches = concepts.each_slice(per_letter_batch).to_a
+
+          batches.each do |batch|
+            result = Finder.deduplicate_concepts(batch)
+            letter_deduplicated_concepts.concat(result)
+          end
+        end
+
+        # Final pass with all deduplicated concepts
+        if letter_deduplicated_concepts.present?
+          final_result = []
+
+          batches = letter_deduplicated_concepts.each_slice(full_pass_batch).to_a
+          batches.each do |batch|
+            dedups = Finder.deduplicate_concepts(batch)
+            final_result.concat(dedups)
+          end
+
+          # Remove duplicates
+          final_result.uniq!
+
+          # Apply the deduplicated concepts
+          InferredConcept.destroy_all
+          InferredConcept.insert_all(final_result.map { { name: it } })
+        end
+      end
+
       # Generate new concepts for a topic and apply them
       # @param topic [Topic] A Topic instance
       # @return [Array<InferredConcept>] The concepts that were applied
@@ -139,7 +198,7 @@ module DiscourseAi
       # @option opts [DateTime] :created_after (30.days.ago) Only include topics created after this time
       # @return [Array<Topic>] Array of Topic objects that are good candidates
       def self.find_candidate_topics(opts = {})
-        Finder.find_candidate_topics(opts)
+        Finder.find_candidate_topics(**opts)
       end
 
       # Find candidate posts that are good for concept generation
