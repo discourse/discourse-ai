@@ -238,7 +238,7 @@ RSpec.describe DiscourseAi::Completions::ToolDefinition do
 
       it "skips missing optional parameters" do
         result = tool.coerce_parameters({})
-        expect(result["required_param"]).to be_nil
+        expect(result[:required_param]).to be_nil
         expect(result.key?("optional_param")).to be false
       end
     end
