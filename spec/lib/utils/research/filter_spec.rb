@@ -2,7 +2,10 @@
 
 describe DiscourseAi::Utils::Research::Filter do
   describe "integration tests" do
-    before_all { SiteSetting.min_topic_title_length = 3 }
+    before_all do
+      SiteSetting.min_topic_title_length = 3
+      SiteSetting.min_personal_message_title_length = 3
+    end
 
     fab!(:user)
 
@@ -50,6 +53,46 @@ describe DiscourseAi::Utils::Research::Filter do
     fab!(:bug_post) { Fabricate(:post, topic: bug_topic, user: user) }
     fab!(:feature_bug_post) { Fabricate(:post, topic: feature_bug_topic, user: user) }
     fab!(:no_tag_post) { Fabricate(:post, topic: no_tag_topic, user: user) }
+
+    describe "security filtering" do
+      fab!(:secure_group) { Fabricate(:group) }
+      fab!(:secure_category) { Fabricate(:category, name: "Secure") }
+
+      fab!(:secure_topic) do
+        secure_category.set_permissions(secure_group => :readonly)
+        secure_category.save!
+        Fabricate(
+          :topic,
+          category: secure_category,
+          user: user,
+          title: "This is a secret Secret Topic",
+        )
+      end
+
+      fab!(:secure_post) { Fabricate(:post, topic: secure_topic, user: user) }
+
+      fab!(:pm_topic) { Fabricate(:private_message_topic, user: user) }
+      fab!(:pm_post) { Fabricate(:post, topic: pm_topic, user: user) }
+
+      it "omits secure categories when no guardian is supplied" do
+        filter = described_class.new("")
+        expect(filter.search.pluck(:id)).not_to include(secure_post.id)
+
+        user.groups << secure_group
+        guardian = Guardian.new(user)
+        filter_with_guardian = described_class.new("", guardian: guardian)
+        expect(filter_with_guardian.search.pluck(:id)).to include(secure_post.id)
+      end
+
+      it "omits PMs unconditionally" do
+        filter = described_class.new("")
+        expect(filter.search.pluck(:id)).not_to include(pm_post.id)
+
+        guardian = Guardian.new(user)
+        filter_with_guardian = described_class.new("", guardian: guardian)
+        expect(filter_with_guardian.search.pluck(:id)).not_to include(pm_post.id)
+      end
+    end
 
     describe "tag filtering" do
       it "correctly filters posts by tags" do

@@ -235,7 +235,12 @@ module DiscourseAi
         end
 
         def search
-          filtered = Post.secured(@guardian).joins(:topic).merge(Topic.secured(@guardian))
+          filtered =
+            Post
+              .secured(@guardian)
+              .joins(:topic)
+              .merge(Topic.secured(@guardian))
+              .where("topics.archetype = 'regular'")
           original_filtered = filtered
 
           @filters.each do |filter_block, match_data|
