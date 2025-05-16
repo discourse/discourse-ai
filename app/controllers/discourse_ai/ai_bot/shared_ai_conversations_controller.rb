@@ -8,7 +8,7 @@ module DiscourseAi
       before_action :require_site_settings!
 
       skip_before_action :preload_json, :check_xhr, only: %i[show asset]
-      skip_before_action :verify_authenticity_token, only: ["asset"]
+      skip_before_action :redirect_to_login_if_required, :verify_authenticity_token, only: %i[asset]
 
       def create
         ensure_allowed_create!
