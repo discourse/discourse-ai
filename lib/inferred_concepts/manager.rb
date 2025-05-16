@@ -73,24 +73,6 @@ module DiscourseAi
         end
       end
 
-      # Generate new concepts for a topic and apply them
-      # @param topic [Topic] A Topic instance
-      # @return [Array<InferredConcept>] The concepts that were applied
-      def self.analyze_topic(topic)
-        return [] if topic.blank?
-
-        Applier.analyze_and_apply(topic)
-      end
-
-      # Generate new concepts for a post and apply them
-      # @param post [Post] A Post instance
-      # @return [Array<InferredConcept>] The concepts that were applied
-      def self.analyze_post(post)
-        return [] if post.blank?
-
-        Applier.analyze_and_apply_post(post)
-      end
-
       # Extract new concepts from arbitrary content
       # @param content [String] The content to analyze
       # @return [Array<String>] The identified concept names
@@ -205,14 +187,7 @@ module DiscourseAi
       # @param opts [Hash] Options to pass to the finder
       # @return [Array<Post>] Array of Post objects that are good candidates
       def self.find_candidate_posts(opts = {})
-        Finder.find_candidate_posts(
-          limit: opts[:limit],
-          min_likes: opts[:min_likes],
-          exclude_first_posts: opts[:exclude_first_posts],
-          exclude_post_ids: opts[:exclude_post_ids],
-          category_ids: opts[:category_ids],
-          created_after: opts[:created_after],
-        )
+        Finder.find_candidate_posts(**opts)
       end
     end
   end
