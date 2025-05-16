@@ -44,6 +44,6 @@ export default class AiConversationsSidebarManager extends Service {
       this.sidebarState.isForcingSidebar = false;
     }
 
-    this.appEvents.trigger("discourse-ai:stop-forcing-custom-sidebar");
+    this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
   }
 }
