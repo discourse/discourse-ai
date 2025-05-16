@@ -30,7 +30,6 @@ export default {
       );
       const appEvents = api.container.lookup("service:app-events");
       const messageBus = api.container.lookup("service:message-bus");
-      const navigationMenu = api.container.lookup("service:navigationMenu");
 
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
