@@ -3,6 +3,10 @@
 module DiscourseAi
   module Personas
     class ConceptDeduplicator < Persona
+      def self.default_enabled
+        false
+      end
+
       def system_prompt
         <<~PROMPT.strip
           You will be given a list of machine-generated tags.
@@ -42,7 +46,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ key: "streamlined_tags", type: "array" }]
+        [{ "key" => "streamlined_tags", "type" => "array" }]
       end
     end
   end
