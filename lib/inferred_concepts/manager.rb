@@ -68,7 +68,7 @@ module DiscourseAi
           final_result.uniq!
 
           # Apply the deduplicated concepts
-          InferredConcept.destroy_all
+          InferredConcept.where.not(name: final_result).destroy_all
           InferredConcept.insert_all(final_result.map { { name: it } })
         end
       end
