@@ -97,7 +97,6 @@ export default class AiBotConversations extends Component {
           }
         });
 
-        // Setup paste listener for the textarea
         this.textarea?.addEventListener("paste", this._handlePaste);
       },
 
@@ -117,7 +116,7 @@ export default class AiBotConversations extends Component {
     super.willDestroy(...arguments);
     this.textarea?.removeEventListener("paste", this._handlePaste);
     this.uppyUpload?.teardown();
-    // needed for safety
+    // needed for safety (textarea may not have a autocomplete)
     if (this.textarea.autocomplete) {
       this.textarea.autocomplete("destroy");
     }
