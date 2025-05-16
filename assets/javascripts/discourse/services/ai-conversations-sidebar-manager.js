@@ -27,7 +27,7 @@ export default class AiConversationsSidebarManager extends Service {
 
     this.sidebarState.isForcingSidebar = true;
     document.body.classList.add("has-ai-conversations-sidebar");
-    this.appEvents.trigger("discourse-ai:force-custom-sidebar");
+    this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
     return true;
   }
 
