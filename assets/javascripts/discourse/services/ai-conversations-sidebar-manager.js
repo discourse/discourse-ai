@@ -5,6 +5,7 @@ import { ADMIN_PANEL, MAIN_PANEL } from "discourse/lib/sidebar/panels";
 export const AI_CONVERSATIONS_PANEL = "ai-conversations";
 
 export default class AiConversationsSidebarManager extends Service {
+  @service appEvents;
   @service sidebarState;
 
   @tracked newTopicForceSidebar = false;
@@ -26,6 +27,7 @@ export default class AiConversationsSidebarManager extends Service {
 
     this.sidebarState.isForcingSidebar = true;
     document.body.classList.add("has-ai-conversations-sidebar");
+    this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
     return true;
   }
 
@@ -41,5 +43,7 @@ export default class AiConversationsSidebarManager extends Service {
       this.sidebarState.setPanel(MAIN_PANEL); // Return to main sidebar panel
       this.sidebarState.isForcingSidebar = false;
     }
+
+    this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
   }
 }
