@@ -152,10 +152,12 @@ module DiscourseAi
                       raw_context << partial
                       current_thinking << partial
                     end
-                  elsif partial.is_a?(DiscourseAi::Completions::StructuredOutput)
-                    update_blk.call(partial, nil, :structured_output)
-                  else
-                    update_blk.call(partial)
+                  elsif update_blk.present?
+                    if partial.is_a?(DiscourseAi::Completions::StructuredOutput)
+                      update_blk.call(partial, nil, :structured_output)
+                    else
+                      update_blk.call(partial)
+                    end
                   end
                 end
               end

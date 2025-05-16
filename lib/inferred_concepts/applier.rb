@@ -125,8 +125,6 @@ module DiscourseAi
 
         response = bot.reply(context)
 
-        debugger
-
         matching_concepts = JSON.parse(response[0][0]).dig("matching_concepts")
 
         matching_concepts || []

@@ -3,6 +3,10 @@
 module DiscourseAi
   module Personas
     class ConceptFinder < Persona
+      def self.default_enabled
+        false
+      end
+
       def system_prompt
         existing_concepts = DiscourseAi::InferredConcepts::Manager.list_concepts(limit: 100)
         existing_concepts_text = ""
@@ -38,7 +42,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ key: "concepts", type: "array" }]
+        [{ "key" => "concepts", "type" => "array" }]
       end
     end
   end

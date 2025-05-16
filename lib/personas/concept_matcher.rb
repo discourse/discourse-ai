@@ -3,6 +3,10 @@
 module DiscourseAi
   module Personas
     class ConceptMatcher < Persona
+      def self.default_enabled
+        false
+      end
+
       def system_prompt
         <<~PROMPT.strip
           You are an advanced concept matching system that determines which concepts from a provided list are relevant to a piece of content.
@@ -32,7 +36,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ key: "matching_concepts", type: "array" }]
+        [{ "key" => "matching_concepts", "type" => "array" }]
       end
     end
   end

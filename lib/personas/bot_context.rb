@@ -17,11 +17,8 @@ module DiscourseAi
                     :context_post_ids,
                     :feature_name,
                     :resource_url,
-<<<<<<< HEAD
-                    :cancel_manager
-=======
+                    :cancel_manager,
                     :inferred_concepts
->>>>>>> 44391e27 (FEATURE: Extend inferred concepts to include posts)
 
       def initialize(
         post: nil,
@@ -39,11 +36,8 @@ module DiscourseAi
         context_post_ids: nil,
         feature_name: "bot",
         resource_url: nil,
-<<<<<<< HEAD
-        cancel_manager: nil
-=======
+        cancel_manager: nil,
         inferred_concepts: []
->>>>>>> 44391e27 (FEATURE: Extend inferred concepts to include posts)
       )
         @participants = participants
         @user = user
