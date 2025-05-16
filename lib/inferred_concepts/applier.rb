@@ -65,44 +65,6 @@ module DiscourseAi
         content
       end
 
-      # Comprehensive method to analyze a topic and apply concepts
-      def self.analyze_and_apply(topic)
-        return if topic.blank?
-
-        # Get content to analyze
-        content = topic_content_for_analysis(topic)
-
-        # Identify concepts
-        concept_names = Finder.identify_concepts(content)
-
-        # Create or find concepts in the database
-        concepts = Finder.create_or_find_concepts(concept_names)
-
-        # Apply concepts to the topic
-        apply_to_topic(topic, concepts)
-
-        concepts
-      end
-
-      # Comprehensive method to analyze a post and apply concepts
-      def self.analyze_and_apply_post(post)
-        return if post.blank?
-
-        # Get content to analyze
-        content = post_content_for_analysis(post)
-
-        # Identify concepts
-        concept_names = Finder.identify_concepts(content)
-
-        # Create or find concepts in the database
-        concepts = Finder.create_or_find_concepts(concept_names)
-
-        # Apply concepts to the post
-        apply_to_post(post, concepts)
-
-        concepts
-      end
-
       # Match a topic with existing concepts
       def self.match_existing_concepts(topic)
         return [] if topic.blank?
@@ -158,7 +120,7 @@ module DiscourseAi
 
         # Use the ConceptMatcher persona to match concepts
         llm = DiscourseAi::Completions::Llm.default_llm
-        persona = DiscourseAi::Personas::ConceptMatcher.new(concept_list: concept_list)
+        persona = DiscourseAi::Personas::ConceptMatcher.new
         context =
           DiscourseAi::Personas::BotContext.new(
             messages: [{ type: :user, content: user_message }],
