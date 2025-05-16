@@ -9,15 +9,7 @@ module DiscourseAi
       def self.apply_to_topic(topic, concepts)
         return if topic.blank? || concepts.blank?
 
-        concepts.each do |concept|
-          # Use the join table to associate the concept with the topic
-          # Avoid duplicates by using find_or_create_by
-          ActiveRecord::Base.connection.execute(<<~SQL)
-            INSERT INTO topics_inferred_concepts (topic_id, inferred_concept_id, created_at, updated_at)
-            VALUES (#{topic.id}, #{concept.id}, NOW(), NOW())
-            ON CONFLICT (topic_id, inferred_concept_id) DO NOTHING
-          SQL
-        end
+        topic.inferred_concepts << concepts
       end
 
       # Associates the provided concepts with a post
@@ -26,15 +18,7 @@ module DiscourseAi
       def self.apply_to_post(post, concepts)
         return if post.blank? || concepts.blank?
 
-        concepts.each do |concept|
-          # Use the join table to associate the concept with the post
-          # Avoid duplicates by using find_or_create_by
-          ActiveRecord::Base.connection.execute(<<~SQL)
-            INSERT INTO posts_inferred_concepts (post_id, inferred_concept_id, created_at, updated_at)
-            VALUES (#{post.id}, #{concept.id}, NOW(), NOW())
-            ON CONFLICT (post_id, inferred_concept_id) DO NOTHING
-          SQL
-        end
+        post.inferred_concepts << concepts
       end
 
       # Extracts content from a topic for concept analysis
@@ -119,21 +103,32 @@ module DiscourseAi
         user_message = content
 
         # Use the ConceptMatcher persona to match concepts
-        llm = DiscourseAi::Completions::Llm.default_llm
-        persona = DiscourseAi::Personas::ConceptMatcher.new
+
+        persona =
+          AiPersona
+            .all_personas(enabled_only: false)
+            .find { |persona| persona.id == SiteSetting.inferred_concepts_match_persona.to_i }
+            .new
+
+        llm = LlmModel.find(persona.class.default_llm_id)
+
+        input = { type: :user, content: content }
+
         context =
           DiscourseAi::Personas::BotContext.new(
-            messages: [{ type: :user, content: user_message }],
+            messages: [input],
             user: Discourse.system_user,
-            inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
+            inferred_concepts: concept_list,
           )
 
-        prompt = persona.craft_prompt(context)
-        response = llm.completion(prompt, extract_json: true)
+        bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
 
-        return [] unless response.success?
+        response = bot.reply(context)
 
-        matching_concepts = response.parsed_output["matching_concepts"]
+        debugger
+
+        matching_concepts = JSON.parse(response[0][0]).dig("matching_concepts")
+
         matching_concepts || []
       end
     end
