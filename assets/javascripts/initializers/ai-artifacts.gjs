@@ -18,12 +18,24 @@ function initializeAiArtifacts(api) {
             "data-ai-artifact-version"
           );
 
+          const dataAttributes = {};
+          for (const attr of artifactElement.attributes) {
+            if (
+              attr.name.startsWith("data-") &&
+              attr.name !== "data-ai-artifact-id" &&
+              attr.name !== "data-ai-artifact-version"
+            ) {
+              dataAttributes[attr.name] = attr.value;
+            }
+          }
+
           helper.renderGlimmer(
             artifactElement,
             <template>
               <AiArtifact
                 @artifactId={{artifactId}}
                 @artifactVersion={{artifactVersion}}
+                @dataAttributes={{dataAttributes}}
               />
             </template>
           );
