@@ -1,6 +1,7 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
+import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import htmlClass from "discourse/helpers/html-class";
@@ -88,6 +89,15 @@ export default class AiArtifactComponent extends Component {
     }`;
   }
 
+  @action
+  setDataAttributes(element) {
+    if (this.args.dataAttributes) {
+      Object.entries(this.args.dataAttributes).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+      });
+    }
+  }
+
   <template>
     {{#if this.expanded}}
       {{htmlClass "ai-artifact-expanded"}}
@@ -118,6 +128,7 @@ export default class AiArtifactComponent extends Component {
           src={{this.artifactUrl}}
           width="100%"
           frameborder="0"
+          {{didInsert this.setDataAttributes}}
         ></iframe>
       {{/if}}
       {{#unless this.requireClickToRun}}

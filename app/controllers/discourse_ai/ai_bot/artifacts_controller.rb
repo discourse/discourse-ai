@@ -42,6 +42,21 @@ module DiscourseAi
               <style>
                 #{artifact.css}
               </style>
+              <script>
+                window._discourse_user_data = {
+                  #{current_user ? "username: #{current_user.username.to_json}" : "username: null"}
+                };
+                window.discourseArtifactReady = new Promise(resolve => {
+                  window._resolveArtifactData = resolve;
+                });
+                window.addEventListener('message', function(event) {
+                  if (event.data && event.data.type === 'discourse-artifact-data') {
+                    window.discourseArtifactData = event.data.dataset || {};
+                    Object.assign(window.discourseArtifactData, window._discourse_user_data);
+                    window._resolveArtifactData(window.discourseArtifactData);
+                  }
+                });
+              </script>
             </head>
             <body>
               #{artifact.html}
@@ -74,6 +89,19 @@ module DiscourseAi
             </head>
             <body>
               <iframe sandbox="allow-scripts allow-forms" height="100%" width="100%" srcdoc="#{ERB::Util.html_escape(untrusted_html)}" frameborder="0"></iframe>
+              <script>
+                document.querySelector('iframe').addEventListener('load', function() {
+                  try {
+                    const iframeWindow = this.contentWindow;
+                    const message = { type: 'discourse-artifact-data', dataset: {} };
+
+                    if (window.frameElement && window.frameElement.dataset) {
+                      Object.assign(message.dataset, window.frameElement.dataset);
+                    }
+                    iframeWindow.postMessage(message, '*');
+                  } catch (e) { console.error('Error passing data to artifact:', e); }
+                });
+              </script>
             </body>
           </html>
         HTML
