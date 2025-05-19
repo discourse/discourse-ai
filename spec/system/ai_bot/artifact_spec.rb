@@ -48,30 +48,26 @@ RSpec.describe "AI Artifact with Data Attributes", type: :system do
     find(".ai-artifact__click-to-run button").click
 
     artifact_element_selector = ".ai-artifact[data-ai-artifact-id='#{ai_artifact.id}']"
-    iframe_selector = "#{artifact_element_selector} iframe"
+    artifact_element = find(artifact_element_selector)
 
-    expect(page).to have_css(iframe_selector)
-
-    iframe_element = find(iframe_selector)
-    expect(iframe_element["data-custom-message"]).to eq("hello-from-post")
-    expect(iframe_element["data-post-author-id"]).to eq(author.id.to_s)
+    expect(artifact_element).to have_css("iframe[data-custom-message='hello-from-post']")
+    expect(artifact_element).to have_css("iframe[data-post-author-id='#{author.id}']")
 
     # note: artifacts are within nested iframes for security reasons
-    page.within_frame(iframe_element) do
+    iframe_element = artifact_element.find("iframe")
+    within_frame(iframe_element) do
       inner_iframe = find("iframe")
-      page.within_frame(inner_iframe) do
-        data_display_element = find("#data-display")
+      within_frame(inner_iframe) do
+        data_selector = "#data-display"
+        expect(page).to have_selector(data_selector, text: /.+/)
+        expect(page).to have_no_selector(data_selector, text: "Waiting for data...")
+        expect(page).to have_no_selector(data_selector, text: "Error:")
 
-        expect(data_display_element.text).not_to be_empty
-        expect(data_display_element.text).not_to eq("Waiting for data...")
-        expect(data_display_element.text).not_to include("Error:")
-
-        artifact_data_json = data_display_element.text
+        artifact_data_json = find(data_selector).text
         artifact_data = JSON.parse(artifact_data_json)
 
         expect(artifact_data["customMessage"]).to eq("hello-from-post")
         expect(artifact_data["postAuthorId"]).to eq(author.id.to_s)
-
         expect(artifact_data["username"]).to eq(user.username)
       end
     end
