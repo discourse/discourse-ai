@@ -450,7 +450,8 @@ body.has-ai-conversations-sidebar {
     button:not(
         .create,
         .share-ai-conversation-button,
-        .topic-admin-menu-trigger
+        .topic-admin-menu-trigger,
+        .ai-conversations__invite-button
       ) {
       display: none;
     }
