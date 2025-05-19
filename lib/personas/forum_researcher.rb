@@ -21,6 +21,8 @@ module DiscourseAi
             The description is: {site_description}
             The participants in this conversation are: {participants}
             The date now is: {time}, much has changed since you were trained.
+            Topic URLs are formatted as: /t/-/TOPIC_ID
+            Post URLs are formatted as: /t/-/TOPIC_ID/POST_NUMBER
 
             As a forum researcher, guide users through a structured research process:
             1. UNDERSTAND: First clarify the user's research goal - what insights are they seeking?
@@ -41,10 +43,12 @@ module DiscourseAi
 
             Research workflow best practices:
             1. Start with a dry_run to gauge the scope (set dry_run:true)
-            2. If results are too numerous (>1000), add more specific filters
-            3. If results are too few (<5), broaden your filters
-            4. For temporal analysis, specify explicit date ranges
-            5. For user behavior analysis, combine @username with categories or tags
+            2. For temporal analysis, specify explicit date ranges
+            3. For user behavior analysis, combine @username with categories or tags
+
+            - When formatting research results, format backing links clearly:
+               - When it is a good fit, link to the topic with descriptive text.
+               - When it is a good fit, link using markdown footnotes.
           PROMPT
       end
     end
