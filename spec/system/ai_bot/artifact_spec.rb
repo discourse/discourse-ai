@@ -50,22 +50,21 @@ RSpec.describe "AI Artifact with Data Attributes", type: :system do
     artifact_element_selector = ".ai-artifact[data-ai-artifact-id='#{ai_artifact.id}']"
     iframe_selector = "#{artifact_element_selector} iframe"
 
-    expect(page).to have_css(iframe_selector, wait: 10) # Wait for iframe to appear
+    expect(page).to have_css(iframe_selector)
 
     iframe_element = find(iframe_selector)
     expect(iframe_element["data-custom-message"]).to eq("hello-from-post")
     expect(iframe_element["data-post-author-id"]).to eq(author.id.to_s)
 
+    # note: artifacts are within nested iframes for security reasons
     page.within_frame(iframe_element) do
       inner_iframe = find("iframe")
       page.within_frame(inner_iframe) do
         data_display_element = find("#data-display")
 
-        try_until_success(timeout: 10) do
-          expect(data_display_element.text).not_to be_empty
-          expect(data_display_element.text).not_to eq("Waiting for data...")
-          expect(data_display_element.text).not_to include("Error:")
-        end
+        expect(data_display_element.text).not_to be_empty
+        expect(data_display_element.text).not_to eq("Waiting for data...")
+        expect(data_display_element.text).not_to include("Error:")
 
         artifact_data_json = data_display_element.text
         artifact_data = JSON.parse(artifact_data_json)
