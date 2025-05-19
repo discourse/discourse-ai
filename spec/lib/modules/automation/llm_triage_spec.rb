@@ -128,6 +128,26 @@ describe DiscourseAi::Automation::LlmTriage do
     expect(post.user.silenced?).to eq(true)
   end
 
+  it "can handle flag + hide" do
+    DiscourseAi::Completions::Llm.with_prepared_responses(["bad"]) do
+      triage(
+        post: post,
+        model: "custom:#{llm_model.id}",
+        system_prompt: "test %%POST%%",
+        search_for_text: "bad",
+        flag_post: true,
+        flag_type: :review_hide,
+        automation: nil,
+      )
+    end
+
+    reviewable = ReviewablePost.last
+
+    expect(reviewable.target).to eq(post)
+    expect(reviewable.reviewable_scores.first.reason).to include("bad")
+    expect(post.reload).to be_hidden
+  end
+
   it "does not silence the user if the flag fails" do
     Fabricate(
       :post_action,

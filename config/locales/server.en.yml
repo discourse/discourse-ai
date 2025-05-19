@@ -3,6 +3,7 @@ en:
     ai:
       flag_types:
         review: "Add post to review queue"
+        review_hide: "Add post to review queue and hide post"
         spam: "Flag as spam and hide post"
         spam_silence: "Flag as spam, hide post and silence user"
     scriptables:

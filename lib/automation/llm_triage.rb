@@ -148,6 +148,11 @@ module DiscourseAi
                 reason: score_reason,
                 force_review: true,
               )
+
+              # We cannot do this through the PostActionCreator because hiding a post is reserved for auto action flags.
+              # Those flags are off_topic, inappropiate, and spam. We want a more generic type for triage, so none of those
+              # fit here.
+              post.hide!(PostActionType.types[:notify_moderators]) if flag_type == :review_hide
             end
           end
         end
