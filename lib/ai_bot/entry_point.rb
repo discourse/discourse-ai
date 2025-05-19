@@ -140,7 +140,8 @@ module DiscourseAi
           :topic_view,
           :is_bot_pm,
           include_condition: -> do
-            object.personal_message && object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
+            object.topic && object.personal_message &&
+              object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
           end,
         ) { true }
 
@@ -148,7 +149,7 @@ module DiscourseAi
           :post,
           :llm_name,
           include_condition: -> do
-            object.topic.private_message? && object.custom_fields[POST_AI_LLM_NAME_FIELD]
+            object&.topic&.private_message? && object.custom_fields[POST_AI_LLM_NAME_FIELD]
           end,
         ) { object.custom_fields[POST_AI_LLM_NAME_FIELD] }
 
