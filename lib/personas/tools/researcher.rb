@@ -166,8 +166,15 @@ module DiscourseAi
 
         def goal_system_prompt(goals)
           <<~TEXT
-            You are a researcher tool designed to analyze and extract information from forum content.
+            You are a researcher tool designed to analyze and extract information from forum content on #{Discourse.base_url}.
+            The current date is #{::Time.zone.now.strftime("%a, %d %b %Y %H:%M %Z")}.
             Your task is to process the provided content and extract relevant information based on the specified goal.
+            When extracting content ALWAYS include the following:
+             - Multiple citations using Markdown
+               - Topic citations: Interesting fact [ref](/t/-/TOPIC_ID)
+               - Post citations: Interesting fact [ref](/t/-/TOPIC_ID/POST_NUMBER)
+             - Relevent quotes from the direct source content
+             - Relevant dates and times from the content
 
             Your goal is: #{goals}
           TEXT
