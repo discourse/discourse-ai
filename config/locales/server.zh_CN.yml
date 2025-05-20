@@ -260,9 +260,6 @@ zh_CN:
         settings_explorer:
           name: 设置资源管理器
           description: "专门帮助探索 Discourse 站点设置的 AI 机器人"
-        researcher:
-          name: 研究者
-          description: "具有 Google 访问权限的可以为您研究信息的 AI 机器人"
         creative:
           name: 创作者
           description: "无需外部集成的专门从事创作任务的 AI 机器人"
@@ -279,6 +276,9 @@ zh_CN:
       summarizing: "正在总结话题"
       searching: "搜索：'%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "最大结果数"
         google:
           base_query:
             name: "基本搜索查询"

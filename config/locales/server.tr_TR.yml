@@ -262,9 +262,6 @@ tr_TR:
         settings_explorer:
           name: Ayarlar Gezgini
           description: "Discourse site ayarlarını keşfetmeye yardımcı olma konusunda uzmanlaşmış AI Bot"
-        researcher:
-          name: Araştırmacı
-          description: "Sizin için bilgi araştırabilen Google erişimli AI Bot"
         creative:
           name: Yaratıcı
           description: "Yaratıcı görevlerde uzmanlaşmış, harici entegrasyonları olmayan AI Bot"
@@ -281,6 +278,9 @@ tr_TR:
       summarizing: "Konu özetleniyor"
       searching: "Aranıyor: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Maksimum sonuç sayısı"
         google:
           base_query:
             name: "Temel Arama Sorgusu"

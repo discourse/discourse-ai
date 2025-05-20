@@ -320,9 +320,18 @@ de:
         rag_conversation_chunks_help: "Die Anzahl der Chunks, die für die RAG-Modell-Suche verwendet werden. Erhöhen, um die Menge des Kontexts zu steigern, den die KI verwenden kann."
         persona_description: "Personas sind eine leistungsstarke Funktion, mit der du das Verhalten der KI-Engine in deinem Discourse-Forum anpassen kannst. Sie fungieren als „Systemnachricht“, welche die Antworten und Interaktionen der KI steuert und dazu beiträgt, ein persönlicheres und ansprechenderes Erlebnis für Benutzer zu schaffen."
         response_format:
+          title: "JSON-Antwortformat"
+          no_format: "Kein JSON-Format angegeben"
           open_modal: "Bearbeiten"
           modal:
+            root_title: "Antwortstruktur"
             key_title: "Schlüssel"
+        examples:
+          title: Beispiele
+          new: Neues Beispiel
+          remove: Beispiel löschen
+          collapsable_title: "Beispiel #%{number}"
+          model: "Antwort des Modells"
         list:
           enabled: "KI-Bot?"
         ai_bot:
@@ -514,6 +523,7 @@ de:
           disable_streaming: "Streaming-Vervollständigung deaktivieren (Streaming-Anfragen in Nicht-Streaming-Anfragen umwandeln)"
           reasoning_effort: "Argumentationsaufwand (gilt nur für Argumentationsmodelle)"
           enable_reasoning: "Argumentation aktivieren (gilt nur für Sonnet 3.7)"
+          thinking_tokens: "Anzahl der zum Denken verwendeten Token"
           reasoning_tokens: "Anzahl der für die Argumentation verwendeten Token"
           disable_temperature: "Temperatur deaktivieren (einige Denkmodelle unterstützen keine Temperatur)"
           disable_top_p: "Top P deaktivieren (einige Denkmodelle unterstützen Top P nicht)"
@@ -701,6 +711,9 @@ de:
           disclaimer: "Generative KI kann Fehler machen. Überprüfe wichtige Informationen."
           placeholder: "Stell eine Frage ..."
           new: "Neue Frage"
+          min_input_length_message:
+            one: "Nachricht muss mindestens 1 Zeichen lang sein"
+            other: "Nachricht muss mindestens %{count} Zeichen lang sein"
           messages_sidebar_title: "Unterhaltungen"
           today: "Heute"
           last_7_days: "Letzte 7 Tage"

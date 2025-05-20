@@ -262,9 +262,6 @@ fi:
         settings_explorer:
           name: Asetusapuri
           description: "Tekoälybotti, joka on erikoistunut auttamaan Discoursen sivustoasetuksiin tutustumisessa"
-        researcher:
-          name: Tutkija
-          description: "Tekoälybotti, joka voi käyttää Googlea ja etsiä tietoja puolestasi"
         creative:
           name: Luova
           description: "Tekoälybotti ilman ulkoisia integraatioita, joka on erikoistuneet luoviin tehtäviin"
@@ -281,6 +278,9 @@ fi:
       summarizing: "Laaditaan yhteenvetoa ketjusta"
       searching: "Haetaan: \"%{query}\""
       tool_options:
+        researcher:
+          max_results:
+            name: "Tulosten enimmäismäärä"
         google:
           base_query:
             name: "Perushakukysely"

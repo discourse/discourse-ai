@@ -260,9 +260,6 @@ ja:
         settings_explorer:
           name: 設定エクスプローラー
           description: "Discourse のサイト設定のナビ支援を専門とする AI ボット"
-        researcher:
-          name: リサーチャー
-          description: "ユーザーに代わって Google にアクセスして情報を調査できる AI ボット"
         creative:
           name: クリエイティブ
           description: "外部統合のないクリエイティブ系タスクを専門とする AI ボット"
@@ -279,6 +276,9 @@ ja:
       summarizing: "トピックの要約を生成中"
       searching: "検索中: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "結果の最大件数"
         google:
           base_query:
             name: "ベース検索クエリ"

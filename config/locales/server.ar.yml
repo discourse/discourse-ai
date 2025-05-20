@@ -261,9 +261,6 @@ ar:
         settings_explorer:
           name: مستكشف الإعدادات
           description: "روبوت ذكاء اصطناعي متخصص في المساعدة في استكشاف إعدادات موقع Discourse"
-        researcher:
-          name: الباحث
-          description: "روبوت ذكاء اصطناعي مزوَّد بإمكانية الوصول إلى Google، ويمكنه البحث عن المعلومات نيابةً عنك"
         creative:
           name: المبدع
           description: "روبوت ذكاء اصطناعي من دون تكاملات خارجية متخصصة في المهام الإبداعية"
@@ -280,6 +277,9 @@ ar:
       summarizing: "جارٍ تلخيص الموضوع"
       searching: "جارٍ البحث عن: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "الحد الأقصى لعدد النتائج"
         google:
           base_query:
             name: "استعلام البحث الأساسي"

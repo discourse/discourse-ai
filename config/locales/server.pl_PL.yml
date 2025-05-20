@@ -141,9 +141,6 @@ pl_PL:
         settings_explorer:
           name: Eksplorator ustawień
           description: "Bot AI specjalizujący się w eksploracji ustawień strony Discourse"
-        researcher:
-          name: Badacz
-          description: "Bot AI z dostępem do Google, który może wyszukiwać informacje za Ciebie"
         creative:
           name: Kreatywny
           description: "Bot AI bez zewnętrznych integracji specjalizujący się w zadaniach kreatywnych"
@@ -156,6 +153,9 @@ pl_PL:
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Maksymalna liczba wyników"
         update_artifact:
           update_algorithm:
             description: "Poproś LLM o pełne zastąpienie lub użyj diff do aktualizacji"

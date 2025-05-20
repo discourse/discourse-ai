@@ -171,9 +171,6 @@ uk:
         settings_explorer:
           name: Провідник налаштувань
           description: "AI Bot спеціалізується на допомозі досліджувати налаштування сайту Discourse"
-        researcher:
-          name: Дослідник
-          description: "AI Bot з доступом в Google, щоб дослідити інформацію для вас"
         creative:
           name: Творчий
           description: "AI Bot без зовнішніх інтеграцій, що спеціалізуються на творчих завданнях"
@@ -187,6 +184,9 @@ uk:
       summarizing: "Підведення підсумків теми"
       searching: "Пошук: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Максимальна кількість результатів"
         google:
           base_query:
             name: "Базовий пошуковий запит"
