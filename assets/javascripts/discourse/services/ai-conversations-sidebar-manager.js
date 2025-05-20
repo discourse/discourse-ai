@@ -42,8 +42,7 @@ export default class AiConversationsSidebarManager extends Service {
     if (this.sidebarState.isForcingSidebar && !isAdminSidebarActive) {
       this.sidebarState.setPanel(MAIN_PANEL); // Return to main sidebar panel
       this.sidebarState.isForcingSidebar = false;
+      this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
     }
-
-    this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
   }
 }
