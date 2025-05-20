@@ -712,6 +712,10 @@ en:
           name: "Share AI conversation"
           title: "Share this AI conversation publicly"
 
+        invite_ai_conversation:
+          button: "Invite"
+          title: "Invite to AI conversation"
+
         ai_label: "AI"
         ai_title: "Conversation with AI"
 
