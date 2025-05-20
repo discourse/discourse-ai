@@ -262,9 +262,6 @@ nl:
         settings_explorer:
           name: Instellingenverkenner
           description: "AI-bot gespecialiseerd in het verkennen van Discourse-site-instellingen"
-        researcher:
-          name: Onderzoeker
-          description: "AI-bot met toegang tot Google die informatie voor je kan onderzoeken"
         creative:
           name: Creatief
           description: "AI-bot zonder externe integraties, gespecialiseerd in creatieve taken"
@@ -281,6 +278,9 @@ nl:
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Maximaal aantal resultaten"
         google:
           base_query:
             name: "Basiszoekquery"

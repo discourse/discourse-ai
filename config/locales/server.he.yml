@@ -283,9 +283,6 @@ he:
         settings_explorer:
           name: סייר הגדרות
           description: "בוט בינה מלאכותית שמתמחה בסיור בהגדרות אתר ה־Discourse"
-        researcher:
-          name: מחקר
-          description: "בוט בינה מלאכותית עם גישה ל־Google שיכול לגשת למידע מחקרי בשבילך"
         creative:
           name: יצירה
           description: "בוט בינה מלאכותית ללא שילובים חיצוניים שמתמחה ביצירת משימות יצירתיות"
@@ -306,6 +303,9 @@ he:
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       tool_options:
+        researcher:
+          max_results:
+            name: "מספר תוצאות מרבי"
         create_artifact:
           creator_llm:
             name: "LLM"
@@ -363,6 +363,7 @@ he:
         javascript_evaluator: "שערוך JavaScript"
         create_image: "יצירת תמונה"
         edit_image: "עריכת תמונה"
+        researcher_dry_run: "המחקר בהכנה"
       tool_help:
         read_artifact: "לקרוא תוצר דפדפני באמצעות בוט הבינה המלאכותית"
         update_artifact: "עדכון תוצר דפדפני באמצעות בוט הבינה המלאכותית"
@@ -433,6 +434,16 @@ he:
           other: "נמצאו %{count} <a href='%{url}'>תוצאות</a> לחיפוש אחר ‚%{query}’"
         setting_context: "נקרא הקשר עבור: %{setting_name}"
         schema: "%{tables}"
+        researcher_dry_run:
+          one: "יעדים מוצעים: %{goals}\n\nנמצא פוסט שעונה על ‚%{filter}’"
+          two: "יעדים מוצעים: %{goals}\n\nנמצאו שני פוסטים שעונים על ‚%{filter}’"
+          many: "יעדים מוצעים: %{goals}\n\nנמצאו %{count} פוסטים שעונים על ‚%{filter}’"
+          other: "יעדים מוצעים: %{goals}\n\nנמצאו %{count} פוסטים שעונים על ‚%{filter}’"
+        researcher:
+          one: "במהלך מחקר: %{goals}\n\nנמצא פוסט שעונה על ‚%{filter}’"
+          two: "במהלך מחקר: %{goals}\n\nנמצאו שני פוסטים שעונים על ‚%{filter}’"
+          many: "במהלך מחקר: %{goals}\n\nנמצאו %{count} פוסטים שעונים על ‚%{filter}’"
+          other: "במהלך מחקר: %{goals}\n\nנמצאו %{count} פוסטים שעונים על ‚%{filter}’"
         search_settings:
           one: "נמצאה תוצאה לחיפוש אחר ‚%{query}’"
           two: "נמצאו שתי תוצאות לחיפוש אחר ‚%{query}’"

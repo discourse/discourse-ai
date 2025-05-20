@@ -262,9 +262,6 @@ fr:
         settings_explorer:
           name: Explorateur de paramètres
           description: "Bot IA spécialisé dans l'aide à l'exploration des paramètres du site Discourse"
-        researcher:
-          name: Chercheur
-          description: "Bot IA avec accès Google qui peut rechercher des informations pour vous"
         creative:
           name: Créatif
           description: "Bot IA sans intégration externe spécialisé dans les tâches créatives"
@@ -281,6 +278,9 @@ fr:
       summarizing: "Synthèse du sujet"
       searching: "Recherche de : '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Nombre maximal de résultats"
         google:
           base_query:
             name: "Requête de recherche de base"

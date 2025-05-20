@@ -262,9 +262,6 @@ ru:
         settings_explorer:
           name: Обозреватель настроек
           description: "AI-бот, специализирующийся на помощи в изучении настроек сайта Discourse"
-        researcher:
-          name: Исследователь
-          description: "AI-бот с доступом к Google, который может искать для вас информацию"
         creative:
           name: Автор
           description: "AI-бот без внешних интеграций, специализирующийся на творческих задачах"
@@ -281,6 +278,9 @@ ru:
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"
       tool_options:
+        researcher:
+          max_results:
+            name: "Максимальное количество результатов"
         google:
           base_query:
             name: "Базовый поисковый запрос"

@@ -309,6 +309,13 @@ he:
           modal:
             root_title: "מבנה תגובה"
             key_title: "מפתח"
+        examples:
+          title: דוגמאות
+          new: דוגמה חדשה
+          remove: מחיקת דוגמה
+          collapsable_title: "דוגמה מס׳ %{number}"
+          user: "הודעת משתמש"
+          model: "תגובת המודל"
         list:
           enabled: "בוט בינה מלאכותית?"
         ai_bot:
@@ -714,6 +721,7 @@ he:
       discobot_discoveries:
         regular_results: "נושאים"
         tell_me_more: "אשמח לדעת עוד…"
+        continue_convo: "המשך בשיחה…"
         collapse: "צמצום"
         tooltip:
           header: "חיפוש מופעל בינה מלאכותית"

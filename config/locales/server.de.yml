@@ -106,6 +106,7 @@ de:
     ai_discord_search_mode: "Wähle den Suchmodus für die Discord-Suche aus"
     ai_discord_search_persona: "Die Persona, die für die Discord-Suche verwendet wird."
     ai_discord_allowed_guilds: "Discord-Gilden (Server), auf denen der Bot suchen darf"
+    ai_bot_enable_dedicated_ux: "Erlaube eine Vollbild-Bot-Oberfläche anstelle einer PM"
   reviewables:
     reasons:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
@@ -278,6 +279,11 @@ de:
         artist:
           name: Künstler
           description: "KI-Bot, spezialisiert auf die Erstellung von Bildern"
+        designer:
+          name: Designer
+        forum_researcher:
+          name: Forum-Rechercheur
+          description: "KI-Bot, spezialisiert auf gründliche Recherche für das Forum"
         sql_helper:
           name: SQL-Helfer
           description: "KI-Bot, der darauf spezialisiert ist, bei der Erstellung von SQL-Abfragen auf dieser Discourse-Instanz zu helfen"
@@ -285,8 +291,8 @@ de:
           name: Einstellungs-Explorer
           description: "KI-Bot, der darauf spezialisiert ist, die Einstellungen der Discourse-Website zu erkunden"
         researcher:
-          name: Forscher
-          description: "KI-Bot mit Google-Zugang, der Informationen für dich recherchieren kann"
+          name: Web-Rechercheur
+          description: "KI-Bot mit Google-Zugriff, der Webseiten sowohl suchen als auch lesen kann"
         creative:
           name: Kreativ
           description: "KI-Bot ohne externe Integrationen, spezialisiert auf kreative Aufgaben"
@@ -309,6 +315,16 @@ de:
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
+        researcher:
+          max_results:
+            name: "Maximale Anzahl von Ergebnissen"
+            description: "Maximale Anzahl von Ergebnissen, die in einen Filter aufgenommen werden"
+          include_private:
+            name: "Private einschließen"
+            description: "Private Themen in die Filter einbeziehen"
+          max_tokens_per_post:
+            name: "Maximale Token pro Beitrag"
+            description: "Maximale Anzahl von Token, die für jeden Beitrag im Filter verwendet werden"
         create_artifact:
           creator_llm:
             name: "LLM"
@@ -365,6 +381,7 @@ de:
         dall_e: "Bild generieren"
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
+        researcher: "Rechercheur"
       tool_help:
         read_artifact: "Lesen eines Webartefakts mit dem KI-Bot"
         update_artifact: "Aktualisiere ein Web-Artefakt mit dem KI-Bot"
@@ -389,6 +406,7 @@ de:
         dall_e: "Bild mit DALL-E 3 generieren"
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
+        researcher: "Foreninformationen mit dem KI-Bot recherchieren"
       tool_description:
         read_artifact: "Lesen eines Webartefakts mit dem KI-Bot"
         update_artifact: "Ein Web-Artefakt wurde mit dem KI-Bot aktualisiert"
@@ -423,6 +441,12 @@ de:
           other: "%{count} <a href='%{url}'>Ergebnisse</a> für „%{query}“ gefunden"
         setting_context: "Kontext wird gelesen für: %{setting_name}"
         schema: "%{tables}"
+        researcher_dry_run:
+          one: "Vorgeschlagene Ziele: %{goals}\n\n%{count} Beitrag passend zu „%{filter}“ gefunden"
+          other: "Vorgeschlagene Ziele: %{goals}\n\n%{count} Beiträge passend zu „%{filter}“ gefunden"
+        researcher:
+          one: "Recherche: %{goals}\n\n%{count} Beitrag passend zu „%{filter}“ gefunden"
+          other: "Recherche: %{goals}\n\n%{count} Beiträge passend zu „%{filter}“ gefunden"
         search_settings:
           one: "%{count} Ergebnis für „%{query}“ gefunden"
           other: "%{count} Ergebnisse für „%{query}“ gefunden"
@@ -468,6 +492,8 @@ de:
         one: "Wir konnten dieses Modell nicht löschen, weil es von %{settings} verwendet wird. Aktualisiere die Einstellung und versuche es erneut."
         other: "Wir konnten dieses Modell nicht löschen, weil %{settings} es verwenden. Aktualisiere die Einstellungen und versuche es erneut."
       cannot_edit_builtin: "Du kannst ein integriertes Modell nicht bearbeiten."
+    personas:
+      malformed_examples: "Die angegebenen Beispiele haben das falsche Format."
     embeddings:
       delete_failed: "Dieses Modell wird derzeit verwendet. Aktualisiere zuerst `ai embeddings selected model`."
       cannot_edit_builtin: "Du kannst ein integriertes Modell nicht bearbeiten."
