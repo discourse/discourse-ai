@@ -37,6 +37,24 @@ export default class DiffStreamer {
     const newText = result[newTextKey];
     this.isDone = !!result?.done;
 
+    if (this.isDone) {
+      this.isStreaming = false;
+      this.suggestion = newText;
+      this.words = [];
+
+      if (this.typingTimer) {
+        clearTimeout(this.typingTimer);
+        this.typingTimer = null;
+      }
+
+      const originalDiff = this.jsDiff.diffWordsWithSpace(
+        this.selectedText,
+        this.suggestion
+      );
+      this.diff = this.#formatDiffWithTags(originalDiff, false);
+      return;
+    }
+
     if (newText.length < this.lastResultText.length) {
       this.isThinking = false;
       // reset if text got shorter (e.g., reset or new input)
