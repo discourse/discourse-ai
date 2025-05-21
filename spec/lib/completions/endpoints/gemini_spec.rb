@@ -576,4 +576,28 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
       expect(parsed.dig(:generationConfig, :responseMimeType)).to eq("application/json")
     end
   end
+
+  it "includes model params in the request" do
+    response = <<~TEXT
+    data: {"candidates": [{"content": {"parts": [{"text": "Hello"}],"role": "model"}}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+    data: {"candidates": [{"content": {"parts": [{"text": "! This is a simple response"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+    data: {"candidates": [{"content": {"parts": [{"text": ""}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+  TEXT
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
+
+    output = []
+
+    stub_request(:post, url).with(
+      body: hash_including(generationConfig: { temperature: 0.2 }),
+    ).to_return(status: 200, body: response)
+
+    llm.generate("Hello", user: user, temperature: 0.2) { |partial| output << partial }
+
+    expect(output).to eq(["Hello", "! This is a simple response"])
+  end
 end

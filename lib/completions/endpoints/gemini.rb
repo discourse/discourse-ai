@@ -88,7 +88,7 @@ module DiscourseAi
             payload[:generationConfig].merge!(model_params.except(:response_format))
 
             # https://ai.google.dev/api/generate-content#generationconfig
-            gemini_schema = model_params[:response_format].dig(:json_schema, :schema)
+            gemini_schema = model_params.dig(:response_format, :json_schema, :schema)
 
             if gemini_schema.present?
               payload[:generationConfig][:responseSchema] = gemini_schema.except(
