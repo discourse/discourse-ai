@@ -810,6 +810,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
       data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "Hello!"}}
 
       event: content_block_delta
+      data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "\\n there"}}
+
+      event: content_block_delta
       data: {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "\\"}"}}
 
       event: content_block_stop
@@ -845,7 +848,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
         response_format: schema,
       ) { |partial, cancel| structured_output = partial }
 
-      expect(structured_output.read_buffered_property(:key)).to eq("Hello!")
+      expect(structured_output.read_buffered_property(:key)).to eq("Hello!\n there")
 
       expected_body = {
         model: "claude-3-opus-20240229",

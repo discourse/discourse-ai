@@ -334,8 +334,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
       {"is_finished":false,"event_type":"text-generation","text":"key"}
       {"is_finished":false,"event_type":"text-generation","text":"\\":\\""}
       {"is_finished":false,"event_type":"text-generation","text":"Hello!"}
+      {"is_finished":false,"event_type":"text-generation","text":"\\n there"}
       {"is_finished":false,"event_type":"text-generation","text":"\\"}"}|
-      {"is_finished":true,"event_type":"stream-end","response":{"response_id":"d235db17-8555-493b-8d91-e601f76de3f9","text":"{\\"key\\":\\"Hello!\\"}","generation_id":"eb889b0f-c27d-45ea-98cf-567bdb7fc8bf","chat_history":[{"role":"USER","message":"user1: hello"},{"role":"CHATBOT","message":"hi user"},{"role":"USER","message":"user1: thanks"},{"role":"CHATBOT","message":"You're welcome! Is there anything else I can help you with?"}],"token_count":{"prompt_tokens":29,"response_tokens":14,"total_tokens":43,"billed_tokens":28},"meta":{"api_version":{"version":"1"},"billed_units":{"input_tokens":14,"output_tokens":14}}},"finish_reason":"COMPLETE"}
+      {"is_finished":true,"event_type":"stream-end","response":{"response_id":"d235db17-8555-493b-8d91-e601f76de3f9","text":"{\\"key\\":\\"Hello! \\n there\\"}","generation_id":"eb889b0f-c27d-45ea-98cf-567bdb7fc8bf","chat_history":[{"role":"USER","message":"user1: hello"},{"role":"CHATBOT","message":"hi user"},{"role":"USER","message":"user1: thanks"},{"role":"CHATBOT","message":"You're welcome! Is there anything else I can help you with?"}],"token_count":{"prompt_tokens":29,"response_tokens":14,"total_tokens":43,"billed_tokens":28},"meta":{"api_version":{"version":"1"},"billed_units":{"input_tokens":14,"output_tokens":14}}},"finish_reason":"COMPLETE"}
     TEXT
 
     parsed_body = nil
@@ -366,6 +367,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     )
     expect(parsed_body[:message]).to eq("user1: thanks")
 
-    expect(structured_output.read_buffered_property(:key)).to eq("Hello!")
+    expect(structured_output.read_buffered_property(:key)).to eq("Hello!\n there")
   end
 end

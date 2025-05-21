@@ -28,17 +28,21 @@ module DiscourseAi
         @broken
       end
 
-      def <<(json)
+      def <<(raw_json)
         # llm could send broken json
         # in that case just deal with it later
         # don't stream
         return if @broken
 
         begin
-          @parser << json
+          @parser << raw_json
         rescue DiscourseAi::Completions::ParserError
-          @broken = true
-          return
+          # Note: We're parsing JSON content that was itself embedded as a string inside another JSON object.
+          # During the outer JSON.parse, any escaped control characters (like "\\n") are unescaped to real characters ("\n"),
+          # which corrupts the inner JSON structure when passed to the parser here.
+          # To handle this, we retry parsing with the string JSON-escaped again (`.dump[1..-2]`) if the first attempt fails.
+          try_escape_and_parse(raw_json)
+          return if @broken
         end
 
         if @parser.state == :start_string && @current_key
@@ -47,6 +51,20 @@ module DiscourseAi
         end
 
         @current_key = nil if @parser.state == :end_value
+      end
+
+      private
+
+      def try_escape_and_parse(raw_json)
+        if raw_json.blank? || !raw_json.is_a?(String)
+          @broken = true
+          return
+        end
+        # Escape the string as JSON and remove surrounding quotes
+        escaped_json = raw_json.dump[1..-2]
+        @parser << escaped_json
+      rescue DiscourseAi::Completions::ParserError
+        @broken = true
       end
     end
   end
