@@ -524,6 +524,9 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
               key: {
                 type: "string",
               },
+              num: {
+                type: "integer",
+              },
             },
             required: ["key"],
             additionalProperties: false,
@@ -541,7 +544,19 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
         data: {"candidates": [{"content": {"parts": [{"text": "Hello!"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
 
-        data: {"candidates": [{"content": {"parts": [{"text": "\\"}"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+        data: {"candidates": [{"content": {"parts": [{"text": "\\n there"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "\\","}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "\\""}],"role": "model"}}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+        
+        data: {"candidates": [{"content": {"parts": [{"text": "num"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "\\":"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "42"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
+
+        data: {"candidates": [{"content": {"parts": [{"text": "}"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
 
         data: {"candidates": [{"finishReason": "MALFORMED_FUNCTION_CALL"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
 
@@ -565,7 +580,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         structured_response = partial
       end
 
-      expect(structured_response.read_buffered_property(:key)).to eq("Hello!")
+      expect(structured_response.read_buffered_property(:key)).to eq("Hello!\n there")
+      expect(structured_response.read_buffered_property(:num)).to eq(42)
 
       parsed = JSON.parse(req_body, symbolize_names: true)
 

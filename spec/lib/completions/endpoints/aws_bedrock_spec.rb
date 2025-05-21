@@ -574,6 +574,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
           { type: "content_block_delta", delta: { text: "key" } },
           { type: "content_block_delta", delta: { text: "\":\"" } },
           { type: "content_block_delta", delta: { text: "Hello!" } },
+          { type: "content_block_delta", delta: { text: "\n There" } },
           { type: "content_block_delta", delta: { text: "\"}" } },
           { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
         ].map { |message| encode_message(message) }
@@ -607,7 +608,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         }
         expect(JSON.parse(request.body)).to eq(expected)
 
-        expect(structured_output.read_buffered_property(:key)).to eq("Hello!")
+        expect(structured_output.read_buffered_property(:key)).to eq("Hello!\n There")
       end
     end
   end
