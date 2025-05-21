@@ -145,6 +145,7 @@ export default class ModalDiffModal extends Component {
                 "streamable-content"
                 (if this.isStreaming "streaming")
                 (if @model.showResultAsDiff "inline-diff")
+                (if this.diffStreamer.isThinking "thinking")
               }}
             >
               {{~#if @model.showResultAsDiff~}}
