@@ -83,14 +83,48 @@ article.streaming .cooked {
 @keyframes mark-blink {
   0%,
   100% {
-    border-color: var(--highlight-high);
+    border-color: transparent;
   }
 
   50% {
-    border-color: transparent;
+    border-color: var(--highlight-high);
   }
+}
+
+@keyframes fade-in-highlight {
+  from {
+    opacity: 0.5;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+mark.highlight {
+  background-color: var(--highlight-high);
+  animation: fade-in-highlight 0.5s ease-in-out forwards;
 }
 
 .composer-ai-helper-modal__suggestion.thinking mark.highlight {
   animation: mark-blink 1s step-start 0s infinite;
+  animation-name: mark-blink;
+}
+
+.composer-ai-helper-modal__loading {
+  white-space: pre-wrap;
+}
+
+.composer-ai-helper-modal__suggestion.inline-diff {
+  white-space: pre-wrap;
+
+  del:last-child {
+    text-decoration: none;
+    background-color: transparent;
+    color: var(--primary-low-mid);
+  }
+
+  .diff-inner {
+    display: inline;
+  }
 }
