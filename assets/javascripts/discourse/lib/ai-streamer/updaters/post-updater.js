@@ -12,13 +12,15 @@ export default class PostUpdater extends StreamUpdater {
 
   constructor(postStream, postId) {
     super();
+
     this.postStream = postStream;
     this.postId = postId;
     this.post = postStream.findLoadedPost(postId);
+    const topicId = postStream.topic.id;
 
-    if (this.post) {
+    if (this.post && topicId) {
       this.postElement = document.querySelector(
-        `#post_${this.post.post_number}`
+        `.topic-area[data-topic-id="${topicId}"] #post_${this.post.post_number}`
       );
     }
   }
@@ -57,6 +59,10 @@ export default class PostUpdater extends StreamUpdater {
   }
 
   async setCooked(value) {
+    if (!this.postElement) {
+      return;
+    }
+
     this.post.set("cooked", value);
 
     (await loadMorphlex()).morphInner(
