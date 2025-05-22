@@ -27,6 +27,7 @@ function initializeAiHelperTrigger(api) {
       icon: "discourse-sparkles",
       title: "discourse_ai.ai_helper.context_menu.trigger",
       preventFocus: true,
+      hideShortcutInTitle: true,
       shortcut: "ALT+P",
       shortcutAction: (toolbarEvent) => {
         if (toolbarEvent.getText().length === 0) {
