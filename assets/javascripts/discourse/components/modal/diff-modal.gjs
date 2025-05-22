@@ -137,7 +137,6 @@ export default class ModalDiffModal extends Component {
   }
 
   <template>
-    {{log this.prefersRichEditor}}
     <DModal
       class="composer-ai-helper-modal"
       @title={{i18n "discourse_ai.ai_helper.context_menu.changes"}}
