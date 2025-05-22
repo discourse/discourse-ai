@@ -18,7 +18,7 @@ export default class PostUpdater extends StreamUpdater {
     this.post = postStream.findLoadedPost(postId);
     const topicId = postStream.topic.id;
 
-    if (this.post && topicId) {
+    if (this.post) {
       this.postElement = document.querySelector(
         `.topic-area[data-topic-id="${topicId}"] #post_${this.post.post_number}`
       );
