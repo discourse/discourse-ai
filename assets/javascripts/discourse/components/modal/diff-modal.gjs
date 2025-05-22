@@ -20,7 +20,6 @@ import AiIndicatorWave from "../ai-indicator-wave";
 
 export default class ModalDiffModal extends Component {
   @service currentUser;
-  @service siteSettings;
   @service messageBus;
 
   @tracked loading = false;
