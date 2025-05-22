@@ -4,6 +4,8 @@ import loadJSDiff from "discourse/lib/load-js-diff";
 import { parseAsync } from "discourse/lib/text";
 
 const DEFAULT_CHAR_TYPING_DELAY = 30;
+const STREAMING_DIFF_TRUNCATE_THRESHOLD = 0.1;
+const STREAMING_DIFF_TRUNCATE_BUFFER = 10;
 
 export default class DiffStreamer {
   @tracked isStreaming = false;
@@ -122,6 +124,53 @@ export default class DiffStreamer {
     return maybeUnfinishedImage || maybeUnfinishedLink;
   }
 
+  // this is public to make testing easier
+  // is makes it easier to do a "streaming diff" where we want to ensure diff
+  // is focused on the beginning of the text instead of taking the entire body
+  // into account.
+  // This ensures that we do not make mistakes and present wildly different diffs
+  // to what we would stablize on at the end of the stream.
+  streamingDiff(original, suggestion) {
+    const maxDiffLength = Math.floor(
+      suggestion.length +
+        suggestion.length * STREAMING_DIFF_TRUNCATE_THRESHOLD +
+        STREAMING_DIFF_TRUNCATE_BUFFER
+    );
+    const head = original.slice(0, maxDiffLength);
+    const tail = original.slice(maxDiffLength);
+
+    const diffArray = this.jsDiff.diffWordsWithSpace(head, suggestion);
+
+    if (tail.length > 0) {
+      // if last in the array is added, and previous is removed then flip them
+      let last = diffArray[diffArray.length - 1];
+      let secondLast = diffArray[diffArray.length - 2];
+
+      if (last.added && secondLast.removed) {
+        diffArray.pop();
+        diffArray.pop();
+        diffArray.push(last);
+        diffArray.push(secondLast);
+
+        last = secondLast;
+        secondLast = diffArray[diffArray.length - 2];
+      }
+
+      if (!last.removed) {
+        last = {
+          added: false,
+          removed: true,
+          value: "",
+        };
+        diffArray.push(last);
+      }
+
+      last.value = last.value + tail;
+    }
+
+    return diffArray;
+  }
+
   async #streamNextChar() {
     if (this.currentWordIndex < this.words.length) {
       const currentToken = this.words[this.currentWordIndex];
@@ -134,7 +183,7 @@ export default class DiffStreamer {
         this.currentWordIndex++;
         this.currentCharIndex = 0;
 
-        const originalDiff = this.jsDiff.diffWordsWithSpace(
+        const originalDiff = this.streamingDiff(
           this.selectedText,
           this.suggestion
         );
