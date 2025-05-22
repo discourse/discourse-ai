@@ -12,6 +12,7 @@ import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
+import { escapeExpression } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
 import DiffStreamer from "../../lib/diff-streamer";
 import SmoothStreamer from "../../lib/smooth-streamer";
@@ -23,7 +24,8 @@ export default class ModalDiffModal extends Component {
 
   @tracked loading = false;
   @tracked finalResult = "";
-  @tracked diffStreamer = new DiffStreamer(this.args.model.selectedText);
+  @tracked selectedText = escapeExpression(this.args.model.selectedText);
+  @tracked diffStreamer = new DiffStreamer(this.selectedText);
   @tracked suggestion = "";
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -34,6 +36,16 @@ export default class ModalDiffModal extends Component {
   constructor() {
     super(...arguments);
     this.suggestChanges();
+  }
+
+  get diffResult() {
+    if (this.diffStreamer.diff?.length > 0) {
+      return this.diffStreamer.diff;
+    }
+
+    // Prevents flash by showing the
+    // original text when the diff is empty
+    return this.selectedText;
   }
 
   get isStreaming() {
@@ -93,7 +105,7 @@ export default class ModalDiffModal extends Component {
         data: {
           location: "composer",
           mode: this.args.model.mode,
-          text: this.args.model.selectedText,
+          text: this.selectedText,
           custom_prompt: this.args.model.customPromptValue,
           force_default_locale: true,
         },
@@ -109,7 +121,7 @@ export default class ModalDiffModal extends Component {
 
     if (this.suggestion) {
       this.args.model.toolbarEvent.replaceText(
-        this.args.model.selectedText,
+        this.selectedText,
         this.suggestion
       );
     }
@@ -119,10 +131,7 @@ export default class ModalDiffModal extends Component {
         ? this.finalResult
         : this.diffStreamer.suggestion;
     if (this.args.model.showResultAsDiff && finalResult) {
-      this.args.model.toolbarEvent.replaceText(
-        this.args.model.selectedText,
-        finalResult
-      );
+      this.args.model.toolbarEvent.replaceText(this.selectedText, finalResult);
     }
   }
 
@@ -133,7 +142,11 @@ export default class ModalDiffModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        <div {{didInsert this.subscribe}} {{willDestroy this.unsubscribe}}>
+        <div
+          {{didInsert this.subscribe}}
+          {{willDestroy this.unsubscribe}}
+          class="text-preview"
+        >
           {{#if this.loading}}
             <div class="composer-ai-helper-modal__loading">
               {{~@model.selectedText~}}
@@ -149,9 +162,7 @@ export default class ModalDiffModal extends Component {
               }}
             >
               {{~#if @model.showResultAsDiff~}}
-                <span class="diff-inner">{{htmlSafe
-                    this.diffStreamer.diff
-                  }}</span>
+                <span class="diff-inner">{{htmlSafe this.diffResult}}</span>
               {{else}}
                 {{#if this.smoothStreamer.isStreaming}}
                   <CookText

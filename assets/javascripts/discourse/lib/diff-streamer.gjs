@@ -11,7 +11,7 @@ export default class DiffStreamer {
   @tracked isStreaming = false;
   @tracked words = [];
   @tracked lastResultText = "";
-  @tracked diff = "";
+  @tracked diff = this.selectedText;
   @tracked suggestion = "";
   @tracked isDone = false;
   @tracked isThinking = false;
