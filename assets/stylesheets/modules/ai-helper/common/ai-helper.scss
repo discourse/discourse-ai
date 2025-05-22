@@ -1,6 +1,9 @@
 .composer-ai-helper-modal {
   .text-preview,
   .inline-diff {
+    font-family: var(--d-font-family--monospace);
+    font-variant-ligatures: none;
+
     ins {
       background-color: var(--success-low);
       text-decoration: none;
