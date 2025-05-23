@@ -80,6 +80,7 @@ RSpec.describe Jobs::StreamComposerHelper do
                 text: input,
                 prompt: prompt.name,
                 force_default_locale: true,
+                client_id: "123",
               )
             end
 
