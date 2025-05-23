@@ -125,9 +125,9 @@ RSpec.describe "AI Bot - Homepage", type: :system do
             )
 
           topic_page.visit_topic(pm)
-          link =
-            page.find("article[data-post-id='#{post_with_link.id}'] .cooked a[href='#{post_url}']")
-          link.click
+          page.find(
+            "article[data-post-id='#{post_with_link.id}'] .cooked a[href='#{post_url}']",
+          ).click
 
           try_until_success do
             expect(topic_page.current_topic).to eq(regular_topic)
