@@ -547,6 +547,67 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     end
   end
 
+  describe "forced tool use" do
+    it "can properly force tool use" do
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      request = nil
+
+      tools = [
+        {
+          name: "echo",
+          description: "echo something",
+          parameters: [
+            { name: "text", type: "string", description: "text to echo", required: true },
+          ],
+        },
+      ]
+
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "echo hello"],
+          tools: tools,
+          tool_choice: "echo",
+        )
+
+      # Mock response from Bedrock
+      content = {
+        content: [
+          {
+            type: "tool_use",
+            id: "toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7",
+            name: "echo",
+            input: {
+              text: "hello",
+            },
+          },
+        ],
+        usage: {
+          input_tokens: 25,
+          output_tokens: 15,
+        },
+      }.to_json
+
+      stub_request(
+        :post,
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke",
+      )
+        .with do |inner_request|
+          request = inner_request
+          true
+        end
+        .to_return(status: 200, body: content)
+
+      proxy.generate(prompt, user: user)
+
+      # Parse the request body
+      request_body = JSON.parse(request.body)
+
+      # Verify that tool_choice: "echo" is present
+      expect(request_body.dig("tool_choice", "name")).to eq("echo")
+    end
+  end
+
   describe "structured output via prefilling" do
     it "forces the response to be a JSON and using the given JSON schema" do
       schema = {

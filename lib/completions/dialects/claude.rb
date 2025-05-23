@@ -13,14 +13,13 @@ module DiscourseAi
         end
 
         class ClaudePrompt
-          attr_reader :system_prompt
-          attr_reader :messages
-          attr_reader :tools
+          attr_reader :system_prompt, :messages, :tools, :tool_choice
 
-          def initialize(system_prompt, messages, tools)
+          def initialize(system_prompt, messages, tools, tool_choice)
             @system_prompt = system_prompt
             @messages = messages
             @tools = tools
+            @tool_choice = tool_choice
           end
 
           def has_tools?
@@ -55,7 +54,7 @@ module DiscourseAi
           tools = nil
           tools = tools_dialect.translated_tools if native_tool_support?
 
-          ClaudePrompt.new(system_prompt.presence, interleving_messages, tools)
+          ClaudePrompt.new(system_prompt.presence, interleving_messages, tools, tool_choice)
         end
 
         def max_prompt_tokens

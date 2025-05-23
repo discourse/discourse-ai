@@ -770,6 +770,55 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     end
   end
 
+  describe "forced tool use" do
+    it "can properly force tool use" do
+      prompt =
+        DiscourseAi::Completions::Prompt.new(
+          "You are a bot",
+          messages: [type: :user, id: "user1", content: "echo hello"],
+          tools: [echo_tool],
+          tool_choice: "echo",
+        )
+
+      response_body = {
+        id: "msg_01RdJkxCbsEj9VFyFYAkfy2S",
+        type: "message",
+        role: "assistant",
+        model: "claude-3-haiku-20240307",
+        content: [
+          {
+            type: "tool_use",
+            id: "toolu_bdrk_014CMjxtGmKUtGoEFPgc7PF7",
+            name: "echo",
+            input: {
+              text: "hello",
+            },
+          },
+        ],
+        stop_reason: "end_turn",
+        stop_sequence: nil,
+        usage: {
+          input_tokens: 345,
+          output_tokens: 65,
+        },
+      }.to_json
+
+      parsed_body = nil
+      stub_request(:post, url).with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+      ).to_return(status: 200, body: response_body)
+
+      llm.generate(prompt, user: Discourse.system_user)
+
+      # Verify that tool_choice: "echo" is present
+      expect(parsed_body.dig(:tool_choice, :name)).to eq("echo")
+    end
+  end
+
   describe "structured output via prefilling" do
     it "forces the response to be a JSON and using the given JSON schema" do
       schema = {
