@@ -18,8 +18,8 @@ export default class AiConversationInvite extends Component {
 
   get participants() {
     const participants = [
-      ...this.header.topicInfo.details.allowed_users,
-      ...this.header.topicInfo.details.allowed_groups,
+      ...(this.header.topicInfo.details?.allowed_users ?? []),
+      ...(this.header.topicInfo.details?.allowed_groups ?? []),
     ];
     return participants;
   }
