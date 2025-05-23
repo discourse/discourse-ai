@@ -196,19 +196,6 @@ export default class DiffStreamer {
       }
 
       this.typingTimer = later(this, this.#streamNextChar, this.typingDelay);
-    } else {
-      if (!this.suggestion || !this.selectedText || !this.jsDiff) {
-        return;
-      }
-
-      const originalDiff = this.jsDiff.diffWordsWithSpace(
-        this.selectedText,
-        this.suggestion
-      );
-
-      this.typingTimer = null;
-      this.diff = this.#formatDiffWithTags(originalDiff, false);
-      this.isStreaming = false;
     }
   }
 
