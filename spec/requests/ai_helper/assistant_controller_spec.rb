@@ -2,6 +2,41 @@
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
   before { assign_fake_provider_to(:ai_helper_model) }
+  fab!(:newuser)
+  fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+
+  describe "#stream_suggestion" do
+    before do
+      Jobs.run_immediately!
+      SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_0]
+    end
+
+    it "is able to stream suggestions back on appropriate channel" do
+      sign_in(user)
+      messages =
+        MessageBus.track_publish("/discourse-ai/ai-helper/stream_composer_suggestion") do
+          results = [["hello ", "world"]]
+          DiscourseAi::Completions::Llm.with_prepared_responses(results) do
+            post "/discourse-ai/ai-helper/stream_suggestion.json",
+                 params: {
+                   text: "hello wrld",
+                   location: "composer",
+                   client_id: "1234",
+                   mode: CompletionPrompt::PROOFREAD,
+                 }
+
+            expect(response.status).to eq(200)
+          end
+        end
+
+      last_message = messages.last
+      expect(messages.all? { |m| m.client_ids == ["1234"] }).to eq(true)
+      expect(messages.all? { |m| m == last_message || !m.data[:done] }).to eq(true)
+
+      expect(last_message.data[:result]).to eq("hello world")
+      expect(last_message.data[:done]).to eq(true)
+    end
+  end
 
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
@@ -17,10 +52,8 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
 
     context "when logged in as an user without enough privileges" do
-      fab!(:user) { Fabricate(:newuser) }
-
       before do
-        sign_in(user)
+        sign_in(newuser)
         SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:staff]
       end
 
@@ -32,8 +65,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
 
     context "when logged in as an allowed user" do
-      fab!(:user)
-
       before do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
@@ -141,8 +172,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     fab!(:post_2) { Fabricate(:post, topic: topic, raw: "I love bananas") }
 
     context "when logged in as an allowed user" do
-      fab!(:user)
-
       before do
         sign_in(user)
         user.group_ids = [Group::AUTO_GROUPS[:trust_level_1]]
@@ -219,8 +248,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
 
     context "when logged in as an allowed user" do
-      fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
-
       before do
         sign_in(user)
 

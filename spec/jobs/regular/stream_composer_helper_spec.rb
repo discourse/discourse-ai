@@ -35,6 +35,7 @@ RSpec.describe Jobs::StreamComposerHelper do
               text: nil,
               prompt: prompt.name,
               force_default_locale: false,
+              client_id: "123",
             )
           end
 
@@ -58,6 +59,7 @@ RSpec.describe Jobs::StreamComposerHelper do
                 text: input,
                 prompt: prompt.name,
                 force_default_locale: true,
+                client_id: "123",
               )
             end
 
@@ -78,6 +80,7 @@ RSpec.describe Jobs::StreamComposerHelper do
                 text: input,
                 prompt: prompt.name,
                 force_default_locale: true,
+                client_id: "123",
               )
             end
 

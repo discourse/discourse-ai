@@ -8,6 +8,7 @@ module Jobs
       return unless args[:prompt]
       return unless user = User.find_by(id: args[:user_id])
       return unless args[:text]
+      return unless args[:client_id]
 
       prompt = CompletionPrompt.enabled_by_name(args[:prompt])
 
@@ -21,6 +22,7 @@ module Jobs
         user,
         "/discourse-ai/ai-helper/stream_composer_suggestion",
         force_default_locale: args[:force_default_locale],
+        client_id: args[:client_id],
       )
     end
   end

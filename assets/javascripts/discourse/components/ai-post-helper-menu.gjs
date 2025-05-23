@@ -242,6 +242,7 @@ export default class AiPostHelperMenu extends Component {
         text: this.args.data.selectedText,
         post_id: this.args.data.quoteState.postId,
         custom_prompt: this.customPromptValue,
+        client_id: this.messageBus.clientId,
       },
     });
 
