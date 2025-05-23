@@ -1,5 +1,5 @@
 import { tracked } from "@glimmer/tracking";
-import { later } from "@ember/runloop";
+import { cancel, later } from "@ember/runloop";
 import loadJSDiff from "discourse/lib/load-js-diff";
 import { parseAsync } from "discourse/lib/text";
 
@@ -45,7 +45,7 @@ export default class DiffStreamer {
       this.words = [];
 
       if (this.typingTimer) {
-        clearTimeout(this.typingTimer);
+        cancel(this.typingTimer);
         this.typingTimer = null;
       }
 
@@ -100,7 +100,7 @@ export default class DiffStreamer {
     this.currentCharIndex = 0;
     this.isStreaming = false;
     if (this.typingTimer) {
-      clearTimeout(this.typingTimer);
+      cancel(this.typingTimer);
       this.typingTimer = null;
     }
   }
@@ -254,6 +254,8 @@ export default class DiffStreamer {
 
   #formatDiffWithTags(diffArray, highlightLastWord = true) {
     const wordsWithType = [];
+    const output = [];
+
     diffArray.forEach((part) => {
       const tokens = part.value.match(/\S+|\s+/g) || [];
       tokens.forEach((token) => {
@@ -276,8 +278,6 @@ export default class DiffStreamer {
         }
       }
     }
-
-    const output = [];
 
     for (let i = 0; i <= lastWordIndex; i++) {
       const { text, type } = wordsWithType[i];

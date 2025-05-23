@@ -108,6 +108,7 @@ export default class ModalDiffModal extends Component {
           text: this.selectedText,
           custom_prompt: this.args.model.customPromptValue,
           force_default_locale: true,
+          client_id: this.messageBus.clientId,
         },
       });
     } catch (e) {

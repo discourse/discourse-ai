@@ -124,6 +124,10 @@ module DiscourseAi
           raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
         end
 
+        # to stream we must have an appropriate client_id
+        # otherwise we may end up streaming the data to the wrong client
+        raise Discourse::InvalidParameters.new(:client_id) if params[:client_id].blank?
+
         if location == "composer"
           Jobs.enqueue(
             :stream_composer_helper,
@@ -132,6 +136,7 @@ module DiscourseAi
             prompt: prompt.name,
             custom_prompt: params[:custom_prompt],
             force_default_locale: params[:force_default_locale] || false,
+            client_id: params[:client_id],
           )
         else
           post_id = get_post_param!
@@ -146,6 +151,7 @@ module DiscourseAi
             text: text,
             prompt: prompt.name,
             custom_prompt: params[:custom_prompt],
+            client_id: params[:client_id],
           )
         end
 

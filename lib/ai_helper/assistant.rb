@@ -166,7 +166,14 @@ module DiscourseAi
         result
       end
 
-      def stream_prompt(completion_prompt, input, user, channel, force_default_locale: false)
+      def stream_prompt(
+        completion_prompt,
+        input,
+        user,
+        channel,
+        force_default_locale: false,
+        client_id: nil
+      )
         streamed_diff = +""
         streamed_result = +""
         start = Time.now
@@ -178,7 +185,6 @@ module DiscourseAi
           force_default_locale: force_default_locale,
         ) do |partial_response, cancel_function|
           streamed_result << partial_response
-
           streamed_diff = parse_diff(input, partial_response) if completion_prompt.diff?
 
           # Throttle updates and check for safe stream points
@@ -186,7 +192,7 @@ module DiscourseAi
             sanitized = sanitize_result(streamed_result)
 
             payload = { result: sanitized, diff: streamed_diff, done: false }
-            publish_update(channel, payload, user)
+            publish_update(channel, payload, user, client_id: client_id)
             start = Time.now
           end
         end
@@ -195,7 +201,12 @@ module DiscourseAi
 
         sanitized_result = sanitize_result(streamed_result)
         if sanitized_result.present?
-          publish_update(channel, { result: sanitized_result, diff: final_diff, done: true }, user)
+          publish_update(
+            channel,
+            { result: sanitized_result, diff: final_diff, done: true },
+            user,
+            client_id: client_id,
+          )
         end
       end
 
@@ -238,8 +249,28 @@ module DiscourseAi
         result.gsub(SANITIZE_REGEX, "")
       end
 
-      def publish_update(channel, payload, user)
-        MessageBus.publish(channel, payload, user_ids: [user.id])
+      def publish_update(channel, payload, user, client_id: nil)
+        # when publishing we make sure we do not keep large backlogs on the channel
+        # and make sure we clear the streaming info after 60 seconds
+        # this ensures we do not bloat redis
+        if client_id
+          MessageBus.publish(
+            channel,
+            payload,
+            user_ids: [user.id],
+            client_ids: [client_id],
+            max_backlog_size: 2,
+            max_backlog_age: 60,
+          )
+        else
+          MessageBus.publish(
+            channel,
+            payload,
+            user_ids: [user.id],
+            max_backlog_size: 2,
+            max_backlog_age: 60,
+          )
+        end
       end
 
       def icon_map(name)
