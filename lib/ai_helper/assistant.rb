@@ -259,17 +259,10 @@ module DiscourseAi
             payload,
             user_ids: [user.id],
             client_ids: [client_id],
-            max_backlog_size: 2,
             max_backlog_age: 60,
           )
         else
-          MessageBus.publish(
-            channel,
-            payload,
-            user_ids: [user.id],
-            max_backlog_size: 2,
-            max_backlog_age: 60,
-          )
+          MessageBus.publish(channel, payload, user_ids: [user.id], max_backlog_age: 60)
         end
       end
 
