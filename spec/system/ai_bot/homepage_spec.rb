@@ -109,6 +109,33 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     before { SiteSetting.glimmer_post_stream_mode = value }
 
     context "when glimmer_post_stream_mode=#{value}" do
+      context "when mobile", mobile: true do
+        it "allows navigating from AI conversation to regular topic, and loads new post stream" do
+          regular_topic = Fabricate(:topic)
+          regular_post = Fabricate(:post, topic: regular_topic)
+
+          post_url = Topic.relative_url(regular_topic.id, regular_topic.slug)
+          post_with_link =
+            Fabricate(
+              :post,
+              topic: pm,
+              user: user,
+              post_number: 4,
+              raw: "This is a second reply by the user [link](#{post_url})",
+            )
+
+          topic_page.visit_topic(pm)
+          link =
+            page.find("article[data-post-id='#{post_with_link.id}'] .cooked a[href='#{post_url}']")
+          link.click
+
+          try_until_success do
+            expect(topic_page.current_topic).to eq(regular_topic)
+            expect(page).to have_css("article[data-post-id='#{regular_post.id}']")
+          end
+        end
+      end
+
       context "when `ai_bot_enable_dedicated_ux` is enabled" do
         it "allows uploading files to a new conversation" do
           ai_pm_homepage.visit
