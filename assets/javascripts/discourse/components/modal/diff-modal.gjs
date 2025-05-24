@@ -24,8 +24,8 @@ export default class ModalDiffModal extends Component {
 
   @tracked loading = false;
   @tracked finalResult = "";
-  @tracked selectedText = escapeExpression(this.args.model.selectedText);
-  @tracked diffStreamer = new DiffStreamer(this.selectedText);
+  @tracked escapedSelectedText = escapeExpression(this.args.model.selectedText);
+  @tracked diffStreamer = new DiffStreamer(this.args.model.selectedText);
   @tracked suggestion = "";
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -45,11 +45,16 @@ export default class ModalDiffModal extends Component {
 
     // Prevents flash by showing the
     // original text when the diff is empty
-    return this.selectedText;
+    return this.escapedSelectedText;
   }
 
   get isStreaming() {
-    return this.diffStreamer.isStreaming || this.smoothStreamer.isStreaming;
+    // diffStreamer stops "streaming" when it is finished with a chunk
+    return (
+      this.diffStreamer.isStreaming ||
+      !this.diffStreamer.isDone ||
+      this.smoothStreamer.isStreaming
+    );
   }
 
   get primaryBtnLabel() {
@@ -71,7 +76,7 @@ export default class ModalDiffModal extends Component {
   @bind
   unsubscribe() {
     const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
-    this.messageBus.subscribe(channel, this.updateResult);
+    this.messageBus.unsubscribe(channel, this.updateResult);
   }
 
   @action
@@ -105,7 +110,7 @@ export default class ModalDiffModal extends Component {
         data: {
           location: "composer",
           mode: this.args.model.mode,
-          text: this.selectedText,
+          text: this.args.model.selectedText,
           custom_prompt: this.args.model.customPromptValue,
           force_default_locale: true,
           client_id: this.messageBus.clientId,
@@ -122,7 +127,7 @@ export default class ModalDiffModal extends Component {
 
     if (this.suggestion) {
       this.args.model.toolbarEvent.replaceText(
-        this.selectedText,
+        this.args.model.selectedText,
         this.suggestion
       );
     }
@@ -131,8 +136,12 @@ export default class ModalDiffModal extends Component {
       this.finalResult?.length > 0
         ? this.finalResult
         : this.diffStreamer.suggestion;
+
     if (this.args.model.showResultAsDiff && finalResult) {
-      this.args.model.toolbarEvent.replaceText(this.selectedText, finalResult);
+      this.args.model.toolbarEvent.replaceText(
+        this.args.model.selectedText,
+        finalResult
+      );
     }
   }
 

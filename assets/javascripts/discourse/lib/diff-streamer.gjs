@@ -2,8 +2,9 @@ import { tracked } from "@glimmer/tracking";
 import { cancel, later } from "@ember/runloop";
 import loadJSDiff from "discourse/lib/load-js-diff";
 import { parseAsync } from "discourse/lib/text";
+import { escapeExpression } from "discourse/lib/utilities";
 
-const DEFAULT_CHAR_TYPING_DELAY = 30;
+const DEFAULT_CHAR_TYPING_DELAY = 10;
 const STREAMING_DIFF_TRUNCATE_THRESHOLD = 0.1;
 const STREAMING_DIFF_TRUNCATE_BUFFER = 10;
 
@@ -51,7 +52,7 @@ export default class DiffStreamer {
 
       const originalDiff = this.jsDiff.diffWordsWithSpace(
         this.selectedText,
-        this.suggestion
+        newText
       );
       this.diff = this.#formatDiffWithTags(originalDiff, false);
       return;
@@ -172,6 +173,10 @@ export default class DiffStreamer {
   }
 
   async #streamNextChar() {
+    if (!this.isStreaming || this.isDone) {
+      return;
+    }
+
     if (this.currentWordIndex < this.words.length) {
       const currentToken = this.words[this.currentWordIndex];
 
@@ -252,6 +257,7 @@ export default class DiffStreamer {
     return `<span>${text}</span>`;
   }
 
+  // returns an HTML safe diff (escaping all internals)
   #formatDiffWithTags(diffArray, highlightLastWord = true) {
     const wordsWithType = [];
     const output = [];
@@ -280,7 +286,8 @@ export default class DiffStreamer {
     }
 
     for (let i = 0; i <= lastWordIndex; i++) {
-      const { text, type } = wordsWithType[i];
+      let { text, type } = wordsWithType[i];
+      text = escapeExpression(text);
 
       if (/^\s+$/.test(text)) {
         output.push(text);
@@ -310,6 +317,7 @@ export default class DiffStreamer {
           i++;
         }
 
+        chunkText = escapeExpression(chunkText);
         output.push(this.#wrapChunk(chunkText, chunkType));
       }
     }
