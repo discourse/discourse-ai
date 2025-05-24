@@ -76,7 +76,7 @@ export default class ModalDiffModal extends Component {
   @bind
   unsubscribe() {
     const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
-    this.messageBus.subscribe(channel, this.updateResult);
+    this.messageBus.unsubscribe(channel, this.updateResult);
   }
 
   @action
