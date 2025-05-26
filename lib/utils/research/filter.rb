@@ -17,7 +17,7 @@ module DiscourseAi
           ::Search.word_to_date(str)
         end
 
-        attr_reader :term, :filters, :order, :guardian, :limit, :offset
+        attr_reader :term, :filters, :order, :guardian, :limit, :offset, :invalid_filters
 
         # Define all filters at class level
         register_filter(/\Astatus:open\z/i) do |relation, _, _|
@@ -206,7 +206,6 @@ module DiscourseAi
         end
 
         def initialize(term, guardian: nil, limit: nil, offset: nil)
-          @term = term.to_s
           @guardian = guardian || Guardian.new
           @limit = limit
           @offset = offset
@@ -214,8 +213,10 @@ module DiscourseAi
           @valid = true
           @order = :latest_post
           @topic_ids = nil
+          @invalid_filters = []
+          @term = term.to_s.strip
 
-          @term = process_filters(@term)
+          process_filters(@term)
         end
 
         def set_order!(order)
@@ -250,7 +251,7 @@ module DiscourseAi
           if @topic_ids.present?
             filtered =
               original_filtered.where(
-                "posts.topic_id IN (?) OR posts.id IN (?)",
+                "posts.topic_id IN (?) AND posts.id IN (?)",
                 @topic_ids,
                 filtered.select("posts.id"),
               )
@@ -275,7 +276,7 @@ module DiscourseAi
         private
 
         def process_filters(term)
-          return "" if term.blank?
+          return if term.blank?
 
           term
             .to_s
@@ -293,10 +294,8 @@ module DiscourseAi
                 end
               end
 
-              found ? nil : word
+              invalid_filters << word if !found
             end
-            .compact
-            .join(" ")
         end
       end
     end

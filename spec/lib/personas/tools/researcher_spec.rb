@@ -17,10 +17,23 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
 
   fab!(:topic_with_tags) { Fabricate(:topic, category: category, tags: [tag_research, tag_data]) }
   fab!(:post) { Fabricate(:post, topic: topic_with_tags) }
+  fab!(:another_post) { Fabricate(:post) }
 
   before { SiteSetting.ai_bot_enabled = true }
 
   describe "#invoke" do
+    it "can correctly filter to a topic id" do
+      researcher =
+        described_class.new(
+          { dry_run: true, filter: "topic:#{topic_with_tags.id}", goals: "analyze topic content" },
+          bot_user: bot_user,
+          llm: llm,
+          context: DiscourseAi::Personas::BotContext.new(user: user, post: post),
+        )
+      results = researcher.invoke(&progress_blk)
+      expect(results[:number_of_posts]).to eq(1)
+    end
+
     it "returns filter information and result count" do
       researcher =
         described_class.new(
@@ -61,6 +74,20 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
         )
 
       expect(researcher.options[:max_results]).to eq(50)
+    end
+
+    it "returns error for invalid filter fragments" do
+      researcher =
+        described_class.new(
+          { filter: "invalidfilter tag:research", goals: "analyze content" },
+          bot_user: bot_user,
+          llm: llm,
+          context: DiscourseAi::Personas::BotContext.new(user: user, post: post),
+        )
+
+      results = researcher.invoke(&progress_blk)
+
+      expect(results[:error]).to include("Invalid filter fragment")
     end
 
     it "returns correct results for non-dry-run with filtered posts" do
