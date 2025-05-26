@@ -19,7 +19,6 @@ export default class AiPostHelperTrigger extends Component {
   @tracked menuState = this.MENU_STATES.triggers;
   @tracked showMainButtons = true;
   @tracked showAiButtons = true;
-  @tracked originalPostHTML = null;
   @tracked postHighlighted = false;
   @tracked currentMenu = this.menu.getByIdentifier(
     "post-text-selection-toolbar"
@@ -45,7 +44,6 @@ export default class AiPostHelperTrigger extends Component {
       return;
     }
 
-    this.originalPostHTML = postElement.innerHTML;
     this.selectedText = this.args.outletArgs.data.quoteState.buffer;
 
     const selection = window.getSelection();
@@ -121,7 +119,15 @@ export default class AiPostHelperTrigger extends Component {
       return;
     }
 
-    postElement.innerHTML = this.originalPostHTML;
+    const highlightedSpans = postElement.querySelectorAll(
+      "span.ai-helper-highlighted-selection"
+    );
+
+    highlightedSpans.forEach((span) => {
+      const textNode = document.createTextNode(span.textContent);
+      span.parentNode.replaceChild(textNode, span);
+    });
+
     this.postHighlighted = false;
   }
 
