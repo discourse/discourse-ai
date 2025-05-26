@@ -540,7 +540,7 @@ en:
           provider_quantizations: "Order of provider quantizations (comma delimited list eg: fp16,fp8)"
           disable_streaming: "Disable streaming completions (convert streaming to non streaming requests)"
           reasoning_effort: "Reasoning effort (only applicable to reasoning models)"
-          enable_reasoning: "Enable reasoning (only applicable to Sonnet 3.7)"
+          enable_reasoning: "Enable reasoning (only applicable to reasoning models)"
           enable_thinking: "Enable thinking (only on applicable models eg: flash 2.5)"
           thinking_tokens: "Number of tokens used for thinking"
           reasoning_tokens: "Number of tokens used for reasoning"
