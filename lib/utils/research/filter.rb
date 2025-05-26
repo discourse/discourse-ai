@@ -249,12 +249,16 @@ module DiscourseAi
           end
 
           if @topic_ids.present?
-            filtered =
-              original_filtered.where(
-                "posts.topic_id IN (?) AND posts.id IN (?)",
-                @topic_ids,
-                filtered.select("posts.id"),
-              )
+            if original_filtered == filtered
+              filtered = original_filtered.where("posts.topic_id IN (?)", @topic_ids)
+            else
+              filtered =
+                original_filtered.where(
+                  "posts.topic_id IN (?) OR posts.id IN (?)",
+                  @topic_ids,
+                  filtered.select("posts.id"),
+                )
+            end
           end
 
           filtered = filtered.limit(@limit) if @limit.to_i > 0
