@@ -85,6 +85,16 @@ module DiscourseAi
               limit: max_results,
               guardian: guardian,
             )
+
+          if filter.invalid_filters.present?
+            return(
+              {
+                error:
+                  "Invalid filter fragment: #{filter.invalid_filters.join(" ")}\n\n#{self.class.filter_description}",
+              }
+            )
+          end
+
           @result_count = filter.search.count
 
           blk.call details
