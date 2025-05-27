@@ -39,10 +39,12 @@ body.has-ai-conversations-sidebar {
         .sidebar-section-link.date-heading {
           pointer-events: none;
           cursor: default;
-          color: var(--primary-500);
+          color: var(--d-sidebar-header-color);
           margin-top: 1em;
+          font-weight: bold;
           font-size: var(--font-down-2-rem);
           text-transform: uppercase;
+          letter-spacing: 0.05rem;
         }
 
         .sidebar-section-link {
