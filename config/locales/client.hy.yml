@@ -133,6 +133,8 @@ hy:
           response: "Արձագանք"
           next_log: "Հաջորդը"
           previous_log: "Նախորդը"
+        invite_ai_conversation:
+          button: "Հրավիրել"
         share_modal:
           copy: "Կրկնօրինակել"
         conversations:

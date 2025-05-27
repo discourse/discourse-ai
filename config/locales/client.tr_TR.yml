@@ -592,6 +592,8 @@ tr_TR:
         share_ai_conversation:
           name: "YZ konuşmasını paylaş"
           title: "Bu YZ konuşmasını herkese açık olarak paylaşın"
+        invite_ai_conversation:
+          button: "Davet et"
         ai_label: "YZ"
         ai_title: "YZ ile konuşma"
         share_modal:

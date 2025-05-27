@@ -607,6 +607,8 @@ zh_CN:
         share_ai_conversation:
           name: "分享 AI 对话"
           title: "公开分享此 AI 对话"
+        invite_ai_conversation:
+          button: "邀请"
         ai_label: "AI"
         ai_title: "与 AI 的对话"
         share_modal:

@@ -124,6 +124,8 @@ th:
           request: "ร้องขอ"
           next_log: "ต่อไป"
           previous_log: "ก่อนหน้า"
+        invite_ai_conversation:
+          button: "เชิญ"
         share_modal:
           copy: "คัดลอก"
         conversations:

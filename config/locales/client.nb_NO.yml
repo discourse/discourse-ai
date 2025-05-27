@@ -137,6 +137,8 @@ nb_NO:
           response: "Svar"
           next_log: "Neste"
           previous_log: "Forrige"
+        invite_ai_conversation:
+          button: "Inviter"
         share_modal:
           copy: "Kopier"
         conversations:

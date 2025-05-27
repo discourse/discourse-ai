@@ -234,6 +234,8 @@ id:
         share_ai_conversation:
           name: "Bagikan percakapan AI"
           title: "Bagikan percakapan AI ini secara publik"
+        invite_ai_conversation:
+          button: "Undang"
         ai_label: "AI"
         ai_title: "Percakapan dengan AI"
         share_modal:

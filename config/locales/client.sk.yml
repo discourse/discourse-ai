@@ -152,6 +152,8 @@ sk:
           response: "Odpoveď"
           next_log: "Ďalej"
           previous_log: "Predchádzajúci"
+        invite_ai_conversation:
+          button: "Pozvi"
         share_modal:
           copy: "Kopírovať"
         conversations:

@@ -130,6 +130,8 @@ et:
           response: "Vastus"
           next_log: "Järgmine"
           previous_log: "Eelmine"
+        invite_ai_conversation:
+          button: "Kutsu"
         share_modal:
           copy: "Kopeeri"
         conversations:

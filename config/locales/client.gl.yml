@@ -140,6 +140,8 @@ gl:
           response: "Resposta"
           next_log: "Seguinte"
           previous_log: "Anterior"
+        invite_ai_conversation:
+          button: "Convidar"
         share_modal:
           copy: "Copiar"
         conversations:

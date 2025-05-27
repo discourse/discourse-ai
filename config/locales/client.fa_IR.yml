@@ -187,6 +187,8 @@ fa_IR:
           response: "پاسخ"
           next_log: "بعدی"
           previous_log: "پیشین"
+        invite_ai_conversation:
+          button: "دعوت"
         ai_label: "هوش مصنوعی"
         share_modal:
           copy: "کپی"

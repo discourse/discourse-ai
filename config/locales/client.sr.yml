@@ -117,6 +117,8 @@ sr:
         debug_ai_modal:
           next_log: "Dalje"
           previous_log: "Prethodno"
+        invite_ai_conversation:
+          button: "Pozovite"
         share_modal:
           copy: "Kopija"
         conversations:

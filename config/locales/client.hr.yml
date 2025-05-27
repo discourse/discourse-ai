@@ -147,6 +147,8 @@ hr:
           response: "Odgovor"
           next_log: "Sljedeći"
           previous_log: "Predhodno"
+        invite_ai_conversation:
+          button: "Pozovite"
         share_modal:
           copy: "Kopija"
         conversations:

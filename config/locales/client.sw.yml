@@ -123,6 +123,8 @@ sw:
           response: "Mwitikio"
           next_log: "Ijayo"
           previous_log: "Uliopita"
+        invite_ai_conversation:
+          button: "Mualiko"
         share_modal:
           copy: "Nakili"
         conversations:

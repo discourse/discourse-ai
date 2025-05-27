@@ -150,6 +150,8 @@ ug:
           response: "ئىنكاس"
           next_log: "كېيىنكى"
           previous_log: "ئالدىنقى"
+        invite_ai_conversation:
+          button: "تەكلىپ"
         share_modal:
           copy: "كۆچۈر"
         conversations:

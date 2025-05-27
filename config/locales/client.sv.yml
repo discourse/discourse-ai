@@ -148,6 +148,8 @@ sv:
           response: "Svar"
           next_log: "Nästa"
           previous_log: "Föregående"
+        invite_ai_conversation:
+          button: "Bjud in"
         share_modal:
           copy: "Kopiera"
         conversations:

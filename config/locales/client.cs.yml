@@ -211,24 +211,69 @@ cs:
       ai_artifact:
         collapse_view_label: "Ukončení celé obrazovky (ESC nebo tlačítko Zpět)"
       ai_bot:
+        pm_warning: "Zprávy chatbotů s umělou inteligencí jsou pravidelně monitorovány moderátory."
         cancel_streaming: "Zastavit odpověď"
         default_pm_prefix: "[Nepojmenovaná SZ od AI bota]"
         shortcut_title: "Začněte SZ s AI botem"
         share: "Kopírovat konverzaci s AI"
+        conversation_shared: "Konverzace zkopírována"
+        debug_ai: "Zobrazit nezpracovaný požadavek a odpověď umělé inteligence"
+        sidebar_empty: "Zde se zobrazí historie konverzace s botem."
         debug_ai_modal:
+          title: "Zobrazit interakci s umělou inteligencí"
+          copy_request: "Kopírovat požadavek"
+          copy_response: "Kopírovat odpověď"
+          request_tokens: "Tokeny požadavku:"
+          response_tokens: "Tokeny odpovědi:"
           request: "Požadavek"
           response: "Odpověď"
           next_log: "Další"
           previous_log: "Předchozí"
+        share_full_topic_modal:
+          title: "Veřejně sdílet konverzaci"
+          share: "Sdílet a kopírovat odkaz"
+          update: "Aktualizovat a zkopírovat odkaz"
+          delete: "Odstranit sdílení"
+        share_ai_conversation:
+          name: "Sdílet konverzaci s AI"
+          title: "Sdílejte veřejně tuto konverzaci s umělou inteligencí"
+        invite_ai_conversation:
+          button: "Pozvat"
+          title: "Pozvat do konverzace s AI"
+        ai_title: "Konverzace s AI"
         share_modal:
+          title: "Kopírovat konverzaci s AI"
           copy: "Kopírovat"
+          context: "Interakce ke sdílení:"
+          share_tip: "Můžete také sdílet celou konverzaci."
         bot_names:
+          fake: "Falešný testovací bot"
+          claude-3-opus: "Claude 3 Opus"
+          claude-3-sonnet: "Claude 3 Sonet"
+          claude-3-haiku: "Haiku Claude 3"
+          cohere-command-r-plus: "Cohere Command R Plus"
+          gpt-4: "GPT-4"
+          gpt-4-turbo: "GPT-4 Turbo"
+          gpt-4o: "GPT-4 Omni"
+          gpt-3:
+            5-turbo: "GPT-3.5"
           claude-2: "Claude 2"
           gemini-1:
             5-pro: "Gemini"
           mixtral-8x7B-Instruct-V0:
             "1": "Mixtral-8x7B V0.1"
         conversations:
+          header: "S čím mohu pomoci?"
+          submit: "Odeslat otázku"
+          disclaimer: "Generativní umělá inteligence může dělat chyby. Ověřte si důležité informace."
+          placeholder: "Zeptejte se..."
+          new: "Nová otázka"
+          min_input_length_message:
+            one: "Zpráva musí mít 1 nebo více znaků"
+            few: "Zpráva musí mít %{count} nebo více znaků"
+            many: "Zpráva musí mít %{count} nebo více znaků"
+            other: "Zpráva musí mít %{count} nebo více znaků"
+          messages_sidebar_title: "Konverzace"
           today: "Dnes"
           last_7_days: "Posledních 7 dní"
           last_30_days: "Posledních 30 dní"

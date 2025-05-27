@@ -142,6 +142,8 @@ zh_TW:
           response: "回應"
           next_log: "下一步"
           previous_log: "舊"
+        invite_ai_conversation:
+          button: "邀請"
         share_modal:
           copy: "複製"
         conversations:

@@ -497,7 +497,8 @@ he:
           disable_native_tools: "השבתת תמיכה בבלי מובנה (להשתמש בכלים מבוססי XML)"
           provider_order: "סדר ספקים (רשימה מופרדת בפסיקים)"
           provider_quantizations: "סדר כימות הספקים (רשימה מופרדת בפסיקים, למשל: fp16,fp8)"
-          enable_reasoning: "הפעלת נימוק (תקף רק על Sonnet 3.7)"
+          reasoning_effort: "מאמץ נימוק (תקף רק על מודלים של נימוק)"
+          enable_thinking: "הפעלת חשיבה (רק במודלים תקפים לדוגמה: flash 2.5)"
           reasoning_tokens: "כמות אסימונים המשמשים לנימוק"
       related_topics:
         title: "נושאים קשורים"
@@ -631,6 +632,7 @@ he:
         share: "העתקת דיון עם בינה מלאכותית"
         conversation_shared: "הדיון הועתק"
         debug_ai: "הצגת בקשה ותגובה גולמיות לבינה המלאכותית"
+        sidebar_empty: "היסטוריית השיחה עם הבוט תופיע כאן."
         debug_ai_modal:
           title: "הצגת התכתובת מול הבינה המלאכותית"
           copy_request: "העתקת הבקשה"
@@ -649,6 +651,9 @@ he:
         share_ai_conversation:
           name: "שיתוף דיון עם בינה מלאכותית"
           title: "שיתוף שיחת בינה מלאכותית באופן ציבורי"
+        invite_ai_conversation:
+          button: "להזמין"
+          title: "הזמנה לשיחה עם בינה מלאכותית"
         ai_label: "בינה מלאכותית"
         ai_title: "דיון עם בינה מלאכותית"
         share_modal:
@@ -675,6 +680,7 @@ he:
         conversations:
           header: "איך אפשר לעזור?"
           submit: "הגשת שאלה"
+          disclaimer: "בינה מלאכותית מחוללת עלולה לשגות. כדאי לאמת פרטים חשובים."
           placeholder: "הגשת שאלה…"
           new: "שאלה חדשה"
           messages_sidebar_title: "שיחות"

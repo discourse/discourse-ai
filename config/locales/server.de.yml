@@ -9,6 +9,7 @@ de:
     ai:
       flag_types:
         review: "Beitrag zur Überprüfungswarteschlange hinzufügen"
+        review_hide: "Beitrag zur Warteschlange zur Überprüfung hinzufügen und Beitrag verstecken"
         spam: "Als Spam markieren und Beitrag verbergen"
         spam_silence: "Als Spam melden, Beitrag ausblenden und Benutzer stummschalten"
     scriptables:
@@ -58,6 +59,9 @@ de:
     ai_nsfw_flag_threshold_porn: "Schwellenwert, ab dem ein Bild, das als Porno eingestuft wird, als NSFW gilt."
     ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild, das als sexy eingestuft wird, als NSFW gilt."
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
+    ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Bilderstellung und -bearbeitung verwendet. Für GPT verwende die Registerkarte für die LLM-Konfiguration"
+    ai_openai_image_generation_url: "URL für die OpenAI-Bilderstellungs-API"
+    ai_openai_image_edit_url: "URL für die OpenAI-Bildbearbeitungs-API"
     ai_helper_enabled: "Aktiviere den KI-Helfer."
     composer_ai_helper_allowed_groups: "Benutzer dieser Gruppen sehen die KI-Helfer-Schaltfläche im Composer."
     ai_helper_allowed_in_pm: "Aktiviere den Composer-KI-Helfer in PN."
@@ -281,6 +285,7 @@ de:
           description: "KI-Bot, spezialisiert auf die Erstellung von Bildern"
         designer:
           name: Designer
+          description: "KI-Bot, spezialisiert auf die Erstellung und Bearbeitung von Bildern"
         forum_researcher:
           name: Forum-Rechercheur
           description: "KI-Bot, spezialisiert auf gründliche Recherche für das Forum"
@@ -381,7 +386,10 @@ de:
         dall_e: "Bild generieren"
         search_meta_discourse: "Meta-Discourse durchsuchen"
         javascript_evaluator: "JavaScript auswerten"
+        create_image: "Bild erstellen"
+        edit_image: "Bild bearbeiten"
         researcher: "Rechercheur"
+        researcher_dry_run: "Recherche vorbereiten"
       tool_help:
         read_artifact: "Lesen eines Webartefakts mit dem KI-Bot"
         update_artifact: "Aktualisiere ein Web-Artefakt mit dem KI-Bot"
@@ -398,6 +406,8 @@ de:
         time: "Zeit in verschiedenen Zeitzonen finden"
         summary: "Ein Thema zusammenfassen"
         image: "Bild mit Stable Diffusion generieren"
+        create_image: "Erstelle ein Bild mit dem Open AI GPT Bildmodell"
+        edit_image: "Bearbeite ein Bild mit dem Open AI GPT Bildmodell"
         google: "Bei Google nach einer Anfrage suchen"
         read: "Öffentliches Thema im Forum lesen"
         setting_context: "Kontext der Website-Einstellung nachschlagen"

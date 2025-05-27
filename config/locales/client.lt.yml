@@ -187,6 +187,8 @@ lt:
           response: "Atsakymas"
           next_log: "Kitas"
           previous_log: "Buvęs"
+        invite_ai_conversation:
+          button: "Kviesti"
         ai_label: "AI"
         share_modal:
           copy: "Kopijuoti"

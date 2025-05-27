@@ -586,6 +586,8 @@ ja:
         share_ai_conversation:
           name: "AI の会話を共有"
           title: "この AI の会話を公開共有する"
+        invite_ai_conversation:
+          button: "招待"
         ai_label: "AI"
         ai_title: "AI との会話"
         share_modal:
