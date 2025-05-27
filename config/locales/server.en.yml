@@ -56,6 +56,8 @@ en:
     ai_nsfw_flag_threshold_sexy: "Threshold for an image classified as sexy to be considered NSFW."
     ai_nsfw_models: "Models to use for NSFW inference."
 
+    ai_spam_detection_enabled: "Enable the AI spam detection module"
+
     ai_openai_api_key: "API key for OpenAI API. ONLY used for Image creation and edits. For GPT use the LLM config tab"
     ai_openai_image_generation_url: "URL for OpenAI image generation API"
     ai_openai_image_edit_url: "URL for OpenAI image edit API"
@@ -275,6 +277,7 @@ en:
       invalid_error_type: "Invalid error type provided"
       unexpected: "An unexpected error occured"
       bot_user_update_failed: "Failed to update the spam scanning bot user"
+      configuration_missing: "The AI spam detection configuration is missing. Add configuration in the 'Admin > Plugins > Discourse AI > Spam' before enabling."
 
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
