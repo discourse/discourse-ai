@@ -202,7 +202,7 @@ export default class AiPostHelperMenu extends Component {
       this._activeAiRequest = ajax("/discourse-ai/ai-helper/suggest", {
         method: "POST",
         data: {
-          mode: option.id,
+          mode: option.name,
           text: this.args.data.quoteState.buffer,
           custom_prompt: this.customPromptValue,
         },
@@ -238,7 +238,7 @@ export default class AiPostHelperMenu extends Component {
       method: "POST",
       data: {
         location: "post",
-        mode: option.id,
+        mode: option.name,
         text: this.args.data.selectedText,
         post_id: this.args.data.quoteState.postId,
         custom_prompt: this.customPromptValue,

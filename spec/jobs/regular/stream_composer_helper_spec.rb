@@ -15,13 +15,12 @@ RSpec.describe Jobs::StreamComposerHelper do
     end
 
     describe "validates params" do
-      let(:mode) { CompletionPrompt::PROOFREAD }
-      let(:prompt) { CompletionPrompt.find_by(id: mode) }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
 
       it "does nothing if there is no user" do
         messages =
           MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion") do
-            job.execute(user_id: nil, text: input, prompt: prompt.name, force_default_locale: false)
+            job.execute(user_id: nil, text: input, prompt: mode, force_default_locale: false)
           end
 
         expect(messages).to be_empty
@@ -33,7 +32,7 @@ RSpec.describe Jobs::StreamComposerHelper do
             job.execute(
               user_id: user.id,
               text: nil,
-              prompt: prompt.name,
+              prompt: mode,
               force_default_locale: false,
               client_id: "123",
             )
@@ -44,12 +43,10 @@ RSpec.describe Jobs::StreamComposerHelper do
     end
 
     context "when all params are provided" do
-      let(:mode) { CompletionPrompt::PROOFREAD }
-      let(:prompt) { CompletionPrompt.find_by(id: mode) }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
 
       it "publishes updates with a partial result" do
         proofread_result = "I like to eat pie for breakfast because it is delicious."
-        partial_result = "I"
 
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_result]) do
           messages =
@@ -57,7 +54,7 @@ RSpec.describe Jobs::StreamComposerHelper do
               job.execute(
                 user_id: user.id,
                 text: input,
-                prompt: prompt.name,
+                prompt: mode,
                 force_default_locale: true,
                 client_id: "123",
               )
@@ -65,7 +62,7 @@ RSpec.describe Jobs::StreamComposerHelper do
 
           partial_result_update = messages.first.data
           expect(partial_result_update[:done]).to eq(false)
-          expect(partial_result_update[:result]).to eq(partial_result)
+          expect(partial_result_update[:result]).to eq(proofread_result)
         end
       end
 
@@ -78,7 +75,7 @@ RSpec.describe Jobs::StreamComposerHelper do
               job.execute(
                 user_id: user.id,
                 text: input,
-                prompt: prompt.name,
+                prompt: mode,
                 force_default_locale: true,
                 client_id: "123",
               )

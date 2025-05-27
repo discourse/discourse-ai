@@ -18,7 +18,10 @@ module DiscourseAi
                     :feature_name,
                     :resource_url,
                     :cancel_manager,
-                    :inferred_concepts
+                    :inferred_concepts,
+                    :format_dates,
+                    :temporal_context,
+                    :user_language
 
       def initialize(
         post: nil,
@@ -37,13 +40,15 @@ module DiscourseAi
         feature_name: "bot",
         resource_url: nil,
         cancel_manager: nil,
-        inferred_concepts: []
+        inferred_concepts: [],
+        format_dates: false
       )
         @participants = participants
         @user = user
         @skip_tool_details = skip_tool_details
         @messages = messages
         @custom_instructions = custom_instructions
+        @format_dates = format_dates
 
         @message_id = message_id
         @channel_id = channel_id
@@ -78,6 +83,8 @@ module DiscourseAi
         participants
         resource_url
         inferred_concepts
+        user_language
+        temporal_context
       ]
 
       def lookup_template_param(key)
@@ -125,6 +132,8 @@ module DiscourseAi
           feature_name: @feature_name,
           resource_url: @resource_url,
           inferred_concepts: @inferred_concepts,
+          user_language: @user_language,
+          temporal_context: @temporal_context,
         }
       end
     end

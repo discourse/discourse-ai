@@ -62,7 +62,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when using custom prompt" do
-      let(:mode) { CompletionPrompt::CUSTOM_PROMPT }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT }
 
       let(:custom_prompt_input) { "Translate to French" }
       let(:custom_prompt_response) { "La pluie en Espagne reste principalement dans l'avion." }
@@ -94,7 +94,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when not a member of custom prompt group" do
-      let(:mode) { CompletionPrompt::CUSTOM_PROMPT }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT }
       before { SiteSetting.ai_helper_custom_prompts_allowed_groups = non_member_group.id.to_s }
 
       it "does not show custom prompt option" do
@@ -104,7 +104,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when using translation mode" do
-      let(:mode) { CompletionPrompt::TRANSLATE }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::TRANSLATE }
 
       let(:spanish_input) { "La lluvia en España se queda principalmente en el avión." }
 
@@ -163,7 +163,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     end
 
     context "when using the proofreading mode" do
-      let(:mode) { CompletionPrompt::PROOFREAD }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
 
       let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
 
@@ -182,7 +182,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggesting titles with AI title suggester" do
-    let(:mode) { CompletionPrompt::GENERATE_TITLES }
+    let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
 
     let(:titles) do
       "<item>Rainy Spain</item><item>Plane-Bound Delights</item><item>Mysterious Spain</item><item>Plane-Rain Chronicles</item><item>Unveiling Spain</item>"
@@ -330,7 +330,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when AI helper is disabled" do
-    let(:mode) { CompletionPrompt::GENERATE_TITLES }
+    let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
     before { SiteSetting.ai_helper_enabled = false }
 
     it "does not show the AI helper button in the composer toolbar" do
@@ -349,7 +349,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when user is not a member of AI helper allowed group" do
-    let(:mode) { CompletionPrompt::GENERATE_TITLES }
+    let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
     before { SiteSetting.composer_ai_helper_allowed_groups = non_member_group.id.to_s }
 
     it "does not show the AI helper button in the composer toolbar" do
@@ -368,7 +368,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   end
 
   context "when suggestion features are disabled" do
-    let(:mode) { CompletionPrompt::GENERATE_TITLES }
+    let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
     before { SiteSetting.ai_helper_enabled_features = "context_menu" }
 
     it "does not show suggestion buttons in the composer" do
@@ -398,7 +398,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       composer.click_toolbar_button("ai-helper-trigger")
 
       DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
-        ai_helper_menu.select_helper_model(CompletionPrompt::TRANSLATE)
+        ai_helper_menu.select_helper_model(DiscourseAi::AiHelper::Assistant::TRANSLATE)
         expect(ai_helper_menu).to have_no_context_menu
         expect(diff_modal).to be_visible
       end
