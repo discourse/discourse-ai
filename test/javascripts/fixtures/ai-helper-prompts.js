@@ -1,6 +1,5 @@
 export default [
   {
-    id: -301,
     name: "translate",
     translated_name: "Translate to English (US)",
     prompt_type: "text",
@@ -8,7 +7,6 @@ export default [
     location: ["composer", "post"],
   },
   {
-    id: -303,
     name: "proofread",
     translated_name: "Proofread text",
     prompt_type: "diff",
@@ -16,7 +14,6 @@ export default [
     location: ["composer", "post"],
   },
   {
-    id: -304,
     name: "markdown_table",
     translated_name: "Generate Markdown table",
     prompt_type: "diff",
@@ -24,7 +21,6 @@ export default [
     location: ["composer"],
   },
   {
-    id: -305,
     name: "custom_prompt",
     translated_name: "Custom Prompt",
     prompt_type: "diff",
@@ -32,7 +28,6 @@ export default [
     location: ["composer", "post"],
   },
   {
-    id: -306,
     name: "explain",
     translated_name: "Explain",
     prompt_type: "text",
@@ -40,7 +35,6 @@ export default [
     location: ["post"],
   },
   {
-    id: -307,
     name: "generate_titles",
     translated_name: "Suggest topic titles",
     prompt_type: "list",
@@ -48,19 +42,10 @@ export default [
     location: ["composer"],
   },
   {
-    id: -308,
     name: "illustrate_post",
     translated_name: "Illustrate Post",
     prompt_type: "list",
     icon: "images",
     location: ["composer"],
-  },
-  {
-    id: -309,
-    name: "detect_text_locale",
-    translated_name: "detect_text_locale",
-    prompt_type: "text",
-    icon: null,
-    location: [],
   },
 ];

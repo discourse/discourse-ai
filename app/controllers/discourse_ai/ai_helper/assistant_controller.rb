@@ -25,25 +25,24 @@ module DiscourseAi
         input = get_text_param!
         force_default_locale = params[:force_default_locale] || false
 
-        prompt = CompletionPrompt.find_by(id: params[:mode])
+        raise Discourse::InvalidParameters.new(:mode) if params[:mode].blank?
 
-        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-
-        if prompt.id == CompletionPrompt::CUSTOM_PROMPT
+        if params[:mode] == DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT
           raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
-
-          prompt.custom_instruction = params[:custom_prompt]
         end
 
-        return suggest_thumbnails(input) if prompt.id == CompletionPrompt::ILLUSTRATE_POST
+        if params[:mode] == DiscourseAi::AiHelper::Assistant::ILLUSTRATE_POST
+          return suggest_thumbnails(input)
+        end
 
         hijack do
           render json:
                    DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
-                     prompt,
+                     params[:mode],
                      input,
                      current_user,
                      force_default_locale: force_default_locale,
+                     custom_prompt: params[:custom_prompt],
                    ),
                  status: 200
         end
@@ -60,13 +59,10 @@ module DiscourseAi
           input = get_text_param!
         end
 
-        prompt = CompletionPrompt.enabled_by_name("generate_titles")
-        raise Discourse::InvalidParameters.new(:mode) if !prompt
-
         hijack do
           render json:
                    DiscourseAi::AiHelper::Assistant.new.generate_and_send_prompt(
-                     prompt,
+                     DiscourseAi::AiHelper::Assistant::GENERATE_TITLES,
                      input,
                      current_user,
                    ),
@@ -115,12 +111,12 @@ module DiscourseAi
         location = params[:location]
         raise Discourse::InvalidParameters.new(:location) if !location
 
-        prompt = CompletionPrompt.find_by(id: params[:mode])
+        raise Discourse::InvalidParameters.new(:mode) if params[:mode].blank?
+        if params[:mode] == DiscourseAi::AiHelper::Assistant::ILLUSTRATE_POST
+          return suggest_thumbnails(input)
+        end
 
-        raise Discourse::InvalidParameters.new(:mode) if !prompt || !prompt.enabled?
-        return suggest_thumbnails(input) if prompt.id == CompletionPrompt::ILLUSTRATE_POST
-
-        if prompt.id == CompletionPrompt::CUSTOM_PROMPT
+        if params[:mode] == DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT
           raise Discourse::InvalidParameters.new(:custom_prompt) if params[:custom_prompt].blank?
         end
 
@@ -133,7 +129,7 @@ module DiscourseAi
             :stream_composer_helper,
             user_id: current_user.id,
             text: text,
-            prompt: prompt.name,
+            prompt: params[:mode],
             custom_prompt: params[:custom_prompt],
             force_default_locale: params[:force_default_locale] || false,
             client_id: params[:client_id],
@@ -149,7 +145,7 @@ module DiscourseAi
             post_id: post.id,
             user_id: current_user.id,
             text: text,
-            prompt: prompt.name,
+            prompt: params[:mode],
             custom_prompt: params[:custom_prompt],
             client_id: params[:client_id],
           )

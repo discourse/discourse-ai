@@ -10,6 +10,7 @@ module Jobs
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
       limit = SiteSetting.ai_translation_backfill_rate
+
       return if limit == 0
 
       topics = Topic.where(locale: nil, deleted_at: nil).where("topics.user_id > 0")

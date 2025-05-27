@@ -339,6 +339,33 @@ en:
         concept_deduplicator:
           name: "Concept Deduplicator"
           description: "AI Bot specialized in deduplicating concepts"
+        custom_prompt:
+          name: "Custom Prompt"
+          description: "Default persona powering the AI helper's custom prompt feature"
+        smart_dates:
+          name: "Smart Dates"
+          description: "Default persona powering the AI helper's smart dates feature"
+        markdown_table_generator:
+          name: "Markdown Table Generator"
+          description: "Default persona powering the AI helper's generate Markdown table feature"
+        post_illustrator:
+          name: "Post Illustrator"
+          description: "Generates StableDiffusion prompts to power the AI helper's illustrate post feature"
+        proofreader:
+          name: "Proofreader"
+          description: "Default persona powering the AI helper's proofread text feature"
+        titles_generator:
+          name: "Titles Generator"
+          description: "Default persona powering the AI helper's suggest topic titles feature"
+        tutor:
+          name: "Tutor"
+          description: "Default persona powering the AI helper's explain feature"
+        translator:
+          name: "Translator"
+          description: "Default persona powering the AI helper's translator feature"
+        image_captioner:
+          name: "Image Captions"
+          description: "Default persona powering the AI helper's image caption feature"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"

@@ -10,19 +10,16 @@ module Jobs
       return unless args[:text]
       return unless args[:client_id]
 
-      prompt = CompletionPrompt.enabled_by_name(args[:prompt])
-
-      if prompt.id == CompletionPrompt::CUSTOM_PROMPT
-        prompt.custom_instruction = args[:custom_prompt]
-      end
+      helper_mode = args[:prompt]
 
       DiscourseAi::AiHelper::Assistant.new.stream_prompt(
-        prompt,
+        helper_mode,
         args[:text],
         user,
         "/discourse-ai/ai-helper/stream_composer_suggestion",
         force_default_locale: args[:force_default_locale],
         client_id: args[:client_id],
+        custom_prompt: args[:custom_prompt],
       )
     end
   end
