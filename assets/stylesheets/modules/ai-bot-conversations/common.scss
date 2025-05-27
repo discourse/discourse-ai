@@ -39,25 +39,20 @@ body.has-ai-conversations-sidebar {
         .sidebar-section-link.date-heading {
           pointer-events: none;
           cursor: default;
-          color: var(--primary-medium);
-          opacity: 0.8;
-          font-weight: 700;
+          color: var(--primary-500);
           margin-top: 1em;
-          font-size: var(--font-down-2);
+          font-size: var(--font-down-2-rem);
+          text-transform: uppercase;
         }
 
         .sidebar-section-link {
-          height: unset;
-          padding-block: 0.65em;
           font-size: var(--font-down-1);
-          letter-spacing: 0.35px;
-          border-radius: 0 var(--border-radius) var(--border-radius) 0;
 
           .sidebar-section-link-content-text {
             white-space: normal;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             overflow: hidden;
           }
         }
@@ -228,7 +223,7 @@ body.has-ai-conversations-sidebar {
       line-height: var(--line-height-medium);
 
       // optical centering for layout balance
-      @media screen and (min-height: 600px) {
+      @media screen and (height >= 600px) {
         margin-top: -6em;
       }
     }
