@@ -591,6 +591,8 @@ nl:
         share_ai_conversation:
           name: "AI-conversatie delen"
           title: "Deel deze AI-conversatie openbaar"
+        invite_ai_conversation:
+          button: "Uitnodigen"
         ai_label: "AI"
         ai_title: "Conversatie met AI"
         share_modal:

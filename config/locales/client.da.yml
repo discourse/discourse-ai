@@ -147,6 +147,8 @@ da:
           response: "Svar"
           next_log: "Næste"
           previous_log: "Forrige"
+        invite_ai_conversation:
+          button: "Invitér"
         share_modal:
           copy: "Kopier"
         conversations:

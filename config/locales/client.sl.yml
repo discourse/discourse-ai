@@ -137,6 +137,8 @@ sl:
           request: "Zahteva"
           next_log: "Naprej"
           previous_log: "Prejšnja"
+        invite_ai_conversation:
+          button: "Povabi"
         share_modal:
           copy: "Kopiraj"
         conversations:

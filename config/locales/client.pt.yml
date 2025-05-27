@@ -140,6 +140,8 @@ pt:
           response: "Resposta"
           next_log: "Próximo"
           previous_log: "Anterior"
+        invite_ai_conversation:
+          button: "Convidar"
         share_modal:
           copy: "Copiar"
         conversations:

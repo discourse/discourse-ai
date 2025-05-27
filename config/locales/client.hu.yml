@@ -150,6 +150,8 @@ hu:
           response: "Válasz"
           next_log: "Tovább"
           previous_log: "Vissza"
+        invite_ai_conversation:
+          button: "Meghívás"
         share_modal:
           copy: "Másolás"
         conversations:

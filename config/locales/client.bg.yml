@@ -134,6 +134,8 @@ bg:
           request: "Заявка"
           next_log: "Напред"
           previous_log: "Предишни"
+        invite_ai_conversation:
+          button: "Покана"
         share_modal:
           copy: "Копирай"
         conversations:

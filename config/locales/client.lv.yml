@@ -128,6 +128,8 @@ lv:
           response: "Atbilde"
           next_log: "Nākamais"
           previous_log: "Iepriekšējais"
+        invite_ai_conversation:
+          button: "Ielūgt"
         share_modal:
           copy: "Kopēt"
         conversations:

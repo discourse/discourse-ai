@@ -420,7 +420,6 @@ pl_PL:
           disable_system_prompt: "Wyłącz wiadomość systemową w promptach"
           enable_native_tool: "Włącz obsługę natywnych narzędzi"
           provider_order: "Kolejność dostawców (lista rozdzielona przecinkami)"
-          enable_reasoning: "Włącz rozumowanie (dotyczy tylko Sonnet 3.7)"
           reasoning_tokens: "Liczba tokenów użytych do wnioskowania"
           disable_temperature: "Wyłącz temperaturę (niektóre modele nie obsługują temperatury)"
       related_topics:
@@ -521,6 +520,8 @@ pl_PL:
           previous_log: "Poprzedni"
         share_ai_conversation:
           name: "Udostępnij rozmowę AI"
+        invite_ai_conversation:
+          button: "Zaproś"
         ai_label: "AI"
         ai_title: "Rozmowa z AI"
         share_modal:

@@ -603,6 +603,8 @@ ar:
         share_ai_conversation:
           name: "مشاركة محادثة الذكاء الاصطناعي"
           title: "مشاركة هذه المحادثة بشكلٍ علني"
+        invite_ai_conversation:
+          button: "دعوة"
         ai_label: "الذكاء الاصطناعي"
         ai_title: "المحادثة مع الذكاء الاصطناعي"
         share_modal:

@@ -591,6 +591,8 @@ es:
         share_ai_conversation:
           name: "Compartir conversación de IA"
           title: "Compartir esta conversación de IA públicamente"
+        invite_ai_conversation:
+          button: "Invitar"
         ai_label: "IA"
         ai_title: "Conversación con IA"
         share_modal:

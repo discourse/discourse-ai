@@ -133,6 +133,8 @@ ca:
           response: "Reacció"
           next_log: "Següent"
           previous_log: "Previ"
+        invite_ai_conversation:
+          button: "Convida"
         share_modal:
           copy: "Còpia"
         conversations:

@@ -591,6 +591,8 @@ fi:
         share_ai_conversation:
           name: "Jaa tekoälykeskustelu"
           title: "Jaa tämä tekoälykeskustelu julkisesti"
+        invite_ai_conversation:
+          button: "Kutsu"
         ai_label: "Tekoäly"
         ai_title: "Keskustelu tekoälyn kanssa"
         share_modal:

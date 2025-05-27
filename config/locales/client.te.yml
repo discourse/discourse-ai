@@ -135,6 +135,8 @@ te:
           response: "ప్రతిస్పందన"
           next_log: "తదుపరి"
           previous_log: "గత"
+        invite_ai_conversation:
+          button: "ఆహ్వానించండి"
         share_modal:
           copy: "నకలు"
         conversations:

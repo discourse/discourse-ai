@@ -142,6 +142,8 @@ el:
           response: "Απάντηση"
           next_log: "Επόμενο"
           previous_log: "Προηγούμενο"
+        invite_ai_conversation:
+          button: "Πρόσκληση"
         share_modal:
           copy: "Αντιγραφή"
         conversations:

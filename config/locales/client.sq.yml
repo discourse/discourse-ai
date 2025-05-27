@@ -125,6 +125,8 @@ sq:
         debug_ai_modal:
           next_log: "Vazhdo përpara"
           previous_log: "I kaluar"
+        invite_ai_conversation:
+          button: "Fto"
         share_modal:
           copy: "Kopjo"
         conversations:

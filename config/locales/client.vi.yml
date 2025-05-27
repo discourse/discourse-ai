@@ -144,6 +144,8 @@ vi:
           response: "Đáp ứng"
           next_log: "Kế tiếp"
           previous_log: "Trước"
+        invite_ai_conversation:
+          button: "Mời"
         share_modal:
           copy: "Sao chép"
         conversations:

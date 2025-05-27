@@ -140,6 +140,8 @@ ro:
           response: "Răspuns"
           next_log: "Următorul"
           previous_log: "Precedent"
+        invite_ai_conversation:
+          button: "Invită"
         share_modal:
           copy: "Copiază"
         conversations:

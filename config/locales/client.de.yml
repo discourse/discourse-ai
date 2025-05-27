@@ -328,9 +328,11 @@ de:
             key_title: "Schlüssel"
         examples:
           title: Beispiele
+          examples_help: Simuliere frühere Interaktionen mit dem LLM und erde es, um bessere Ergebnisse zu erzielen.
           new: Neues Beispiel
           remove: Beispiel löschen
           collapsable_title: "Beispiel #%{number}"
+          user: "Nachricht des Benutzers"
           model: "Antwort des Modells"
         list:
           enabled: "KI-Bot?"
@@ -522,7 +524,8 @@ de:
           provider_quantizations: "Reihenfolge der Provider-Quantisierungen (kommagetrennte Liste, z. B.: fp16,fp8)"
           disable_streaming: "Streaming-Vervollständigung deaktivieren (Streaming-Anfragen in Nicht-Streaming-Anfragen umwandeln)"
           reasoning_effort: "Argumentationsaufwand (gilt nur für Argumentationsmodelle)"
-          enable_reasoning: "Argumentation aktivieren (gilt nur für Sonnet 3.7)"
+          enable_reasoning: "Argumentation aktivieren (nur für Argumentationsmodelle anwendbar)"
+          enable_thinking: "Denken aktivieren (nur bei entsprechenden Modellen, z.B.: Flash 2.5)"
           thinking_tokens: "Anzahl der zum Denken verwendeten Token"
           reasoning_tokens: "Anzahl der für die Argumentation verwendeten Token"
           disable_temperature: "Temperatur deaktivieren (einige Denkmodelle unterstützen keine Temperatur)"
@@ -664,6 +667,7 @@ de:
         share: "KI-Unterhaltung kopieren"
         conversation_shared: "Unterhaltung kopiert"
         debug_ai: "Rohdaten der KI-Anfrage und -Antwort anzeigen"
+        sidebar_empty: "Der Verlauf der Bot-Konversation wird hier angezeigt."
         debug_ai_modal:
           title: "KI-Interaktion ansehen"
           copy_request: "Anfrage kopieren"
@@ -682,6 +686,9 @@ de:
         share_ai_conversation:
           name: "KI-Unterhaltung teilen"
           title: "Diese KI-Unterhaltung öffentlich teilen"
+        invite_ai_conversation:
+          button: "Einladen"
+          title: "Zur KI-Konversation einladen"
         ai_label: "KI"
         ai_title: "Unterhaltung mit KI"
         share_modal:

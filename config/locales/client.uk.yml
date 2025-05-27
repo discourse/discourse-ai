@@ -394,6 +394,8 @@ uk:
           previous_log: "Попередні"
         share_ai_conversation:
           title: "Поділіться цією бесідою зі ШІ публічно"
+        invite_ai_conversation:
+          button: "Запрошення"
         ai_label: "ШІ"
         ai_title: "Розмова з ШІ"
         share_modal:
