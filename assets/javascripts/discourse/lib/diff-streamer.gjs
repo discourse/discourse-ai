@@ -100,6 +100,7 @@ export default class DiffStreamer {
     this.currentWordIndex = 0;
     this.currentCharIndex = 0;
     this.isStreaming = false;
+    this.isDone = false;
     if (this.typingTimer) {
       cancel(this.typingTimer);
       this.typingTimer = null;

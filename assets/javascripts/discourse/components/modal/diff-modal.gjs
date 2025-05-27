@@ -18,6 +18,8 @@ import DiffStreamer from "../../lib/diff-streamer";
 import SmoothStreamer from "../../lib/smooth-streamer";
 import AiIndicatorWave from "../ai-indicator-wave";
 
+const CHANNEL = "/discourse-ai/ai-helper/stream_composer_suggestion";
+
 export default class ModalDiffModal extends Component {
   @service currentUser;
   @service messageBus;
@@ -49,12 +51,9 @@ export default class ModalDiffModal extends Component {
   }
 
   get isStreaming() {
-    // diffStreamer stops "streaming" when it is finished with a chunk
-    return (
-      this.diffStreamer.isStreaming ||
-      !this.diffStreamer.isDone ||
-      this.smoothStreamer.isStreaming
-    );
+    // diffStreamer stops Streaming when it is finished with a chunk, looking at isDone is safe
+    // it starts off not done
+    return !this.diffStreamer.isDone || this.smoothStreamer.isStreaming;
   }
 
   get primaryBtnLabel() {
@@ -69,25 +68,23 @@ export default class ModalDiffModal extends Component {
 
   @bind
   subscribe() {
-    const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
-    this.messageBus.subscribe(channel, this.updateResult);
+    this.messageBus.subscribe(CHANNEL, this.updateResult);
   }
 
   @bind
-  unsubscribe() {
-    const channel = "/discourse-ai/ai-helper/stream_composer_suggestion";
-    this.messageBus.unsubscribe(channel, this.updateResult);
+  cleanup() {
+    // stop all callbacks so it does not end up streaming pointlessly
+    this.smoothStreamer.resetStreaming();
+    this.diffStreamer.reset();
+    this.messageBus.unsubscribe(CHANNEL, this.updateResult);
   }
 
   @action
-  async updateResult(result) {
+  updateResult(result) {
     this.loading = false;
 
     if (result.done) {
       this.finalResult = result.result;
-    }
-
-    if (result.done) {
       this.loading = false;
     }
 
@@ -154,7 +151,7 @@ export default class ModalDiffModal extends Component {
       <:body>
         <div
           {{didInsert this.subscribe}}
-          {{willDestroy this.unsubscribe}}
+          {{willDestroy this.cleanup}}
           class="text-preview"
         >
           {{#if this.loading}}
