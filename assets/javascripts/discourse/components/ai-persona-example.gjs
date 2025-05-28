@@ -45,7 +45,7 @@ export default class AiPersonaCollapsableExample extends Component {
               (if (eq pairIdx 0) "user" "model")
             )
           }}
-          @validation="required|length:1,100"
+          @validation="required|length:1,5000"
           @disabled={{@system}}
           as |field|
         >
