@@ -15,7 +15,7 @@ export default class AiBotSidebarNewConversation extends Component {
 
   @action
   routeTo() {
-    this.appEvents.trigger("discourse-ai:ai-bot-new-conversation");
+    this.appEvents.trigger("discourse-ai:new-conversation-btn-clicked");
 
     if (this.router.currentRouteName !== "discourse-ai-bot-conversations") {
       this.router.transitionTo("/discourse-ai/ai-bot/conversations");
