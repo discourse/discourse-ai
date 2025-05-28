@@ -5,6 +5,7 @@ import DButton from "discourse/components/d-button";
 import { AI_CONVERSATIONS_PANEL } from "../services/ai-conversations-sidebar-manager";
 
 export default class AiBotSidebarNewConversation extends Component {
+  @service appEvents;
   @service router;
   @service sidebarState;
 
@@ -14,6 +15,8 @@ export default class AiBotSidebarNewConversation extends Component {
 
   @action
   routeTo() {
+    this.appEvents.trigger("discourse-ai:new-conversation-btn-clicked");
+
     if (this.router.currentRouteName !== "discourse-ai-bot-conversations") {
       this.router.transitionTo("/discourse-ai/ai-bot/conversations");
     }
