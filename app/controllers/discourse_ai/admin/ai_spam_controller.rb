@@ -50,7 +50,7 @@ module DiscourseAi
             )
           end
 
-          SiteSetting.ai_spam_detection_enabled = is_enabled
+          SiteSetting.set_and_log("ai_spam_detection_enabled", is_enabled)
         end
 
         render json: AiSpamSerializer.new(spam_config, root: false)
