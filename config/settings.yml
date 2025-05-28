@@ -401,3 +401,19 @@ discourse_ai:
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+  ai_translation_backfill_rate:
+    default: 0
+    client: false
+    hidden: true
+  ai_translation_backfill_limit_to_public_content:
+    default: true
+    client: false
+    hidden: true
+  ai_translation_backfill_max_age_days:
+    default: 5
+    client: false
+    hidden: true
+  ai_translation_verbose_logs:
+    default: false
+    client: false
+    hidden: true
