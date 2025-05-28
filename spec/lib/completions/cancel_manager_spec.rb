@@ -5,7 +5,6 @@
 Net::BufferedIO.prepend(
   Module.new do
     def initialize(*args, **kwargs)
-      puts "Initializing #{kwargs.inspect}"
       if kwargs[:debug_output] && !kwargs[:debug_output].respond_to(:<<)
         raise ArgumentError, "debug_output must support <<"
       end
@@ -13,7 +12,6 @@ Net::BufferedIO.prepend(
     end
 
     def debug_output=(debug_output)
-      puts "SETTING DEBUG OUTPUT: #{debug_output.inspect}"
       if debug_output && !debug_output.respond_to?(:<<)
         raise ArgumentError, "debug_output must support <<"
       end
