@@ -122,12 +122,13 @@ module DiscourseAi
           )
 
         bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
+        structured_output = nil
 
-        response = bot.reply(context)
+        bot.reply(context) do |partial, _, type|
+          structured_output = partial if type == :structured_output
+        end
 
-        matching_concepts = JSON.parse(response[0][0]).dig("matching_concepts")
-
-        matching_concepts || []
+        structured_output&.read_buffered_property(:matching_concepts) || []
       end
     end
   end

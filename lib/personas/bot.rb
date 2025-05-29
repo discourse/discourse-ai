@@ -318,8 +318,13 @@ module DiscourseAi
           response_format
             .to_a
             .reduce({}) do |memo, format|
-              memo[format["key"].to_sym] = { type: format["type"] }
-              memo[format["key"].to_sym][:items] = format["items"] if format["items"]
+              type_desc = { type: format["type"] }
+
+              if format["type"] == "array"
+                type_desc[:items] = { type: format["array_type"] || "string" }
+              end
+
+              memo[format["key"].to_sym] = type_desc
               memo
             end
 

@@ -46,7 +46,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ "key" => "streamlined_tags", "type" => "array" }]
+        [{ "key" => "streamlined_tags", "type" => "array", "array_type" => "string" }]
       end
     end
   end

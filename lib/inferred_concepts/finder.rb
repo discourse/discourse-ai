@@ -24,11 +24,13 @@ module DiscourseAi
           )
 
         bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
+        structured_output = nil
 
-        response = bot.reply(context)
+        bot.reply(context) do |partial, _, type|
+          structured_output = partial if type == :structured_output
+        end
 
-        concepts = JSON.parse(response[0][0]).dig("concepts")
-        concepts || []
+        structured_output&.read_buffered_property(:concepts) || []
       end
 
       # Creates or finds concepts in the database from provided names
@@ -161,10 +163,13 @@ module DiscourseAi
           DiscourseAi::Personas::BotContext.new(messages: [input], user: Discourse.system_user)
 
         bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
+        structured_output = nil
 
-        response = bot.reply(context)
+        bot.reply(context) do |partial, _, type|
+          structured_output = partial if type == :structured_output
+        end
 
-        concepts = JSON.parse(response[0][0]).dig("streamlined_tags")
+        structured_output&.read_buffered_property(:streamlined_tags) || []
       end
     end
   end

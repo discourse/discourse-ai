@@ -9,6 +9,7 @@ module DiscourseAi
         @stream_consumer = stream_consumer
         @current_key = nil
         @current_value = nil
+        @tracking_array = false
         @parser = DiscourseAi::Completions::JsonStreamingParser.new
 
         @parser.key do |k|
@@ -16,11 +17,27 @@ module DiscourseAi
           @current_value = nil
         end
 
-        @parser.value do |v|
+        @parser.value do |value|
           if @current_key
-            stream_consumer.notify_progress(@current_key, v)
-            @current_key = nil
+            if @tracking_array
+              @current_value << value
+              stream_consumer.notify_progress(@current_key, @current_value)
+            else
+              stream_consumer.notify_progress(@current_key, value)
+              @current_key = nil
+            end
           end
+        end
+
+        @parser.start_array do
+          @tracking_array = true
+          @current_value = []
+        end
+
+        @parser.end_array do
+          @tracking_array = false
+          @current_key = nil
+          @current_value = nil
         end
       end
 
@@ -46,8 +63,9 @@ module DiscourseAi
         end
 
         if @parser.state == :start_string && @current_key
+          buffered = @tracking_array ? [@parser.buf] : @parser.buf
           # this is is worth notifying
-          stream_consumer.notify_progress(@current_key, @parser.buf)
+          stream_consumer.notify_progress(@current_key, buffered)
         end
 
         @current_key = nil if @parser.state == :end_value

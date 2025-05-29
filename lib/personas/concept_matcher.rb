@@ -36,7 +36,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ "key" => "matching_concepts", "type" => "array" }]
+        [{ "key" => "matching_concepts", "type" => "array", "array_type" => "string" }]
       end
     end
   end
