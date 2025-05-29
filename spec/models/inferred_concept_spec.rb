@@ -22,8 +22,8 @@ RSpec.describe InferredConcept do
   end
 
   describe "associations" do
-    fab!(:topic) { Fabricate(:topic) }
-    fab!(:post) { Fabricate(:post) }
+    fab!(:topic)
+    fab!(:post)
     fab!(:concept) { Fabricate(:inferred_concept, name: "programming") }
 
     it "can be associated with topics" do

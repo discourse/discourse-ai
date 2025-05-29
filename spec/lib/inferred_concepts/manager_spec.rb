@@ -3,8 +3,8 @@
 RSpec.describe DiscourseAi::InferredConcepts::Manager do
   subject(:manager) { described_class.new }
 
-  fab!(:topic) { Fabricate(:topic) }
-  fab!(:post) { Fabricate(:post) }
+  fab!(:topic)
+  fab!(:post)
   fab!(:concept1) { Fabricate(:inferred_concept, name: "programming") }
   fab!(:concept2) { Fabricate(:inferred_concept, name: "testing") }
 
@@ -62,10 +62,13 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
     it "extracts content and generates concepts" do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
-
       allow(applier).to receive(:topic_content_for_analysis).with(topic).and_return("topic content")
 
-      allow(manager).to receive(:generate_concepts_from_content).with("topic content").and_return(
+      # Mock the finder instead of stubbing subject
+      finder = instance_double(DiscourseAi::InferredConcepts::Finder)
+      allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
+      allow(finder).to receive(:identify_concepts).with("topic content").and_return(%w[programming])
+      allow(finder).to receive(:create_or_find_concepts).with(%w[programming]).and_return(
         [concept1],
       )
 
@@ -82,12 +85,13 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
     it "extracts content and generates concepts" do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
-
       allow(applier).to receive(:post_content_for_analysis).with(post).and_return("post content")
 
-      allow(manager).to receive(:generate_concepts_from_content).with("post content").and_return(
-        [concept1],
-      )
+      # Mock the finder instead of stubbing subject
+      finder = instance_double(DiscourseAi::InferredConcepts::Finder)
+      allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
+      allow(finder).to receive(:identify_concepts).with("post content").and_return(%w[testing])
+      allow(finder).to receive(:create_or_find_concepts).with(%w[testing]).and_return([concept1])
 
       result = manager.generate_concepts_from_post(post)
       expect(result).to eq([concept1])
@@ -164,9 +168,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       existing_concepts = %w[programming testing]
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
 
-      allow(InferredConcept).to receive_message_chain(:all, :pluck).with(:name).and_return(
-        existing_concepts,
-      )
+      all_double = instance_double(ActiveRecord::Relation)
+      allow(InferredConcept).to receive(:all).and_return(all_double)
+      allow(all_double).to receive(:pluck).with(:name).and_return(existing_concepts)
 
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
       allow(applier).to receive(:match_concepts_to_content).with(

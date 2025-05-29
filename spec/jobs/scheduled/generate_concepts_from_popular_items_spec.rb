@@ -235,7 +235,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
     end
   end
 
-  context "job scheduling" do
+  context "when scheduling the job" do
     it "is scheduled to run daily" do
       expect(described_class.every).to eq(1.day)
     end

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::GenerateInferredConcepts do
-  fab!(:topic) { Fabricate(:topic) }
-  fab!(:post) { Fabricate(:post) }
+  fab!(:topic)
+  fab!(:post)
   fab!(:concept) { Fabricate(:inferred_concept, name: "programming") }
 
   before { SiteSetting.inferred_concepts_enabled = true }

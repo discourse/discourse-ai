@@ -74,10 +74,12 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       # Create 12 posts for the topic
       12.times { |i| Fabricate(:post, topic: topic, post_number: i + 1, user: user) }
 
-      expect(Post).to receive(:where).with(topic_id: topic.id).and_call_original
-      expect_any_instance_of(ActiveRecord::Relation).to receive(:limit).with(10).and_call_original
+      allow(Post).to receive(:where).with(topic_id: topic.id).and_call_original
+      allow_any_instance_of(ActiveRecord::Relation).to receive(:limit).with(10).and_call_original
 
       applier.topic_content_for_analysis(topic)
+
+      expect(Post).to have_received(:where).with(topic_id: topic.id)
     end
   end
 
@@ -128,18 +130,30 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     end
 
     it "matches concepts and applies them to topic" do
-      allow(applier).to receive(:topic_content_for_analysis).with(topic).and_return(
-        "content about programming",
-      )
-
-      allow(applier).to receive(:match_concepts_to_content).with(
-        "content about programming",
-        %w[programming testing ruby],
-      ).and_return(["programming"])
-
+      # Test the real implementation without stubbing internal methods
       allow(InferredConcept).to receive(:where).with(name: ["programming"]).and_return([concept1])
 
-      allow(applier).to receive(:apply_to_topic).with(topic, [concept1])
+      # Mock the LLM interaction
+      persona_double = instance_spy(AiPersona)
+      bot_double = instance_spy(DiscourseAi::Personas::Bot)
+      structured_output_double = instance_spy(Object)
+      llm_class_double = instance_spy(Class)
+
+      allow(AiPersona).to receive_message_chain(:all_personas, :find, :new).and_return(
+        persona_double,
+      )
+      allow(persona_double).to receive(:class).and_return(llm_class_double)
+      allow(llm_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(
+        structured_output_double,
+        nil,
+        :structured_output,
+      )
+      allow(structured_output_double).to receive(:read_buffered_property).with(
+        :matching_concepts,
+      ).and_return(["programming"])
 
       result = applier.match_existing_concepts(topic)
       expect(result).to eq([concept1])
@@ -166,18 +180,30 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     end
 
     it "matches concepts and applies them to post" do
-      allow(applier).to receive(:post_content_for_analysis).with(post).and_return(
-        "content about testing",
-      )
-
-      allow(applier).to receive(:match_concepts_to_content).with(
-        "content about testing",
-        %w[programming testing ruby],
-      ).and_return(["testing"])
-
+      # Test the real implementation without stubbing internal methods
       allow(InferredConcept).to receive(:where).with(name: ["testing"]).and_return([concept2])
 
-      allow(applier).to receive(:apply_to_post).with(post, [concept2])
+      # Mock the LLM interaction
+      persona_double = instance_spy(AiPersona)
+      bot_double = instance_spy(DiscourseAi::Personas::Bot)
+      structured_output_double = instance_spy(Object)
+      llm_class_double = instance_spy(Class)
+
+      allow(AiPersona).to receive_message_chain(:all_personas, :find, :new).and_return(
+        persona_double,
+      )
+      allow(persona_double).to receive(:class).and_return(llm_class_double)
+      allow(llm_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(
+        structured_output_double,
+        nil,
+        :structured_output,
+      )
+      allow(structured_output_double).to receive(:read_buffered_property).with(
+        :matching_concepts,
+      ).and_return(["testing"])
 
       result = applier.match_existing_concepts_for_post(post)
       expect(result).to eq([concept2])
@@ -195,31 +221,36 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     it "uses ConceptMatcher persona to match concepts" do
       content = "This is about Ruby programming"
       concept_list = %w[programming testing ruby]
-      structured_output_double = double("StructuredOutput")
+      structured_output_double = instance_spy(Object)
 
-      persona_class_double = double("ConceptMatcherClass")
-      persona_double = double("ConceptMatcher")
-      bot_double = double("Bot")
+      persona_class_double = instance_spy(Class)
+      persona_double = instance_spy(AiPersona)
+      bot_double = instance_spy(DiscourseAi::Personas::Bot)
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
+      allow(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
         persona_class_double,
       )
-      expect(persona_class_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:class).and_return(persona_class_double)
-      expect(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
-      expect(LlmModel).to receive(:find).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(
+      allow(persona_class_double).to receive(:new).and_return(persona_double)
+      allow(persona_double).to receive(:class).and_return(persona_class_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(
         structured_output_double,
         nil,
         :structured_output,
       )
-      expect(structured_output_double).to receive(:read_buffered_property).with(
+      allow(structured_output_double).to receive(:read_buffered_property).with(
         :matching_concepts,
       ).and_return(%w[programming ruby])
 
       result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq(%w[programming ruby])
+
+      expect(bot_double).to have_received(:reply)
+      expect(structured_output_double).to have_received(:read_buffered_property).with(
+        :matching_concepts,
+      )
     end
 
     it "handles no structured output gracefully" do

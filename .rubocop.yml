@@ -3,5 +3,15 @@ inherit_gem:
 RSpec/NamedSubject:
   Enabled: false
 
+# Disable some RSpec cops for AI/LLM tests that involve complex mocking
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/MessageChain:
+  Enabled: false
+
 Style/GlobalVars:
   AllowedVariables: [$prometheus_client]

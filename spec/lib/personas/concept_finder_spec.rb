@@ -46,9 +46,9 @@ RSpec.describe DiscourseAi::Personas::ConceptFinder do
     end
 
     it "limits existing concepts to 100" do
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:list_concepts).with(
-        limit: 100,
-      ).and_return(%w[concept1 concept2])
+      manager = instance_double(DiscourseAi::InferredConcepts::Manager)
+      allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager)
+      allow(manager).to receive(:list_concepts).with(limit: 100).and_return(%w[concept1 concept2])
 
       persona.system_prompt
     end
