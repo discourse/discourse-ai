@@ -1,12 +1,13 @@
 import { tracked } from "@glimmer/tracking";
 import { cancel, later } from "@ember/runloop";
 import loadJSDiff from "discourse/lib/load-js-diff";
-import { parseAsync } from "discourse/lib/text";
 import { escapeExpression } from "discourse/lib/utilities";
 
 const DEFAULT_CHAR_TYPING_DELAY = 10;
 const STREAMING_DIFF_TRUNCATE_THRESHOLD = 0.1;
 const STREAMING_DIFF_TRUNCATE_BUFFER = 10;
+const RUSH_MAX_TICKS = 10; // ≤ 10 visual diff refreshes
+const RUSH_TICK_INTERVAL = 100; // 100 ms between them → ≤ 1 s total
 
 export default class DiffStreamer {
   @tracked isStreaming = false;
@@ -15,83 +16,125 @@ export default class DiffStreamer {
   @tracked diff = this.selectedText;
   @tracked suggestion = "";
   @tracked isDone = false;
-  @tracked isThinking = false;
+  @tracked isThinking = true;
 
   typingTimer = null;
   currentWordIndex = 0;
   currentCharIndex = 0;
   jsDiff = null;
 
+  bufferedToken = null;
+
+  rushMode = false;
+  rushBatchSize = 1;
+  rushTicksLeft = 0;
+
+  receivedFinalUpdate = false;
+
+  /**
+   * Initializes the DiffStreamer with initial text and typing delay.
+   * @param {string} selectedText - The original text to diff against.
+   * @param {number} typingDelay - (Optional) character typing delay in ms.
+   */
   constructor(selectedText, typingDelay) {
     this.selectedText = selectedText;
     this.typingDelay = typingDelay || DEFAULT_CHAR_TYPING_DELAY;
     this.loadJSDiff();
   }
 
+  /**
+   * Loads the jsDiff library asynchronously.
+   */
   async loadJSDiff() {
     this.jsDiff = await loadJSDiff();
   }
 
+  /**
+   * Main entry point for streaming updates from the backend.
+   * Handles both incremental and final updates.
+   * @param {object} result - The result object containing the new text and status
+   * @param {string} newTextKey - The key in result that holds the new text value (e.g. if the JSON is { text: "Hello", done: false }, newTextKey would be "text")
+   */
   async updateResult(result, newTextKey) {
+    if (this.receivedFinalUpdate) {
+      return;
+    }
+
     if (!this.jsDiff) {
       await this.loadJSDiff();
     }
 
+    this.isThinking = false;
     const newText = result[newTextKey];
-    this.isDone = !!result?.done;
+    const gotDoneFlag = !!result?.done;
 
-    if (this.isDone) {
-      this.isStreaming = false;
-      this.suggestion = newText;
-      this.words = [];
-
+    if (gotDoneFlag) {
+      this.receivedFinalUpdate = true;
       if (this.typingTimer) {
         cancel(this.typingTimer);
         this.typingTimer = null;
       }
 
-      const originalDiff = this.jsDiff.diffWordsWithSpace(
-        this.selectedText,
-        newText
-      );
-      this.diff = this.#formatDiffWithTags(originalDiff, false);
+      // flush buffered token so everything is renderable
+      if (this.bufferedToken) {
+        this.words.push(this.bufferedToken);
+        this.bufferedToken = null;
+      }
+
+      // tokenise whatever tail we haven’t processed yet
+      const tail = newText.slice(this.lastResultText.length);
+      if (tail.length) {
+        this.words.push(...this.#tokenize(tail));
+      }
+
+      const charsLeft = newText.length - this.suggestion.length;
+      if (charsLeft <= 0) {
+        this.suggestion = newText;
+        this.diff = this.#formatDiffWithTags(
+          this.jsDiff.diffWordsWithSpace(this.selectedText, newText),
+          false
+        );
+        this.isStreaming = false;
+        this.isDone = true;
+        return;
+      }
+
+      this.rushBatchSize = Math.ceil(charsLeft / RUSH_MAX_TICKS);
+      this.rushTicksLeft = RUSH_MAX_TICKS;
+      this.rushMode = true;
+      this.isStreaming = true;
+      this.lastResultText = newText;
+
+      this.#streamNextChar();
       return;
     }
 
-    if (newText.length < this.lastResultText.length) {
-      this.isThinking = false;
-      // reset if text got shorter (e.g., reset or new input)
-      this.words = [];
-      this.suggestion = "";
-      this.currentWordIndex = 0;
-      this.currentCharIndex = 0;
-    }
-
-    const diffText = newText.slice(this.lastResultText.length);
-
-    if (!diffText.trim()) {
+    const delta = newText.slice(this.lastResultText.length);
+    if (!delta) {
       this.lastResultText = newText;
       return;
     }
 
-    if (await this.#isIncompleteMarkdown(diffText)) {
-      this.isThinking = true;
-      return;
+    // combine any previous buffered token with new delta and retokenize
+    const combined = (this.bufferedToken || "") + delta;
+    const tokens = this.#tokenize(combined);
+    this.bufferedToken = tokens.pop() || null;
+
+    if (tokens.length) {
+      this.words.push(...tokens);
     }
 
-    const newWords = this.#tokenizeMarkdownAware(diffText);
-
-    if (newWords.length > 0) {
-      this.isStreaming = true;
-      this.words.push(...newWords);
-      if (!this.typingTimer) {
-        this.#streamNextChar();
-      }
+    this.isStreaming = true;
+    if (!this.typingTimer) {
+      this.#streamNextChar();
     }
 
     this.lastResultText = newText;
   }
 
+  /**
+   * Resets the streamer's internal state to allow reuse.
+   */
   reset() {
     this.diff = "";
     this.suggestion = "";
@@ -99,228 +142,192 @@ export default class DiffStreamer {
     this.words = [];
     this.currentWordIndex = 0;
     this.currentCharIndex = 0;
+    this.bufferedToken = null;
+
     this.isStreaming = false;
     this.isDone = false;
+    this.receivedFinalUpdate = false;
+    this.isThinking = true;
+
+    this.rushMode = false;
+    this.rushBatchSize = 1;
+    this.rushTicksLeft = 0;
+
     if (this.typingTimer) {
       cancel(this.typingTimer);
       this.typingTimer = null;
     }
   }
 
-  async #isIncompleteMarkdown(text) {
-    const tokens = await parseAsync(text);
-
-    const hasImage = tokens.some((t) => t.type === "image");
-    const hasLink = tokens.some((t) => t.type === "link_open");
-
-    if (hasImage || hasLink) {
-      return false;
-    }
-
-    const maybeUnfinishedImage =
-      /!\[[^\]]*$/.test(text) || /!\[[^\]]*]\(upload:\/\/[^\s)]+$/.test(text);
-
-    const maybeUnfinishedLink =
-      /\[[^\]]*$/.test(text) || /\[[^\]]*]\([^\s)]+$/.test(text);
-
-    return maybeUnfinishedImage || maybeUnfinishedLink;
-  }
-
-  // this is public to make testing easier
-  // is makes it easier to do a "streaming diff" where we want to ensure diff
-  // is focused on the beginning of the text instead of taking the entire body
-  // into account.
-  // This ensures that we do not make mistakes and present wildly different diffs
-  // to what we would stablize on at the end of the stream.
+  /**
+   * Computes a truncated diff during streaming to avoid excessive churn.
+   * @param {string} original - The original text.
+   * @param {string} suggestion - The partially streamed suggestion.
+   * @returns {Array} Array of diff parts with `.added`, `.removed`, and `.value`.
+   */
   streamingDiff(original, suggestion) {
-    const maxDiffLength = Math.floor(
+    const max = Math.floor(
       suggestion.length +
         suggestion.length * STREAMING_DIFF_TRUNCATE_THRESHOLD +
         STREAMING_DIFF_TRUNCATE_BUFFER
     );
-    const head = original.slice(0, maxDiffLength);
-    const tail = original.slice(maxDiffLength);
+    const head = original.slice(0, max);
+    const tail = original.slice(max);
 
-    const diffArray = this.jsDiff.diffWordsWithSpace(head, suggestion);
+    const output = this.jsDiff.diffWordsWithSpace(head, suggestion);
 
-    if (tail.length > 0) {
-      // if last in the array is added, and previous is removed then flip them
-      let last = diffArray[diffArray.length - 1];
-      let secondLast = diffArray[diffArray.length - 2];
+    if (tail.length) {
+      let last = output.at(-1);
+      let secondLast = output.at(-2);
 
-      if (last.added && secondLast.removed) {
-        diffArray.pop();
-        diffArray.pop();
-        diffArray.push(last);
-        diffArray.push(secondLast);
-
+      if (last.added && secondLast?.removed) {
+        output.splice(-2, 2, last, secondLast);
         last = secondLast;
-        secondLast = diffArray[diffArray.length - 2];
       }
 
       if (!last.removed) {
-        last = {
-          added: false,
-          removed: true,
-          value: "",
-        };
-        diffArray.push(last);
+        last = { added: false, removed: true, value: "" };
+        output.push(last);
       }
-
-      last.value = last.value + tail;
+      last.value += tail;
     }
-
-    return diffArray;
+    return output;
   }
 
-  async #streamNextChar() {
-    if (!this.isStreaming || this.isDone) {
+  /**
+   * Internal loop that emits the next character(s) to simulate typing.
+   * Works in both normal and rush mode.
+   */
+  #streamNextChar() {
+    if (!this.isStreaming) {
       return;
     }
 
-    if (this.currentWordIndex < this.words.length) {
-      const currentToken = this.words[this.currentWordIndex];
-
-      const nextChar = currentToken.charAt(this.currentCharIndex);
-      this.suggestion += nextChar;
+    const limit = this.rushMode ? this.rushBatchSize : 1;
+    let emitted = 0;
+    while (emitted < limit && this.currentWordIndex < this.words.length) {
+      const token = this.words[this.currentWordIndex];
+      this.suggestion += token.charAt(this.currentCharIndex);
       this.currentCharIndex++;
+      emitted++;
 
-      if (this.currentCharIndex >= currentToken.length) {
+      if (this.currentCharIndex >= token.length) {
         this.currentWordIndex++;
         this.currentCharIndex = 0;
-
-        const originalDiff = this.streamingDiff(
-          this.selectedText,
-          this.suggestion
-        );
-
-        this.diff = this.#formatDiffWithTags(originalDiff);
-
-        if (this.currentWordIndex === 1) {
-          this.diff = this.diff.replace(/^\s+/, "");
-        }
       }
+    }
 
-      this.typingTimer = later(this, this.#streamNextChar, this.typingDelay);
+    let refresh = false;
+    if (this.rushMode) {
+      if (this.rushTicksLeft > 0) {
+        this.rushTicksLeft--;
+        refresh = true;
+      }
     } else {
-      if (!this.suggestion || !this.selectedText || !this.jsDiff) {
-        return;
-      }
+      refresh = this.currentCharIndex === 0;
+    }
 
-      const originalDiff = this.jsDiff.diffWordsWithSpace(
-        this.selectedText,
-        this.suggestion
+    if (refresh || this.currentWordIndex >= this.words.length) {
+      const useStreaming =
+        this.currentWordIndex < this.words.length || this.rushMode;
+      this.diff = this.#formatDiffWithTags(
+        useStreaming
+          ? this.streamingDiff(this.selectedText, this.suggestion)
+          : this.jsDiff.diffWordsWithSpace(this.selectedText, this.suggestion),
+        !this.rushMode
       );
+    }
 
-      this.typingTimer = null;
-      this.diff = this.#formatDiffWithTags(originalDiff, false);
+    const doneStreaming = this.currentWordIndex >= this.words.length;
+
+    if (doneStreaming) {
       this.isStreaming = false;
-    }
-  }
+      this.rushMode = false;
+      this.typingTimer = null;
 
-  #tokenizeMarkdownAware(text) {
-    const tokens = [];
-    let lastIndex = 0;
-    const regex = /!\[[^\]]*]\(upload:\/\/[^\s)]+\)/g;
-
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      const matchStart = match.index;
-
-      if (lastIndex < matchStart) {
-        const before = text.slice(lastIndex, matchStart);
-        tokens.push(...(before.match(/\S+\s*|\s+/g) || []));
+      if (this.receivedFinalUpdate) {
+        this.isDone = true;
       }
-
-      tokens.push(match[0]);
-
-      lastIndex = regex.lastIndex;
+    } else {
+      const delay = this.rushMode ? RUSH_TICK_INTERVAL : this.typingDelay;
+      this.typingTimer = later(this, this.#streamNextChar, delay);
     }
-
-    if (lastIndex < text.length) {
-      const rest = text.slice(lastIndex);
-      tokens.push(...(rest.match(/\S+\s*|\s+/g) || []));
-    }
-
-    return tokens;
   }
 
+  /**
+   * Splits a string into tokens, preserving whitespace as separate entries.
+   * @param {string} text - The input string.
+   * @returns {Array} Array of tokens.
+   */
+  #tokenize(text) {
+    return text.split(/(?<=\S)(?=\s)/);
+  }
+
+  /**
+   * Wraps a chunk of text in appropriate HTML tags based on its diff type.
+   * @param {string} text - The text chunk.
+   * @param {string} type - The type: 'added', 'removed', or 'unchanged'.
+   * @returns {string} HTML string.
+   */
   #wrapChunk(text, type) {
     if (type === "added") {
       return `<ins>${text}</ins>`;
     }
     if (type === "removed") {
-      if (/^\s+$/.test(text)) {
-        return "";
-      }
-      return `<del>${text}</del>`;
+      return /^\s+$/.test(text) ? "" : `<del>${text}</del>`;
     }
     return `<span>${text}</span>`;
   }
 
-  // returns an HTML safe diff (escaping all internals)
+  /**
+   * Converts a diff array into a string of HTML with highlight markup.
+   * @param {Array} diffArray - The array from a diff function.
+   * @param {boolean} highlightLastWord - Whether to highlight the last non-removed word.
+   * @returns {string} HTML representation of the diff.
+   */
   #formatDiffWithTags(diffArray, highlightLastWord = true) {
-    const wordsWithType = [];
-    const output = [];
-
-    diffArray.forEach((part) => {
-      const tokens = part.value.match(/\S+|\s+/g) || [];
-      tokens.forEach((token) => {
-        wordsWithType.push({
-          text: token,
+    const words = [];
+    diffArray.forEach((part) =>
+      (part.value.match(/\S+|\s+/g) || []).forEach((tok) =>
+        words.push({
+          text: tok,
           type: part.added ? "added" : part.removed ? "removed" : "unchanged",
-        });
-      });
-    });
+        })
+      )
+    );
 
-    let lastWordIndex = -1;
+    let lastIndex = -1;
     if (highlightLastWord) {
-      for (let i = wordsWithType.length - 1; i >= 0; i--) {
-        if (
-          wordsWithType[i].type !== "removed" &&
-          /\S/.test(wordsWithType[i].text)
-        ) {
-          lastWordIndex = i;
+      for (let i = words.length - 1; i >= 0; i--) {
+        if (words[i].type !== "removed" && /\S/.test(words[i].text)) {
+          lastIndex = i;
           break;
         }
       }
     }
 
-    for (let i = 0; i <= lastWordIndex; i++) {
-      let { text, type } = wordsWithType[i];
+    const output = [];
+    for (let i = 0; i <= lastIndex; i++) {
+      let { text, type } = words[i];
       text = escapeExpression(text);
-
       if (/^\s+$/.test(text)) {
         output.push(text);
         continue;
       }
-
-      let content = this.#wrapChunk(text, type);
-
-      if (highlightLastWord && i === lastWordIndex) {
-        content = `<mark class="highlight">${content}</mark>`;
+      let chunk = this.#wrapChunk(text, type);
+      if (highlightLastWord && i === lastIndex) {
+        chunk = `<mark class="highlight">${chunk}</mark>`;
       }
-
-      output.push(content);
+      output.push(chunk);
     }
 
-    if (lastWordIndex < wordsWithType.length - 1) {
-      let i = lastWordIndex + 1;
-      while (i < wordsWithType.length) {
-        let chunkType = wordsWithType[i].type;
-        let chunkText = "";
-
-        while (
-          i < wordsWithType.length &&
-          wordsWithType[i].type === chunkType
-        ) {
-          chunkText += wordsWithType[i].text;
-          i++;
-        }
-
-        chunkText = escapeExpression(chunkText);
-        output.push(this.#wrapChunk(chunkText, chunkType));
+    for (let i = lastIndex + 1; i < words.length; ) {
+      const type = words[i].type;
+      let buf = "";
+      while (i < words.length && words[i].type === type) {
+        buf += words[i++].text;
       }
+      output.push(this.#wrapChunk(escapeExpression(buf), type));
     }
 
     return output.join("");
