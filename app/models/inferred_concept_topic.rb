@@ -15,13 +15,13 @@ end
 #
 # Table name: inferred_concepts_topics
 #
-#  inferred_concept_id :bigint           not null
-#  topic_id            :bigint           not null
+#  inferred_concept_id :bigint
+#  topic_id            :bigint
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #
 # Indexes
 #
-#  index_inferred_concepts_topics_uniqueness  (topic_id,inferred_concept_id) UNIQUE
 #  index_inferred_concepts_topics_on_inferred_concept_id  (inferred_concept_id)
+#  index_inferred_concepts_topics_uniqueness              (topic_id,inferred_concept_id) UNIQUE
 #
