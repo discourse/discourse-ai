@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::InferredConcepts::Applier do
+  subject(:applier) { described_class.new }
+
   fab!(:topic) { Fabricate(:topic, title: "Ruby Programming Tutorial") }
   fab!(:post) { Fabricate(:post, raw: "This post is about advanced testing techniques") }
   fab!(:user) { Fabricate(:user, username: "dev_user") }
@@ -16,15 +18,15 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     post.update!(user: user)
   end
 
-  describe ".apply_to_topic" do
+  describe "#apply_to_topic" do
     it "does nothing for blank topic or concepts" do
-      expect { described_class.apply_to_topic(nil, [concept1]) }.not_to raise_error
-      expect { described_class.apply_to_topic(topic, []) }.not_to raise_error
-      expect { described_class.apply_to_topic(topic, nil) }.not_to raise_error
+      expect { applier.apply_to_topic(nil, [concept1]) }.not_to raise_error
+      expect { applier.apply_to_topic(topic, []) }.not_to raise_error
+      expect { applier.apply_to_topic(topic, nil) }.not_to raise_error
     end
 
     it "associates concepts with topic" do
-      described_class.apply_to_topic(topic, [concept1, concept2])
+      applier.apply_to_topic(topic, [concept1, concept2])
 
       expect(topic.inferred_concepts).to include(concept1, concept2)
       expect(concept1.topics).to include(topic)
@@ -32,15 +34,15 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     end
   end
 
-  describe ".apply_to_post" do
+  describe "#apply_to_post" do
     it "does nothing for blank post or concepts" do
-      expect { described_class.apply_to_post(nil, [concept1]) }.not_to raise_error
-      expect { described_class.apply_to_post(post, []) }.not_to raise_error
-      expect { described_class.apply_to_post(post, nil) }.not_to raise_error
+      expect { applier.apply_to_post(nil, [concept1]) }.not_to raise_error
+      expect { applier.apply_to_post(post, []) }.not_to raise_error
+      expect { applier.apply_to_post(post, nil) }.not_to raise_error
     end
 
     it "associates concepts with post" do
-      described_class.apply_to_post(post, [concept1, concept2])
+      applier.apply_to_post(post, [concept1, concept2])
 
       expect(post.inferred_concepts).to include(concept1, concept2)
       expect(concept1.posts).to include(post)
@@ -48,9 +50,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     end
   end
 
-  describe ".topic_content_for_analysis" do
+  describe "#topic_content_for_analysis" do
     it "returns empty string for blank topic" do
-      expect(described_class.topic_content_for_analysis(nil)).to eq("")
+      expect(applier.topic_content_for_analysis(nil)).to eq("")
     end
 
     it "extracts title and posts content" do
@@ -58,7 +60,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       post1 = Fabricate(:post, topic: topic, post_number: 1, raw: "First post content", user: user)
       post2 = Fabricate(:post, topic: topic, post_number: 2, raw: "Second post content", user: user)
 
-      content = described_class.topic_content_for_analysis(topic)
+      content = applier.topic_content_for_analysis(topic)
 
       expect(content).to include(topic.title)
       expect(content).to include("First post content")
@@ -75,17 +77,17 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(Post).to receive(:where).with(topic_id: topic.id).and_call_original
       expect_any_instance_of(ActiveRecord::Relation).to receive(:limit).with(10).and_call_original
 
-      described_class.topic_content_for_analysis(topic)
+      applier.topic_content_for_analysis(topic)
     end
   end
 
-  describe ".post_content_for_analysis" do
+  describe "#post_content_for_analysis" do
     it "returns empty string for blank post" do
-      expect(described_class.post_content_for_analysis(nil)).to eq("")
+      expect(applier.post_content_for_analysis(nil)).to eq("")
     end
 
     it "extracts post content with topic context" do
-      content = described_class.post_content_for_analysis(post)
+      content = applier.post_content_for_analysis(post)
 
       expect(content).to include(post.topic.title)
       expect(content).to include(post.raw)
@@ -98,7 +100,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       # Mock the post to return nil for topic
       allow(post).to receive(:topic).and_return(nil)
 
-      content = described_class.post_content_for_analysis(post)
+      content = applier.post_content_for_analysis(post)
 
       expect(content).to include(post.raw)
       expect(content).to include(post.user.username)
@@ -106,92 +108,98 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     end
   end
 
-  describe ".match_existing_concepts" do
+  describe "#match_existing_concepts" do
+    let(:manager) { instance_double(DiscourseAi::InferredConcepts::Manager) }
+
     before do
-      allow(DiscourseAi::InferredConcepts::Manager).to receive(:list_concepts).and_return(
+      allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager)
+      allow(manager).to receive(:list_concepts).and_return(
         %w[programming testing ruby],
       )
     end
 
     it "returns empty array for blank topic" do
-      expect(described_class.match_existing_concepts(nil)).to eq([])
+      expect(applier.match_existing_concepts(nil)).to eq([])
     end
 
     it "returns empty array when no existing concepts" do
-      allow(DiscourseAi::InferredConcepts::Manager).to receive(:list_concepts).and_return([])
+      allow(manager).to receive(:list_concepts).and_return([])
 
-      result = described_class.match_existing_concepts(topic)
+      result = applier.match_existing_concepts(topic)
       expect(result).to eq([])
     end
 
     it "matches concepts and applies them to topic" do
-      expect(described_class).to receive(:topic_content_for_analysis).with(topic).and_return(
+      allow(applier).to receive(:topic_content_for_analysis).with(topic).and_return(
         "content about programming",
       )
 
-      expect(described_class).to receive(:match_concepts_to_content).with(
+      allow(applier).to receive(:match_concepts_to_content).with(
         "content about programming",
         %w[programming testing ruby],
       ).and_return(["programming"])
 
-      expect(InferredConcept).to receive(:where).with(name: ["programming"]).and_return([concept1])
+      allow(InferredConcept).to receive(:where).with(name: ["programming"]).and_return([concept1])
 
-      expect(described_class).to receive(:apply_to_topic).with(topic, [concept1])
+      allow(applier).to receive(:apply_to_topic).with(topic, [concept1])
 
-      result = described_class.match_existing_concepts(topic)
+      result = applier.match_existing_concepts(topic)
       expect(result).to eq([concept1])
     end
   end
 
-  describe ".match_existing_concepts_for_post" do
+  describe "#match_existing_concepts_for_post" do
+    let(:manager) { instance_double(DiscourseAi::InferredConcepts::Manager) }
+
     before do
-      allow(DiscourseAi::InferredConcepts::Manager).to receive(:list_concepts).and_return(
+      allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager)
+      allow(manager).to receive(:list_concepts).and_return(
         %w[programming testing ruby],
       )
     end
 
     it "returns empty array for blank post" do
-      expect(described_class.match_existing_concepts_for_post(nil)).to eq([])
+      expect(applier.match_existing_concepts_for_post(nil)).to eq([])
     end
 
     it "returns empty array when no existing concepts" do
-      allow(DiscourseAi::InferredConcepts::Manager).to receive(:list_concepts).and_return([])
+      allow(manager).to receive(:list_concepts).and_return([])
 
-      result = described_class.match_existing_concepts_for_post(post)
+      result = applier.match_existing_concepts_for_post(post)
       expect(result).to eq([])
     end
 
     it "matches concepts and applies them to post" do
-      expect(described_class).to receive(:post_content_for_analysis).with(post).and_return(
+      allow(applier).to receive(:post_content_for_analysis).with(post).and_return(
         "content about testing",
       )
 
-      expect(described_class).to receive(:match_concepts_to_content).with(
+      allow(applier).to receive(:match_concepts_to_content).with(
         "content about testing",
         %w[programming testing ruby],
       ).and_return(["testing"])
 
-      expect(InferredConcept).to receive(:where).with(name: ["testing"]).and_return([concept2])
+      allow(InferredConcept).to receive(:where).with(name: ["testing"]).and_return([concept2])
 
-      expect(described_class).to receive(:apply_to_post).with(post, [concept2])
+      allow(applier).to receive(:apply_to_post).with(post, [concept2])
 
-      result = described_class.match_existing_concepts_for_post(post)
+      result = applier.match_existing_concepts_for_post(post)
       expect(result).to eq([concept2])
     end
   end
 
-  describe ".match_concepts_to_content" do
+  describe "#match_concepts_to_content" do
     it "returns empty array for blank content or concept list" do
-      expect(described_class.match_concepts_to_content("", ["concept1"])).to eq([])
-      expect(described_class.match_concepts_to_content(nil, ["concept1"])).to eq([])
-      expect(described_class.match_concepts_to_content("content", [])).to eq([])
-      expect(described_class.match_concepts_to_content("content", nil)).to eq([])
+      expect(applier.match_concepts_to_content("", ["concept1"])).to eq([])
+      expect(applier.match_concepts_to_content(nil, ["concept1"])).to eq([])
+      expect(applier.match_concepts_to_content("content", [])).to eq([])
+      expect(applier.match_concepts_to_content("content", nil)).to eq([])
     end
 
     it "uses ConceptMatcher persona to match concepts" do
       content = "This is about Ruby programming"
       concept_list = %w[programming testing ruby]
-      expected_response = [['{"matching_concepts": ["programming", "ruby"]}']]
+      structured_output_double = double("StructuredOutput")
 
       persona_class_double = double("ConceptMatcherClass")
       persona_double = double("ConceptMatcher")
@@ -205,16 +213,16 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       expect(LlmModel).to receive(:find).and_return(llm_model)
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_return(expected_response)
+      expect(bot_double).to receive(:reply).and_yield(structured_output_double, nil, :structured_output)
+      expect(structured_output_double).to receive(:read_buffered_property).with(:matching_concepts).and_return(%w[programming ruby])
 
-      result = described_class.match_concepts_to_content(content, concept_list)
+      result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq(%w[programming ruby])
     end
 
-    it "handles invalid JSON response gracefully" do
+    it "handles no structured output gracefully" do
       content = "Test content"
       concept_list = ["concept1"]
-      invalid_response = [["invalid json"]]
 
       persona_class_double = double("ConceptMatcherClass")
       persona_double = double("ConceptMatcher")
@@ -228,11 +236,10 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       expect(LlmModel).to receive(:find).and_return(llm_model)
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_return(invalid_response)
+      expect(bot_double).to receive(:reply).and_yield(nil, nil, :text)
 
-      expect { described_class.match_concepts_to_content(content, concept_list) }.to raise_error(
-        JSON::ParserError,
-      )
+      result = applier.match_concepts_to_content(content, concept_list)
+      expect(result).to eq([])
     end
 
     it "returns empty array when no matching concepts found" do
@@ -254,7 +261,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
       expect(bot_double).to receive(:reply).and_return(expected_response)
 
-      result = described_class.match_concepts_to_content(content, concept_list)
+      result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq([])
     end
 
@@ -277,7 +284,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
       expect(bot_double).to receive(:reply).and_return(expected_response)
 
-      result = described_class.match_concepts_to_content(content, concept_list)
+      result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq([])
     end
   end

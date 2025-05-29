@@ -6,7 +6,7 @@ module DiscourseAi
       # Associates the provided concepts with a topic
       # topic: a Topic instance
       # concepts: an array of InferredConcept instances
-      def self.apply_to_topic(topic, concepts)
+      def apply_to_topic(topic, concepts)
         return if topic.blank? || concepts.blank?
 
         topic.inferred_concepts << concepts
@@ -15,7 +15,7 @@ module DiscourseAi
       # Associates the provided concepts with a post
       # post: a Post instance
       # concepts: an array of InferredConcept instances
-      def self.apply_to_post(post, concepts)
+      def apply_to_post(post, concepts)
         return if post.blank? || concepts.blank?
 
         post.inferred_concepts << concepts
@@ -23,7 +23,7 @@ module DiscourseAi
 
       # Extracts content from a topic for concept analysis
       # Returns a string with the topic title and first few posts
-      def self.topic_content_for_analysis(topic)
+      def topic_content_for_analysis(topic)
         return "" if topic.blank?
 
         # Combine title and first few posts for analysis
@@ -37,7 +37,7 @@ module DiscourseAi
 
       # Extracts content from a post for concept analysis
       # Returns a string with the post content
-      def self.post_content_for_analysis(post)
+      def post_content_for_analysis(post)
         return "" if post.blank?
 
         # Get the topic title for context
@@ -50,14 +50,14 @@ module DiscourseAi
       end
 
       # Match a topic with existing concepts
-      def self.match_existing_concepts(topic)
+      def match_existing_concepts(topic)
         return [] if topic.blank?
 
         # Get content to analyze
         content = topic_content_for_analysis(topic)
 
         # Get all existing concepts
-        existing_concepts = DiscourseAi::InferredConcepts::Manager.list_concepts
+        existing_concepts = DiscourseAi::InferredConcepts::Manager.new.list_concepts
         return [] if existing_concepts.empty?
 
         # Use the ConceptMatcher persona to match concepts
@@ -73,14 +73,14 @@ module DiscourseAi
       end
 
       # Match a post with existing concepts
-      def self.match_existing_concepts_for_post(post)
+      def match_existing_concepts_for_post(post)
         return [] if post.blank?
 
         # Get content to analyze
         content = post_content_for_analysis(post)
 
         # Get all existing concepts
-        existing_concepts = DiscourseAi::InferredConcepts::Manager.list_concepts
+        existing_concepts = DiscourseAi::InferredConcepts::Manager.new.list_concepts
         return [] if existing_concepts.empty?
 
         # Use the ConceptMatcher persona to match concepts
@@ -96,7 +96,7 @@ module DiscourseAi
       end
 
       # Use ConceptMatcher persona to match content against provided concepts
-      def self.match_concepts_to_content(content, concept_list)
+      def match_concepts_to_content(content, concept_list)
         return [] if content.blank? || concept_list.blank?
 
         # Prepare user message with only the content

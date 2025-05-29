@@ -8,7 +8,7 @@ module DiscourseAi
       end
 
       def system_prompt
-        existing_concepts = DiscourseAi::InferredConcepts::Manager.list_concepts(limit: 100)
+        existing_concepts = DiscourseAi::InferredConcepts::Manager.new.list_concepts(limit: 100)
         existing_concepts_text = ""
 
         existing_concepts_text = <<~CONCEPTS if existing_concepts.present?

@@ -17,8 +17,9 @@ module Jobs
 
     def process_popular_topics
       # Find candidate topics that are popular and don't have concepts yet
+      manager = DiscourseAi::InferredConcepts::Manager.new
       candidates =
-        DiscourseAi::InferredConcepts::Manager.find_candidate_topics(
+        manager.find_candidate_topics(
           limit: SiteSetting.inferred_concepts_daily_topics_limit || 20,
           min_posts: SiteSetting.inferred_concepts_min_posts || 5,
           min_likes: SiteSetting.inferred_concepts_min_likes || 10,
@@ -51,8 +52,9 @@ module Jobs
 
     def process_popular_posts
       # Find candidate posts that are popular and don't have concepts yet
+      manager = DiscourseAi::InferredConcepts::Manager.new
       candidates =
-        DiscourseAi::InferredConcepts::Manager.find_candidate_posts(
+        manager.find_candidate_posts(
           limit: SiteSetting.inferred_concepts_daily_posts_limit || 30,
           min_likes: SiteSetting.inferred_concepts_post_min_likes || 5,
           exclude_first_posts: true,

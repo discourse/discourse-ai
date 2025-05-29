@@ -51,17 +51,18 @@ module Jobs
 
     def process_item(item, item_type, match_only)
       # Use the Manager method that handles both identifying and creating concepts
+      manager = DiscourseAi::InferredConcepts::Manager.new
       if match_only
         if item_type == "topics"
-          DiscourseAi::InferredConcepts::Manager.match_topic_to_concepts(item)
+          manager.match_topic_to_concepts(item)
         else # posts
-          DiscourseAi::InferredConcepts::Manager.match_post_to_concepts(item)
+          manager.match_post_to_concepts(item)
         end
       else
         if item_type == "topics"
-          DiscourseAi::InferredConcepts::Manager.generate_concepts_from_topic(item)
+          manager.generate_concepts_from_topic(item)
         else # posts
-          DiscourseAi::InferredConcepts::Manager.generate_concepts_from_post(item)
+          manager.generate_concepts_from_post(item)
         end
       end
     end

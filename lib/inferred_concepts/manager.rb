@@ -6,7 +6,7 @@ module DiscourseAi
       # Get a list of existing concepts
       # @param limit [Integer, nil] Optional maximum number of concepts to return
       # @return [Array<InferredConcept>] Array of InferredConcept objects
-      def self.list_concepts(limit: nil)
+      def list_concepts(limit: nil)
         query = InferredConcept.all.order("name ASC")
 
         # Apply limit if provided
@@ -21,7 +21,7 @@ module DiscourseAi
       # 2. Process each letter group separately through the deduplicator
       # 3. Do a final pass with all deduplicated concepts
       # @return [Hash] Statistics about the deduplication process
-      def self.deduplicate_concepts_by_letter(per_letter_batch: 50, full_pass_batch: 150)
+      def deduplicate_concepts_by_letter(per_letter_batch: 50, full_pass_batch: 150)
         # Get all concepts
         all_concepts = list_concepts
         return if all_concepts.empty?
@@ -42,6 +42,7 @@ module DiscourseAi
 
         # Process each letter group
         letter_deduplicated_concepts = []
+        finder = DiscourseAi::InferredConcepts::Finder.new
 
         letter_groups.each do |letter, concepts|
           next if concepts.empty?
@@ -49,7 +50,7 @@ module DiscourseAi
           batches = concepts.each_slice(per_letter_batch).to_a
 
           batches.each do |batch|
-            result = Finder.deduplicate_concepts(batch)
+            result = finder.deduplicate_concepts(batch)
             letter_deduplicated_concepts.concat(result)
           end
         end
@@ -60,7 +61,7 @@ module DiscourseAi
 
           batches = letter_deduplicated_concepts.each_slice(full_pass_batch).to_a
           batches.each do |batch|
-            dedups = Finder.deduplicate_concepts(batch)
+            dedups = finder.deduplicate_concepts(batch)
             final_result.concat(dedups)
           end
 
@@ -76,32 +77,34 @@ module DiscourseAi
       # Extract new concepts from arbitrary content
       # @param content [String] The content to analyze
       # @return [Array<String>] The identified concept names
-      def self.identify_concepts(content)
-        Finder.identify_concepts(content)
+      def identify_concepts(content)
+        DiscourseAi::InferredConcepts::Finder.new.identify_concepts(content)
       end
 
       # Identify and create concepts from content without applying them to any topic
       # @param content [String] The content to analyze
       # @return [Array<InferredConcept>] The created or found concepts
-      def self.generate_concepts_from_content(content)
+      def generate_concepts_from_content(content)
         return [] if content.blank?
 
         # Identify concepts
-        concept_names = Finder.identify_concepts(content)
+        finder = DiscourseAi::InferredConcepts::Finder.new
+        concept_names = finder.identify_concepts(content)
         return [] if concept_names.blank?
 
         # Create or find concepts in the database
-        Finder.create_or_find_concepts(concept_names)
+        finder.create_or_find_concepts(concept_names)
       end
 
       # Generate concepts from a topic's content without applying them to the topic
       # @param topic [Topic] A Topic instance
       # @return [Array<InferredConcept>] The created or found concepts
-      def self.generate_concepts_from_topic(topic)
+      def generate_concepts_from_topic(topic)
         return [] if topic.blank?
 
         # Get content to analyze
-        content = Applier.topic_content_for_analysis(topic)
+        applier = DiscourseAi::InferredConcepts::Applier.new
+        content = applier.topic_content_for_analysis(topic)
         return [] if content.blank?
 
         # Generate concepts from the content
@@ -111,11 +114,12 @@ module DiscourseAi
       # Generate concepts from a post's content without applying them to the post
       # @param post [Post] A Post instance
       # @return [Array<InferredConcept>] The created or found concepts
-      def self.generate_concepts_from_post(post)
+      def generate_concepts_from_post(post)
         return [] if post.blank?
 
         # Get content to analyze
-        content = Applier.post_content_for_analysis(post)
+        applier = DiscourseAi::InferredConcepts::Applier.new
+        content = applier.post_content_for_analysis(post)
         return [] if content.blank?
 
         # Generate concepts from the content
@@ -125,25 +129,25 @@ module DiscourseAi
       # Match a topic against existing concepts
       # @param topic [Topic] A Topic instance
       # @return [Array<InferredConcept>] The concepts that were applied
-      def self.match_topic_to_concepts(topic)
+      def match_topic_to_concepts(topic)
         return [] if topic.blank?
 
-        Applier.match_existing_concepts(topic)
+        DiscourseAi::InferredConcepts::Applier.new.match_existing_concepts(topic)
       end
 
       # Match a post against existing concepts
       # @param post [Post] A Post instance
       # @return [Array<InferredConcept>] The concepts that were applied
-      def self.match_post_to_concepts(post)
+      def match_post_to_concepts(post)
         return [] if post.blank?
 
-        Applier.match_existing_concepts_for_post(post)
+        DiscourseAi::InferredConcepts::Applier.new.match_existing_concepts_for_post(post)
       end
 
       # Find topics that have a specific concept
       # @param concept_name [String] The name of the concept to search for
       # @return [Array<Topic>] Topics that have the specified concept
-      def self.search_topics_by_concept(concept_name)
+      def search_topics_by_concept(concept_name)
         concept = ::InferredConcept.find_by(name: concept_name)
         return [] unless concept
         concept.topics
@@ -152,7 +156,7 @@ module DiscourseAi
       # Find posts that have a specific concept
       # @param concept_name [String] The name of the concept to search for
       # @return [Array<Post>] Posts that have the specified concept
-      def self.search_posts_by_concept(concept_name)
+      def search_posts_by_concept(concept_name)
         concept = ::InferredConcept.find_by(name: concept_name)
         return [] unless concept
         concept.posts
@@ -161,11 +165,11 @@ module DiscourseAi
       # Match arbitrary content against existing concepts
       # @param content [String] The content to analyze
       # @return [Array<String>] Names of matching concepts
-      def self.match_content_to_concepts(content)
+      def match_content_to_concepts(content)
         existing_concepts = InferredConcept.all.pluck(:name)
         return [] if existing_concepts.empty?
 
-        Applier.match_concepts_to_content(content, existing_concepts)
+        DiscourseAi::InferredConcepts::Applier.new.match_concepts_to_content(content, existing_concepts)
       end
 
       # Find candidate topics that are good for concept generation
@@ -179,15 +183,15 @@ module DiscourseAi
       # @option opts [Array<Integer>] :category_ids (nil) Only include topics from these categories
       # @option opts [DateTime] :created_after (30.days.ago) Only include topics created after this time
       # @return [Array<Topic>] Array of Topic objects that are good candidates
-      def self.find_candidate_topics(opts = {})
-        Finder.find_candidate_topics(**opts)
+      def find_candidate_topics(opts = {})
+        DiscourseAi::InferredConcepts::Finder.new.find_candidate_topics(**opts)
       end
 
       # Find candidate posts that are good for concept generation
       # @param opts [Hash] Options to pass to the finder
       # @return [Array<Post>] Array of Post objects that are good candidates
-      def self.find_candidate_posts(opts = {})
-        Finder.find_candidate_posts(**opts)
+      def find_candidate_posts(opts = {})
+        DiscourseAi::InferredConcepts::Finder.new.find_candidate_posts(**opts)
       end
     end
   end

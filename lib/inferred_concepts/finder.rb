@@ -5,7 +5,7 @@ module DiscourseAi
     class Finder
       # Identifies potential concepts from provided content
       # Returns an array of concept names (strings)
-      def self.identify_concepts(content)
+      def identify_concepts(content)
         return [] if content.blank?
 
         # Use the ConceptFinder persona to identify concepts
@@ -20,7 +20,7 @@ module DiscourseAi
           DiscourseAi::Personas::BotContext.new(
             messages: [{ type: :user, content: content }],
             user: Discourse.system_user,
-            inferred_concepts: DiscourseAi::InferredConcepts::Manager.list_concepts,
+            inferred_concepts: DiscourseAi::InferredConcepts::Manager.new.list_concepts,
           )
 
         bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: persona, model: llm)
@@ -35,7 +35,7 @@ module DiscourseAi
 
       # Creates or finds concepts in the database from provided names
       # Returns an array of InferredConcept instances
-      def self.create_or_find_concepts(concept_names)
+      def create_or_find_concepts(concept_names)
         return [] if concept_names.blank?
 
         concept_names.map { |name| InferredConcept.find_or_create_by(name: name) }
@@ -51,7 +51,7 @@ module DiscourseAi
       # @param category_ids [Array<Integer>] Only include topics from these categories (optional)
       # @param created_after [DateTime] Only include topics created after this time (optional)
       # @return [Array<Topic>] Array of Topic objects that are good candidates
-      def self.find_candidate_topics(
+      def find_candidate_topics(
         limit: 100,
         min_posts: 5,
         min_likes: 10,
@@ -104,7 +104,7 @@ module DiscourseAi
       # @param category_ids [Array<Integer>] Only include posts from topics in these categories
       # @param created_after [DateTime] Only include posts created after this time
       # @return [Array<Post>] Array of Post objects that are good candidates
-      def self.find_candidate_posts(
+      def find_candidate_posts(
         limit: 100,
         min_likes: 5,
         exclude_first_posts: true,
@@ -144,7 +144,7 @@ module DiscourseAi
       # Deduplicate and standardize a list of concepts
       # @param concept_names [Array<String>] List of concept names to deduplicate
       # @return [Hash] Hash with deduplicated concepts and mapping
-      def self.deduplicate_concepts(concept_names)
+      def deduplicate_concepts(concept_names)
         return { deduplicated_concepts: [], mapping: {} } if concept_names.blank?
 
         # Use the ConceptDeduplicator persona to deduplicate concepts
