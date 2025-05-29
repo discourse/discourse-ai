@@ -107,7 +107,7 @@ module DiscourseAi
         persona =
           AiPersona
             .all_personas(enabled_only: false)
-            .find { |persona| persona.id == SiteSetting.inferred_concepts_match_persona.to_i }
+            .find { |p| p.id == SiteSetting.inferred_concepts_match_persona.to_i }
             .new
 
         llm = LlmModel.find(persona.class.default_llm_id)
