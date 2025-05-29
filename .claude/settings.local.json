@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(bundle exec rails g migration:*)"
-    ],
-    "deny": []
-  }
-}

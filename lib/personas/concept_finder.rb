@@ -42,7 +42,7 @@ module DiscourseAi
       end
 
       def response_format
-        [{ "key" => "concepts", "type" => "array" }]
+        [{ "key" => "concepts", "type" => "array", "items" => { "type" => "string" } }]
       end
     end
   end

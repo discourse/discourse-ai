@@ -319,6 +319,7 @@ module DiscourseAi
             .to_a
             .reduce({}) do |memo, format|
               memo[format["key"].to_sym] = { type: format["type"] }
+              memo[format["key"].to_sym][:items] = format["items"] if format["items"]
               memo
             end
 

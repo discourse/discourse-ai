@@ -336,6 +336,9 @@ en:
         concept_matcher:
           name: "Concept Matcher"
           description: "AI Bot specialized in matching content against existing concepts"
+        concept_deduplicator:
+          name: "Concept Deduplicator"
+          description: "AI Bot specialized in deduplicating concepts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
