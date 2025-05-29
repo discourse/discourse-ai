@@ -42,6 +42,8 @@ module Jobs
           )
         end
       end
+
+      MessageBus.publish("/topic/#{topic.id}", type: :localized, id: 1)
     end
   end
 end
