@@ -126,19 +126,25 @@ describe Jobs::LocalizePosts do
     fab!(:private_category) { Fabricate(:private_category, group: Group[:staff]) }
     fab!(:private_topic) { Fabricate(:topic, category: private_category) }
     fab!(:private_post) { Fabricate(:post, topic: private_topic, locale: "es") }
+
+    fab!(:pm_post) { Fabricate(:post, topic: Fabricate(:private_message_topic), locale: "es") }
+
     fab!(:public_post) { Fabricate(:post, locale: "es") }
 
-    before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
+    before do
+      SiteSetting.ai_translation_backfill_limit_to_public_content = true
+      SiteSetting.experimental_content_localization_supported_locales = "ja"
+    end
 
     it "only processes posts from public categories" do
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "en").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "de").once
 
       DiscourseAi::Translation::PostLocalizer
         .expects(:localize)
         .with(private_post, any_parameters)
         .never
+
+      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(pm_post, any_parameters).never
 
       job.execute({})
     end
@@ -146,13 +152,9 @@ describe Jobs::LocalizePosts do
     it "processes all posts when setting is disabled" do
       SiteSetting.ai_translation_backfill_limit_to_public_content = false
 
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "en").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "de").once
-
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(private_post, "en").once
+      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(pm_post, "ja").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(private_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(private_post, "de").once
 
       job.execute({})
     end
@@ -162,12 +164,13 @@ describe Jobs::LocalizePosts do
     fab!(:old_post) { Fabricate(:post, locale: "es", created_at: 10.days.ago) }
     fab!(:new_post) { Fabricate(:post, locale: "es", created_at: 2.days.ago) }
 
-    before { SiteSetting.ai_translation_backfill_max_age_days = 5 }
+    before do
+      SiteSetting.ai_translation_backfill_max_age_days = 5
+      SiteSetting.experimental_content_localization_supported_locales = "ja"
+    end
 
     it "only processes posts within the age limit" do
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "en").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "de").once
 
       DiscourseAi::Translation::PostLocalizer
         .expects(:localize)
@@ -180,13 +183,9 @@ describe Jobs::LocalizePosts do
     it "processes all posts when setting is disabled" do
       SiteSetting.ai_translation_backfill_max_age_days = 0
 
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "en").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(new_post, "de").once
 
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(old_post, "en").once
       DiscourseAi::Translation::PostLocalizer.expects(:localize).with(old_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(old_post, "de").once
 
       job.execute({})
     end

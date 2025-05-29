@@ -81,5 +81,8 @@ describe Jobs::DetectTranslatePost do
     DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 
     job.execute({ post_id: post.id })
+
+    pm_post = Fabricate(:post, topic: Fabricate(:private_message_topic))
+    job.execute({ post_id: pm_post.id })
   end
 end

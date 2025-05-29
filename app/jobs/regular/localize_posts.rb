@@ -31,12 +31,10 @@ module Jobs
 
         if SiteSetting.ai_translation_backfill_limit_to_public_content
           posts =
-            posts.joins(:topic).where(
-              topics: {
-                category_id: Category.where(read_restricted: false).select(:id),
-                archetype: "regular",
-              },
-            )
+            posts
+              .joins(:topic)
+              .where(topics: { category_id: Category.where(read_restricted: false).select(:id) })
+              .where.not(topics: { archetype: Archetype.private_message })
         end
 
         if SiteSetting.ai_translation_backfill_max_age_days > 0
