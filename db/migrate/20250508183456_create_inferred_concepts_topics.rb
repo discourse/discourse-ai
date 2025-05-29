@@ -8,7 +8,7 @@ class CreateInferredConceptsTopics < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    create_index :inferred_concepts_topics, %i[topic_id inferred_concept_id], unique: true
-    create_index :inferred_concepts_topics, :inferred_concept_id
+    add_index :inferred_concepts_topics, %i[topic_id inferred_concept_id], unique: true
+    add_index :inferred_concepts_topics, :inferred_concept_id
   end
 end
