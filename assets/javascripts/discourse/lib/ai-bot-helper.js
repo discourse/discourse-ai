@@ -5,7 +5,7 @@ import Composer from "discourse/models/composer";
 import { i18n } from "discourse-i18n";
 import ShareFullTopicModal from "../components/modal/share-full-topic-modal";
 
-const MAX_PERSONA_USER_ID = -1200;
+const MAX_AGENT_USER_ID = -1200;
 
 let enabledChatBotMap = null;
 
@@ -40,12 +40,12 @@ export function getBotType(user) {
   if (!bot) {
     return;
   }
-  return bot.is_persona ? "persona" : "llm";
+  return bot.is_agent ? "agent" : "llm";
 }
 
 export function isPostFromAiBot(post, currentUser) {
   return (
-    post.user_id <= MAX_PERSONA_USER_ID ||
+    post.user_id <= MAX_AGENT_USER_ID ||
     !!currentUser?.ai_enabled_chat_bots?.any(
       (bot) => post.username === bot.username
     )
@@ -66,7 +66,7 @@ export async function composeAiBotMessage(
   options = {
     skipFocus: false,
     topicBody: "",
-    personaUsername: null,
+    agentUsername: null,
   }
 ) {
   const currentUser = composer.currentUser;
@@ -77,8 +77,8 @@ export async function composeAiBotMessage(
     botUsername = currentUser.ai_enabled_chat_bots.find(
       (bot) => bot.model_name === targetBot
     )?.username;
-  } else if (options.personaUsername) {
-    botUsername = options.personaUsername;
+  } else if (options.agentUsername) {
+    botUsername = options.agentUsername;
   } else {
     botUsername = currentUser.ai_enabled_chat_bots[0].username;
   }

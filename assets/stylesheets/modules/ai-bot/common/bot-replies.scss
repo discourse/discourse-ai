@@ -11,7 +11,7 @@ nav.post-controls .actions button.cancel-streaming {
     }
   }
 
-  .persona-llm-selector {
+  .agent-llm-selector {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -24,7 +24,7 @@ nav.post-controls .actions button.cancel-streaming {
 }
 
 .ai-bot-pm {
-  .gpt-persona {
+  .gpt-agent {
     margin-bottom: 5px;
   }
 
@@ -75,7 +75,7 @@ article.streaming nav.post-controls .actions button.cancel-streaming {
   }
 }
 
-.topic-body .persona-flair {
+.topic-body .agent-flair {
   order: 2;
   font-size: var(--font-down-1);
 }

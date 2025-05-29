@@ -1,0 +1,158 @@
+.admin-contents .ai-agent-list-editor {
+  margin-top: 0;
+}
+
+.ai-agent-list-editor {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 1em 0;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__current {
+    padding-left: 20px;
+  }
+
+  li.disabled {
+    opacity: 0.5;
+  }
+}
+
+.ai-agent-tool-option-editor {
+  &__instructions {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+    line-height: var(--line-height-large);
+  }
+}
+
+.ai-agents__container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ai-agent-editor {
+  padding-left: 0.5em;
+
+  &__tool-options {
+    padding: 1em;
+    border: 1px solid var(--primary-low-mid);
+    width: 480px;
+  }
+
+  &__tool-options-name {
+    margin-bottom: 10px;
+    font-size: var(--font-down-1);
+  }
+
+  &__response-format {
+    width: 100%;
+    display: block;
+  }
+
+  &__response-format-pre {
+    margin-bottom: 0;
+    white-space: pre-line;
+  }
+
+  &__response-format-none {
+    margin-bottom: 1em;
+    margin-top: 0.5em;
+  }
+}
+
+.rag-options {
+  &__indexing-options {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+
+.rag-uploader {
+  width: 500px;
+
+  &__search-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--primary-400);
+    width: 100%;
+    box-sizing: border-box;
+    height: 35px;
+    padding: 0 0.5rem;
+
+    &:focus,
+    &:focus-within {
+      @include default-focus;
+    }
+
+    &-container {
+      display: flex;
+      flex-grow: 1;
+    }
+
+    &__search-icon {
+      background: none !important;
+      color: var(--primary-medium);
+    }
+
+    &__input {
+      width: 100% !important;
+    }
+
+    &__input,
+    &__input:focus {
+      margin: 0 !important;
+      border: 0 !important;
+      appearance: none !important;
+      outline: none !important;
+      background: none !important;
+    }
+  }
+
+  &__uploads-list {
+    &:has(tr) {
+      margin-bottom: 20px;
+    }
+
+    tbody {
+      border-top: none;
+    }
+  }
+
+  &__upload-status {
+    text-align: right;
+    padding-right: 0;
+
+    .indexed {
+      color: var(--success);
+    }
+
+    .uploaded,
+    .indexing {
+      color: var(--primary-low-mid);
+    }
+  }
+
+  &__remove-file {
+    text-align: right;
+    padding-left: 0;
+  }
+
+  &__rag-file-icon {
+    margin-right: 5px;
+  }
+
+  .hidden-upload-field {
+    visibility: hidden;
+    position: absolute;
+  }
+}

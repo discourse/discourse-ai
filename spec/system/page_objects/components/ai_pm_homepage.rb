@@ -23,7 +23,7 @@ module PageObjects
           text:
             I18n.t(
               "js.discourse_ai.ai_bot.conversations.min_input_length_message",
-              count: SiteSetting.min_personal_message_post_length,
+              count: SiteSetting.min_agentl_message_post_length,
             ),
         )
       end
@@ -62,12 +62,12 @@ module PageObjects
         ).click
       end
 
-      def persona_selector
-        PageObjects::Components::SelectKit.new(".persona-llm-selector__persona-dropdown")
+      def agent_selector
+        PageObjects::Components::SelectKit.new(".agent-llm-selector__agent-dropdown")
       end
 
       def llm_selector
-        PageObjects::Components::SelectKit.new(".persona-llm-selector__llm-dropdown")
+        PageObjects::Components::SelectKit.new(".agent-llm-selector__llm-dropdown")
       end
 
       def has_sidebar_back_link?

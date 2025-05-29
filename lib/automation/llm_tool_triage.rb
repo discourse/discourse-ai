@@ -7,7 +7,7 @@ module DiscourseAi
         return if !tool
         return if !tool.parameters.blank?
 
-        context = DiscourseAi::Personas::BotContext.new(post: post)
+        context = DiscourseAi::Agents::BotContext.new(post: post)
 
         runner = tool.runner({}, llm: nil, bot_user: Discourse.system_user, context: context)
         runner.invoke
