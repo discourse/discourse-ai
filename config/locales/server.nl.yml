@@ -243,10 +243,10 @@ nl:
     ai_bot:
       reply_error: "Het lijkt erop dat ons systeem een onverwacht probleem heeft ondervonden terwijl het probeerde te antwoorden.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Ongetitelde PB van AI-bot]"
-      personas:
+      agents:
         default_llm_required: "Standaard LLM-model is vereist voordat Chat wordt ingeschakeld"
-        cannot_delete_system_persona: "Systeempersona's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
-        cannot_edit_system_persona: "Systeempersona's kunnen alleen worden hernoemd. Je kunt tools of systeemprompts niet bewerken. Je kunt ze wel uitschakelen en een kopie maken"
+        cannot_delete_system_agent: "Systeemagent's kunnen niet worden verwijderd. Schakel deze in plaats daarvan uit"
+        cannot_edit_system_agent: "Systeemagent's kunnen alleen worden hernoemd. Je kunt tools of systeemprompts niet bewerken. Je kunt ze wel uitschakelen en een kopie maken"
         github_helper:
           name: "GitHub Helper"
           description: "AI-bot gespecialiseerd in het assisteren bij GitHub-gerelateerde taken en vragen"
@@ -430,11 +430,11 @@ nl:
       quota_exceeded: "Je hebt het quotum voor dit model overschreden. Probeer het opnieuw over %{relative_time}."
       quota_required: "Je moet het maximale aantal tokens of gebruiken opgeven voor dit model"
       no_query_specified: De queryparameter is verplicht. Geef deze op.
-      no_user_for_persona: Er is geen gebruiker gekoppeld aan de opgegeven persona.
-      persona_not_found: De opgegeven persona bestaat niet. Controleer de parameters persona_name en persona_id.
+      no_user_for_agent: Er is geen gebruiker gekoppeld aan de opgegeven agent.
+      agent_not_found: De opgegeven agent bestaat niet. Controleer de parameters agent_name en agent_id.
       no_user_specified: De gebruikersnaam of de parameter user_unique_id is vereist. Geef deze op.
       user_not_found: De opgegeven gebruiker bestaat niet. Controleer de gebruikersnaamparameter.
-      persona_disabled: De opgegeven persona is uitgeschakeld. Controleer de parameters persona_name en persona_id.
-      no_default_llm: Er moet een default_llm zijn gedefinieerd voor de persona.
+      agent_disabled: De opgegeven agent is uitgeschakeld. Controleer de parameters agent_name en agent_id.
+      no_default_llm: Er moet een default_llm zijn gedefinieerd voor de agent.
       user_not_allowed: De gebruiker mag niet deelnemen aan het topic.
       prompt_message_length: Het bericht %{idx} is langer dan de limiet van 1000 tekens.

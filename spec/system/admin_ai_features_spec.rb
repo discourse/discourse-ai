@@ -3,7 +3,7 @@
 RSpec.describe "Admin AI features configuration", type: :system, js: true do
   fab!(:admin)
   fab!(:llm_model)
-  fab!(:summarization_persona) { Fabricate(:ai_persona) }
+  fab!(:summarization_agent) { Fabricate(:ai_agent) }
   fab!(:group_1) { Fabricate(:group) }
   fab!(:group_2) { Fabricate(:group) }
   let(:page_header) { PageObjects::Components::DPageHeader.new }
@@ -11,15 +11,15 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
   let(:ai_features_page) { PageObjects::Pages::AdminAiFeatures.new }
 
   before do
-    summarization_persona.allowed_group_ids = [group_1.id, group_2.id]
-    summarization_persona.save!
+    summarization_agent.allowed_group_ids = [group_1.id, group_2.id]
+    summarization_agent.save!
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true
-    SiteSetting.ai_summarization_persona = summarization_persona.id
+    SiteSetting.ai_summarization_agent = summarization_agent.id
     sign_in(admin)
   end
 
-  it "lists all persona backed AI features separated by configured/unconfigured" do
+  it "lists all agent backed AI features separated by configured/unconfigured" do
     ai_features_page.visit
     expect(
       ai_features_page
@@ -32,9 +32,9 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
     expect(ai_features_page).to have_unconfigured_feature_items(3)
   end
 
-  it "lists the persona used for the corresponding AI feature" do
+  it "lists the agent used for the corresponding AI feature" do
     ai_features_page.visit
-    expect(ai_features_page).to have_feature_persona(summarization_persona.name)
+    expect(ai_features_page).to have_feature_agent(summarization_agent.name)
   end
 
   it "lists the groups allowed to use the AI feature" do

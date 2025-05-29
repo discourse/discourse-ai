@@ -8,10 +8,10 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
   fab!(:topic) { Fabricate(:topic, user: new_user) }
   fab!(:post) { Fabricate(:post, topic: topic, user: new_user, raw: "How do I reset my password?") }
   fab!(:llm_model)
-  fab!(:ai_persona) do
-    persona = Fabricate(:ai_persona, default_llm: llm_model)
-    persona.create_user
-    persona
+  fab!(:ai_agent) do
+    agent = Fabricate(:ai_agent, default_llm: llm_model)
+    agent.create_user
+    agent
   end
 
   fab!(:tool) do
@@ -28,7 +28,7 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
           };
         }
 
-        const helper = discourse.getPersona("#{ai_persona.name}");
+        const helper = discourse.getAgent("#{ai_agent.name}");
         const answer = helper.respondTo({ post_id: post.id });
 
         return {
@@ -79,7 +79,7 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
         const postId = context.post_id;
         const post = discourse.getPost(postId);
 
-        const helper = discourse.getPersona("#{ai_persona.name}");
+        const helper = discourse.getAgent("#{ai_agent.name}");
         // Pass instructions to make response a whisper
         const answer = helper.respondTo({
           post_id: post.id,

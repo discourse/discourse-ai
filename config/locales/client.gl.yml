@@ -55,8 +55,8 @@ gl:
         username: "Nome de usuario"
         total_requests: "Solicitudes totais"
         periods:
-          custom: "Personalizar..."
-      ai_persona:
+          custom: "Agentlizar..."
+      ai_agent:
         back: "Volver"
         name: "Nome"
         edit: "Editar"
@@ -97,7 +97,7 @@ gl:
             hour: "1 hora"
             six_hours: "6 horas"
             day: "24 horas"
-            custom: "Personalizar..."
+            custom: "Agentlizar..."
           hours: "horas"
         usage:
           ai_spam: "Lixo"
@@ -107,7 +107,7 @@ gl:
           success: "Feito!"
         providers:
           google: "Google"
-          fake: "Personalizado"
+          fake: "Agentlizado"
       ai_helper:
         context_menu:
           cancel: "Cancelar"
@@ -133,7 +133,7 @@ gl:
         display_name: "Nome"
         providers:
           google: "Google"
-          fake: "Personalizado"
+          fake: "Agentlizado"
       ai_bot:
         debug_ai_modal:
           request: "Petición"

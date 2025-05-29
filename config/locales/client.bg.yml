@@ -56,7 +56,7 @@ bg:
         periods:
           last_day: "Последните 24 часа"
           custom: "Ръчно задаване..."
-      ai_persona:
+      ai_agent:
         back: "Назад"
         name: "Име"
         edit: "Редактирай"

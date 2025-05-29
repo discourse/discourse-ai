@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::DigestRagUpload do
-  fab!(:persona) { Fabricate(:ai_persona) }
+  fab!(:agent) { Fabricate(:ai_agent) }
   fab!(:upload) { Fabricate(:upload, extension: "txt") }
   fab!(:image_upload) { Fabricate(:upload, extension: "png") }
   let(:document_file) { StringIO.new("some text" * 200) }
@@ -38,8 +38,8 @@ RSpec.describe Jobs::DigestRagUpload do
         expect {
           described_class.new.execute(
             upload_id: image_upload.id,
-            target_id: persona.id,
-            target_type: persona.class.to_s,
+            target_id: agent.id,
+            target_type: agent.class.to_s,
           )
         }.to raise_error(Discourse::InvalidAccess)
       end
@@ -47,12 +47,12 @@ RSpec.describe Jobs::DigestRagUpload do
     context "when processing an upload containing metadata" do
       it "correctly splits on metadata boundary" do
         # be explicit here about chunking strategy
-        persona.update!(rag_chunk_tokens: 100, rag_chunk_overlap_tokens: 10)
+        agent.update!(rag_chunk_tokens: 100, rag_chunk_overlap_tokens: 10)
 
         described_class.new.execute(
           upload_id: upload_with_metadata.id,
-          target_id: persona.id,
-          target_type: persona.class.to_s,
+          target_id: agent.id,
+          target_type: agent.class.to_s,
         )
 
         parsed = +""
@@ -80,8 +80,8 @@ RSpec.describe Jobs::DigestRagUpload do
       it "splits an upload into chunks" do
         subject.execute(
           upload_id: upload.id,
-          target_id: persona.id,
-          target_type: persona.class.to_s,
+          target_id: agent.id,
+          target_type: agent.class.to_s,
         )
 
         created_fragment = RagDocumentFragment.last
@@ -95,20 +95,20 @@ RSpec.describe Jobs::DigestRagUpload do
         expect {
           subject.execute(
             upload_id: upload.id,
-            target_id: persona.id,
-            target_type: persona.class.to_s,
+            target_id: agent.id,
+            target_type: agent.class.to_s,
           )
         }.to change(Jobs::GenerateRagEmbeddings.jobs, :size).by(1)
       end
     end
 
     it "doesn't generate new fragments if we already processed the upload" do
-      Fabricate(:rag_document_fragment, upload: upload, target: persona)
+      Fabricate(:rag_document_fragment, upload: upload, target: agent)
 
-      previous_count = RagDocumentFragment.where(upload: upload, target: persona).count
+      previous_count = RagDocumentFragment.where(upload: upload, target: agent).count
 
-      subject.execute(upload_id: upload.id, target_id: persona.id, target_type: persona.class.to_s)
-      updated_count = RagDocumentFragment.where(upload: upload, target: persona).count
+      subject.execute(upload_id: upload.id, target_id: agent.id, target_type: agent.class.to_s)
+      updated_count = RagDocumentFragment.where(upload: upload, target: agent).count
 
       expect(updated_count).to eq(previous_count)
     end

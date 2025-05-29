@@ -95,7 +95,7 @@ lt:
         periods:
           last_day: "Paskutinės 24 valandos"
           custom: "Pasirinktinis..."
-      ai_persona:
+      ai_agent:
         back: "Atgal"
         name: "Vardas"
         edit: "Redaguoti"

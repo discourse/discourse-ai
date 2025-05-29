@@ -241,10 +241,10 @@ zh_CN:
     ai_bot:
       reply_error: "抱歉，我们的系统在尝试回复时似乎遇到了意外问题。\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[无标题 AI 机器人私信]"
-      personas:
+      agents:
         default_llm_required: "启用聊天之前需要默认的 LLM 模型"
-        cannot_delete_system_persona: "无法删除系统角色，请改为将其禁用"
-        cannot_edit_system_persona: "系统角色只能重命名，您不能编辑工具或系统提示，但可以禁用和复制"
+        cannot_delete_system_agent: "无法删除系统角色，请改为将其禁用"
+        cannot_edit_system_agent: "系统角色只能重命名，您不能编辑工具或系统提示，但可以禁用和复制"
         github_helper:
           name: "GitHub 助手"
           description: "专门协助处理 GitHub 相关任务和问题的 AI 机器人"
@@ -419,11 +419,11 @@ zh_CN:
       quota_exceeded: "您已超出此模型的配额。请在 %{relative_time}后再试。"
       quota_required: "必须为此模型指定最大词元数或使用次数"
       no_query_specified: 查询参数为必填项，请指定。
-      no_user_for_persona: 指定的角色没有与之关联的用户。
-      persona_not_found: 指定的角色不存在。请检查 persona_name 或 persona_id 参数。
+      no_user_for_agent: 指定的角色没有与之关联的用户。
+      agent_not_found: 指定的角色不存在。请检查 agent_name 或 agent_id 参数。
       no_user_specified: username 或 user_unique_id 参数为必填项，请指定。
       user_not_found: 指定的用户不存在。请检查 username 参数。
-      persona_disabled: 指定的角色被禁用。请检查 persona_name 或 persona_id 参数。
+      agent_disabled: 指定的角色被禁用。请检查 agent_name 或 agent_id 参数。
       no_default_llm: 角色必须定义一个 default_llm。
       user_not_allowed: 该用户无法参与该话题。
       prompt_message_length: 消息 %{idx} 超过 1000 个字符限制。

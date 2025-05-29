@@ -243,10 +243,10 @@ tr_TR:
     ai_bot:
       reply_error: "Üzgünüz, sistemimiz yanıtlamaya çalışırken beklenmeyen bir sorunla karşılaşmış gibi görünüyor.\n\n[details='Hata ayrıntıları']\n%{details}\n[/details]"
       default_pm_prefix: "[Adsız YZ botu kişisel mesajı]"
-      personas:
+      agents:
         default_llm_required: "Sohbeti etkinleştirmeden önce varsayılan LLM modeli gereklidir"
-        cannot_delete_system_persona: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
-        cannot_edit_system_persona: "Sistem kişileri yalnızca yeniden adlandırılabilir, araçları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
+        cannot_delete_system_agent: "Sistem kişilikleri silinemez, lütfen bunun yerine devre dışı bırakın"
+        cannot_edit_system_agent: "Sistem kişileri yalnızca yeniden adlandırılabilir, araçları veya sistem istemini düzenleyemezsiniz, bunun yerine devre dışı bırakıp bir kopyasını oluşturabilirsiniz"
         github_helper:
           name: "GitHub Yardımcısı"
           description: "GitHub ile ilgili görevlere ve sorulara yardımcı olma konusunda uzmanlaşmış YZ Botu"
@@ -431,11 +431,11 @@ tr_TR:
       quota_exceeded: "Bu model için kotayı aştınız. Lütfen %{relative_time} içinde tekrar deneyin."
       quota_required: "Bu model için maksimum token veya kullanımları belirtmelisiniz"
       no_query_specified: Sorgu parametresi gerekli, lütfen belirtin.
-      no_user_for_persona: Belirtilen kişilik ile ilişkilendirilmiş bir kullanıcı yok.
-      persona_not_found: Belirtilen kişilik mevcut değil. persona_name veya persona_id parametrelerini kontrol edin.
+      no_user_for_agent: Belirtilen kişilik ile ilişkilendirilmiş bir kullanıcı yok.
+      agent_not_found: Belirtilen kişilik mevcut değil. agent_name veya agent_id parametrelerini kontrol edin.
       no_user_specified: Kullanıcı adı veya user_unique_id parametresi gerekli, lütfen belirtin.
       user_not_found: Belirtilen kullanıcı mevcut değil. Kullanıcı adı parametresini kontrol edin.
-      persona_disabled: Belirtilen kişilik devre dışı. persona_name veya persona_id parametrelerini kontrol edin.
+      agent_disabled: Belirtilen kişilik devre dışı. agent_name veya agent_id parametrelerini kontrol edin.
       no_default_llm: Kişiliğin tanımlanmış bir default_llm'si olmalıdır.
       user_not_allowed: Kullanıcının konuya katılmasına izin verilmiyor.
       prompt_message_length: '%{idx} mesajı 1000 karakter limitinin üzerinde.'

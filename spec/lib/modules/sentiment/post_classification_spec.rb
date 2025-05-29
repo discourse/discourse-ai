@@ -127,7 +127,7 @@ RSpec.describe DiscourseAi::Sentiment::PostClassification do
   end
 
   describe ".backfill_query" do
-    it "excludes posts in personal messages" do
+    it "excludes posts in agentl messages" do
       Fabricate(:private_message_post)
 
       posts = described_class.backfill_query

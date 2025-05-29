@@ -13,7 +13,7 @@ zh_CN:
             discourse_ai:
               search: "允许 AI 搜索"
               stream_completion: "允许流式 AI 角色补全"
-              update_personas: "允许更新 AI 角色模型"
+              update_agents: "允许更新 AI 角色模型"
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
@@ -102,9 +102,9 @@ zh_CN:
             tool:
               label: "工具"
               description: "用于初步分类的工具（工具不得包含已定义的参数）"
-        llm_persona_triage:
+        llm_agent_triage:
           fields:
-            persona:
+            agent:
               label: "角色模型"
               description: "用于初步分类的 AI 角色模型（必须设置默认 LLM 和用户）"
             whisper:
@@ -144,7 +144,7 @@ zh_CN:
             flag_post:
               label: "举报帖子"
               description: "举报帖子（垃圾内容或请求审核）"
-            include_personal_messages:
+            include_agentl_messages:
               label: "包括私信"
               description: "同时扫描私信并对其进行分类"
             model:
@@ -234,7 +234,7 @@ zh_CN:
           last_week: "上周"
           last_month: "上个月"
           custom: "自定义…"
-      ai_persona:
+      ai_agent:
         ai_tools: "工具"
         tool_strategies:
           all: "应用于所有回复"
@@ -271,8 +271,8 @@ zh_CN:
         allow_chat_direct_messages_help: "如果启用，允许的群组中的用户可以向此角色发送直接消息。"
         allow_chat_channel_mentions: "允许聊天频道提及"
         allow_chat_channel_mentions_help: "如果启用，允许的群组中的用户可以在聊天频道中提及此角色。"
-        allow_personal_messages: "允许私信"
-        allow_personal_messages_help: "如果启用，允许的群组中的用户可以向此角色发送私信。"
+        allow_agentl_messages: "允许私信"
+        allow_agentl_messages_help: "如果启用，允许的群组中的用户可以向此角色发送私信。"
         allow_topic_mentions: "允许话题提及"
         allow_topic_mentions_help: "如果启用，允许的群组中的用户可以在话题中提及此角色。"
         force_default_llm: "始终使用默认语言模型"
@@ -284,7 +284,7 @@ zh_CN:
         allowed_groups: "允许的群组"
         confirm_delete: "确定要删除此角色吗？"
         new: "新角色"
-        no_personas: "您还没有创建任何角色"
+        no_agents: "您还没有创建任何角色"
         title: "角色"
         short_title: "角色"
         delete: "删除"
@@ -297,7 +297,7 @@ zh_CN:
         tool_options: "工具选项"
         rag_conversation_chunks: "搜索对话分块"
         rag_conversation_chunks_help: "为 RAG 模型搜索使用的分块数。增加分块数会增加 AI 可以使用的上下文数量。"
-        persona_description: "角色是一种强大的功能，可以让您自定义 Discourse 论坛中 AI 引擎的行为。它们充当“系统消息”，指导 AI 的回答和互动，帮助创造更加个性化、引人入胜的用户体验。"
+        agent_description: "角色是一种强大的功能，可以让您自定义 Discourse 论坛中 AI 引擎的行为。它们充当“系统消息”，指导 AI 的回答和互动，帮助创造更加个性化、引人入胜的用户体验。"
         response_format:
           open_modal: "编辑"
           modal:
@@ -394,7 +394,7 @@ zh_CN:
         usage:
           ai_bot: "AI 机器人"
           ai_helper: "助手"
-          ai_persona: "角色 (%{persona})"
+          ai_agent: "角色 (%{agent})"
           ai_summarization: "总结"
           ai_embeddings_semantic_search: "AI 搜索"
           ai_spam: "垃圾内容"
@@ -580,7 +580,7 @@ zh_CN:
         collapse_view_label: "退出全屏（按 ESC 或“返回”按钮）"
         click_to_run_label: "运行工件"
       ai_bot:
-        persona: "角色模型"
+        agent: "角色模型"
         llm: "模型"
         pm_warning: "版主会定期监控 AI 聊天机器人消息。"
         cancel_streaming: "停止回复"

@@ -50,7 +50,7 @@ be:
         summary: "вынік"
         username: "Імя карыстальніка"
         total_requests: "Усяго запытаў"
-      ai_persona:
+      ai_agent:
         back: "Назад"
         name: "імя"
         edit: "рэдагаваць"

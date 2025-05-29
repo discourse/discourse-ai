@@ -80,7 +80,7 @@ he:
     ai_embeddings_per_post_enabled: יצירת הטמעות בכל פוסט בנפרד
     ai_summarization_enabled: "הפעלת יכולת הסיכום"
     ai_summarization_model: "מודל לשימוש לסיכום"
-    ai_summarization_persona: "דמות לשימוש ליכולת הסיכום"
+    ai_summarization_agent: "דמות לשימוש ליכולת הסיכום"
     ai_custom_summarization_allowed_groups: "קבוצות שמורשות להשתמש ליצירת סיכומים חדשים."
     ai_pm_summarization_allowed_groups: "קבוצות שמורשות ליצור ולצפות בתקצירים בהודעות פרטיות."
     ai_summary_gists_enabled: "יצירת תקצירים של התגובות האחרונות בנושאים אוטומטית"
@@ -102,7 +102,7 @@ he:
     ai_discord_app_id: "המזהה של יישום ה־Discord שברצונך לחבר אליו את החיפוש ב־Discord"
     ai_discord_app_public_key: "המפתח הציבורי של יישום ה־Discord שברצונך לחבר אליו את החיפוש ב־Discord"
     ai_discord_search_mode: "נא לבחור את מצב החיפוש לחיפוש ב־Discord"
-    ai_discord_search_persona: "הדמות לשימוש בחיפוש Discord."
+    ai_discord_search_agent: "הדמות לשימוש בחיפוש Discord."
     ai_discord_allowed_guilds: "גילדות (שרתי) Discord בהן מותר לבוט לחפש"
   reviewables:
     reasons:
@@ -260,10 +260,10 @@ he:
       reply_error: "נראה שהמערכת שלך נתקלה בקשיים לא צפויים בעת הניסיון להשיב, עמך הסליחה.\n\n[details='פרטי השגיאה']\n%{details}\n[/details]"
       default_pm_prefix: "[הודעה פרטית של בינה מלאכותית ללא כותרת]"
       thinking: "בתהליך חשיבה…"
-      personas:
+      agents:
         default_llm_required: "ברירת מחדל של מודל שפה הגדול נחוצה בטרם הפעלת הצ׳אט"
-        cannot_delete_system_persona: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
-        cannot_edit_system_persona: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
+        cannot_delete_system_agent: "אי אפשר למחוק דמויות מערכת, נא להשבית אותן במקום"
+        cannot_edit_system_agent: "לדמויות מערכת אפשר רק לשנות את השם, אסור לערוך כלים או את בקשת הבסיס של המערכת, במקום יש להשבית ולשבט"
         cannot_have_duplicate_tools: "לא יכולים להיות כלים כפולים"
         github_helper:
           name: "מסייע GitHub"
@@ -519,11 +519,11 @@ he:
       quota_exceeded: "חרגת מהמכסה למודל הזה. נא לנסות שוב בעוד %{relative_time}."
       quota_required: "יש לציין את כמות האסימונים המרבית לשימוש למודל הזה"
       no_query_specified: משתנה השאילתה נחוץ, נא לציין אותו.
-      no_user_for_persona: לדמות שצוינה אין משתמש שמשויך אליה.
-      persona_not_found: הדמות שצוינה לא קיימת. נא לבדוק את המשתנים persona_name או persona_id.
+      no_user_for_agent: לדמות שצוינה אין משתמש שמשויך אליה.
+      agent_not_found: הדמות שצוינה לא קיימת. נא לבדוק את המשתנים agent_name או agent_id.
       no_user_specified: המשתנים username או user_unique_id נחוצים, נא לציין לפחות אחד מהם.
       user_not_found: המשתמש שצוין לא קיים. נא לבדוק את המשתנה username.
-      persona_disabled: הדמות שצוינה הושבתה. נא לבדוק את המשתנים persona_name או persona_id.
+      agent_disabled: הדמות שצוינה הושבתה. נא לבדוק את המשתנים agent_name או agent_id.
       no_default_llm: לדמות חייב להיות מוגדר default_llm (מודל ברירת מחדל).
       user_not_allowed: המשתמש לא מורשה להשתתף בנושא.
       prompt_message_length: ההודעה %{idx} חורגת ממגבלת 1000 התווים.

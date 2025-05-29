@@ -56,7 +56,7 @@ zh_TW:
         periods:
           last_day: "過去 24 小時"
           custom: "自訂..."
-      ai_persona:
+      ai_agent:
         back: "上一步"
         name: "名字"
         edit: "編輯"

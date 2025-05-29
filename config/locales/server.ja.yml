@@ -241,10 +241,10 @@ ja:
     ai_bot:
       reply_error: "返信中に予期しない問題が発生したようです。\n\n\n[details='エラーの詳細']\n%{details}\n[/details]"
       default_pm_prefix: "[無題の AI ボット PM]"
-      personas:
+      agents:
         default_llm_required: "チャットを有効にする前に、デフォルトの LLM モデルが必要です"
-        cannot_delete_system_persona: "システムペルソナは削除できません。代わりに無効にしてください"
-        cannot_edit_system_persona: "システムペルソナは名前変更のみ可能です。ツールまたはシステムプロンプトは編集できません。代わりに無効にするかコピーを作成してください"
+        cannot_delete_system_agent: "システムペルソナは削除できません。代わりに無効にしてください"
+        cannot_edit_system_agent: "システムペルソナは名前変更のみ可能です。ツールまたはシステムプロンプトは編集できません。代わりに無効にするかコピーを作成してください"
         github_helper:
           name: "GitHub ヘルパー"
           description: "GitHub 関連タスクと質問の支援を専門とする AI ボット"
@@ -419,11 +419,11 @@ ja:
       quota_exceeded: "このモデルの使用量制限を超過しました。%{relative_time}後にもう一度お試しください。"
       quota_required: "このモデルのトークンまたは使用量の上限を指定する必要があります"
       no_query_specified: クエリパラメーターは必須です。指定してください。
-      no_user_for_persona: 指定されたペルソナにはユーザーが関連付けられていません。
-      persona_not_found: 指定されたペルソナは存在しません。persona_name または persona_id パラメーターを確認してください。
+      no_user_for_agent: 指定されたペルソナにはユーザーが関連付けられていません。
+      agent_not_found: 指定されたペルソナは存在しません。agent_name または agent_id パラメーターを確認してください。
       no_user_specified: username または user_unique_id パラメーターは必須です。指定してください。
       user_not_found: 指定されたユーザーは存在しません。username パラメーターを確認してください。
-      persona_disabled: 指定されたペルソナは無効化されています。persona_name または persona_id パラメーターを確認してください。
+      agent_disabled: 指定されたペルソナは無効化されています。agent_name または agent_id パラメーターを確認してください。
       no_default_llm: ペルソナには default_llm が定義されている必要があります。
       user_not_allowed: ユーザーはトピックに参加できません。
       prompt_message_length: メッセージ %{idx} は 1000 文字の上限を超えています。

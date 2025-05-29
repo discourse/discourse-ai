@@ -7,18 +7,18 @@ module ::Jobs
     def execute(args)
       return unless bot_user = User.find_by(id: args[:bot_user_id])
       return unless post = Post.includes(:topic).find_by(id: args[:post_id])
-      persona_id = args[:persona_id]
+      agent_id = args[:agent_id]
 
       begin
-        persona = DiscourseAi::Personas::Persona.find_by(user: post.user, id: persona_id)
-        raise DiscourseAi::Personas::Bot::BOT_NOT_FOUND if persona.nil?
+        agent = DiscourseAi::Agents::Agent.find_by(user: post.user, id: agent_id)
+        raise DiscourseAi::Agents::Bot::BOT_NOT_FOUND if agent.nil?
 
-        bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.new)
+        bot = DiscourseAi::Agents::Bot.as(bot_user, agent: agent.new)
 
         DiscourseAi::AiBot::Playground.new(bot).reply_to(post)
-      rescue DiscourseAi::Personas::Bot::BOT_NOT_FOUND
+      rescue DiscourseAi::Agents::Bot::BOT_NOT_FOUND
         Rails.logger.warn(
-          "Bot not found for post #{post.id} - perhaps persona was deleted or bot was disabled",
+          "Bot not found for post #{post.id} - perhaps agent was deleted or bot was disabled",
         )
       end
     end

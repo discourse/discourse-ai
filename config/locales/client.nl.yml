@@ -12,7 +12,7 @@ nl:
           descriptions:
             discourse_ai:
               search: "Staat AI zoeken toe"
-              stream_completion: "Maakt streamen van voltooiingen van AI persona's mogelijk"
+              stream_completion: "Maakt streamen van voltooiingen van AI agent's mogelijk"
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
@@ -128,7 +128,7 @@ nl:
             flag_post:
               label: "Bericht markeren"
               description: "Markeert berichten (als spam of ter beoordeling)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Persoonlijke berichten opnemen"
               description: "Scan en triageer ook persoonlijke berichten"
             model:
@@ -219,7 +219,7 @@ nl:
           last_week: "Vorige week"
           last_month: "Vorige maand"
           custom: "Aangepast..."
-      ai_persona:
+      ai_agent:
         ai_tools: "Tools"
         tool_strategies:
           all: "Toepassen op alle antwoorden"
@@ -243,47 +243,47 @@ nl:
         tool_details: Tooldetails weergeven
         tool_details_help: Toont eindgebruikers informatie over welke tools het taalmodel heeft geactiveerd.
         mentionable: Vermeldingen toestaan
-        mentionable_help: Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze gebruiker vermelden in berichten. De AI reageert als deze persona.
+        mentionable_help: Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze gebruiker vermelden in berichten. De AI reageert als deze agent.
         user: Gebruiker
         create_user: Gebruiker maken
-        create_user_help: Je kunt optioneel een gebruiker aan deze persona koppelen. Als je dat doet, gebruikt de AI deze gebruiker om op verzoeken te antwoorden.
+        create_user_help: Je kunt optioneel een gebruiker aan deze agent koppelen. Als je dat doet, gebruikt de AI deze gebruiker om op verzoeken te antwoorden.
         default_llm: Standaard taalmodel
-        default_llm_help: Het standaard taalmodel dat voor deze persona moet worden gebruikt. Vereist als je de persona wilt vermelden in openbare berichten.
+        default_llm_help: Het standaard taalmodel dat voor deze agent moet worden gebruikt. Vereist als je de agent wilt vermelden in openbare berichten.
         question_consolidator_llm: Taalmodel voor Vragenconsolidator
         question_consolidator_llm_help: Het te gebruiken taalmodel voor de vragenconsolidator. Je kunt een minder krachtig model kiezen om kosten te besparen.
         system_prompt: Systeemprompt
         forced_tool_strategy: Gedwongen toolstrategie
         allow_chat_direct_messages: "Directe chatberichten toestaan"
-        allow_chat_direct_messages_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen directe berichten naar deze persona sturen."
+        allow_chat_direct_messages_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen directe berichten naar deze agent sturen."
         allow_chat_channel_mentions: "Vermelding in chatkanalen toestaan"
-        allow_chat_channel_mentions_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze persona vermelden in chatkanalen."
-        allow_personal_messages: "Persoonlijke berichten toestaan"
-        allow_personal_messages_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen persoonlijke berichten naar deze persona sturen."
+        allow_chat_channel_mentions_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze agent vermelden in chatkanalen."
+        allow_agentl_messages: "Persoonlijke berichten toestaan"
+        allow_agentl_messages_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen persoonlijke berichten naar deze agent sturen."
         allow_topic_mentions: "Vermelding in topics toestaan"
-        allow_topic_mentions_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze persona vermelden in topics."
+        allow_topic_mentions_help: "Indien ingeschakeld, kunnen gebruikers in toegestane groepen deze agent vermelden in topics."
         force_default_llm: "Altijd standaard taalmodel gebruiken"
         save: "Opslaan"
-        saved: "Persona opgeslagen"
+        saved: "Agent opgeslagen"
         enabled: "Ingeschakeld?"
         tools: "Ingeschakelde tools"
         forced_tools: "Geforceerde tools"
         allowed_groups: "Toegestane groepen"
-        confirm_delete: "Weet je zeker dat je deze persona wilt verwijderen?"
-        new: "Nieuwe persona"
-        no_personas: "Je hebt nog geen persona's gemaakt"
-        title: "Persona's"
-        short_title: "Persona's"
+        confirm_delete: "Weet je zeker dat je deze agent wilt verwijderen?"
+        new: "Nieuwe agent"
+        no_agents: "Je hebt nog geen agent's gemaakt"
+        title: "Agent's"
+        short_title: "Agent's"
         delete: "Verwijderen"
         temperature: "Temperatuur"
         temperature_help: "Te gebruiken temperatuur voor de LLM. Verhoog deze om de creativiteit te vergroten (laat dit leeg om de standaardinstelling van het model te gebruiken, doorgaans een waarde van 0,0 tot 2,0)"
         top_p: "Top P"
         top_p_help: "Te gebruiken Top P voor de LLM. Verhoog deze om de willekeurigheid te vergroten (laat dit leeg om de standaardinstelling van het model te gebruiken, doorgaans een waarde van 0,0 tot 2,0)"
         priority: "Prioriteit"
-        priority_help: "Prioritaire persona's worden bovenaan de personalijst weergegeven voor gebruikers. Als meerdere persona's prioriteit hebben, worden deze alfabetisch gesorteerd."
+        priority_help: "Prioritaire agent's worden bovenaan de agentlijst weergegeven voor gebruikers. Als meerdere agent's prioriteit hebben, worden deze alfabetisch gesorteerd."
         tool_options: "Toolopties"
         rag_conversation_chunks: "Conversatiechunks zoeken"
         rag_conversation_chunks_help: "Het te gebruiken aantal chunks voor zoeken door het RAG-model. Verhoog dit om de hoeveelheid context te vergroten die de AI kan gebruiken."
-        persona_description: "Persona's zijn een krachtige functie waarmee je het gedrag van de AI-engine kunt aanpassen in je Discourse-forum. Ze fungeren als een 'systeembericht' dat de reacties en interacties van de AI stuurt, waardoor je een persoonlijkere en boeiendere gebruikerservaring creëert."
+        agent_description: "Agent's zijn een krachtige functie waarmee je het gedrag van de AI-engine kunt aanpassen in je Discourse-forum. Ze fungeren als een 'systeembericht' dat de reacties en interacties van de AI stuurt, waardoor je een persoonlijkere en boeiendere gebruikerservaring creëert."
         response_format:
           open_modal: "Bewerken"
           modal:
@@ -376,7 +376,7 @@ nl:
         usage:
           ai_bot: "AI-bot"
           ai_helper: "Helper"
-          ai_persona: "Persona (%{persona})"
+          ai_agent: "Agent (%{agent})"
           ai_summarization: "Samenvatten"
           ai_embeddings_semantic_search: "AI zoeken"
           ai_spam: "Spam"

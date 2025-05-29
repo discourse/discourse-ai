@@ -52,7 +52,7 @@ te:
         summary: "సారాంశం"
         username: "సభ్యనామం"
         total_requests: "మొత్తం అభ్యర్థనలు"
-      ai_persona:
+      ai_agent:
         back: "వెనుకకు"
         name: "పేరు"
         edit: "సవరించండి"

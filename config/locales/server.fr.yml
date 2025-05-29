@@ -243,10 +243,10 @@ fr:
     ai_bot:
       reply_error: "Il semble que notre système ait rencontré un problème inattendu en essayant de répondre.\n\n[details='Détails de l'erreur']\n%{details}\n[/details]"
       default_pm_prefix: "[MD de robot IA sans titre]"
-      personas:
+      agents:
         default_llm_required: "Le modèle LLM par défaut est requis avant d'activer Chat"
-        cannot_delete_system_persona: "Les personnages système ne peuvent pas être supprimés, veuillez plutôt les désactiver"
-        cannot_edit_system_persona: "Les personnages du système peuvent uniquement être renommés, vous ne pouvez pas modifier les outils ou l'invite du système, mais seulement les désactiver et en faire une copie"
+        cannot_delete_system_agent: "Les personnages système ne peuvent pas être supprimés, veuillez plutôt les désactiver"
+        cannot_edit_system_agent: "Les personnages du système peuvent uniquement être renommés, vous ne pouvez pas modifier les outils ou l'invite du système, mais seulement les désactiver et en faire une copie"
         github_helper:
           name: "Assistant GitHub"
           description: "Robot IA spécialisé dans l'assistance aux tâches et questions liées à GitHub"
@@ -430,11 +430,11 @@ fr:
       quota_exceeded: "Vous avez dépassé le quota pour ce modèle. Veuillez réessayer dans %{relative_time}."
       quota_required: "Vous devez spécifier un nombre maximal de jetons ou d'utilisations pour ce modèle"
       no_query_specified: Le paramètre de requête est obligatoire, veuillez le spécifier.
-      no_user_for_persona: Le personnage spécifié n'a pas d'utilisateur associé.
-      persona_not_found: Le personnage spécifié n'existe pas. Vérifiez les paramètres persona_name ou persona_id.
+      no_user_for_agent: Le personnage spécifié n'a pas d'utilisateur associé.
+      agent_not_found: Le personnage spécifié n'existe pas. Vérifiez les paramètres agent_name ou agent_id.
       no_user_specified: Le nom d'utilisateur ou le paramètre user_unique_id est obligatoire. Veuillez le préciser.
       user_not_found: L'utilisateur spécifié n'existe pas. Vérifiez le paramètre du nom d'utilisateur.
-      persona_disabled: Le personnage spécifié est désactivé. Vérifiez les paramètres persona_name ou persona_id.
+      agent_disabled: Le personnage spécifié est désactivé. Vérifiez les paramètres agent_name ou agent_id.
       no_default_llm: Le personnage doit avoir un default_llm défini.
       user_not_allowed: L'utilisateur n'est pas autorisé à participer au sujet.
       prompt_message_length: Le message %{idx} dépasse la limite de 1 000 caractères.

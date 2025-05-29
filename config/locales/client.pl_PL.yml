@@ -95,13 +95,13 @@ pl_PL:
               description: "Domyślny model językowy używany do selekcji"
             tool:
               label: "Narzędzie"
-        llm_persona_triage:
+        llm_agent_triage:
           fields:
-            persona:
+            agent:
               label: "Osobowość"
             silent_mode:
               label: "Tryb cichy"
-              description: "W trybie cichym persona otrzyma zawartość, ale nie opublikuje niczego na forum - przydatne podczas przeprowadzania selekcji przy użyciu narzędzi."
+              description: "W trybie cichym agent otrzyma zawartość, ale nie opublikuje niczego na forum - przydatne podczas przeprowadzania selekcji przy użyciu narzędzi."
         llm_triage:
           fields:
             system_prompt:
@@ -136,12 +136,12 @@ pl_PL:
             flag_post:
               label: "Oflaguj post"
               description: "Oflaguj post (jako spam lub do sprawdzenia)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Dołącz osobiste wiadomości"
               description: "Skanuj i sortuj również wiadomości prywatne"
-            reply_persona:
-              label: "Persona odpowiedzi"
-              description: "AI Persona użyta do odpowiedzi (musi mieć domyślną wartość LLM), będzie traktowana priorytetowo nad gotową odpowiedzią"
+            reply_agent:
+              label: "Agent odpowiedzi"
+              description: "AI Agent użyta do odpowiedzi (musi mieć domyślną wartość LLM), będzie traktowana priorytetowo nad gotową odpowiedzią"
             model:
               label: "Model"
               description: "Model językowy używany do selekcji"
@@ -155,7 +155,7 @@ pl_PL:
         list:
           header:
             name: "Nazwa"
-            persona: "Osobowość"
+            agent: "Osobowość"
             groups: "Grupy"
           edit: "Edytuj"
           set_up: "Skonfiguruj"
@@ -227,7 +227,7 @@ pl_PL:
           last_week: "Ostatni tydzień"
           last_month: "Ostatni miesiąc"
           custom: "Niestandardowy..."
-      ai_persona:
+      ai_agent:
         ai_tools: "Narzędzia"
         tool_strategies:
           all: "Zastosuj do wszystkich odpowiedzi"
@@ -254,20 +254,20 @@ pl_PL:
         default_llm: Domyślny model językowy
         default_llm_help: Domyślny model językowy używany dla tej persony. Wymagane, jeśli chcesz wspomnieć o osobie w postach publicznych.
         system_prompt: Prompt systemowy
-        allow_personal_messages: "Zezwalaj na wiadomości osobiste"
-        allow_personal_messages_help: "Jeśli ta opcja jest włączona, użytkownicy w dozwolonych grupach mogą wysyłać osobiste wiadomości do tej persony."
+        allow_agentl_messages: "Zezwalaj na wiadomości osobiste"
+        allow_agentl_messages_help: "Jeśli ta opcja jest włączona, użytkownicy w dozwolonych grupach mogą wysyłać osobiste wiadomości do tej persony."
         allow_topic_mentions: "Zezwalaj na wzmianki o temacie"
         allow_topic_mentions_help: "Jeśli ta opcja jest włączona, użytkownicy w dozwolonych grupach mogą wspominać o tej personie w tematach."
         force_default_llm: "Zawsze używaj domyślnego modelu języka"
         save: "Zapisz"
-        saved: "Persona zapisana"
+        saved: "Agent zapisana"
         enabled: "Włączona?"
         tools: "Włączone narzędzia"
         forced_tools: "Narzędzia wymuszone"
         allowed_groups: "Dozwolone grupy"
         confirm_delete: "Czy na pewno chcesz usunąć tę personę?"
-        new: "Nowa persona"
-        no_personas: "Nie utworzyłeś jeszcze żadnych person"
+        new: "Nowa agent"
+        no_agents: "Nie utworzyłeś jeszcze żadnych person"
         title: "Persony"
         short_title: "Persony"
         delete: "Usuń"
@@ -306,7 +306,7 @@ pl_PL:
         name_help: "Nazwa pojawi się w interfejsie użytkownika Discourse i będzie krótkim identyfikatorem, którego będziesz używać do znajdowania narzędzia w różnych ustawieniach. Powinna być ona unikatowa (jest wymagana)"
         new: "Nowe narzędzie"
         tool_name: "Nazwa narzędzia"
-        tool_name_help: "Nazwa narzędzia jest prezentowana w dużym modelu językowym. Nie jest ona odrębna, ale jest odrębna dla każdej persony. (persona sprawdza poprawność przy zapisywaniu)"
+        tool_name_help: "Nazwa narzędzia jest prezentowana w dużym modelu językowym. Nie jest ona odrębna, ale jest odrębna dla każdej persony. (agent sprawdza poprawność przy zapisywaniu)"
         description: "Opis"
         description_help: "Jasny opis celu narzędzia dla modelu językowego"
         subheader_description: "Narzędzia rozszerzają możliwości botów AI o zdefiniowane przez użytkownika funkcje JavaScript."
@@ -374,7 +374,7 @@ pl_PL:
         usage:
           ai_bot: "Bot AI"
           ai_helper: "Pomocnik"
-          ai_persona: "Persona (%{persona})"
+          ai_agent: "Agent (%{agent})"
           ai_summarization: "Podsumuj"
           ai_embeddings_semantic_search: "Wyszukiwanie AI"
           ai_spam: "Spam"
@@ -505,7 +505,7 @@ pl_PL:
         expand_view_label: "Rozszerz widok"
         collapse_view_label: "Wyjdź z trybu pełnoekranowego (przycisk ESC lub Wstecz)"
       ai_bot:
-        persona: "Osobowość"
+        agent: "Osobowość"
         llm: "Model"
         pm_warning: "Wiadomości wysyłane przez chatboty AI są regularnie monitorowane przez moderatorów."
         cancel_streaming: "Zatrzymaj odpowiedź"

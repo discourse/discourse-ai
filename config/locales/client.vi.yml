@@ -56,7 +56,7 @@ vi:
         periods:
           last_day: "24 giờ qua"
           custom: "Tùy chỉnh..."
-      ai_persona:
+      ai_agent:
         back: "Quay lại"
         name: "Tên"
         edit: "Sửa"

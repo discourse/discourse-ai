@@ -57,8 +57,8 @@ ro:
         total_requests: "Total cereri"
         periods:
           last_day: "Ultimele 24 de ore"
-          custom: "Personalizat..."
-      ai_persona:
+          custom: "Agentlizat..."
+      ai_agent:
         back: "Înapoi"
         name: "Nume"
         edit: "Modifică"
@@ -96,7 +96,7 @@ ro:
             hour: "o oră"
             six_hours: "6 de ore"
             day: "24 de ore"
-            custom: "Personalizat..."
+            custom: "Agentlizat..."
           hours: "de ore"
         usage:
           ai_summarization: "Rezumat"
@@ -107,7 +107,7 @@ ro:
           success: "Succes!"
         providers:
           google: "Google"
-          fake: "Personalizat"
+          fake: "Agentlizat"
       ai_helper:
         context_menu:
           cancel: "Anulare"
@@ -133,7 +133,7 @@ ro:
         display_name: "Nume"
         providers:
           google: "Google"
-          fake: "Personalizat"
+          fake: "Agentlizat"
       ai_bot:
         debug_ai_modal:
           request: "Cere"

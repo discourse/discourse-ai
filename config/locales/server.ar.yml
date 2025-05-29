@@ -242,10 +242,10 @@ ar:
     ai_bot:
       reply_error: "عذراً، يبدو أن نظامنا واجه مشكلة غير متوقعة أثناء محاولة الرد.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[رسالة خاصة دون عنوان من روبوت ذكاء اصطناعي]"
-      personas:
+      agents:
         default_llm_required: "نموذج اللغة الكبير الافتراضي مطلوب قبل تفعيل الدردشة"
-        cannot_delete_system_persona: "لا يمكن حذف شخصيات النظام، يُرجى إيقافها بدلًا من ذلك"
-        cannot_edit_system_persona: "يمكن إعادة تسمية شخصيات النظام فقط، ولا يجوز لك تعديل الأدوات أو رسائل مطالبة النظام. قم بإيقافها وعمل نسخة منها بدلًا من ذلك."
+        cannot_delete_system_agent: "لا يمكن حذف شخصيات النظام، يُرجى إيقافها بدلًا من ذلك"
+        cannot_edit_system_agent: "يمكن إعادة تسمية شخصيات النظام فقط، ولا يجوز لك تعديل الأدوات أو رسائل مطالبة النظام. قم بإيقافها وعمل نسخة منها بدلًا من ذلك."
         github_helper:
           name: "مساعد GitHub"
           description: "روبوت ذكاء اصطناعي متخصص في المساعدة في المهام والأسئلة المتعلقة بمنصة GitHub"
@@ -465,11 +465,11 @@ ar:
       quota_exceeded: "لقد تجاوزت الحصة المُخصَّصة لهذا النموذج. يُرجى إعادة المحاولة بعد %{relative_time}."
       quota_required: "يجب عليك تحديد الحد الأقصى للرموز أو الاستخدامات لهذا النموذج"
       no_query_specified: معلمة الاستعلام مطلوبة، يُرجى تحديدها.
-      no_user_for_persona: لا تملك الشخصية المحدَّدة مستخدمًا مرتبطًا بها.
-      persona_not_found: الشخصية المحدَّدة غير موجودة. تحقَّق من معلمتَي persona_name أو persona_id.
+      no_user_for_agent: لا تملك الشخصية المحدَّدة مستخدمًا مرتبطًا بها.
+      agent_not_found: الشخصية المحدَّدة غير موجودة. تحقَّق من معلمتَي agent_name أو agent_id.
       no_user_specified: اسم المستخدم أو معلمة user_unique_id مطلوبة، يُرجى تحديدها.
       user_not_found: المستخدم المحدَّد غير موجود. تحقَّق من معلمة username.
-      persona_disabled: الشخصية المحدَّدة متوقفة. تحقَّق من معلمتَي persona_name أو persona_id.
+      agent_disabled: الشخصية المحدَّدة متوقفة. تحقَّق من معلمتَي agent_name أو agent_id.
       no_default_llm: يجب أن يكون للشخصية معلمة default_llm محدَّدة.
       user_not_allowed: غير مسموح للمستخدم بالمشاركة في الموضوع.
       prompt_message_length: تتجاوز الرسالة الحد الأقصى لعدد الحروف، والبالغ 1000 حرف، بمقدار %{idx}.

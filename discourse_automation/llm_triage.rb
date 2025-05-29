@@ -10,7 +10,7 @@ if defined?(DiscourseAutomation)
     triggerables %i[post_created_edited]
 
     # TODO move to triggerables
-    field :include_personal_messages, component: :boolean
+    field :include_agentl_messages, component: :boolean
 
     # Inputs
     field :model,
@@ -39,11 +39,11 @@ if defined?(DiscourseAutomation)
           default: "review"
     field :canned_reply_user, component: :user
     field :canned_reply, component: :message
-    field :reply_persona,
+    field :reply_agent,
           component: :choices,
           extra: {
             content:
-              DiscourseAi::Automation.available_persona_choices(
+              DiscourseAi::Automation.available_agent_choices(
                 require_user: false,
                 require_default_llm: true,
               ),
@@ -55,13 +55,13 @@ if defined?(DiscourseAutomation)
       next if post&.user&.bot?
 
       if post.topic.private_message?
-        include_personal_messages = fields.dig("include_personal_messages", "value")
-        next if !include_personal_messages
+        include_agentl_messages = fields.dig("include_agentl_messages", "value")
+        next if !include_agentl_messages
       end
 
       canned_reply = fields.dig("canned_reply", "value")
       canned_reply_user = fields.dig("canned_reply_user", "value")
-      reply_persona_id = fields.dig("reply_persona", "value")
+      reply_agent_id = fields.dig("reply_agent", "value")
       whisper = fields.dig("whisper", "value")
 
       # nothing to do if we already replied
@@ -113,7 +113,7 @@ if defined?(DiscourseAutomation)
           tags: tags,
           canned_reply: canned_reply,
           canned_reply_user: canned_reply_user,
-          reply_persona_id: reply_persona_id,
+          reply_agent_id: reply_agent_id,
           whisper: whisper,
           hide_topic: hide_topic,
           flag_post: flag_post,

@@ -52,7 +52,7 @@ sq:
         summary: "Përmbledhja"
         username: "Emri i përdoruesit"
         total_requests: "Total requests"
-      ai_persona:
+      ai_agent:
         back: "Kthehu mbrapa"
         name: "Emri"
         edit: "Redakto"

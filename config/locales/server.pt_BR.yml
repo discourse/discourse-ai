@@ -56,7 +56,7 @@ pt_BR:
     composer_ai_helper_allowed_groups: "Os usuários desses grupos visualizarão o botão de assistência por IA no compositor."
     ai_helper_allowed_in_pm: "Ative o ajudante de IA do compositor em MPs."
     ai_helper_model: "Modelo usado para o ajudante de IA."
-    ai_helper_custom_prompts_allowed_groups: "Os(as) usuários(as) que estiverem nestes grupos verão um prompt personalizado no ajudante da IA."
+    ai_helper_custom_prompts_allowed_groups: "Os(as) usuários(as) que estiverem nestes grupos verão um prompt agentlizado no ajudante da IA."
     ai_helper_automatic_chat_thread_title_delay: "O atraso, em minutos, até que o ajudante de IA defina automaticamente o título da thread do chat."
     ai_helper_automatic_chat_thread_title: "Defina automaticamente os títulos das linhas de discussão do chat com base no conteúdo delas."
     ai_helper_illustrate_post_model: "O modelo a ser usado para o ajudante de IA ilustrar o recurso da postagem"
@@ -89,8 +89,8 @@ pt_BR:
     ai_stability_api_key: "Chave de API para a API stability.ai"
     ai_stability_engine: "Mecanismo de geração de imagem usado para a API stability.ai"
     ai_stability_api_url: "URL para a API stability.ai"
-    ai_google_custom_search_api_key: "Chave de API para a API de pesquisa personalizada do Google. Veja: https://developers.google.com/custom-search"
-    ai_google_custom_search_cx: "CX para API de pesquisa personalizada do Google"
+    ai_google_custom_search_api_key: "Chave de API para a API de pesquisa agentlizada do Google. Veja: https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "CX para API de pesquisa agentlizada do Google"
   reviewables:
     reasons:
       flagged_by_toxicity: O plugin de IA sinalizou isto após classificar como tóxico.
@@ -192,7 +192,7 @@ pt_BR:
       view_changes: "Visualizar alterações"
     unknown_model: "Modelo de IA desconhecido"
     tools:
-      custom_name: "%{name} (personalizado)"
+      custom_name: "%{name} (agentlizado)"
       presets:
         browse_web_jina:
           name: "Navegar na Web com (jina.ai)"
@@ -212,7 +212,7 @@ pt_BR:
         generate_titles: Sugerir títulos de tópicos
         proofread: Revisar texto
         markdown_table: Gerar tabela de Markdown
-        custom_prompt: "Prompt personalizado"
+        custom_prompt: "Prompt agentlizado"
         explain: "Explicar"
         illustrate_post: "Ilustrar postagem"
         replace_dates: "Datas inteligentes"
@@ -242,10 +242,10 @@ pt_BR:
     ai_bot:
       reply_error: "Desculpe, parece que nosso sistema encontrou um problema inesperado ao tentar responder.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[MP de bot de IA não identificado]"
-      personas:
+      agents:
         default_llm_required: "É preciso de um modelo de LLM padrão para ativar o chat"
-        cannot_delete_system_persona: "Personas de sistema não podem ser excluídas, desative"
-        cannot_edit_system_persona: "Personas de sistema só podem ser renomeadas, você não pode editar ferramentas ou prompt de sistema. Desative e faça uma cópia"
+        cannot_delete_system_agent: "Agents de sistema não podem ser excluídas, desative"
+        cannot_edit_system_agent: "Agents de sistema só podem ser renomeadas, você não pode editar ferramentas ou prompt de sistema. Desative e faça uma cópia"
         github_helper:
           name: "Ajudante do GitHub"
           description: "Bot de IA especializado em auxiliar em tarefas e perguntas relacionadas ao GitHub"
@@ -429,11 +429,11 @@ pt_BR:
       quota_exceeded: "Você ultrapassou a cota deste modelo. Tente novamente em %{relative_time}."
       quota_required: "Você deve especificar o máximo de tokens ou usos para este modelo"
       no_query_specified: Requer parâmetro de consulta, especifique um.
-      no_user_for_persona: A persona especificada não tem usuário(a) associado(a).
-      persona_not_found: A persona especificada não existe. Confira os parâmetros persona_name ou persona_id
+      no_user_for_agent: A agent especificada não tem usuário(a) associado(a).
+      agent_not_found: A agent especificada não existe. Confira os parâmetros agent_name ou agent_id
       no_user_specified: Requer o parâmetro username ou user_unique_id. Insira-o.
       user_not_found: O(a) usuário(a) especificado(a) não existe. Confira o parâmetro username.
-      persona_disabled: A persona especificada está desativada. Confira os parâmetros persona_name ou persona_id
-      no_default_llm: A persona deve ter default_llm definida.
+      agent_disabled: A agent especificada está desativada. Confira os parâmetros agent_name ou agent_id
+      no_default_llm: A agent deve ter default_llm definida.
       user_not_allowed: O(a) usuário(a) não tem permissão para participar do tópico.
       prompt_message_length: A mensagem %{idx} excede o limite de 1000 caracteres.

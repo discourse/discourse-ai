@@ -58,7 +58,7 @@ ur:
         periods:
           last_day: "پچھلے 24 گھنٹے"
           custom: "ترمیم..."
-      ai_persona:
+      ai_agent:
         back: "واپس"
         name: "نام"
         edit: "ترمیم کریں"

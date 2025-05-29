@@ -12,7 +12,7 @@ pt_BR:
           descriptions:
             discourse_ai:
               search: "Permite pesquisa com IA"
-              stream_completion: "Permite transmissão de conclusão com persona de IA"
+              stream_completion: "Permite transmissão de conclusão com agent de IA"
       site_settings:
         categories:
           discourse_ai: "Discourse IA"
@@ -128,7 +128,7 @@ pt_BR:
             flag_post:
               label: "Sinalizar postagem"
               description: "Sinaliza a postagem (como spam ou para revisão)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Incluir mensagens pessoais"
               description: "Também verificar e fazer triagem de mensagens pessoais"
             model:
@@ -152,7 +152,7 @@ pt_BR:
         short_title: "Spam"
         title: "Configurar tratamento de spam"
         select_llm: "Selecionar LLM"
-        custom_instructions: "Instruções personalizadas"
+        custom_instructions: "Instruções agentlizadas"
         custom_instructions_help: "Instruções específicas para seu site para ajudar a orientar a IA na identificação de spam, por exemplo: \"Verificar com mais agressividade postagens que não estão em inglês\"."
         last_seven_days: "Últimos sete dias"
         scanned_count: "Postagens verificadas"
@@ -218,8 +218,8 @@ pt_BR:
           last_day: "Últimas 24 horas"
           last_week: "Semana passada"
           last_month: "Mês passado"
-          custom: "Personalizado..."
-      ai_persona:
+          custom: "Agentlizado..."
+      ai_agent:
         ai_tools: "Ferramentas"
         tool_strategies:
           all: "Aplicar a todas as respostas"
@@ -243,47 +243,47 @@ pt_BR:
         tool_details: Exibir detalhes da ferramenta
         tool_details_help: Serão exibidos aos(às) usuários(as) finais as ferramentas nas quais o modelo de linguagem foi acionado.
         mentionable: Permitir menções
-        mentionable_help: Ative para que os(as) usuários(as) nos grupos permitidos possam mencionar este(a) usuário(a) nas postagens. A IA responderá como esta persona.
+        mentionable_help: Ative para que os(as) usuários(as) nos grupos permitidos possam mencionar este(a) usuário(a) nas postagens. A IA responderá como esta agent.
         user: Usuário(a)
         create_user: Criar usuário(a)
-        create_user_help: Como alternativa, você poderá anexar um(a) usuário(a) a esta persona. Se fizer isso, a IA usará este(a) usuário(a) para responder aos pedidos.
+        create_user_help: Como alternativa, você poderá anexar um(a) usuário(a) a esta agent. Se fizer isso, a IA usará este(a) usuário(a) para responder aos pedidos.
         default_llm: Modelo de linguagem padrão
-        default_llm_help: O modelo de linguagem padrão a ser usado para esta persona. É obrigatório se você quiser mencionar a persona em postagens públicas.
+        default_llm_help: O modelo de linguagem padrão a ser usado para esta agent. É obrigatório se você quiser mencionar a agent em postagens públicas.
         question_consolidator_llm: Modelo de linguagem para consolidador de pergunta
         question_consolidator_llm_help: O modelo de linguagem a ser usado para o consolidador de pergunta. Para economizar, você pode escolher um modelo menos robusto.
         system_prompt: Prompt do sistema
         forced_tool_strategy: Estratégia de ferramenta forçada
         allow_chat_direct_messages: "Permitir mensagens diretas do chat"
-        allow_chat_direct_messages_help: "Ative para que os(às) usuários(as) nos grupos permitidos possam enviar mensagens diretas a esta persona."
+        allow_chat_direct_messages_help: "Ative para que os(às) usuários(as) nos grupos permitidos possam enviar mensagens diretas a esta agent."
         allow_chat_channel_mentions: "Permitir menções no canal de chat"
-        allow_chat_channel_mentions_help: "Ative para os(as) usuários(as) nos grupos permitidos poderem mencionar esta persona nos canais de chat"
-        allow_personal_messages: "Permitir mensagens pessoais"
-        allow_personal_messages_help: "Ative para que os(as) usuários(as) nos grupos permitidos possam enviar mensagens pessoais a esta persona."
+        allow_chat_channel_mentions_help: "Ative para os(as) usuários(as) nos grupos permitidos poderem mencionar esta agent nos canais de chat"
+        allow_agentl_messages: "Permitir mensagens pessoais"
+        allow_agentl_messages_help: "Ative para que os(as) usuários(as) nos grupos permitidos possam enviar mensagens pessoais a esta agent."
         allow_topic_mentions: "Permtir menções de tópicos"
-        allow_topic_mentions_help: "Ative para os(as) usuários(as) nos grupos permitidos poderem mencionar esta persona nos tópicos."
+        allow_topic_mentions_help: "Ative para os(as) usuários(as) nos grupos permitidos poderem mencionar esta agent nos tópicos."
         force_default_llm: "Usar sempre o modelo de linguagem padrão"
         save: "Salvar"
-        saved: "Persona salva"
+        saved: "Agent salva"
         enabled: "Ativado(a)?"
         tools: "Ferramentas ativadas"
         forced_tools: "Ferramentas forçadas"
         allowed_groups: "Grupos permitidos"
-        confirm_delete: "Você tem certeza de que deseja excluir esta persona?"
-        new: "Nova persona"
-        no_personas: "Você ainda não criou nenhuma persona"
-        title: "Personas"
-        short_title: "Personas"
+        confirm_delete: "Você tem certeza de que deseja excluir esta agent?"
+        new: "Nova agent"
+        no_agents: "Você ainda não criou nenhuma agent"
+        title: "Agents"
+        short_title: "Agents"
         delete: "Excluir"
         temperature: "Temperatura"
         temperature_help: "A Temperatura a ser usada para o LLM. Aumente para incrementar a criatividade (deixe vazio para usar o padrão do modelo, que geralmente é um valor que varia entre 0.0 e 2.0)"
         top_p: "P Máximo"
         top_p_help: "O P Máximo a ser usado para o LLM, aumente para incrementar o fator aleatório (deixe vazio para usar o padrão do modelo, que geralmente é um valor que varia entre 0.0 e 1.0)"
         priority: "Prioridade"
-        priority_help: "Personas de prioridade são exibidas aos(às) usuários(as) no topo da lista de personas. Se várias personas tiverem prioridade, serão escolhidas em ordem alfabética."
+        priority_help: "Agents de prioridade são exibidas aos(às) usuários(as) no topo da lista de agents. Se várias agents tiverem prioridade, serão escolhidas em ordem alfabética."
         tool_options: "Opções de ferramenta"
         rag_conversation_chunks: "Pesquisar pedaços de conversa"
         rag_conversation_chunks_help: "O número de pedaços a serem usados para pesquisas de modelo RAG. Aumente para incrementar a quantidade de contexto que a IA pode usar."
-        persona_description: "Personas são um recurso poderoso que permite personalizar o comportamento da engine de IA no seu fórum do Discourse. Atuam como uma \"mensagem de sistema\" que orienta as respostas e as interações da IA, ajudando a criar uma experiência mais personzalidada e envolvente para o(a) usuário(a)."
+        agent_description: "Agents são um recurso poderoso que permite agentlizar o comportamento da engine de IA no seu fórum do Discourse. Atuam como uma \"mensagem de sistema\" que orienta as respostas e as interações da IA, ajudando a criar uma experiência mais personzalidada e envolvente para o(a) usuário(a)."
         response_format:
           open_modal: "Editar"
           modal:
@@ -369,14 +369,14 @@ pt_BR:
             six_hours: "6 horas"
             day: "24 horas"
             week: "Sete dias"
-            custom: "Personalizado..."
+            custom: "Agentlizado..."
           hours: "horas"
           max_tokens_help: "Quantidade máxima de tokens (palavras e caracteres) que podem ser usados por cada usuário(a) neste grupo durante o período especificado. Tokens são unidades usadas para modelos de IA processarem texto: 1 token equivale a aproximadamente 4 caracteres ou 3/4 de uma palavra."
           max_usages_help: "A quantidade máxima de vezes que cada usuário(a) neste grupo pode usar o modelo de IA durante o período especificado. Essa cota é rastreada por cada usuário(a) individual e não é compartilhada no grupo."
         usage:
           ai_bot: "Bot de IA"
           ai_helper: "Ajudante"
-          ai_persona: "Persona (%{persona})"
+          ai_agent: "Agent (%{agent})"
           ai_summarization: "Resumir"
           ai_embeddings_semantic_search: "Pesquisa com IA"
           ai_spam: "Spam"
@@ -429,7 +429,7 @@ pt_BR:
           samba_nova: "SambaNova"
           mistral: "Mistral"
           open_router: "OpenRouter"
-          fake: "Personalizados(as)"
+          fake: "Agentlizados(as)"
         provider_fields:
           access_key_id: "ID da chave de acesso do AWS Bedrock"
           region: "Região do AWS Bedrock"
@@ -463,8 +463,8 @@ pt_BR:
           discard: "Descartar"
           changes: "Edições sugeridas"
           custom_prompt:
-            title: "Prompt personalizado"
-            placeholder: "Insira um prompt personalizado..."
+            title: "Prompt agentlizado"
+            placeholder: "Insira um prompt agentlizado..."
             submit: "Enviar prompt"
           translate_prompt: "Traduzir para %{language}"
         post_options_menu:
@@ -542,7 +542,7 @@ pt_BR:
           google: "Google"
           cloudflare: "Cloudflare"
           CDCK: "CDCK"
-          fake: "Personalizados(as)"
+          fake: "Agentlizados(as)"
         provider_fields:
           model_name: "Nome do modelo"
         semantic_search: "Tópicos (semântica)"

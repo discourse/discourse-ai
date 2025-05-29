@@ -61,7 +61,7 @@ sk:
         periods:
           last_day: "Posledných 24 hodín"
           custom: "Vlastné..."
-      ai_persona:
+      ai_agent:
         back: "Späť"
         name: "Meno"
         edit: "Upraviť"

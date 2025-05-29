@@ -59,7 +59,7 @@ hu:
         periods:
           last_day: "Elmúlt 24 óra"
           custom: "Egyéni…"
-      ai_persona:
+      ai_agent:
         back: "Vissza"
         name: "Név"
         edit: "Szerkesztés"

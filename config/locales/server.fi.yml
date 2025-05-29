@@ -243,10 +243,10 @@ fi:
     ai_bot:
       reply_error: "Näyttää siltä, että järjestelmässä tapahtui odottamaton ongelma, kun se yritti vastata.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Nimetön tekoälybotin yksityisviesti]"
-      personas:
+      agents:
         default_llm_required: "Oletus-LLM-malli vaaditaan ennen chatin käyttöönottoa"
-        cannot_delete_system_persona: "Järjestelmäpersoonia ei voi poistaa, poista se sen sijaan käytöstä"
-        cannot_edit_system_persona: "Järjestelmäpersoonia voi vain nimetä uudelleen, et saa muokata työkaluja tai järjestelmäkehotetta, sen sijaan voit poistaa ne käytöstä ja tehdä kopion"
+        cannot_delete_system_agent: "Järjestelmäpersoonia ei voi poistaa, poista se sen sijaan käytöstä"
+        cannot_edit_system_agent: "Järjestelmäpersoonia voi vain nimetä uudelleen, et saa muokata työkaluja tai järjestelmäkehotetta, sen sijaan voit poistaa ne käytöstä ja tehdä kopion"
         github_helper:
           name: "GitHub-apulainen"
           description: "Tekoälybotti, joka on erikoistunut avustamaan GitHubiin liittyvissä tehtävissä ja kysymyksissä"
@@ -430,11 +430,11 @@ fi:
       quota_exceeded: "Olet ylittänyt tämän mallin kiintiön. Odota %{relative_time} ja yritä sitten uudelleen."
       quota_required: "Sinun on määritettävä tälle mallille saneiden tai käyttökertojen enimmäismäärä"
       no_query_specified: Kyselyparametri on pakollinen, määritä se.
-      no_user_for_persona: Määritetyllä persoonalle ei ole siihen liitettyä käyttäjää.
-      persona_not_found: Määritettyä persoonaa ei ole olemassa. Tarkista parametrit persona_name tai persona_id.
+      no_user_for_agent: Määritetyllä persoonalle ei ole siihen liitettyä käyttäjää.
+      agent_not_found: Määritettyä persoonaa ei ole olemassa. Tarkista parametrit agent_name tai agent_id.
       no_user_specified: Parametri username tai user_unique_id vaaditaan, määritä se.
       user_not_found: Määritettyä käyttäjää ei ole olemassa. Tarkista username-parametri.
-      persona_disabled: Määritetty persoona ei ole käytössä. Tarkista parametrit persona_name tai persona_id.
+      agent_disabled: Määritetty persoona ei ole käytössä. Tarkista parametrit agent_name tai agent_id.
       no_default_llm: Persoonalla täytyy olla default_llm määritelty.
       user_not_allowed: Käyttäjä ei saa osallistua ketjuun.
       prompt_message_length: Viesti %{idx} ylittää 1 000 merkin rajan.

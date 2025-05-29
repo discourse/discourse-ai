@@ -55,7 +55,7 @@ ca:
         total_requests: "Total de peticions"
         periods:
           last_day: "Últimes 24 hores"
-      ai_persona:
+      ai_agent:
         back: "Enrere"
         name: "Nom"
         edit: "Edita"
@@ -100,7 +100,7 @@ ca:
           success: "Èxit!"
         providers:
           google: "Google"
-          fake: "Personalitzat"
+          fake: "Agentlitzat"
       ai_helper:
         context_menu:
           cancel: "Cancel·la"
@@ -126,7 +126,7 @@ ca:
         display_name: "Nom"
         providers:
           google: "Google"
-          fake: "Personalitzat"
+          fake: "Agentlitzat"
       ai_bot:
         debug_ai_modal:
           request: "Sol·licita"

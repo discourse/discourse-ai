@@ -59,7 +59,7 @@ ug:
         total_requests: "جەمئىي ئىلتىماس"
         periods:
           custom: "ئىختىيارى..."
-      ai_persona:
+      ai_agent:
         back: "كەينى"
         name: "ئىسمى"
         edit: "تەھرىر"

@@ -127,8 +127,8 @@ pl_PL:
     ai_bot:
       default_pm_prefix: "[PW bota AI bez tytułu]"
       thinking: "Myślenie..."
-      personas:
-        cannot_delete_system_persona: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
+      agents:
+        cannot_delete_system_agent: "Person systemowych nie można usunąć, zamiast tego wyłącz je."
         general:
           name: Pomocnik forumowy
           description: "Bot AI ogólnego przeznaczenia zdolny do wykonywania różnych zadań"
@@ -276,6 +276,6 @@ pl_PL:
       quota_exceeded: "Przekroczyłeś limit dla tego modelu. Spróbuj ponownie za %{relative_time}."
       quota_required: "Musisz określić maksymalną liczbę tokenów lub użyć dla tego modelu"
       no_query_specified: Parametr zapytania jest wymagany, podaj go.
-      no_user_for_persona: Określona persona nie ma powiązanego użytkownika.
-      persona_not_found: Określona persona nie istnieje. Sprawdź parametry persona_name lub persona_id.
+      no_user_for_agent: Określona agent nie ma powiązanego użytkownika.
+      agent_not_found: Określona agent nie istnieje. Sprawdź parametry agent_name lub agent_id.
       prompt_message_length: Wiadomość %{idx} przekracza limit 1000 znaków.

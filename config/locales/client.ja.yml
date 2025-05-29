@@ -128,7 +128,7 @@ ja:
             flag_post:
               label: "投稿を通報"
               description: "投稿を通報 (迷惑またはレビュー対象)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "個人メッセージを含める"
               description: "個人メッセージのスキャンとトリアージも行う"
             model:
@@ -218,7 +218,7 @@ ja:
           last_week: "先週"
           last_month: "先月"
           custom: "カスタム..."
-      ai_persona:
+      ai_agent:
         ai_tools: "ツール"
         tool_strategies:
           all: "すべての返信に適用"
@@ -255,8 +255,8 @@ ja:
         allow_chat_direct_messages_help: "有効にすると、許可されているグループのユーザーはこのペルソナにダイレクトメッセージを送信できます。"
         allow_chat_channel_mentions: "チャットチャンネルのメンションを許可"
         allow_chat_channel_mentions_help: "有効にすると、許可されたグループ内のユーザーはチャットチャンネルでこのペルソナをメンションできます。"
-        allow_personal_messages: "個人メッセージを許可"
-        allow_personal_messages_help: "有効にすると、許可されているグループのユーザーはこのペルソナに個人メッセージを送信できます。"
+        allow_agentl_messages: "個人メッセージを許可"
+        allow_agentl_messages_help: "有効にすると、許可されているグループのユーザーはこのペルソナに個人メッセージを送信できます。"
         allow_topic_mentions: "トピックのメンションを許可"
         allow_topic_mentions_help: "有効にすると、許可されたグループ内のユーザーはトピックでこのペルソナをメンションできます。"
         force_default_llm: "常にデフォルトの言語モデルを使用する"
@@ -268,7 +268,7 @@ ja:
         allowed_groups: "許可されたグループ"
         confirm_delete: "このペルソナを削除してもよろしいですか？"
         new: "新しいペルソナ"
-        no_personas: "ペルソナをまだ作成していません"
+        no_agents: "ペルソナをまだ作成していません"
         title: "ペルソナ"
         short_title: "ペルソナ"
         delete: "削除"
@@ -281,7 +281,7 @@ ja:
         tool_options: "ツールのオプション"
         rag_conversation_chunks: "会話チャンクを検索"
         rag_conversation_chunks_help: "RAG モデル検索に使用するチャンクの数。値を増やすと、AI が使用できるコンテキストの量が増えます。"
-        persona_description: "ペルソナは、Discourse フォーラムの AI エンジンの動作をカスタマイズできる強力な機能です。AI の応答と対話を誘導する「システムメッセージ」として機能し、よりパーソナライズされた魅力的なユーザーエクスペリエンスの作成に役立ちます。"
+        agent_description: "ペルソナは、Discourse フォーラムの AI エンジンの動作をカスタマイズできる強力な機能です。AI の応答と対話を誘導する「システムメッセージ」として機能し、よりパーソナライズされた魅力的なユーザーエクスペリエンスの作成に役立ちます。"
         response_format:
           open_modal: "編集"
           modal:
@@ -374,7 +374,7 @@ ja:
         usage:
           ai_bot: "AI ボット"
           ai_helper: "ヘルパー"
-          ai_persona: "ペルソナ (%{persona})"
+          ai_agent: "ペルソナ (%{agent})"
           ai_summarization: "要約"
           ai_embeddings_semantic_search: "AI 検索"
           ai_spam: "迷惑"

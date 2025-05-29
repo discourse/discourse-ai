@@ -57,7 +57,7 @@ el:
         periods:
           last_day: "Τελευταίες 24 ώρες"
           custom: "Προσαρμοσμένο..."
-      ai_persona:
+      ai_agent:
         back: "Πίσω"
         name: "Όνομα"
         edit: "Επεξεργασία"

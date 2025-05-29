@@ -2,7 +2,7 @@
 
 class RagDocumentFragment < ActiveRecord::Base
   # TODO Jan 2025 - remove
-  self.ignored_columns = %i[ai_persona_id]
+  self.ignored_columns = %i[ai_agent_id]
 
   belongs_to :upload
   belongs_to :target, polymorphic: true
@@ -38,7 +38,7 @@ class RagDocumentFragment < ActiveRecord::Base
       end
     end
 
-    def indexing_status(persona, uploads)
+    def indexing_status(agent, uploads)
       embeddings_table = DiscourseAi::Embeddings::Schema.for(self).table
 
       results =
@@ -56,8 +56,8 @@ class RagDocumentFragment < ActiveRecord::Base
         WHERE uploads.id IN (:upload_ids)
         GROUP BY uploads.id
       SQL
-          target_id: persona.id,
-          target_type: persona.class.to_s,
+          target_id: agent.id,
+          target_type: agent.class.to_s,
           upload_ids: uploads.map(&:id),
         )
 

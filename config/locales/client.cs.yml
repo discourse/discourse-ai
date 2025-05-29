@@ -58,7 +58,7 @@ cs:
         periods:
           last_day: "Posledních 24 hodin"
           custom: "Vlastní…"
-      ai_persona:
+      ai_agent:
         back: "Zpět"
         name: "Jméno"
         edit: "Upravit"

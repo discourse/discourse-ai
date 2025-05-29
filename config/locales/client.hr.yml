@@ -58,7 +58,7 @@ hr:
         periods:
           last_day: "Posljednja 24 sata"
           custom: "Prilagođeno..."
-      ai_persona:
+      ai_agent:
         back: "Natrag"
         name: "Ime"
         edit: "Uredi"

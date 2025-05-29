@@ -55,7 +55,7 @@ sl:
         periods:
           last_day: "Zadnjih 24 ur"
           custom: "Po meri..."
-      ai_persona:
+      ai_agent:
         back: "Nazaj"
         name: "Ime"
         edit: "Uredi"

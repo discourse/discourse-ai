@@ -128,7 +128,7 @@ fi:
             flag_post:
               label: "Liputa viesti"
               description: "Liputtaa viestin (joko roskapostiksi tai käsiteltäväksi)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Sisällytä yksityisviestit"
               description: "Skannaa ja luokittele myös yksityisviestit"
             model:
@@ -219,7 +219,7 @@ fi:
           last_week: "Viime viikko"
           last_month: "Viime kuukausi"
           custom: "Mukautettu..."
-      ai_persona:
+      ai_agent:
         ai_tools: "Työkalut"
         tool_strategies:
           all: "Käytä kaikkiin vastauksiin"
@@ -257,8 +257,8 @@ fi:
         allow_chat_direct_messages_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat lähettää yksityisviestejä tälle persoonalle."
         allow_chat_channel_mentions: "Salli chat-kanavamaininnat"
         allow_chat_channel_mentions_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat mainita tämän persoonan chat-kanavilla."
-        allow_personal_messages: "Salli yksityisviestit"
-        allow_personal_messages_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat lähettää yksityisviestejä tälle persoonalle."
+        allow_agentl_messages: "Salli yksityisviestit"
+        allow_agentl_messages_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat lähettää yksityisviestejä tälle persoonalle."
         allow_topic_mentions: "Salli ketjumaininnat"
         allow_topic_mentions_help: "Jos tämä on käytössä, sallittujen ryhmien käyttäjät voivat mainita tämän persoonan ketjuissa."
         force_default_llm: "Käytä aina oletuskielimallia"
@@ -270,7 +270,7 @@ fi:
         allowed_groups: "Sallitut ryhmät"
         confirm_delete: "Oletko varma, että haluat poistaa tämän persoonan?"
         new: "Uusi persoona"
-        no_personas: "Et ole vielä luonut persoonia"
+        no_agents: "Et ole vielä luonut persoonia"
         title: "Persoonat"
         short_title: "Persoonat"
         delete: "Poista"
@@ -283,7 +283,7 @@ fi:
         tool_options: "Työkaluasetukset"
         rag_conversation_chunks: "Hakukeskustelulohkot"
         rag_conversation_chunks_help: "RAG-mallin hauissa käytettävien lohkojen määrä. Lisää kontekstin määrää, jota tekoäly voi käyttää, kasvattamalla arvoa."
-        persona_description: "Personat ovat tehokas ominaisuus, jonka avulla voit mukauttaa tekoälymoduulin toimintaa Discourse-foorumillasi. Ne toimivat \"järjestelmäviestinä\", joka ohjaa tekoälyn vastauksia ja vuorovaikutusta ja auttaa luomaan personoidumman ja kiinnostavamman käyttökokemuksen."
+        agent_description: "Agentt ovat tehokas ominaisuus, jonka avulla voit mukauttaa tekoälymoduulin toimintaa Discourse-foorumillasi. Ne toimivat \"järjestelmäviestinä\", joka ohjaa tekoälyn vastauksia ja vuorovaikutusta ja auttaa luomaan personoidumman ja kiinnostavamman käyttökokemuksen."
         response_format:
           open_modal: "Muokkaa"
           modal:
@@ -376,7 +376,7 @@ fi:
         usage:
           ai_bot: "Tekoälyrobotti"
           ai_helper: "Apuri"
-          ai_persona: "Persoona (%{persona})"
+          ai_agent: "Persoona (%{agent})"
           ai_summarization: "Tee yhteenveto"
           ai_embeddings_semantic_search: "Tekoälyhaku"
           ai_spam: "Roskaposti"

@@ -51,7 +51,7 @@ bs_BA:
       usage:
         summary: "Sažetak"
         username: "Nadimak"
-      ai_persona:
+      ai_agent:
         back: "Prethodno"
         name: "Ime"
         edit: "Edit"

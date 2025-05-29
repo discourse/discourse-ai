@@ -56,7 +56,7 @@ it:
     composer_ai_helper_allowed_groups: "Gli utenti di questi gruppi vedranno il pulsante dell'assistente IA nella sezione di scrittura."
     ai_helper_allowed_in_pm: "Abilita l'assistente IA nei MP."
     ai_helper_model: "Modello da utilizzare per l'assistente IA."
-    ai_helper_custom_prompts_allowed_groups: "Gli utenti di questi gruppi vedranno l'opzione di comando personalizzato nell'assistente IA."
+    ai_helper_custom_prompts_allowed_groups: "Gli utenti di questi gruppi vedranno l'opzione di comando agentlizzato nell'assistente IA."
     ai_helper_automatic_chat_thread_title_delay: "Ritardo in minuti prima che l'assistente IA imposti automaticamente il titolo del thread della chat."
     ai_helper_automatic_chat_thread_title: "Imposta automaticamente i titoli dei thread della chat in base ai contenuti del thread."
     ai_helper_illustrate_post_model: "Modello da utilizzare per la funzionalità di messaggio illustrato dell'assistente IA compositore"
@@ -65,7 +65,7 @@ it:
     ai_helper_image_caption_model: "Seleziona il modello da utilizzare per generare le didascalie delle immagini"
     ai_auto_image_caption_allowed_groups: "Gli utenti di questi gruppi possono attivare/disattivare i sottotitoli automatici delle immagini."
     ai_embeddings_selected_model: "Usa il modello selezionato per generare le integrazioni."
-    ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi personali."
+    ai_embeddings_generate_for_pms: "Genera integrazioni per messaggi agentli."
     ai_embeddings_semantic_related_topics_enabled: "Usa la ricerca semantica per argomenti correlati."
     ai_embeddings_semantic_related_topics: "Numero massimo di argomenti da mostrare nella sezione degli argomenti correlati."
     ai_embeddings_backfill_batch_size: "Numero di incorporamenti da riempire ogni 15 minuti."
@@ -84,14 +84,14 @@ it:
     ai_bot_enable_chat_warning: "Visualizza un avviso quando viene avviata la chat MP. Può essere sovrascritto modificando la stringa di traduzione: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "Quando il bot GPT ha accesso a un MP, risponderà ai membri di questi gruppi."
     ai_bot_debugging_allowed_groups: "Consenti a questi gruppi di vedere un pulsante di debug sui post che mostra la richiesta e la risposta IA non elaborate"
-    ai_bot_public_sharing_allowed_groups: "Consenti a questi gruppi di condividere messaggi personali dell'IA con il pubblico tramite un link univoco disponibile al pubblico. Nota: se il tuo sito richiede l'accesso, anche le condivisioni richiederanno l'accesso."
+    ai_bot_public_sharing_allowed_groups: "Consenti a questi gruppi di condividere messaggi agentli dell'IA con il pubblico tramite un link univoco disponibile al pubblico. Nota: se il tuo sito richiede l'accesso, anche le condivisioni richiederanno l'accesso."
     ai_bot_add_to_header: "Mostra un pulsante nell'intestazione per avviare un MP con un Bot IA"
     ai_bot_github_access_token: "Token di accesso GitHub da utilizzare con gli strumenti GitHub IA (richiesto per il supporto della ricerca)"
     ai_stability_api_key: "Chiave API per l'API stability.ai"
     ai_stability_engine: "Sistema di generazione di immagini da utilizzare per l'API stability.ai"
     ai_stability_api_url: "URL per l'API stability.ai"
-    ai_google_custom_search_api_key: "Chiave API per l'API della ricerca personalizzata di Google: https://developers.google.com/custom-search"
-    ai_google_custom_search_cx: "CX per l'API di ricerca personalizzata di Google"
+    ai_google_custom_search_api_key: "Chiave API per l'API della ricerca agentlizzata di Google: https://developers.google.com/custom-search"
+    ai_google_custom_search_cx: "CX per l'API di ricerca agentlizzata di Google"
   reviewables:
     reasons:
       flagged_by_toxicity: Il plugin IA lo ha segnalato dopo averlo classificato come tossico.
@@ -99,7 +99,7 @@ it:
   reports:
     overall_sentiment:
       title: "Sentimento generale"
-      description: 'Il grafico confronta il numero di messaggi classificati come positivi o negativi. Questi vengono calcolati quando i punteggi positivi o negativi > il punteggio soglia impostato. Ciò significa che i messaggi neutri non vengono mostrati. Sono esclusi anche i messaggi personali (MP). Classificazione effettuata con "cardiffnlp/twitter-roberta-base-sentiment-latest"'
+      description: 'Il grafico confronta il numero di messaggi classificati come positivi o negativi. Questi vengono calcolati quando i punteggi positivi o negativi > il punteggio soglia impostato. Ciò significa che i messaggi neutri non vengono mostrati. Sono esclusi anche i messaggi agentli (MP). Classificazione effettuata con "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positiva(%)"
       yaxis: "Data"
     emotion_admiration:
@@ -193,7 +193,7 @@ it:
       view_changes: "Visualizza modifiche"
     unknown_model: "Modello IA sconosciuto"
     tools:
-      custom_name: "%{name} (personalizzato)"
+      custom_name: "%{name} (agentlizzato)"
       presets:
         browse_web_jina:
           name: "Naviga sul web (jina.ai)"
@@ -213,7 +213,7 @@ it:
         generate_titles: Suggerisci i titoli degli argomenti
         proofread: Testo corretto
         markdown_table: Genera tabella di markdown
-        custom_prompt: "Comando personalizzato"
+        custom_prompt: "Comando agentlizzato"
         explain: "Spiega"
         illustrate_post: "Illustra messaggio"
         replace_dates: "Date smart"
@@ -230,8 +230,8 @@ it:
       title: "%{title} - Conversazione IA - %{site_name}"
       errors:
         not_allowed: "Non hai l'autorizzazione a condividere questo argomento"
-        other_people_in_pm: "I messaggi personali con altri esseri umani non possono essere condivisi pubblicamente"
-        other_content_in_pm: "I messaggi personali contenenti post di altre persone non possono essere condivisi pubblicamente"
+        other_people_in_pm: "I messaggi agentli con altri esseri umani non possono essere condivisi pubblicamente"
+        other_content_in_pm: "I messaggi agentli contenenti post di altre persone non possono essere condivisi pubblicamente"
         failed_to_share: "Condivisione della conversazione non riuscita"
         conversation_deleted: "Condivisione di conversazione eliminata correttamente"
     spam_detection:
@@ -243,10 +243,10 @@ it:
     ai_bot:
       reply_error: "Spiacenti, il nostro sistema ha riscontrato un problema imprevisto durante il tentativo di risposta.\n\n[details='Dettagli errore']\n%{details}\n[/details]"
       default_pm_prefix: "[Bot IA senza titolo MP]"
-      personas:
+      agents:
         default_llm_required: "Il modello LLM predefinito è obbligatorio prima di abilitare la chat"
-        cannot_delete_system_persona: "I personaggi di sistema non possono essere eliminati, vanno invece disattivati"
-        cannot_edit_system_persona: "I personaggi di sistema possono solo essere rinominati, non è possibile modificare strumenti di sistema, piuttosto disabilitali e crearne una copia"
+        cannot_delete_system_agent: "I agentggi di sistema non possono essere eliminati, vanno invece disattivati"
+        cannot_edit_system_agent: "I agentggi di sistema possono solo essere rinominati, non è possibile modificare strumenti di sistema, piuttosto disabilitali e crearne una copia"
         github_helper:
           name: "Assistente GitHub"
           description: "Bot IA specializzato nell'assistenza con attività e domande relative a GitHub"
@@ -430,11 +430,11 @@ it:
       quota_exceeded: "Hai superato la quota per questo modello. Riprova tra %{relative_time}."
       quota_required: "È necessario specificare il numero massimo di token o utilizzi per questo modello"
       no_query_specified: Il parametro di query è obbligatorio, specificalo.
-      no_user_for_persona: Il personaggio specificato non ha alcun utente associato.
-      persona_not_found: Il personaggio specificato non esiste. Controlla i parametri persona_name o persona_id.
+      no_user_for_agent: Il agentggio specificato non ha alcun utente associato.
+      agent_not_found: Il agentggio specificato non esiste. Controlla i parametri agent_name o agent_id.
       no_user_specified: Il parametro username o user_unique_id è obbligatorio, specificalo.
       user_not_found: L'utente specificato non esiste. Controlla il parametro username.
-      persona_disabled: Il personaggio specificato è disattivato. Controlla i parametri persona_name o persona_id.
-      no_default_llm: Il personaggio deve avere un default_llm definito.
+      agent_disabled: Il agentggio specificato è disattivato. Controlla i parametri agent_name o agent_id.
+      no_default_llm: Il agentggio deve avere un default_llm definito.
       user_not_allowed: All'utente non è consentito partecipare all'argomento.
       prompt_message_length: Il messaggio %{idx} supera il limite di 1000 caratteri.

@@ -55,7 +55,7 @@ nb_NO:
         total_requests: "Totalt forespørsler"
         periods:
           last_day: "Siste 24 timer"
-      ai_persona:
+      ai_agent:
         back: "Forrige"
         name: "Navn"
         edit: "Endre"

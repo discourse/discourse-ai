@@ -12,7 +12,7 @@ es:
           descriptions:
             discourse_ai:
               search: "Permite la búsqueda de IA"
-              stream_completion: "Permite la transmisión de realización de personas de IA"
+              stream_completion: "Permite la transmisión de realización de agents de IA"
       site_settings:
         categories:
           discourse_ai: "Discourse AI"
@@ -128,9 +128,9 @@ es:
             flag_post:
               label: "Denunciar publicación"
               description: "Denuncia la publicación (como spam o para revisión)"
-            include_personal_messages:
-              label: "Incluir mensajes personales"
-              description: "También escanea y clasifica los mensajes personales"
+            include_agentl_messages:
+              label: "Incluir mensajes agentles"
+              description: "También escanea y clasifica los mensajes agentles"
             model:
               label: "Modelo"
               description: "Modelo lingüístico utilizado para el triaje"
@@ -152,8 +152,8 @@ es:
         short_title: "Spam"
         title: "Configurar el manejo de correo no deseado"
         select_llm: "Seleccionar LLM"
-        custom_instructions: "Instrucciones personalizadas"
-        custom_instructions_help: "Instrucciones personalizadas específicas de tu sitio para ayudar a guiar a la IA en la identificación del correo no deseado, por ejemplo: «Sé más agresivo a la hora de escanear los mensajes que no estén en inglés»."
+        custom_instructions: "Instrucciones agentlizadas"
+        custom_instructions_help: "Instrucciones agentlizadas específicas de tu sitio para ayudar a guiar a la IA en la identificación del correo no deseado, por ejemplo: «Sé más agresivo a la hora de escanear los mensajes que no estén en inglés»."
         last_seven_days: "Últimos 7 días"
         scanned_count: "Publicaciones escaneadas"
         false_positives: "Denunciado incorrectamente"
@@ -218,8 +218,8 @@ es:
           last_day: "Últimas 24 horas"
           last_week: "Última semana"
           last_month: "Último mes"
-          custom: "Personalizado..."
-      ai_persona:
+          custom: "Agentlizado..."
+      ai_agent:
         ai_tools: "Herramientas"
         tool_strategies:
           all: "Aplicar a todas las respuestas"
@@ -243,47 +243,47 @@ es:
         tool_details: Mostrar detalles de la herramienta
         tool_details_help: Mostrará a los usuarios finales detalles sobre qué herramientas ha activado el modelo de lenguaje.
         mentionable: Permitir menciones
-        mentionable_help: Si está activada, los usuarios de los grupos permitidos pueden mencionar a este usuario en sus mensajes, y la IA responderá como esta persona.
+        mentionable_help: Si está activada, los usuarios de los grupos permitidos pueden mencionar a este usuario en sus mensajes, y la IA responderá como esta agent.
         user: Usuario
         create_user: Crear usuario
-        create_user_help: Opcionalmente, puedes adjuntar un usuario a esta persona. Si lo haces, la IA utilizará a este usuario para responder a las solicitudes.
+        create_user_help: Opcionalmente, puedes adjuntar un usuario a esta agent. Si lo haces, la IA utilizará a este usuario para responder a las solicitudes.
         default_llm: Modelo lingüístico por defecto
-        default_llm_help: El modelo de idioma por defecto que se utilizará para esta persona. Obligatorio si deseas mencionar a la persona en publicaciones públicas.
+        default_llm_help: El modelo de idioma por defecto que se utilizará para esta agent. Obligatorio si deseas mencionar a la agent en publicaciones públicas.
         question_consolidator_llm: Modelo lingüístico para el consolidador de preguntas
         question_consolidator_llm_help: El modelo lingüístico a utilizar para el consolidador de preguntas, puedes elegir un modelo menos potente para ahorrar costes.
         system_prompt: Aviso del sistema
         forced_tool_strategy: Estrategia de herramienta forzada
         allow_chat_direct_messages: "Permitir mensajes directos de chat"
-        allow_chat_direct_messages_help: "Si se activa, los usuarios de los grupos permitidos pueden enviar mensajes directos a esta persona."
+        allow_chat_direct_messages_help: "Si se activa, los usuarios de los grupos permitidos pueden enviar mensajes directos a esta agent."
         allow_chat_channel_mentions: "Permitir menciones en el canal de chat"
-        allow_chat_channel_mentions_help: "Si se activa, los usuarios de los grupos permitidos pueden mencionar a esta persona en los canales de chat."
-        allow_personal_messages: "Permitir mensajes personales"
-        allow_personal_messages_help: "Si se activa, los usuarios de los grupos permitidos pueden enviar mensajes personales a esta persona."
+        allow_chat_channel_mentions_help: "Si se activa, los usuarios de los grupos permitidos pueden mencionar a esta agent en los canales de chat."
+        allow_agentl_messages: "Permitir mensajes agentles"
+        allow_agentl_messages_help: "Si se activa, los usuarios de los grupos permitidos pueden enviar mensajes agentles a esta agent."
         allow_topic_mentions: "Permitir menciones en temas"
-        allow_topic_mentions_help: "Si se activa, los usuarios de los grupos permitidos pueden mencionar a esta persona en los temas."
+        allow_topic_mentions_help: "Si se activa, los usuarios de los grupos permitidos pueden mencionar a esta agent en los temas."
         force_default_llm: "Utilizar siempre el modelo de idioma por defecto"
         save: "Guardar"
-        saved: "Persona guardada"
+        saved: "Agent guardada"
         enabled: "¿Activado?"
         tools: "Herramientas habilitadas"
         forced_tools: "Herramientas forzadas"
         allowed_groups: "Grupos permitidos"
-        confirm_delete: "¿Seguro que quieres eliminar esta persona?"
-        new: "Nueva persona"
-        no_personas: "Aún no has creado ninguna persona"
-        title: "Personas"
-        short_title: "Personas"
+        confirm_delete: "¿Seguro que quieres eliminar esta agent?"
+        new: "Nueva agent"
+        no_agents: "Aún no has creado ninguna agent"
+        title: "Agents"
+        short_title: "Agents"
         delete: "Eliminar"
         temperature: "Temperatura"
         temperature_help: "Temperatura que se utilizará para el LLM. Aumentar para aumentar la creatividad (dejar vacío para utilizar el valor por defecto del modelo, generalmente un valor de 0,0 a 2,0)"
         top_p: "Top P"
         top_p_help: "Top P a utilizar para el LLM, aumentar para aumentar la aleatoriedad (dejar vacío para utilizar el modelo por defecto, generalmente un valor de 0,0 a 1,0)"
         priority: "Prioridad"
-        priority_help: "Las personas prioritarias se muestran a los usuarios en la parte superior de la lista de personas. Si varias personas tienen prioridad, se ordenarán alfabéticamente."
+        priority_help: "Las agents prioritarias se muestran a los usuarios en la parte superior de la lista de agents. Si varias agents tienen prioridad, se ordenarán alfabéticamente."
         tool_options: "Opciones de herramientas"
         rag_conversation_chunks: "Buscar fragmentos de conversación"
         rag_conversation_chunks_help: "El número de fragmentos a utilizar para las búsquedas del modelo RAG. Aumentar para incrementar la cantidad de contexto que puede utilizar la IA."
-        persona_description: "Las personas son una potente característica que te permite personalizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «mensaje del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más personalizada y atractiva."
+        agent_description: "Las agents son una potente característica que te permite agentlizar el comportamiento del motor de IA en tu foro de Discourse. Actúan como un «mensaje del sistema» que guía las respuestas e interacciones de la IA, ayudando a crear una experiencia de usuario más agentlizada y atractiva."
         response_format:
           open_modal: "Editar"
           modal:
@@ -369,14 +369,14 @@ es:
             six_hours: "6 horas"
             day: "24 horas"
             week: "7 días"
-            custom: "Personalizado..."
+            custom: "Agentlizado..."
           hours: "horas"
           max_tokens_help: "Número máximo de tokens (palabras y caracteres) que cada usuario de este grupo puede utilizar dentro de la duración especificada. Los tokens son las unidades que utilizan los modelos de IA para procesar texto: aproximadamente 1 token = 4 caracteres o 3/4 de una palabra."
           max_usages_help: "Número máximo de veces que cada usuario de este grupo puede utilizar el modelo de IA dentro de la duración especificada. Esta cuota se controla por usuario individual, no se comparte con todo el grupo."
         usage:
           ai_bot: "Bot de IA"
           ai_helper: "Ayudante"
-          ai_persona: "Persona (%{persona})"
+          ai_agent: "Agent (%{agent})"
           ai_summarization: "Resumir"
           ai_embeddings_semantic_search: "Búsqueda de IA"
           ai_spam: "Spam"
@@ -429,7 +429,7 @@ es:
           samba_nova: "SambaNova"
           mistral: "Mistral"
           open_router: "OpenRouter"
-          fake: "Personalizado"
+          fake: "Agentlizado"
         provider_fields:
           access_key_id: "ID de la clave de acceso a AWS Bedrock"
           region: "Región de AWS Bedrock"
@@ -463,8 +463,8 @@ es:
           discard: "Descartar"
           changes: "Ediciones sugeridas"
           custom_prompt:
-            title: "Instruccón personalizada"
-            placeholder: "Introduzca un aviso personalizado..."
+            title: "Instruccón agentlizada"
+            placeholder: "Introduzca un aviso agentlizado..."
             submit: "Enviar instrucción"
           translate_prompt: "Traducir a %{language}"
         post_options_menu:
@@ -542,7 +542,7 @@ es:
           google: "Google"
           cloudflare: "Cloudflare"
           CDCK: "CDCK"
-          fake: "Personalizado"
+          fake: "Agentlizado"
         provider_fields:
           model_name: "Nombre del modelo"
         semantic_search: "Temas (semánticos)"

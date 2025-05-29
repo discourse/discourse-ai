@@ -127,9 +127,9 @@ RSpec.describe DiscourseAi::AiBot::BotController do
     before { SiteSetting.ai_bot_enabled = true }
 
     fab!(:group)
-    fab!(:ai_persona) { Fabricate(:ai_persona, allowed_group_ids: [group.id], default_llm_id: 1) }
+    fab!(:ai_agent) { Fabricate(:ai_agent, allowed_group_ids: [group.id], default_llm_id: 1) }
 
-    context "when no persona is selected" do
+    context "when no agent is selected" do
       it "returns a 403" do
         get "/discourse-ai/ai-bot/discover", params: { query: "What is Discourse?" }
 
@@ -137,8 +137,8 @@ RSpec.describe DiscourseAi::AiBot::BotController do
       end
     end
 
-    context "when the user doesn't have access to the persona" do
-      before { SiteSetting.ai_bot_discover_persona = ai_persona.id }
+    context "when the user doesn't have access to the agent" do
+      before { SiteSetting.ai_bot_discover_agent = ai_agent.id }
 
       it "returns a 403" do
         get "/discourse-ai/ai-bot/discover", params: { query: "What is Discourse?" }
@@ -149,7 +149,7 @@ RSpec.describe DiscourseAi::AiBot::BotController do
 
     context "when the user is allowed to use discover" do
       before do
-        SiteSetting.ai_bot_discover_persona = ai_persona.id
+        SiteSetting.ai_bot_discover_agent = ai_agent.id
         group.add(user)
       end
 
@@ -173,17 +173,17 @@ RSpec.describe DiscourseAi::AiBot::BotController do
     before { SiteSetting.ai_bot_enabled = true }
     fab!(:group)
     fab!(:llm_model)
-    fab!(:ai_persona) do
-      persona = Fabricate(:ai_persona, allowed_group_ids: [group.id], default_llm_id: llm_model.id)
-      persona.create_user!
-      persona
+    fab!(:ai_agent) do
+      agent = Fabricate(:ai_agent, allowed_group_ids: [group.id], default_llm_id: llm_model.id)
+      agent.create_user!
+      agent
     end
     let(:query) { "What is Discourse?" }
     let(:context) { "Discourse is an open-source discussion platform." }
 
     context "when the user is allowed to discover" do
       before do
-        SiteSetting.ai_bot_discover_persona = ai_persona.id
+        SiteSetting.ai_bot_discover_agent = ai_agent.id
         group.add(user)
       end
 

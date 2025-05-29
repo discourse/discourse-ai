@@ -83,7 +83,7 @@ fa_IR:
         periods:
           last_day: "۲۴ ساعت گذشته"
           custom: "سفارشی..."
-      ai_persona:
+      ai_agent:
         back: "بازگشت"
         name: "نام"
         edit: "ویرایش"

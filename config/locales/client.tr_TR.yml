@@ -128,7 +128,7 @@ tr_TR:
             flag_post:
               label: "Gönderiye bayrak ekle"
               description: "Gönderiye bayrak ekler (spam olarak veya inceleme için)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Kişisel mesaj dâhil edin"
               description: "Ayrıca kişisel mesajları tarayın ve önceliklendirin"
             model:
@@ -219,7 +219,7 @@ tr_TR:
           last_week: "Geçen hafta"
           last_month: "Geçen ay"
           custom: "Özel..."
-      ai_persona:
+      ai_agent:
         ai_tools: "Araçlar"
         tool_strategies:
           all: "Tüm yanıtlara uygula"
@@ -257,8 +257,8 @@ tr_TR:
         allow_chat_direct_messages_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar bu kişiliğe doğrudan mesaj gönderebilir."
         allow_chat_channel_mentions: "Sohbet kanalından bahsetmeye izin ver"
         allow_chat_channel_mentions_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar sohbet kanallarında bu kişilikten bahsedebilir."
-        allow_personal_messages: "Kişisel mesajlara izin ver"
-        allow_personal_messages_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar bu kişiliğe kişisel mesaj gönderebilir."
+        allow_agentl_messages: "Kişisel mesajlara izin ver"
+        allow_agentl_messages_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar bu kişiliğe kişisel mesaj gönderebilir."
         allow_topic_mentions: "Konu bahsetmelerine izin ver"
         allow_topic_mentions_help: "Etkinleştirilirse izin verilen gruplardaki kullanıcılar konularda bu kişilikten bahsedebilir."
         force_default_llm: "Her zaman varsayılan dil modelini kullan"
@@ -270,7 +270,7 @@ tr_TR:
         allowed_groups: "İzin verilen gruplar"
         confirm_delete: "Bu kişiliği silmek istediğinizden emin misiniz?"
         new: "Yeni kişilik"
-        no_personas: "Henüz herhangi bir kişilik oluşturmadınız"
+        no_agents: "Henüz herhangi bir kişilik oluşturmadınız"
         title: "Kişilikler"
         short_title: "Kişiler"
         delete: "Sil"
@@ -283,7 +283,7 @@ tr_TR:
         tool_options: "Araç seçenekleri"
         rag_conversation_chunks: "Konuşma parçalarını ara"
         rag_conversation_chunks_help: "RAG modeli aramaları için kullanılacak parça sayısı. YZ'nin kullanabileceği bağlam miktarını artırmak için artırın."
-        persona_description: "Kişilikler, Discourse forumunuzdaki YZ motorunun davranışını özelleştirmenize olanak tanıyan güçlü bir özelliktir. YZ'nin yanıtlarını ve etkileşimlerini yönlendiren bir \"sistem mesajı\" olarak hareket ederek daha kişiselleştirilmiş ve ilgi çekici bir kullanıcı deneyimi oluşturmaya yardımcı olurlar."
+        agent_description: "Kişilikler, Discourse forumunuzdaki YZ motorunun davranışını özelleştirmenize olanak tanıyan güçlü bir özelliktir. YZ'nin yanıtlarını ve etkileşimlerini yönlendiren bir \"sistem mesajı\" olarak hareket ederek daha kişiselleştirilmiş ve ilgi çekici bir kullanıcı deneyimi oluşturmaya yardımcı olurlar."
         response_format:
           open_modal: "Düzenle"
           modal:
@@ -376,7 +376,7 @@ tr_TR:
         usage:
           ai_bot: "YZ botu"
           ai_helper: "Yardımcı"
-          ai_persona: "Kişilik (%{persona})"
+          ai_agent: "Kişilik (%{agent})"
           ai_summarization: "Özetle"
           ai_embeddings_semantic_search: "YZ araması"
           ai_spam: "İstenmeyen içerik"

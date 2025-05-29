@@ -63,12 +63,12 @@ Discourse::Application.routes.draw do
       :constraints => StaffConstraint.new
 
   scope "/admin/plugins/discourse-ai", constraints: AdminConstraint.new do
-    resources :ai_personas,
+    resources :ai_agents,
               only: %i[index new create edit update destroy],
-              path: "ai-personas",
-              controller: "discourse_ai/admin/ai_personas"
+              path: "ai-agents",
+              controller: "discourse_ai/admin/ai_agents"
 
-    post "/ai-personas/stream-reply" => "discourse_ai/admin/ai_personas#stream_reply"
+    post "/ai-agents/stream-reply" => "discourse_ai/admin/ai_agents#stream_reply"
 
     resources(
       :ai_tools,
@@ -79,10 +79,10 @@ Discourse::Application.routes.draw do
 
     post "/ai-tools/:id/test", to: "discourse_ai/admin/ai_tools#test"
 
-    post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
+    post "/ai-agents/:id/create-user", to: "discourse_ai/admin/ai_agents#create_user"
 
-    put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
-    get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"
+    put "/ai-agents/:id/files/remove", to: "discourse_ai/admin/ai_agents#remove_file"
+    get "/ai-agents/:id/files/status", to: "discourse_ai/admin/ai_agents#indexing_status_check"
 
     post "/rag-document-fragments/files/upload",
          to: "discourse_ai/admin/rag_document_fragments#upload_file"

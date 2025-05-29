@@ -18,7 +18,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     Fabricate(
       :post,
       topic: topic,
-      raw: "I prefer to eat croissants. They are my personal favorite dessert!",
+      raw: "I prefer to eat croissants. They are my agentl favorite dessert!",
     )
   end
   fab!(:post_3) do

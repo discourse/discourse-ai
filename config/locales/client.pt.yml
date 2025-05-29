@@ -55,8 +55,8 @@ pt:
         total_requests: "Total de pedidos"
         periods:
           last_day: "Últimas 24 horas"
-          custom: "Personalizar..."
-      ai_persona:
+          custom: "Agentlizar..."
+      ai_agent:
         back: "Retroceder"
         name: "Nome"
         edit: "Editar"
@@ -99,7 +99,7 @@ pt:
             six_hours: "6 horas"
             day: "24 horas"
             week: "7 dias"
-            custom: "Personalizar..."
+            custom: "Agentlizar..."
           hours: "horas"
         usage:
           ai_summarization: "Resumir"
@@ -108,7 +108,7 @@ pt:
           title: "Próximo"
         providers:
           google: "Google"
-          fake: "Personalizar"
+          fake: "Agentlizar"
       ai_helper:
         context_menu:
           cancel: "Cancelar"
@@ -133,7 +133,7 @@ pt:
         display_name: "Nome"
         providers:
           google: "Google"
-          fake: "Personalizar"
+          fake: "Agentlizar"
       ai_bot:
         debug_ai_modal:
           request: "Pedido"

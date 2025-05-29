@@ -128,7 +128,7 @@ fr:
             flag_post:
               label: "Signaler cette publication"
               description: "Signale la publication (soit comme spam ou pour examen)"
-            include_personal_messages:
+            include_agentl_messages:
               label: "Inclure les messages personnels"
               description: "Analysez et triez également les messages personnels"
             model:
@@ -219,7 +219,7 @@ fr:
           last_week: "La semaine dernière"
           last_month: "Le mois dernier"
           custom: "Personnalisé…"
-      ai_persona:
+      ai_agent:
         ai_tools: "Outils"
         tool_strategies:
           all: "Appliquer à toutes les réponses"
@@ -257,8 +257,8 @@ fr:
         allow_chat_direct_messages_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent envoyer des messages directs à ce personnage."
         allow_chat_channel_mentions: "Autoriser les mentions du canal de discussion"
         allow_chat_channel_mentions_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent mentionner ce personnage dans les canaux de discussion."
-        allow_personal_messages: "Autoriser les messages personnels"
-        allow_personal_messages_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent envoyer des messages personnels à ce personnage."
+        allow_agentl_messages: "Autoriser les messages personnels"
+        allow_agentl_messages_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent envoyer des messages personnels à ce personnage."
         allow_topic_mentions: "Autoriser les mentions de sujets"
         allow_topic_mentions_help: "Si cette option est activée, les utilisateurs des groupes autorisés peuvent mentionner ce personnage dans les sujets."
         force_default_llm: "Toujours utiliser le modèle linguistique par défaut"
@@ -270,7 +270,7 @@ fr:
         allowed_groups: "Groupes autorisés"
         confirm_delete: "Voulez-vous vraiment supprimer ce personnage ?"
         new: "Nouveau personnage"
-        no_personas: "Vous n'avez pas encore créé de personnage"
+        no_agents: "Vous n'avez pas encore créé de personnage"
         title: "Personnages"
         short_title: "Personnages"
         delete: "Supprimer"
@@ -283,7 +283,7 @@ fr:
         tool_options: "Options de l'outil"
         rag_conversation_chunks: "Rechercher des morceaux de conversation"
         rag_conversation_chunks_help: "Le nombre de segments à utiliser pour les recherches de modèles RAG. Augmentez pour augmenter la quantité de contexte que l'IA peut utiliser."
-        persona_description: "Les personnages sont une fonctionnalité puissante qui vous permet de personnaliser le comportement du moteur d'IA dans votre forum Discourse. Ils agissent comme un « message système » qui guide les réponses et les interactions de l'IA, en contribuant ainsi à créer une expérience utilisateur plus personnalisée et plus interactive."
+        agent_description: "Les personnages sont une fonctionnalité puissante qui vous permet de personnaliser le comportement du moteur d'IA dans votre forum Discourse. Ils agissent comme un « message système » qui guide les réponses et les interactions de l'IA, en contribuant ainsi à créer une expérience utilisateur plus personnalisée et plus interactive."
         response_format:
           open_modal: "Modifier"
           modal:
@@ -376,7 +376,7 @@ fr:
         usage:
           ai_bot: "Robot IA"
           ai_helper: "Assistant"
-          ai_persona: "Personnage (%{persona})"
+          ai_agent: "Personnage (%{agent})"
           ai_summarization: "Résumer"
           ai_embeddings_semantic_search: "Recherche IA"
           ai_spam: "Spam"
