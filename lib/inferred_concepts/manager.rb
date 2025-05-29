@@ -169,7 +169,10 @@ module DiscourseAi
         existing_concepts = InferredConcept.all.pluck(:name)
         return [] if existing_concepts.empty?
 
-        DiscourseAi::InferredConcepts::Applier.new.match_concepts_to_content(content, existing_concepts)
+        DiscourseAi::InferredConcepts::Applier.new.match_concepts_to_content(
+          content,
+          existing_concepts,
+        )
       end
 
       # Find candidate topics that are good for concept generation

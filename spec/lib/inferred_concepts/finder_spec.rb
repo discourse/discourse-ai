@@ -34,8 +34,14 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
       expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
       expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(structured_output_double, nil, :structured_output)
-      expect(structured_output_double).to receive(:read_buffered_property).with(:concepts).and_return(%w[ruby programming testing])
+      expect(bot_double).to receive(:reply).and_yield(
+        structured_output_double,
+        nil,
+        :structured_output,
+      )
+      expect(structured_output_double).to receive(:read_buffered_property).with(
+        :concepts,
+      ).and_return(%w[ruby programming testing])
 
       result = finder.identify_concepts(content)
       expect(result).to eq(%w[ruby programming testing])
@@ -101,8 +107,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
     end
 
     it "finds topics meeting minimum criteria" do
-      candidates =
-        finder.find_candidate_topics(min_posts: 5, min_views: 100, min_likes: 10)
+      candidates = finder.find_candidate_topics(min_posts: 5, min_views: 100, min_likes: 10)
 
       expect(candidates).to include(good_topic)
       expect(candidates).not_to include(bad_topic)
@@ -223,8 +228,14 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
       expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
       expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(structured_output_double, nil, :structured_output)
-      expect(structured_output_double).to receive(:read_buffered_property).with(:streamlined_tags).and_return(%w[ruby testing])
+      expect(bot_double).to receive(:reply).and_yield(
+        structured_output_double,
+        nil,
+        :structured_output,
+      )
+      expect(structured_output_double).to receive(:read_buffered_property).with(
+        :streamlined_tags,
+      ).and_return(%w[ruby testing])
 
       result = finder.deduplicate_concepts(concept_names)
       expect(result).to eq(%w[ruby testing])

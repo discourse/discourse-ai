@@ -113,9 +113,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
 
     before do
       allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager)
-      allow(manager).to receive(:list_concepts).and_return(
-        %w[programming testing ruby],
-      )
+      allow(manager).to receive(:list_concepts).and_return(%w[programming testing ruby])
     end
 
     it "returns empty array for blank topic" do
@@ -153,9 +151,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
 
     before do
       allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager)
-      allow(manager).to receive(:list_concepts).and_return(
-        %w[programming testing ruby],
-      )
+      allow(manager).to receive(:list_concepts).and_return(%w[programming testing ruby])
     end
 
     it "returns empty array for blank post" do
@@ -213,8 +209,14 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       expect(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       expect(LlmModel).to receive(:find).and_return(llm_model)
       expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(structured_output_double, nil, :structured_output)
-      expect(structured_output_double).to receive(:read_buffered_property).with(:matching_concepts).and_return(%w[programming ruby])
+      expect(bot_double).to receive(:reply).and_yield(
+        structured_output_double,
+        nil,
+        :structured_output,
+      )
+      expect(structured_output_double).to receive(:read_buffered_property).with(
+        :matching_concepts,
+      ).and_return(%w[programming ruby])
 
       result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq(%w[programming ruby])

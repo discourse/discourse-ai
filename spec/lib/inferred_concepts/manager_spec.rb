@@ -43,13 +43,11 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       finder = instance_double(DiscourseAi::InferredConcepts::Finder)
       allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
 
-      allow(finder).to receive(:identify_concepts).with(
-        content,
-      ).and_return(%w[ruby programming])
+      allow(finder).to receive(:identify_concepts).with(content).and_return(%w[ruby programming])
 
-      allow(finder).to receive(:create_or_find_concepts).with(
-        %w[ruby programming],
-      ).and_return([concept1])
+      allow(finder).to receive(:create_or_find_concepts).with(%w[ruby programming]).and_return(
+        [concept1],
+      )
 
       result = manager.generate_concepts_from_content(content)
       expect(result).to eq([concept1])
@@ -65,13 +63,11 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
 
-      allow(applier).to receive(:topic_content_for_analysis).with(
-        topic,
-      ).and_return("topic content")
+      allow(applier).to receive(:topic_content_for_analysis).with(topic).and_return("topic content")
 
-      allow(manager).to receive(:generate_concepts_from_content).with(
-        "topic content",
-      ).and_return([concept1])
+      allow(manager).to receive(:generate_concepts_from_content).with("topic content").and_return(
+        [concept1],
+      )
 
       result = manager.generate_concepts_from_topic(topic)
       expect(result).to eq([concept1])
@@ -87,13 +83,11 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
 
-      allow(applier).to receive(:post_content_for_analysis).with(
-        post,
-      ).and_return("post content")
+      allow(applier).to receive(:post_content_for_analysis).with(post).and_return("post content")
 
-      allow(manager).to receive(:generate_concepts_from_content).with(
-        "post content",
-      ).and_return([concept1])
+      allow(manager).to receive(:generate_concepts_from_content).with("post content").and_return(
+        [concept1],
+      )
 
       result = manager.generate_concepts_from_post(post)
       expect(result).to eq([concept1])
@@ -109,9 +103,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
 
-      allow(applier).to receive(:match_existing_concepts).with(
-        topic,
-      ).and_return([concept1])
+      allow(applier).to receive(:match_existing_concepts).with(topic).and_return([concept1])
 
       result = manager.match_topic_to_concepts(topic)
       expect(result).to eq([concept1])
@@ -127,9 +119,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       applier = instance_double(DiscourseAi::InferredConcepts::Applier)
       allow(DiscourseAi::InferredConcepts::Applier).to receive(:new).and_return(applier)
 
-      allow(applier).to receive(
-        :match_existing_concepts_for_post,
-      ).with(post).and_return([concept1])
+      allow(applier).to receive(:match_existing_concepts_for_post).with(post).and_return([concept1])
 
       result = manager.match_post_to_concepts(post)
       expect(result).to eq([concept1])
@@ -195,9 +185,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       finder = instance_double(DiscourseAi::InferredConcepts::Finder)
       allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
 
-      allow(finder).to receive(:find_candidate_topics).with(
-        **opts,
-      ).and_return([topic])
+      allow(finder).to receive(:find_candidate_topics).with(**opts).and_return([topic])
 
       result = manager.find_candidate_topics(opts)
       expect(result).to eq([topic])
@@ -210,9 +198,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       finder = instance_double(DiscourseAi::InferredConcepts::Finder)
       allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
 
-      allow(finder).to receive(:find_candidate_posts).with(
-        **opts,
-      ).and_return([post])
+      allow(finder).to receive(:find_candidate_posts).with(**opts).and_return([post])
 
       result = manager.find_candidate_posts(opts)
       expect(result).to eq([post])
@@ -231,9 +217,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
       finder = instance_double(DiscourseAi::InferredConcepts::Finder)
       allow(DiscourseAi::InferredConcepts::Finder).to receive(:new).and_return(finder)
 
-      allow(finder).to receive(:deduplicate_concepts).at_least(
-        :once,
-      ).and_return(%w[apple banana cat dog])
+      allow(finder).to receive(:deduplicate_concepts).at_least(:once).and_return(
+        %w[apple banana cat dog],
+      )
 
       allow(InferredConcept).to receive(:where).and_call_original
       allow(InferredConcept).to receive(:insert_all).and_call_original
