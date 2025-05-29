@@ -5,7 +5,7 @@ class CreateInferredConceptsTable < ActiveRecord::Migration[7.2]
       t.string :name, null: false
       t.timestamps
     end
-    
+
     add_index :inferred_concepts, :name, unique: true
   end
 end

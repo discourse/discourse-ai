@@ -59,9 +59,9 @@ module Jobs
         end
       else
         if item_type == "topics"
-          DiscourseAi::InferredConcepts::Manager.analyze_topic(item)
+          DiscourseAi::InferredConcepts::Manager.generate_concepts_from_topic(item)
         else # posts
-          DiscourseAi::InferredConcepts::Manager.analyze_post(item)
+          DiscourseAi::InferredConcepts::Manager.generate_concepts_from_post(item)
         end
       end
     end

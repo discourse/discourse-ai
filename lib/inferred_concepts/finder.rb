@@ -15,7 +15,7 @@ module DiscourseAi
             .find { |p| p.id == SiteSetting.inferred_concepts_generate_persona.to_i }
             .new
 
-        llm = LlmModel.find(persona.class.default_llm_id)
+        llm = LlmModel.find(persona.default_llm_id)
         context =
           DiscourseAi::Personas::BotContext.new(
             messages: [{ type: :user, content: content }],
@@ -79,7 +79,7 @@ module DiscourseAi
         # Exclude topics that already have concepts
         topics_with_concepts = <<~SQL
           SELECT DISTINCT topic_id
-          FROM topics_inferred_concepts
+          FROM inferred_concepts_topics
         SQL
 
         query = query.where("topics.id NOT IN (#{topics_with_concepts})")
@@ -129,7 +129,7 @@ module DiscourseAi
         # Exclude posts that already have concepts
         posts_with_concepts = <<~SQL
           SELECT DISTINCT post_id
-          FROM posts_inferred_concepts
+          FROM inferred_concepts_posts
         SQL
 
         query = query.where("posts.id NOT IN (#{posts_with_concepts})")
@@ -154,7 +154,7 @@ module DiscourseAi
             .find { |p| p.id == SiteSetting.inferred_concepts_deduplicate_persona.to_i }
             .new
 
-        llm = LlmModel.find(persona.class.default_llm_id)
+        llm = LlmModel.find(persona.default_llm_id)
 
         # Create the input for the deduplicator
         input = { type: :user, content: concept_names.join(", ") }

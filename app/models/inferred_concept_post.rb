@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+class InferredConceptPost < ActiveRecord::Base
+  self.table_name = "inferred_concepts_posts"
+
+  belongs_to :inferred_concept
+  belongs_to :post
+
+  validates :inferred_concept_id, presence: true
+  validates :post_id, presence: true
+  validates :inferred_concept_id, uniqueness: { scope: :post_id }
+end
+
+# == Schema Information
+#
+# Table name: inferred_concepts_posts
+#
+#  inferred_concept_id :bigint           not null
+#  post_id             :bigint           not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
+# Indexes
+#
+#  index_inferred_concepts_posts_uniqueness  (post_id,inferred_concept_id) UNIQUE
+#  index_inferred_concepts_posts_on_inferred_concept_id  (inferred_concept_id)
+#

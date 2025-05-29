@@ -11,8 +11,9 @@ module DiscourseAi
               -> { where(summary_type: AiSummary.summary_types[:gist]) },
               class_name: "AiSummary",
               as: :target
-              
-      has_and_belongs_to_many :inferred_concepts
+
+      has_many :inferred_concept_topics
+      has_many :inferred_concepts, through: :inferred_concept_topics
     end
   end
 end

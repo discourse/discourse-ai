@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 class InferredConcept < ActiveRecord::Base
-  has_and_belongs_to_many :topics
-  has_and_belongs_to_many :posts
+  has_many :inferred_concept_topics
+  has_many :topics, through: :inferred_concept_topics
+
+  has_many :inferred_concept_posts
+  has_many :posts, through: :inferred_concept_posts
 
   validates :name, presence: true, uniqueness: true
 end

@@ -12,7 +12,8 @@ module DiscourseAi
                class_name: "ClassificationResult",
                as: :target
 
-      has_and_belongs_to_many :inferred_concepts
+      has_many :inferred_concept_posts
+      has_many :inferred_concepts, through: :inferred_concept_posts
     end
   end
 end
