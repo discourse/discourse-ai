@@ -20,8 +20,8 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
     it "does nothing when inferred_concepts_enabled is false" do
       SiteSetting.inferred_concepts_enabled = false
 
-      expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:find_candidate_topics)
-      expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:find_candidate_posts)
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(:find_candidate_topics)
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(:find_candidate_posts)
       expect(Jobs).not_to receive(:enqueue)
 
       subject.execute({})
@@ -31,7 +31,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       candidate_topics = [topic]
 
       freeze_time do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
           limit: 20,
           min_posts: 5,
           min_likes: 10,
@@ -46,7 +46,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
           batch_size: 10,
         )
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
           [],
         )
 
@@ -58,11 +58,11 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       candidate_posts = [post]
 
       freeze_time do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
           :find_candidate_topics,
         ).and_return([])
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
           limit: 30,
           min_likes: 5,
           exclude_first_posts: true,
@@ -86,10 +86,10 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       candidate_topics = [topic]
       candidate_posts = [post]
 
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
         candidate_topics,
       )
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
         candidate_posts,
       )
 
@@ -131,10 +131,10 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
     end
 
     it "does not schedule jobs when no candidates found" do
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
         [],
       )
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
         [],
       )
 
@@ -152,7 +152,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       SiteSetting.inferred_concepts_lookback_days = 45
 
       freeze_time do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
           limit: 50,
           min_posts: 8,
           min_likes: 15,
@@ -160,7 +160,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
           created_after: 45.days.ago,
         ).and_return([])
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
           [],
         )
 
@@ -174,11 +174,11 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       SiteSetting.inferred_concepts_lookback_days = 45
 
       freeze_time do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
           :find_candidate_topics,
         ).and_return([])
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
           limit: 40,
           min_likes: 8,
           exclude_first_posts: true,
@@ -199,7 +199,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       # Keep lookback_days at default so .days.ago doesn't fail
 
       freeze_time do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).with(
           limit: 0, # nil becomes 0
           min_posts: 0, # nil becomes 0
           min_likes: 0, # nil becomes 0
@@ -207,7 +207,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
           created_after: 30.days.ago, # default from before block
         ).and_return([])
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).with(
           limit: 0, # nil becomes 0
           min_likes: 0, # nil becomes 0
           exclude_first_posts: true,
@@ -222,10 +222,10 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       candidate_topics = [topic]
       candidate_posts = [post]
 
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_topics).and_return(
         candidate_topics,
       )
-      expect(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(:find_candidate_posts).and_return(
         candidate_posts,
       )
 
