@@ -1,79 +1,160 @@
 import { tracked } from "@glimmer/tracking";
-import { schedule } from "@ember/runloop";
+import { scheduleOnce } from "@ember/runloop";
 import Service, { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
 import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import { ajax } from "discourse/lib/ajax";
+import discourseDebounce from "discourse/lib/debounce";
 import { autoUpdatingRelativeAge } from "discourse/lib/formatter";
 import { ADMIN_PANEL, MAIN_PANEL } from "discourse/lib/sidebar/panels";
 import { i18n } from "discourse-i18n";
 import AiBotSidebarEmptyState from "../../discourse/components/ai-bot-sidebar-empty-state";
 
 export const AI_CONVERSATIONS_PANEL = "ai-conversations";
+const SCROLL_BUFFER = 100;
+const DEBOUNCE = 100;
 
 export default class AiConversationsSidebarManager extends Service {
   @service appEvents;
   @service sidebarState;
+  @service messageBus;
 
-  @tracked newTopicForceSidebar = false;
+  @tracked topics = [];
   @tracked sections = new TrackedArray();
   @tracked isLoading = true;
 
+  api = null;
   isFetching = false;
   page = 0;
   hasMore = true;
+  _registered = new Set();
+  _hasScrollListener = false;
+  _scrollElement = null;
+  _didInit = false;
 
-  loadedTodayLabel = false;
-  loadedSevenDayLabel = false;
-  loadedThirtyDayLabel = false;
-  loadedMonthLabels = new Set();
+  _debouncedScrollHandler = () => {
+    discourseDebounce(
+      this,
+      () => {
+        const element = this._scrollElement;
+        if (!element) {
+          return;
+        }
 
-  forceCustomSidebar(api) {
-    // Return early if we already have the correct panel, so we don't
-    // re-render it.
+        const { scrollTop, scrollHeight, clientHeight } = element;
+        if (
+          scrollHeight - scrollTop - clientHeight - SCROLL_BUFFER < 100 &&
+          !this.isFetching &&
+          this.hasMore
+        ) {
+          this.fetchMessages();
+        }
+      },
+      DEBOUNCE
+    );
+  };
 
-    if (this.sidebarState.currentPanel?.key === AI_CONVERSATIONS_PANEL) {
-      return;
-    }
+  constructor() {
+    super(...arguments);
 
-    schedule("afterRender", async () => {
-      await this.fetchMessages(api);
-      this.sidebarState.setPanel("ai-conversations");
-    });
+    this.appEvents.on(
+      "discourse-ai:bot-pm-created",
+      this,
+      this._handleNewBotPM
+    );
 
+    this.appEvents.on(
+      "discourse-ai:conversations-sidebar-updated",
+      this,
+      this._attachScrollListener
+    );
+  }
+
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off(
+      "discourse-ai:bot-pm-created",
+      this,
+      this._handleNewBotPM
+    );
+    this.appEvents.off(
+      "discourse-ai:conversations-sidebar-updated",
+      this,
+      this._attachScrollListener
+    );
+  }
+
+  forceCustomSidebar() {
+    document.body.classList.add("has-ai-conversations-sidebar");
+    this.sidebarState.isForcingSidebar = true;
+
+    // calling this before fetching data
+    // helps avoid flash of main sidebar mode
     this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
 
-    // Use separated mode to ensure independence from hamburger menu
+    this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
     this.sidebarState.setSeparatedMode();
-
-    // Hide panel switching buttons to keep UI clean
     this.sidebarState.hideSwitchPanelButtons();
 
-    this.sidebarState.isForcingSidebar = true;
-    document.body.classList.add("has-ai-conversations-sidebar");
-    this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
+    // don't render sidebar multiple times
+    if (this._didInit) {
+      return true;
+    }
+
+    this._didInit = true;
+
+    this.fetchMessages().then(() => {
+      this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
+    });
+
     return true;
   }
 
-  stopForcingCustomSidebar() {
-    // This method is called when leaving your route
-    // Only restore main panel if we previously forced ours
-    document.body.classList.remove("has-ai-conversations-sidebar");
-    const isAdminSidebarActive =
-      this.sidebarState.currentPanel?.key === ADMIN_PANEL;
-    // only restore main panel if we previously forced our sidebar
-    // and not if we are in admin sidebar
-    if (this.sidebarState.isForcingSidebar && !isAdminSidebarActive) {
-      this.sidebarState.setPanel(MAIN_PANEL); // Return to main sidebar panel
-      this.sidebarState.isForcingSidebar = false;
-      this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
+  _attachScrollListener() {
+    const sections = document.querySelector(
+      ".sidebar-sections.ai-conversations-panel"
+    );
+    this._scrollElement = sections;
+
+    if (this._hasScrollListener || !this._scrollElement) {
+      return;
+    }
+
+    sections.addEventListener("scroll", this._debouncedScrollHandler);
+
+    this._hasScrollListener = true;
+  }
+
+  _removeScrollListener() {
+    if (this._hasScrollListener) {
+      this._scrollElement.removeEventListener(
+        "scroll",
+        this._debouncedScrollHandler
+      );
+      this._hasScrollListener = false;
+      this._scrollElement = null;
     }
   }
 
-  async fetchMessages(api) {
-    if (this.isFetching) {
+  stopForcingCustomSidebar() {
+    document.body.classList.remove("has-ai-conversations-sidebar");
+
+    const isAdmin = this.sidebarState.currentPanel?.key === ADMIN_PANEL;
+    if (this.sidebarState.isForcingSidebar && !isAdmin) {
+      this.sidebarState.setPanel(MAIN_PANEL);
+      this.sidebarState.isForcingSidebar = false;
+      this.appEvents.trigger("discourse-ai:stop-forcing-conversations-sidebar");
+    }
+
+    this._removeScrollListener();
+  }
+
+  async fetchMessages() {
+    if (this.isFetching || !this.hasMore) {
       return;
     }
+
+    const isFirstPage = this.page === 0;
     this.isFetching = true;
 
     try {
@@ -82,182 +163,155 @@ export default class AiConversationsSidebarManager extends Service {
         { data: { page: this.page, per_page: 40 } }
       );
 
+      if (isFirstPage) {
+        this.topics = conversations;
+      } else {
+        this.topics = [...this.topics, ...conversations];
+        // force rerender when fetching more messages
+        this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
+      }
+
       this.page += 1;
       this.hasMore = meta.has_more;
 
-      // Append new topics and rebuild groups
-      this._topics = [...(this._topics || []), ...conversations];
-    } catch {
-      this.isFetching = false;
-      this.isLoading = false;
+      this._rebuildSections();
     } finally {
       this.isFetching = false;
       this.isLoading = false;
-      this.buildSections(api);
     }
   }
 
-  buildSections(api) {
-    // reset grouping flags
-    this.loadedTodayLabel = false;
-    this.loadedSevenDayLabel = false;
-    this.loadedThirtyDayLabel = false;
-    this.loadedMonthLabels.clear();
+  _handleNewBotPM(topic) {
+    this.topics = [topic, ...this.topics];
+    this._rebuildSections();
+    this._watchForTitleUpdate(topic.id);
+  }
 
-    const now = new Date();
-    const sections = [];
-    let currentSection = null;
+  _watchForTitleUpdate(topicId) {
+    if (this._subscribedTopicIds?.has(topicId)) {
+      return;
+    }
 
-    (this._topics || []).forEach((topic) => {
-      const heading = this.groupByDate(topic, now);
+    this._subscribedTopicIds = this._subscribedTopicIds || new Set();
+    this._subscribedTopicIds.add(topicId);
 
-      // new section for new heading
-      if (heading) {
-        currentSection = {
-          title: heading.text,
-          name: heading.name,
-          classNames: heading.classNames,
-          links: new TrackedArray(),
-        };
-        sections.push(currentSection);
+    const channel = `/discourse-ai/ai-bot/topic/${topicId}`;
+
+    this.messageBus.subscribe(channel, (payload) => {
+      this._applyTitleUpdate(topicId, payload.title);
+      this.messageBus.unsubscribe(channel);
+    });
+  }
+
+  _applyTitleUpdate(topicId, newTitle) {
+    this.topics = this.topics.map((t) =>
+      t.id === topicId ? { ...t, title: newTitle } : t
+    );
+
+    this._rebuildSections();
+  }
+
+  // organize by date and create a section for each date group
+  _rebuildSections() {
+    const now = Date.now();
+    const fresh = [];
+
+    this.topics.forEach((t) => {
+      const postedAtMs = new Date(t.last_posted_at || now).valueOf();
+      const diffDays = Math.floor((now - postedAtMs) / 86400000);
+      let dateGroup;
+
+      if (diffDays <= 1) {
+        dateGroup = "today";
+      } else if (diffDays <= 7) {
+        dateGroup = "last_7_days";
+      } else if (diffDays <= 30) {
+        dateGroup = "last_30_days";
+      } else {
+        const d = new Date(postedAtMs);
+        const key = `${d.getFullYear()}-${d.getMonth()}`;
+        dateGroup = key;
       }
 
-      // always add topic link under the latest section
-      if (currentSection) {
-        currentSection.links.push({
-          route: "topic.fromParamsNear",
-          models: [topic.slug, topic.id, topic.last_read_post_number || 0],
-          title: topic.title,
-          text: topic.title,
-          key: topic.id,
-          classNames: `ai-conversation-${topic.id}`,
-        });
+      let sec = fresh.find((s) => s.name === dateGroup);
+      if (!sec) {
+        let title;
+        switch (dateGroup) {
+          case "today":
+            title = i18n("discourse_ai.ai_bot.conversations.today");
+            break;
+          case "last_7_days":
+            title = i18n("discourse_ai.ai_bot.conversations.last_7_days");
+            break;
+          case "last_30_days":
+            title = i18n("discourse_ai.ai_bot.conversations.last_30_days");
+            break;
+          default:
+            title = autoUpdatingRelativeAge(new Date(t.last_posted_at));
+        }
+        sec = { name: dateGroup, title, links: new TrackedArray() };
+        fresh.push(sec);
       }
+
+      sec.links.push({
+        key: t.id,
+        route: "topic.fromParamsNear",
+        models: [t.slug, t.id, t.last_read_post_number || 0],
+        title: t.title,
+        text: t.title,
+        classNames: `ai-conversation-${t.id}`,
+      });
     });
 
-    this.sections = sections;
+    this.sections = new TrackedArray(fresh);
 
-    this.mountSections(api);
-  }
-
-  mountSections(api) {
-    this.sections.forEach((section) => {
-      api.addSidebarSection(
-        (BaseCustomSidebarSection, BaseCustomSidebarSectionLink) => {
-          return class extends BaseCustomSidebarSection {
-            get name() {
-              return section.name;
-            }
-
-            get title() {
-              return section.title;
-            }
-
-            get text() {
-              return section.title;
-            }
-
-            get links() {
-              return section.links.map(
-                (link) =>
-                  new (class extends BaseCustomSidebarSectionLink {
-                    get name() {
-                      return `conv-${link.key}`;
-                    }
-
-                    get route() {
-                      return link.route;
-                    }
-
-                    get models() {
-                      return link.models;
-                    }
-
-                    get title() {
-                      return link.title;
-                    }
-
-                    get text() {
-                      return link.text;
-                    }
-                  })()
-              );
-            }
-
-            get emptyStateComponent() {
-              if (!this.isLoading && section.links.length === 0) {
-                return AiBotSidebarEmptyState;
-              }
-            }
-
-            get sidebarElement() {
-              return document.querySelector(
-                ".sidebar-wrapper .sidebar-sections"
-              );
-            }
-          };
-        },
-        AI_CONVERSATIONS_PANEL
-      );
-    });
-
-    this.appEvents.trigger("discourse-ai:conversations-sidebar-updated");
-  }
-
-  groupByDate(topic, now = new Date()) {
-    const lastPostedAt = new Date(topic.last_posted_at);
-    const daysDiff = Math.round((now - lastPostedAt) / (1000 * 60 * 60 * 24));
-
-    // Today
-    if (daysDiff <= 1 || !topic.last_posted_at) {
-      if (!this.loadedTodayLabel) {
-        this.loadedTodayLabel = true;
-        return {
-          text: i18n("discourse_ai.ai_bot.conversations.today"),
-          classNames: "date-heading",
-          name: "date-heading-today",
-        };
+    // register each new section once
+    for (let sec of fresh) {
+      if (this._registered.has(sec.name)) {
+        continue;
       }
-    }
-    // Last 7 days
-    else if (daysDiff <= 7) {
-      if (!this.loadedSevenDayLabel) {
-        this.loadedSevenDayLabel = true;
-        return {
-          text: i18n("discourse_ai.ai_bot.conversations.last_7_days"),
-          classNames: "date-heading",
-          name: "date-heading-last-7-days",
-        };
-      }
-    }
-    // Last 30 days
-    else if (daysDiff <= 30) {
-      if (!this.loadedThirtyDayLabel) {
-        this.loadedThirtyDayLabel = true;
-        return {
-          text: i18n("discourse_ai.ai_bot.conversations.last_30_days"),
-          classNames: "date-heading",
-          name: "date-heading-last-30-days",
-        };
-      }
-    }
-    // Older: group by month
-    else {
-      const month = lastPostedAt.getMonth();
-      const year = lastPostedAt.getFullYear();
-      const monthKey = `${year}-${month}`;
+      this._registered.add(sec.name);
 
-      if (!this.loadedMonthLabels.has(monthKey)) {
-        this.loadedMonthLabels.add(monthKey);
-        const formattedDate = autoUpdatingRelativeAge(lastPostedAt);
-        return {
-          text: htmlSafe(formattedDate),
-          classNames: "date-heading",
-          name: `date-heading-${monthKey}`,
-        };
-      }
-    }
+      this.api.addSidebarSection((BaseCustomSidebarSection) => {
+        return class extends BaseCustomSidebarSection {
+          @service("ai-conversations-sidebar-manager") manager;
+          @service("appEvents") events;
 
-    return null;
+          constructor() {
+            super(...arguments);
+            scheduleOnce("afterRender", this, this.triggerEvent);
+          }
+
+          triggerEvent() {
+            this.events.trigger("discourse-ai:conversations-sidebar-updated");
+          }
+
+          get name() {
+            return sec.name;
+          }
+
+          get title() {
+            return sec.title;
+          }
+
+          get text() {
+            return htmlSafe(sec.title);
+          }
+
+          get links() {
+            return (
+              this.manager.sections.find((s) => s.name === sec.name)?.links ||
+              []
+            );
+          }
+
+          get emptyStateComponent() {
+            if (!this.manager.isLoading && this.links.length === 0) {
+              return AiBotSidebarEmptyState;
+            }
+          }
+        };
+      }, AI_CONVERSATIONS_PANEL);
+    }
   }
 }

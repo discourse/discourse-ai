@@ -20,6 +20,7 @@ export default {
       const aiConversationsSidebarManager = api.container.lookup(
         "service:ai-conversations-sidebar-manager"
       );
+      aiConversationsSidebarManager.api = api;
 
       api.addSidebarPanel(
         (BaseCustomSidebarPanel) =>
@@ -38,7 +39,7 @@ export default {
 
       const setSidebarPanel = (transition) => {
         if (transition?.to?.name === "discourse-ai-bot-conversations") {
-          return aiConversationsSidebarManager.forceCustomSidebar(api);
+          return aiConversationsSidebarManager.forceCustomSidebar();
         }
 
         const topic = api.container.lookup("controller:topic").model;
@@ -49,16 +50,7 @@ export default {
           topic.user_id === currentUser.id &&
           topic.is_bot_pm
         ) {
-          return aiConversationsSidebarManager.forceCustomSidebar(api);
-        }
-
-        // newTopicForceSidebar is set to true when a new topic is created. We have
-        // this because the condition `postStream.posts` above will not be true as the bot response
-        // is not in the postStream yet when this initializer is ran. So we need to force
-        // the sidebar to open when creating a new topic. After that, we set it to false again.
-        if (aiConversationsSidebarManager.newTopicForceSidebar) {
-          aiConversationsSidebarManager.newTopicForceSidebar = false;
-          return aiConversationsSidebarManager.forceCustomSidebar(api);
+          return aiConversationsSidebarManager.forceCustomSidebar();
         }
 
         aiConversationsSidebarManager.stopForcingCustomSidebar();
