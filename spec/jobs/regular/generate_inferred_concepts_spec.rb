@@ -9,14 +9,18 @@ RSpec.describe Jobs::GenerateInferredConcepts do
 
   describe "#execute" do
     it "does nothing with blank item_ids" do
-      expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:match_topic_to_concepts)
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(
+        :match_topic_to_concepts,
+      )
 
       subject.execute(item_type: "topics", item_ids: [])
       subject.execute(item_type: "topics", item_ids: nil)
     end
 
     it "does nothing with blank item_type" do
-      expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:match_topic_to_concepts)
+      expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(
+        :match_topic_to_concepts,
+      )
 
       subject.execute(item_type: "", item_ids: [topic.id])
       subject.execute(item_type: nil, item_ids: [topic.id])
@@ -30,15 +34,15 @@ RSpec.describe Jobs::GenerateInferredConcepts do
 
     context "with topics" do
       it "processes topics in match_only mode" do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_topic_to_concepts).with(
-          topic,
-        )
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
+          :match_topic_to_concepts,
+        ).with(topic)
 
         subject.execute(item_type: "topics", item_ids: [topic.id], match_only: true)
       end
 
       it "processes topics in generation mode" do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
           :generate_concepts_from_topic,
         ).with(topic)
 
@@ -47,7 +51,9 @@ RSpec.describe Jobs::GenerateInferredConcepts do
 
       it "handles topics that don't exist" do
         # Non-existent IDs should be silently skipped (no error expected)
-        expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:match_topic_to_concepts)
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(
+          :match_topic_to_concepts,
+        )
 
         subject.execute(
           item_type: "topics",
@@ -59,12 +65,11 @@ RSpec.describe Jobs::GenerateInferredConcepts do
       it "processes multiple topics" do
         topic2 = Fabricate(:topic)
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_topic_to_concepts).with(
-          topic,
-        )
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_topic_to_concepts).with(
-          topic2,
-        )
+        manager_instance = instance_double(DiscourseAi::InferredConcepts::Manager)
+        allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager_instance)
+
+        expect(manager_instance).to receive(:match_topic_to_concepts).with(topic)
+        expect(manager_instance).to receive(:match_topic_to_concepts).with(topic2)
 
         subject.execute(item_type: "topics", item_ids: [topic.id, topic2.id], match_only: true)
       end
@@ -83,15 +88,15 @@ RSpec.describe Jobs::GenerateInferredConcepts do
 
     context "with posts" do
       it "processes posts in match_only mode" do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_post_to_concepts).with(
-          post,
-        )
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
+          :match_post_to_concepts,
+        ).with(post)
 
         subject.execute(item_type: "posts", item_ids: [post.id], match_only: true)
       end
 
       it "processes posts in generation mode" do
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
           :generate_concepts_from_post,
         ).with(post)
 
@@ -100,7 +105,9 @@ RSpec.describe Jobs::GenerateInferredConcepts do
 
       it "handles posts that don't exist" do
         # Non-existent IDs should be silently skipped (no error expected)
-        expect(DiscourseAi::InferredConcepts::Manager).not_to receive(:match_post_to_concepts)
+        expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(
+          :match_post_to_concepts,
+        )
 
         subject.execute(
           item_type: "posts",
@@ -112,21 +119,20 @@ RSpec.describe Jobs::GenerateInferredConcepts do
       it "processes multiple posts" do
         post2 = Fabricate(:post)
 
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_post_to_concepts).with(
-          post,
-        )
-        expect(DiscourseAi::InferredConcepts::Manager).to receive(:match_post_to_concepts).with(
-          post2,
-        )
+        manager_instance = instance_double(DiscourseAi::InferredConcepts::Manager)
+        allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager_instance)
+
+        expect(manager_instance).to receive(:match_post_to_concepts).with(post)
+        expect(manager_instance).to receive(:match_post_to_concepts).with(post2)
 
         subject.execute(item_type: "posts", item_ids: [post.id, post2.id], match_only: true)
       end
     end
 
     it "handles exceptions during processing" do
-      allow(DiscourseAi::InferredConcepts::Manager).to receive(:match_topic_to_concepts).and_raise(
-        StandardError.new("Test error"),
-      )
+      allow_any_instance_of(DiscourseAi::InferredConcepts::Manager).to receive(
+        :match_topic_to_concepts,
+      ).and_raise(StandardError.new("Test error"))
 
       expect(Rails.logger).to receive(:error).with(
         /Error generating concepts from topic #{topic.id}/,

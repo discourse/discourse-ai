@@ -37,10 +37,11 @@ module Jobs
     def process_batch(item_ids, item_type, match_only)
       klass = item_type.singularize.classify.constantize
       items = klass.where(id: item_ids)
+      manager = DiscourseAi::InferredConcepts::Manager.new
 
       items.each do |item|
         begin
-          process_item(item, item_type, match_only)
+          process_item(item, item_type, match_only, manager)
         rescue => e
           Rails.logger.error(
             "Error generating concepts from #{item_type.singularize} #{item.id}: #{e.message}\n#{e.backtrace.join("\n")}",
@@ -49,9 +50,8 @@ module Jobs
       end
     end
 
-    def process_item(item, item_type, match_only)
+    def process_item(item, item_type, match_only, manager)
       # Use the Manager method that handles both identifying and creating concepts
-      manager = DiscourseAi::InferredConcepts::Manager.new
       if match_only
         if item_type == "topics"
           manager.match_topic_to_concepts(item)
