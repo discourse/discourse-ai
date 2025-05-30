@@ -29,7 +29,7 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
     ).to eq(I18n.t("discourse_ai.features.summarization.name"))
 
     expect(ai_features_page).to have_configured_feature_items(1)
-    expect(ai_features_page).to have_unconfigured_feature_items(3)
+    expect(ai_features_page).to have_unconfigured_feature_items(4)
   end
 
   it "lists the persona used for the corresponding AI feature" do
