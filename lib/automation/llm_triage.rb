@@ -20,11 +20,11 @@ module DiscourseAi
         stop_sequences: nil,
         temperature: nil,
         whisper: nil,
-        reply_persona_id: nil,
+        reply_agent_id: nil,
         action: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
-             flag_post.blank? && reply_persona_id.blank?
+             flag_post.blank? && reply_agent_id.blank?
           raise ArgumentError, "llm_triage: no action specified!"
         end
 
@@ -69,11 +69,11 @@ module DiscourseAi
           user = User.find_by_username(canned_reply_user) if canned_reply_user.present?
           original_user = user
           user = user || Discourse.system_user
-          if reply_persona_id.present? && action != :edit
+          if reply_agent_id.present? && action != :edit
             begin
               DiscourseAi::AiBot::Playground.reply_to_post(
                 post: post,
-                persona_id: reply_persona_id,
+                agent_id: reply_agent_id,
                 whisper: whisper,
                 user: original_user,
               )

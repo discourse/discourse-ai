@@ -17,19 +17,19 @@ module DiscourseAi
       private
 
       def serialize_features(features)
-        features.map { |feature| feature.merge(persona: serialize_persona(feature[:persona])) }
+        features.map { |feature| feature.merge(agent: serialize_agent(feature[:agent])) }
       end
 
       def serialize_feature(feature)
         return nil if feature.blank?
 
-        feature.merge(persona: serialize_persona(feature[:persona]))
+        feature.merge(agent: serialize_agent(feature[:agent]))
       end
 
-      def serialize_persona(persona)
-        return nil if persona.blank?
+      def serialize_agent(agent)
+        return nil if agent.blank?
 
-        serialize_data(persona, AiFeaturesPersonaSerializer, root: false)
+        serialize_data(agent, AiFeaturesAgentSerializer, root: false)
       end
     end
   end

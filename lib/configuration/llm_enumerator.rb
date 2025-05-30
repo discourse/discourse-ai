@@ -16,10 +16,10 @@ module DiscourseAi
         end
 
         # this is unconditional, so it is clear that we always signal configuration
-        AiPersona
+        AiAgent
           .where("default_llm_id IS NOT NULL")
           .pluck(:default_llm_id, :name, :id)
-          .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
+          .each { |llm_id, name, id| rval[llm_id] << { type: :ai_agent, name: name, id: id } }
 
         if SiteSetting.ai_helper_enabled
           model_id = SiteSetting.ai_helper_model.split(":").last.to_i
@@ -32,8 +32,8 @@ module DiscourseAi
         end
 
         if SiteSetting.ai_summarization_enabled
-          summarization_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)
-          model_id = summarization_persona.default_llm_id || LlmModel.last&.id
+          summarization_agent = AiAgent.find_by(id: SiteSetting.ai_summarization_agent)
+          model_id = summarization_agent.default_llm_id || LlmModel.last&.id
 
           rval[model_id] << { type: :ai_summarization }
         end

@@ -10,9 +10,9 @@ en:
       llm_tool_triage:
         title: Triage posts using AI Tool
         description: "Triage posts using custom logic in an AI tool"
-      llm_persona_triage:
-        title: Triage posts using AI Persona
-        description: "Respond to posts using a specific AI persona"
+      llm_agent_triage:
+        title: Triage posts using AI Agent
+        description: "Respond to posts using a specific AI agent"
       llm_triage:
         title: Triage posts using AI
         description: "Triage posts using a large language model"
@@ -76,7 +76,7 @@ en:
     ai_auto_image_caption_allowed_groups: "Users on these groups can toggle automatic image captioning."
 
     ai_embeddings_selected_model: "Use the selected model for generating embeddings."
-    ai_embeddings_generate_for_pms: "Generate embeddings for personal messages."
+    ai_embeddings_generate_for_pms: "Generate embeddings for agentl messages."
     ai_embeddings_semantic_related_topics_enabled: "Use Semantic Search for related topics."
     ai_embeddings_semantic_related_topics: "Maximum number of topics to show in related topic section."
     ai_embeddings_backfill_batch_size: "Number of embeddings to backfill every 15 minutes."
@@ -88,7 +88,7 @@ en:
 
     ai_summarization_enabled: "Enable the summarize feature"
     ai_summarization_model: "Model to use for summarization"
-    ai_summarization_persona: "Persona to use for summarize feature"
+    ai_summarization_agent: "Agent to use for summarize feature"
     ai_custom_summarization_allowed_groups: "Groups allowed to use create new summaries."
     ai_pm_summarization_allowed_groups: "Groups allowed to create and view summaries in PMs."
     ai_summary_gists_enabled: "Generate brief summaries of latest replies in topics automatically"
@@ -99,7 +99,7 @@ en:
     ai_bot_enable_chat_warning: "Display a warning when PM chat is initiated. Can be overriden by editing the translation string: discourse_ai.ai_bot.pm_warning"
     ai_bot_allowed_groups: "When the GPT Bot has access to the PM, it will reply to members of these groups."
     ai_bot_debugging_allowed_groups: "Allow these groups to see a debug button on posts which displays the raw AI request and response"
-    ai_bot_public_sharing_allowed_groups: "Allow these groups to share AI personal messages with the public via a unique publicly available link. Note: if your site requires login, shares will also require login."
+    ai_bot_public_sharing_allowed_groups: "Allow these groups to share AI agentl messages with the public via a unique publicly available link. Note: if your site requires login, shares will also require login."
     ai_bot_add_to_header: "Display a button in the header to start a PM with a AI Bot"
     ai_bot_github_access_token: "GitHub access token for use with GitHub AI tools (required for search support)"
 
@@ -114,7 +114,7 @@ en:
     ai_discord_app_id: "The ID of the Discord application you would like to connect Discord search to"
     ai_discord_app_public_key: "The public key of the Discord application you would like to connect Discord search to"
     ai_discord_search_mode: "Select the search mode to use for Discord search"
-    ai_discord_search_persona: "The persona to use for Discord search."
+    ai_discord_search_agent: "The agent to use for Discord search."
     ai_discord_allowed_guilds: "Discord guilds (servers) where the bot is allowed to search"
     ai_bot_enable_dedicated_ux: "Allow for full screen bot interface, instead of a PM"
 
@@ -129,7 +129,7 @@ en:
       description: "This report provides sentiment analysis for posts, grouped by category, with positive, negative, and neutral scores for each post and category."
     overall_sentiment:
       title: "Overall sentiment"
-      description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Personal messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
+      description: 'The chart compares the number of posts classified as either positive or negative. These are calculated when positive or negative scores > the set threshold score. This means neutral posts are not shown. Agentl messages (PMs) are also excluded. Classified with "cardiffnlp/twitter-roberta-base-sentiment-latest"'
       xaxis: "Positive(%)"
       yaxis: "Date"
     emotion_admiration:
@@ -267,8 +267,8 @@ en:
       title: "%{title} - AI Conversation - %{site_name}"
       errors:
         not_allowed: "You are not allowed to share this topic"
-        other_people_in_pm: "Personal messages with other humans cannot be shared publicly"
-        other_content_in_pm: "Personal messages containing posts from other people cannot be shared publicly"
+        other_people_in_pm: "Agentl messages with other humans cannot be shared publicly"
+        other_content_in_pm: "Agentl messages containing posts from other people cannot be shared publicly"
         failed_to_share: "Failed to share the conversation"
         conversation_deleted: "Conversation share deleted successfully"
     spam_detection:
@@ -283,10 +283,10 @@ en:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
       default_pm_prefix: "[Untitled AI bot PM]"
       thinking: "Thinking..."
-      personas:
+      agents:
         default_llm_required: "Default LLM model is required prior to enabling Chat"
-        cannot_delete_system_persona: "System personas cannot be deleted, please disable it instead"
-        cannot_edit_system_persona: "System personas can only be renamed, you may not edit tools or system prompt, instead disable and make a copy"
+        cannot_delete_system_agent: "System agents cannot be deleted, please disable it instead"
+        cannot_edit_system_agent: "System agents can only be renamed, you may not edit tools or system prompt, instead disable and make a copy"
         cannot_have_duplicate_tools: "Can not have duplicate tools"
         github_helper:
           name: "GitHub Helper"
@@ -326,10 +326,10 @@ en:
           description: "AI Bot specialized in creating interactive web artifacts"
         summarizer:
           name: "Summarizer"
-          description: "Default persona used to power AI summaries"
+          description: "Default agent used to power AI summaries"
         short_summarizer:
           name: "Summarizer (short form)"
-          description: "Default persona used to power AI short summaries for topic lists' items"
+          description: "Default agent used to power AI short summaries for topic lists' items"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -521,7 +521,7 @@ en:
         other: "We couldn't delete this model because %{settings} are using it. Update the settings and try again."
       cannot_edit_builtin: "You can't edit a built-in model."
 
-    personas:
+    agents:
       malformed_examples: "The given examples have the wrong format."
 
     embeddings:
@@ -554,12 +554,12 @@ en:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."
       quota_required: "You must specify maximum tokens or usages for this model"
       no_query_specified: The query parameter is required, please specify it.
-      no_user_for_persona: The persona specified does not have a user associated with it.
-      persona_not_found: The persona specified does not exist. Check the persona_name or persona_id params.
+      no_user_for_agent: The agent specified does not have a user associated with it.
+      agent_not_found: The agent specified does not exist. Check the agent_name or agent_id params.
       no_user_specified: The username or the user_unique_id parameter is required, please specify it.
       user_not_found: The user specified does not exist. Check the username param.
-      persona_disabled: The persona specified is disabled. Check the persona_name or persona_id params.
-      no_default_llm: The persona must have a default_llm defined.
+      agent_disabled: The agent specified is disabled. Check the agent_name or agent_id params.
+      no_default_llm: The agent must have a default_llm defined.
       user_not_allowed: The user is not allowed to participate in the topic.
       prompt_message_length: The message %{idx} is over the 1000 character limit.
   dashboard:

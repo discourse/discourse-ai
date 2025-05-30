@@ -15,7 +15,7 @@ export default RouteTemplate(
       const prefix = "discourse_ai.features.list.header";
       return [
         i18n(`${prefix}.name`),
-        i18n(`${prefix}.persona`),
+        i18n(`${prefix}.agent`),
         i18n(`${prefix}.groups`),
         "",
       ];
@@ -75,21 +75,21 @@ export default RouteTemplate(
                       </span>
                     </td>
                     <td
-                      class="d-admin-row__detail ai-feature-list__row-item ai-feature-list__persona"
+                      class="d-admin-row__detail ai-feature-list__row-item ai-feature-list__agent"
                     >
                       <DButton
-                        class="btn-flat btn-small ai-feature-list__row-item-persona"
-                        @translatedLabel={{feature.persona.name}}
-                        @route="adminPlugins.show.discourse-ai-personas.edit"
-                        @routeModels={{feature.persona.id}}
+                        class="btn-flat btn-small ai-feature-list__row-item-agent"
+                        @translatedLabel={{feature.agent.name}}
+                        @route="adminPlugins.show.discourse-ai-agents.edit"
+                        @routeModels={{feature.agent.id}}
                       />
                     </td>
                     <td
                       class="d-admin-row__detail ai-feature-list__row-item ai-feature-list__groups"
                     >
-                      {{#if (gt feature.persona.allowed_groups.length 0)}}
+                      {{#if (gt feature.agent.allowed_groups.length 0)}}
                         <ul class="ai-feature-list__row-item-groups">
-                          {{#each feature.persona.allowed_groups as |group|}}
+                          {{#each feature.agent.allowed_groups as |group|}}
                             <li>{{group.name}}</li>
                           {{/each}}
                         </ul>

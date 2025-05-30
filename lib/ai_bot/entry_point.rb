@@ -10,9 +10,9 @@ module DiscourseAi
       Bot = Struct.new(:id, :name, :llm)
 
       def self.all_bot_ids
-        AiPersona
-          .persona_users
-          .map { |persona| persona[:user_id] }
+        AiAgent
+          .agent_users
+          .map { |agent| agent[:user_id] }
           .concat(LlmModel.where(enabled_chat_bot: true).pluck(:user_id))
       end
 
@@ -101,7 +101,7 @@ module DiscourseAi
         plugin.register_modifier(:chat_allowed_bot_user_ids) do |user_ids, guardian|
           if guardian.user
             allowed_chat =
-              AiPersona.allowed_modalities(
+              AiAgent.allowed_modalities(
                 user: guardian.user,
                 allow_chat_direct_messages: true,
                 allow_chat_channel_mentions: true,
@@ -140,7 +140,7 @@ module DiscourseAi
           :topic_view,
           :is_bot_pm,
           include_condition: -> do
-            object.topic && object.personal_message &&
+            object.topic && object.agentl_message &&
               object.topic.custom_fields[TOPIC_AI_BOT_PM_FIELD]
           end,
         ) { true }
@@ -155,18 +155,18 @@ module DiscourseAi
 
         plugin.add_to_serializer(
           :current_user,
-          :ai_enabled_personas,
+          :ai_enabled_agents,
           include_condition: -> { scope.authenticated? },
         ) do
-          DiscourseAi::Personas::Persona
+          DiscourseAi::Agents::Agent
             .all(user: scope.user)
-            .map do |persona|
+            .map do |agent|
               {
-                id: persona.id,
-                name: persona.name,
-                description: persona.description,
-                force_default_llm: persona.force_default_llm,
-                username: persona.username,
+                id: agent.id,
+                name: agent.name,
+                description: agent.description,
+                force_default_llm: agent.force_default_llm,
+                username: agent.username,
               }
             end
         end
@@ -191,17 +191,17 @@ module DiscourseAi
         ) do
           bots_map = ::DiscourseAi::AiBot::EntryPoint.enabled_user_ids_and_models_map
 
-          persona_users = AiPersona.persona_users(user: scope.user)
-          if persona_users.present?
-            persona_users.filter! { |persona_user| persona_user[:username].present? }
+          agent_users = AiAgent.agent_users(user: scope.user)
+          if agent_users.present?
+            agent_users.filter! { |agent_user| agent_user[:username].present? }
 
             bots_map.concat(
-              persona_users.map do |persona_user|
+              agent_users.map do |agent_user|
                 {
-                  "id" => persona_user[:user_id],
-                  "username" => persona_user[:username],
-                  "force_default_llm" => persona_user[:force_default_llm],
-                  "is_persona" => true,
+                  "id" => agent_user[:user_id],
+                  "username" => agent_user[:username],
+                  "force_default_llm" => agent_user[:force_default_llm],
+                  "is_agent" => true,
                 }
               end,
             )
@@ -216,16 +216,16 @@ module DiscourseAi
 
         plugin.add_to_serializer(
           :current_user,
-          :can_use_ai_bot_discover_persona,
+          :can_use_ai_bot_discover_agent,
           include_condition: -> do
             SiteSetting.ai_bot_enabled && scope.authenticated? &&
-              SiteSetting.ai_bot_discover_persona.present?
+              SiteSetting.ai_bot_discover_agent.present?
           end,
         ) do
-          persona_allowed_groups =
-            AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona)&.allowed_group_ids.to_a
+          agent_allowed_groups =
+            AiAgent.find_by(id: SiteSetting.ai_bot_discover_agent)&.allowed_group_ids.to_a
 
-          scope.user.in_any_groups?(persona_allowed_groups)
+          scope.user.in_any_groups?(agent_allowed_groups)
         end
 
         UserUpdater::OPTION_ATTR.push(:ai_search_discoveries)
@@ -233,7 +233,7 @@ module DiscourseAi
           :user_option,
           :ai_search_discoveries,
           include_condition: -> do
-            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_persona.present? &&
+            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_agent.present? &&
               scope.authenticated?
           end,
         ) { object.ai_search_discoveries }
@@ -242,19 +242,19 @@ module DiscourseAi
           :current_user_option,
           :ai_search_discoveries,
           include_condition: -> do
-            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_persona.present? &&
+            SiteSetting.ai_bot_enabled && SiteSetting.ai_bot_discover_agent.present? &&
               scope.authenticated?
           end,
         ) { object.ai_search_discoveries }
 
         plugin.add_to_serializer(
           :topic_view,
-          :ai_persona_name,
+          :ai_agent_name,
           include_condition: -> { SiteSetting.ai_bot_enabled && object.topic.private_message? },
         ) do
-          id = topic.custom_fields["ai_persona_id"]
-          name = DiscourseAi::Personas::Persona.find_by(user: scope.user, id: id.to_i)&.name if id
-          name || topic.custom_fields["ai_persona"]
+          id = topic.custom_fields["ai_agent_id"]
+          name = DiscourseAi::Agents::Agent.find_by(user: scope.user, id: id.to_i)&.name if id
+          name || topic.custom_fields["ai_agent"]
         end
 
         plugin.on(:post_created) { |post| DiscourseAi::AiBot::Playground.schedule_reply(post) }
@@ -264,12 +264,12 @@ module DiscourseAi
         end
 
         if plugin.respond_to?(:register_editable_topic_custom_field)
-          plugin.register_editable_topic_custom_field(:ai_persona_id)
+          plugin.register_editable_topic_custom_field(:ai_agent_id)
         end
 
         plugin.add_api_key_scope(
           :discourse_ai,
-          { stream_completion: { actions: %w[discourse_ai/admin/ai_personas#stream_reply] } },
+          { stream_completion: { actions: %w[discourse_ai/admin/ai_agents#stream_reply] } },
         )
 
         plugin.on(:site_setting_changed) do |name, old_value, new_value|
@@ -277,11 +277,11 @@ module DiscourseAi
                new_value != old_value
             RagDocumentFragment.delete_all
             UploadReference
-              .where(target: AiPersona.all)
+              .where(target: AiAgent.all)
               .each do |ref|
                 Jobs.enqueue(
                   :digest_rag_upload,
-                  ai_persona_id: ref.target_id,
+                  ai_agent_id: ref.target_id,
                   upload_id: ref.upload_id,
                 )
               end

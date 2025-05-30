@@ -23,7 +23,7 @@ import {
 } from "discourse/lib/user-status-on-autocomplete";
 import { clipboardHelpers } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
-import AiPersonaLlmSelector from "discourse/plugins/discourse-ai/discourse/components/ai-persona-llm-selector";
+import AiAgentLlmSelector from "discourse/plugins/discourse-ai/discourse/components/ai-agent-llm-selector";
 
 export default class AiBotConversations extends Component {
   @service aiBotConversationsHiddenSubmit;
@@ -133,8 +133,8 @@ export default class AiBotConversations extends Component {
   }
 
   @action
-  setPersonaId(id) {
-    this.aiBotConversationsHiddenSubmit.personaId = id;
+  setAgentId(id) {
+    this.aiBotConversationsHiddenSubmit.agentId = id;
   }
 
   @action
@@ -279,9 +279,9 @@ export default class AiBotConversations extends Component {
 
   <template>
     <div class="ai-bot-conversations">
-      <AiPersonaLlmSelector
+      <AiAgentLlmSelector
         @showLabels={{true}}
-        @setPersonaId={{this.setPersonaId}}
+        @setAgentId={{this.setAgentId}}
         @setTargetRecipient={{this.setTargetRecipient}}
       />
 

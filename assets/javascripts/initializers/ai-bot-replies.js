@@ -3,7 +3,7 @@ import { withSilencedDeprecations } from "discourse/lib/deprecated";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { registerWidgetShim } from "discourse/widgets/render-glimmer";
 import AiBotHeaderIcon from "../discourse/components/ai-bot-header-icon";
-import AiPersonaFlair from "../discourse/components/post/ai-persona-flair";
+import AiAgentFlair from "../discourse/components/post/ai-agent-flair";
 import AiCancelStreamingButton from "../discourse/components/post-menu/ai-cancel-streaming-button";
 import AiDebugButton from "../discourse/components/post-menu/ai-debug-button";
 import AiShareButton from "../discourse/components/post-menu/ai-share-button";
@@ -53,35 +53,35 @@ function initializeAIBotReplies(api) {
   });
 }
 
-function initializePersonaDecorator(api) {
-  api.renderAfterWrapperOutlet("post-meta-data-poster-name", AiPersonaFlair);
+function initializeAgentDecorator(api) {
+  api.renderAfterWrapperOutlet("post-meta-data-poster-name", AiAgentFlair);
 
   withSilencedDeprecations("discourse.post-stream-widget-overrides", () =>
-    initializeWidgetPersonaDecorator(api)
+    initializeWidgetAgentDecorator(api)
   );
 }
 
-function initializeWidgetPersonaDecorator(api) {
+function initializeWidgetAgentDecorator(api) {
   api.decorateWidget(`poster-name:after`, (dec) => {
     const botType = getBotType(dec.attrs.user);
     // we have 2 ways of decorating
-    // 1. if a bot is a LLM we decorate with persona name
-    // 2. if bot is a persona we decorate with LLM name
+    // 1. if a bot is a LLM we decorate with agent name
+    // 2. if bot is a agent we decorate with LLM name
     if (botType === "llm") {
-      return dec.widget.attach("persona-flair", {
-        personaName: dec.model?.topic?.ai_persona_name,
+      return dec.widget.attach("agent-flair", {
+        agentName: dec.model?.topic?.ai_agent_name,
       });
-    } else if (botType === "persona") {
-      return dec.widget.attach("persona-flair", {
-        personaName: dec.model?.llm_name,
+    } else if (botType === "agent") {
+      return dec.widget.attach("agent-flair", {
+        agentName: dec.model?.llm_name,
       });
     }
   });
 
   registerWidgetShim(
-    "persona-flair",
-    "span.persona-flair",
-    hbs`{{@data.personaName}}`
+    "agent-flair",
+    "span.agent-flair",
+    hbs`{{@data.agentName}}`
   );
 }
 
@@ -149,11 +149,11 @@ function initializeShareTopicButton(api) {
       showShareConversationModal(modal, this.topic.id);
     },
     classNames: ["share-ai-conversation-button"],
-    dependentKeys: ["topic.ai_persona_name"],
+    dependentKeys: ["topic.ai_agent_name"],
     displayed() {
       return (
         currentUser?.can_share_ai_bot_conversations &&
-        this.topic.ai_persona_name
+        this.topic.ai_agent_name
       );
     },
   });
@@ -171,7 +171,7 @@ export default {
       withPluginApi((api) => {
         attachHeaderIcon(api);
         initializeAIBotReplies(api);
-        initializePersonaDecorator(api);
+        initializeAgentDecorator(api);
         initializeDebugButton(api, container);
         initializeShareButton(api, container);
         initializeShareTopicButton(api, container);

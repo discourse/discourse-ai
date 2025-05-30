@@ -11,10 +11,10 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
   describe "GET #index" do
     fab!(:llm_model) { Fabricate(:llm_model, enabled_chat_bot: true) }
     fab!(:llm_model2) { Fabricate(:llm_model) }
-    fab!(:ai_persona) do
+    fab!(:ai_agent) do
       Fabricate(
-        :ai_persona,
-        name: "Cool persona",
+        :ai_agent,
+        name: "Cool agent",
         force_default_llm: true,
         default_llm_id: llm_model2.id,
       )
@@ -79,7 +79,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
       model2_json = llms.find { |m| m["id"] == llm_model2.id }
 
       expect(model2_json["used_by"]).to contain_exactly(
-        { "type" => "ai_persona", "name" => "Cool persona", "id" => ai_persona.id },
+        { "type" => "ai_agent", "name" => "Cool agent", "id" => ai_agent.id },
         { "type" => "ai_summarization" },
         { "type" => "ai_embeddings_semantic_search" },
       )
@@ -450,7 +450,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
   describe "DELETE #destroy" do
     fab!(:llm_model)
 
-    it "destroys the requested ai_persona" do
+    it "destroys the requested ai_agent" do
       expect {
         delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
 

@@ -36,12 +36,12 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     claude_2.reload.user
   end
   fab!(:bot) do
-    persona =
-      AiPersona
-        .find(DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General])
+    agent =
+      AiAgent
+        .find(DiscourseAi::Agents::Agent.system_agents[DiscourseAi::Agents::General])
         .class_instance
         .new
-    DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
+    DiscourseAi::Agents::Bot.as(bot_user, agent: agent)
   end
 
   fab!(:pm) do
@@ -74,23 +74,23 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   fab!(:topic_user) { Fabricate(:topic_user, topic: pm, user: user) }
   fab!(:topic_bot_user) { Fabricate(:topic_user, topic: pm, user: bot_user) }
 
-  fab!(:persona) do
-    persona =
-      AiPersona.create!(
-        name: "Test Persona",
-        description: "A test persona",
+  fab!(:agent) do
+    agent =
+      AiAgent.create!(
+        name: "Test Agent",
+        description: "A test agent",
         allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
         enabled: true,
         system_prompt: "You are a helpful bot",
       )
 
-    persona.create_user!
-    persona.update!(
+    agent.create_user!
+    agent.update!(
       default_llm_id: claude_2.id,
       allow_chat_channel_mentions: true,
       allow_topic_mentions: true,
     )
-    persona
+    agent
   end
 
   before do
@@ -334,7 +334,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(ai_pm_homepage).to have_empty_state
         end
 
-        it "Allows choosing persona and LLM" do
+        it "Allows choosing agent and LLM" do
           ai_pm_homepage.visit
 
           ai_pm_homepage.llm_selector.expand

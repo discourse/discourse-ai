@@ -31,7 +31,7 @@ module DiscourseAi
         # this allows us to release memory earlier
         def queue_streamed_reply(
           io:,
-          persona:,
+          agent:,
           user:,
           topic:,
           query:,
@@ -53,7 +53,7 @@ module DiscourseAi
               else
                 post_params[:title] = I18n.t("discourse_ai.ai_bot.default_pm_prefix")
                 post_params[:archetype] = Archetype.private_message
-                post_params[:target_usernames] = "#{user.username},#{persona.user.username}"
+                post_params[:target_usernames] = "#{user.username},#{agent.user.username}"
               end
 
               post = PostCreator.create!(user, post_params)
@@ -76,15 +76,15 @@ module DiscourseAi
               io.write CRLF
               io.flush
 
-              persona_class =
-                DiscourseAi::Personas::Persona.find_by(id: persona.id, user: current_user)
-              bot = DiscourseAi::Personas::Bot.as(persona.user, persona: persona_class.new)
+              agent_class =
+                DiscourseAi::Agents::Agent.find_by(id: agent.id, user: current_user)
+              bot = DiscourseAi::Agents::Bot.as(agent.user, agent: agent_class.new)
 
               data =
                 {
                   topic_id: topic.id,
-                  bot_user_id: persona.user.id,
-                  persona_id: persona.id,
+                  bot_user_id: agent.user.id,
+                  agent_id: agent.id,
                 }.to_json + "\n\n"
 
               io.write data.bytesize.to_s(16)

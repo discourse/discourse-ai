@@ -20,12 +20,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   fab!(:bot) do
-    persona =
-      AiPersona
-        .find(DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::General])
+    agent =
+      AiAgent
+        .find(DiscourseAi::Agents::Agent.system_agents[DiscourseAi::Agents::General])
         .class_instance
         .new
-    DiscourseAi::Personas::Bot.as(bot_user, persona: persona)
+    DiscourseAi::Agents::Bot.as(bot_user, agent: agent)
   end
 
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
@@ -61,16 +61,16 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   before { SiteSetting.ai_embeddings_enabled = false }
 
   after do
-    # we must reset cache on persona cause data can be rolled back
-    AiPersona.persona_cache.flush!
+    # we must reset cache on agent cause data can be rolled back
+    AiAgent.agent_cache.flush!
   end
 
   describe "is_bot_user_id?" do
     it "properly detects ALL bots as bot users" do
-      persona = Fabricate(:ai_persona, enabled: false)
-      persona.create_user!
+      agent = Fabricate(:ai_agent, enabled: false)
+      agent.create_user!
 
-      expect(DiscourseAi::AiBot::Playground.is_bot_user_id?(persona.user_id)).to eq(true)
+      expect(DiscourseAi::AiBot::Playground.is_bot_user_id?(agent.user_id)).to eq(true)
     end
   end
 
@@ -88,7 +88,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
+    let!(:ai_agent) { Fabricate(:ai_agent, tools: ["custom-#{custom_tool.id}"]) }
     let(:tool_call) do
       DiscourseAi::Completions::ToolCall.new(
         name: "search",
@@ -99,7 +99,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let(:bot) { DiscourseAi::Agents::Bot.as(bot_user, agent: ai_agent.class_instance.new) }
 
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
@@ -114,7 +114,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       JS
 
       tool_name = "custom-#{custom_tool.id}"
-      ai_persona.update!(tools: [[tool_name, nil, true]], tool_details: false)
+      ai_agent.update!(tools: [[tool_name, nil, true]], tool_details: false)
 
       reply_post = nil
       prompts = nil
@@ -136,7 +136,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
     it "can force usage of a tool" do
       tool_name = "custom-#{custom_tool.id}"
-      ai_persona.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
+      ai_agent.update!(tools: [[tool_name, nil, true]], forced_tool_count: 1)
       responses = [tool_call, ["custom tool did stuff (maybe)"], ["new PM title"]]
 
       prompts = nil
@@ -154,7 +154,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(prompts[0].tool_choice).to eq("search")
       expect(prompts[1].tool_choice).to eq(nil)
 
-      ai_persona.update!(forced_tool_count: 1)
+      ai_agent.update!(forced_tool_count: 1)
       responses = ["no tool call here"]
 
       DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompts|
@@ -168,8 +168,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "uses custom tool in conversation" do
-      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
+      agent_klass = AiAgent.all_agents.find { |p| p.name == ai_agent.name }
+      bot = DiscourseAi::Agents::Bot.as(bot_user, agent: agent_klass.new)
       playground = described_class.new(bot)
 
       responses = [tool_call, "custom tool did stuff (maybe)"]
@@ -208,8 +208,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       custom_tool.update!(enabled: false)
       # so we pick up new cache
-      persona_klass = AiPersona.all_personas.find { |p| p.name == ai_persona.name }
-      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona_klass.new)
+      agent_klass = AiAgent.all_agents.find { |p| p.name == ai_agent.name }
+      bot = DiscourseAi::Agents::Bot.as(bot_user, agent: agent_klass.new)
       playground = DiscourseAi::AiBot::Playground.new(bot)
 
       responses = ["custom tool did stuff (maybe)", tool_call]
@@ -230,10 +230,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
     end
 
-    fab!(:persona) do
-      AiPersona.create!(
-        name: "Test Persona",
-        description: "A test persona",
+    fab!(:agent) do
+      AiAgent.create!(
+        name: "Test Agent",
+        description: "A test agent",
         allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
         enabled: true,
         system_prompt: "You are a helpful bot",
@@ -249,10 +249,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     it "sends images to llm" do
       post = nil
 
-      persona.create_user!
+      agent.create_user!
 
       image = "![image](upload://#{upload.base62_sha1}.jpg)"
-      body = "Hey @#{persona.user.username}, can you help me with this image? #{image}"
+      body = "Hey @#{agent.user.username}, can you help me with this image? #{image}"
 
       prompts = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(
@@ -276,29 +276,29 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
   end
 
-  describe "persona with user support" do
+  describe "agent with user support" do
     before do
       Jobs.run_immediately!
       SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
     end
 
-    fab!(:persona) do
-      persona =
-        AiPersona.create!(
-          name: "Test Persona",
-          description: "A test persona",
+    fab!(:agent) do
+      agent =
+        AiAgent.create!(
+          name: "Test Agent",
+          description: "A test agent",
           allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
           enabled: true,
           system_prompt: "You are a helpful bot",
         )
 
-      persona.create_user!
-      persona.update!(
+      agent.create_user!
+      agent.update!(
         default_llm_id: claude_2.id,
         allow_chat_channel_mentions: true,
         allow_topic_mentions: true,
       )
-      persona
+      agent
     end
 
     context "with chat channels" do
@@ -314,7 +314,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         SiteSetting.ai_bot_enabled = true
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
-        persona.update!(allow_chat_channel_mentions: true, default_llm_id: opus_model.id)
+        agent.update!(allow_chat_channel_mentions: true, default_llm_id: opus_model.id)
       end
 
       it "should behave in a sane way when threading is enabled" do
@@ -358,7 +358,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
           message =
             ChatSDK::Message.create(
               channel_id: channel.id,
-              raw: "Hello @#{persona.user.username}",
+              raw: "Hello @#{agent.user.username}",
               guardian: guardian,
             )
 
@@ -418,7 +418,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         ) do |_, _, _prompts|
           ChatSDK::Message.create(
             channel_id: channel.id,
-            raw: "Hello @#{persona.user.username}",
+            raw: "Hello @#{agent.user.username}",
             guardian: guardian,
           )
 
@@ -438,12 +438,12 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     context "with chat dms" do
-      fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, persona.user]) }
+      fab!(:dm_channel) { Fabricate(:direct_message_channel, users: [user, agent.user]) }
 
       before do
         SiteSetting.chat_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
         Group.refresh_automatic_groups!
-        persona.update!(
+        agent.update!(
           allow_chat_direct_messages: true,
           allow_topic_mentions: false,
           allow_chat_channel_mentions: false,
@@ -479,7 +479,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       it "can run tools" do
-        persona.update!(tools: ["Time"])
+        agent.update!(tools: ["Time"])
 
         tool_call1 =
           DiscourseAi::Completions::ToolCall.new(
@@ -535,8 +535,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         expect(thread_messages.last.message).to eq("World")
 
         # it also needs to include history per config - first feed some history
-        persona.update!(enabled: false)
-        persona_guardian = Guardian.new(persona.user)
+        agent.update!(enabled: false)
+        agent_guardian = Guardian.new(agent.user)
 
         4.times do |i|
           ChatSDK::Message.create(
@@ -550,11 +550,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             channel_id: dm_channel.id,
             thread_id: message.thread_id,
             raw: "response #{i}",
-            guardian: persona_guardian,
+            guardian: agent_guardian,
           )
         end
 
-        persona.update!(max_context_posts: 4, enabled: true)
+        agent.update!(max_context_posts: 4, enabled: true)
 
         prompts = nil
         DiscourseAi::Completions::Llm.with_prepared_responses(
@@ -599,7 +599,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         post =
           create_post(
             title: "My public topic",
-            raw: "Hey @#{persona.user.username}, can you help me?",
+            raw: "Hey @#{agent.user.username}, can you help me?",
             post_type: Post.types[:whisper],
           )
       end
@@ -607,36 +607,36 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       post.topic.reload
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
       expect(last_post.post_type).to eq(Post.types[:whisper])
     end
 
-    it "allows mentioning a persona" do
+    it "allows mentioning a agent" do
       # we still should be able to mention with no bots
       toggle_enabled_bots(bots: [])
 
-      persona.update!(allow_topic_mentions: true)
+      agent.update!(allow_topic_mentions: true)
 
       post = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(["Yes I can"]) do
         post =
           create_post(
             title: "My public topic",
-            raw: "Hey @#{persona.user.username}, can you help me?",
+            raw: "Hey @#{agent.user.username}, can you help me?",
           )
       end
 
       post.topic.reload
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
-      persona.update!(allow_topic_mentions: false)
+      agent.update!(allow_topic_mentions: false)
 
       post =
         create_post(
           title: "My public topic ABC",
-          raw: "Hey @#{persona.user.username}, can you help me?",
+          raw: "Hey @#{agent.user.username}, can you help me?",
         )
 
       expect(post.topic.posts.last.post_number).to eq(1)
@@ -653,15 +653,15 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         post =
           create_post(
             title: "I just made a PM",
-            raw: "Hey there #{persona.user.username}, can you help me?",
-            target_usernames: "#{user.username},#{persona.user.username},#{claude_2.user.username}",
+            raw: "Hey there #{agent.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{agent.user.username},#{claude_2.user.username}",
             archetype: Archetype.private_message,
             user: admin,
           )
       end
 
       # note that this is a string due to custom field shananigans
-      post.topic.custom_fields["ai_persona_id"] = persona.id.to_s
+      post.topic.custom_fields["ai_agent_id"] = agent.id.to_s
       post.topic.save_custom_fields
 
       llm2 = Fabricate(:llm_model, enabled_chat_bot: true)
@@ -678,7 +678,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = post.topic.reload.posts.order("id desc").first
       expect(last_post.raw).to eq("Hi from bot two")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
       current_users = last_post.topic.reload.topic_allowed_users.joins(:user).pluck(:username)
       expect(current_users).to include(llm2.user.username)
@@ -694,10 +694,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = post.topic.reload.posts.order("id desc").first
       expect(last_post.raw).to eq("Hi from bot two")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
       # tether llm, so it can no longer be switched
-      persona.update!(force_default_llm: true, default_llm_id: claude_2.id)
+      agent.update!(force_default_llm: true, default_llm_id: claude_2.id)
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["Hi from bot one"], llm: claude_2) do
         create_post(
@@ -709,10 +709,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = post.topic.reload.posts.order("id desc").first
       expect(last_post.raw).to eq("Hi from bot one")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
     end
 
-    it "allows PMing a persona even when no particular bots are enabled" do
+    it "allows PMing a agent even when no particular bots are enabled" do
       SiteSetting.ai_bot_enabled = true
       toggle_enabled_bots(bots: [])
       post = nil
@@ -724,8 +724,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         post =
           create_post(
             title: "I just made a PM",
-            raw: "Hey there #{persona.user.username}, can you help me?",
-            target_usernames: "#{user.username},#{persona.user.username}",
+            raw: "Hey there #{agent.user.username}, can you help me?",
+            target_usernames: "#{user.username},#{agent.user.username}",
             archetype: Archetype.private_message,
             user: admin,
           )
@@ -733,19 +733,19 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
       last_post.topic.reload
-      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(agent.user_id)
 
       expect(last_post.topic.participant_count).to eq(2)
 
       # ensure it can be disabled
-      persona.update!(allow_personal_messages: false)
+      agent.update!(allow_agentl_messages: false)
 
       post =
         create_post(
-          raw: "Hey there #{persona.user.username}, can you help me please",
+          raw: "Hey there #{agent.user.username}, can you help me please",
           topic_id: post.topic.id,
           user: admin,
         )
@@ -753,7 +753,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(post.post_number).to eq(3)
     end
 
-    it "can tether a persona unconditionally to an llm" do
+    it "can tether a agent unconditionally to an llm" do
       gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
 
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
@@ -761,7 +761,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       toggle_enabled_bots(bots: [gpt_35_turbo, claude_2])
 
       post = nil
-      persona.update!(force_default_llm: true, default_llm_id: gpt_35_turbo.id)
+      agent.update!(force_default_llm: true, default_llm_id: gpt_35_turbo.id)
 
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["Yes I can", "Magic Title"],
@@ -775,21 +775,21 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             archetype: Archetype.private_message,
             user: admin,
             custom_fields: {
-              "ai_persona_id" => persona.id,
+              "ai_agent_id" => agent.id,
             },
           )
       end
 
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
       expect(last_post.custom_fields[DiscourseAi::AiBot::POST_AI_LLM_NAME_FIELD]).to eq(
         gpt_35_turbo.display_name,
       )
     end
 
-    it "picks the correct llm for persona in PMs" do
+    it "picks the correct llm for agent in PMs" do
       gpt_35_turbo = Fabricate(:llm_model, name: "gpt-3.5-turbo")
 
       # If you start a PM with GPT 3.5 bot, replies should come from it, not from Claude
@@ -809,7 +809,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
             post =
               create_post(
                 title: "I just made a PM",
-                raw: "Hey @#{persona.user.username}, can you help me?",
+                raw: "Hey @#{agent.user.username}, can you help me?",
                 target_usernames: "#{user.username},#{gpt3_5_bot_user.username}",
                 archetype: Archetype.private_message,
                 user: admin,
@@ -823,10 +823,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       expect(title_update_message.data).to eq({ title: "Magic Title" })
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Yes I can")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
 
       last_post.topic.reload
-      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(persona.user_id)
+      expect(last_post.topic.allowed_users.pluck(:user_id)).to include(agent.user_id)
 
       # does not reply if replying directly to a user
       # nothing is mocked, so this would result in HTTP error
@@ -838,7 +838,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
         reply_to_post_number: post.post_number,
       )
 
-      # replies as correct persona if replying direct to persona
+      # replies as correct agent if replying direct to agent
       DiscourseAi::Completions::Llm.with_prepared_responses(["Another reply"], llm: gpt_35_turbo) do
         create_post(
           raw: "Please ignore this bot, I am replying to a user",
@@ -850,14 +850,14 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       last_post = post.topic.posts.order(:post_number).last
       expect(last_post.raw).to eq("Another reply")
-      expect(last_post.user_id).to eq(persona.user_id)
+      expect(last_post.user_id).to eq(agent.user_id)
     end
   end
 
   describe "#title_playground" do
     let(:expected_response) { "This is a suggested title" }
 
-    before { SiteSetting.min_personal_message_post_length = 5 }
+    before { SiteSetting.min_agentl_message_post_length = 5 }
 
     it "updates the title using bot suggestions" do
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
@@ -985,8 +985,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     end
 
     it "supports disabling tool details" do
-      persona = Fabricate(:ai_persona, tool_details: false, tools: ["Search"])
-      bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new)
+      agent = Fabricate(:ai_agent, tool_details: false, tools: ["Search"])
+      bot = DiscourseAi::Agents::Bot.as(bot_user, agent: agent.class_instance.new)
       playground = described_class.new(bot)
 
       response1 =
@@ -1037,13 +1037,13 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     context "with Dall E bot" do
       before { SiteSetting.ai_openai_api_key = "123" }
 
-      let(:persona) do
-        AiPersona.find(
-          DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::DallE3],
+      let(:agent) do
+        AiAgent.find(
+          DiscourseAi::Agents::Agent.system_agents[DiscourseAi::Agents::DallE3],
         )
       end
 
-      let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: persona.class_instance.new) }
+      let(:bot) { DiscourseAi::Agents::Bot.as(bot_user, agent: agent.class_instance.new) }
       let(:data) do
         image =
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -1062,7 +1062,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       end
 
       it "properly returns an image when skipping tool details" do
-        persona.update!(tool_details: false)
+        agent.update!(tool_details: false)
 
         WebMock.stub_request(:post, SiteSetting.ai_openai_image_generation_url).to_return(
           status: 200,
@@ -1165,11 +1165,11 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   end
 
   describe "#available_bot_usernames" do
-    it "includes persona users" do
-      persona = Fabricate(:ai_persona)
-      persona.create_user!
+    it "includes agent users" do
+      agent = Fabricate(:ai_agent)
+      agent.create_user!
 
-      expect(playground.available_bot_usernames).to include(persona.user.username)
+      expect(playground.available_bot_usernames).to include(agent.user.username)
     end
   end
 
@@ -1198,8 +1198,8 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       )
     end
 
-    let!(:ai_persona) { Fabricate(:ai_persona, tools: ["custom-#{custom_tool.id}"]) }
-    let(:bot) { DiscourseAi::Personas::Bot.as(bot_user, persona: ai_persona.class_instance.new) }
+    let!(:ai_agent) { Fabricate(:ai_agent, tools: ["custom-#{custom_tool.id}"]) }
+    let(:bot) { DiscourseAi::Agents::Bot.as(bot_user, agent: ai_agent.class_instance.new) }
     let(:playground) { DiscourseAi::AiBot::Playground.new(bot) }
 
     it "injects custom context into the prompt" do

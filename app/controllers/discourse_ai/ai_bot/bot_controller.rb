@@ -46,17 +46,17 @@ module DiscourseAi
       end
 
       def discover
-        ai_persona =
-          AiPersona
-            .all_personas(enabled_only: false)
-            .find { |persona| persona.id == SiteSetting.ai_bot_discover_persona.to_i }
+        ai_agent =
+          AiAgent
+            .all_agents(enabled_only: false)
+            .find { |agent| agent.id == SiteSetting.ai_bot_discover_agent.to_i }
 
-        if ai_persona.nil? || !current_user.in_any_groups?(ai_persona.allowed_group_ids.to_a)
+        if ai_agent.nil? || !current_user.in_any_groups?(ai_agent.allowed_group_ids.to_a)
           raise Discourse::InvalidAccess.new
         end
 
-        if ai_persona.default_llm_id.blank?
-          render_json_error "Discover persona is missing a default LLM model.", status: 503
+        if ai_agent.default_llm_id.blank?
+          render_json_error "Discover agent is missing a default LLM model.", status: 503
           return
         end
 
@@ -77,7 +77,7 @@ module DiscourseAi
 
         user = User.find(params[:user_id])
 
-        bot_user_id = AiPersona.find_by(id: SiteSetting.ai_bot_discover_persona).user_id
+        bot_user_id = AiAgent.find_by(id: SiteSetting.ai_bot_discover_agent).user_id
         bot_username = User.find_by(id: bot_user_id).username
 
         query = params[:query]

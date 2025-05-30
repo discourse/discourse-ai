@@ -36,7 +36,7 @@ class AiTool < ActiveRecord::Base
   end
 
   def runner(parameters, llm:, bot_user:, context: nil)
-    DiscourseAi::Personas::ToolRunner.new(
+    DiscourseAi::Agents::ToolRunner.new(
       parameters: parameters,
       llm: llm,
       bot_user: bot_user,
@@ -45,10 +45,10 @@ class AiTool < ActiveRecord::Base
     )
   end
 
-  after_commit :bump_persona_cache
+  after_commit :bump_agent_cache
 
-  def bump_persona_cache
-    AiPersona.persona_cache.flush!
+  def bump_agent_cache
+    AiAgent.agent_cache.flush!
   end
 
   def regenerate_rag_fragments
@@ -176,11 +176,11 @@ class AiTool < ActiveRecord::Base
      *      user_id_or_username (number | string): The ID or username of the user.
      *    Returns: Object (User details using UserSerializer structure) or null if not found.
      *
-     *    discourse.getPersona(name): Gets an object representing another AI Persona configured on the site.
+     *    discourse.getAgent(name): Gets an object representing another AI Agent configured on the site.
      *    Parameters:
-     *      name (string): The name of the target persona.
-     *    Returns: Object { respondTo: function(params) } or null if persona not found.
-     *      respondTo(params): Instructs the target persona to generate a response within the current context (e.g., replying to the same post or chat message).
+     *      name (string): The name of the target agent.
+     *    Returns: Object { respondTo: function(params) } or null if agent not found.
+     *      respondTo(params): Instructs the target agent to generate a response within the current context (e.g., replying to the same post or chat message).
      *      Parameters:
      *        params (Object, optional): { instructions: string, whisper: boolean }
      *      Returns: { success: boolean, post_id?: number, post_number?: number, message_id?: number } or { error: string }
@@ -201,7 +201,7 @@ class AiTool < ActiveRecord::Base
      *      private_message (boolean): Whether the context is a private message (in Post context).
      *      message_id (number): ID of the chat message triggering the tool (if in Chat context).
      *      channel_id (number): ID of the chat channel (if in Chat context).
-     *      user (Object): Details of the user invoking the tool/persona (structure may vary, often null or SystemUser details unless explicitly passed).
+     *      user (Object): Details of the user invoking the tool/agent (structure may vary, often null or SystemUser details unless explicitly passed).
      *      participants (string): Comma-separated list of usernames in a PM (if applicable).
      *      // ... other potential context-specific properties added by the calling environment.
      *

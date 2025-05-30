@@ -15,17 +15,17 @@ RSpec.describe Jobs::CreateAiReply do
       "Hello this is a bot and what you just said is an interesting question"
     end
 
-    before { SiteSetting.min_personal_message_post_length = 5 }
+    before { SiteSetting.min_agentl_message_post_length = 5 }
 
     it "adds a reply from the bot" do
-      persona_id = AiPersona.find_by(name: "Forum Helper").id
+      agent_id = AiAgent.find_by(name: "Forum Helper").id
 
       bot_user = DiscourseAi::AiBot::EntryPoint.find_user_from_model("gpt-3.5-turbo")
       DiscourseAi::Completions::Llm.with_prepared_responses([expected_response]) do
         subject.execute(
           post_id: topic.first_post.id,
           bot_user_id: bot_user.id,
-          persona_id: persona_id,
+          agent_id: agent_id,
         )
       end
 

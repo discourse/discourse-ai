@@ -4,7 +4,7 @@ describe DiscourseAi::Utils::Research::Filter do
   describe "integration tests" do
     before_all do
       SiteSetting.min_topic_title_length = 3
-      SiteSetting.min_personal_message_title_length = 3
+      SiteSetting.min_agentl_message_title_length = 3
     end
 
     fab!(:user)

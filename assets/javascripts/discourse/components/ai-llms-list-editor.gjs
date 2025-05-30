@@ -112,9 +112,9 @@ export default class AiLlmsListEditor extends Component {
   }
 
   localizeUsage(usage) {
-    if (usage.type === "ai_persona") {
-      return i18n("discourse_ai.llms.usage.ai_persona", {
-        persona: usage.name,
+    if (usage.type === "ai_agent") {
+      return i18n("discourse_ai.llms.usage.ai_agent", {
+        agent: usage.name,
       });
     } else if (usage.type === "automation") {
       return i18n("discourse_ai.llms.usage.automation", {

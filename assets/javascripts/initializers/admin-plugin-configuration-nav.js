@@ -22,9 +22,9 @@ export default {
           description: "discourse_ai.llms.preconfigured.description",
         },
         {
-          label: "discourse_ai.ai_persona.short_title",
-          route: "adminPlugins.show.discourse-ai-personas",
-          description: "discourse_ai.ai_persona.persona_description",
+          label: "discourse_ai.ai_agent.short_title",
+          route: "adminPlugins.show.discourse-ai-agents",
+          description: "discourse_ai.ai_agent.agent_description",
         },
         {
           label: "discourse_ai.embeddings.short_title",

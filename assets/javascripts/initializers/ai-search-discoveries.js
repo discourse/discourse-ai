@@ -6,7 +6,7 @@ export default apiInitializer((api) => {
 
   if (
     !settings.ai_bot_enabled ||
-    !currentUser?.can_use_ai_bot_discover_persona
+    !currentUser?.can_use_ai_bot_discover_agent
   ) {
     return;
   }

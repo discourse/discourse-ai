@@ -25,25 +25,25 @@ module DiscourseAi
       return false if !SiteSetting.ai_summarization_enabled
       return false if !SiteSetting.ai_summary_gists_enabled
 
-      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summary_gists_persona)).blank?
+      if (ai_agent = AiAgent.find_by(id: SiteSetting.ai_summary_gists_agent)).blank?
         return false
       end
-      persona_groups = ai_persona.allowed_group_ids.to_a
-      return true if persona_groups.include?(Group::AUTO_GROUPS[:everyone])
+      agent_groups = ai_agent.allowed_group_ids.to_a
+      return true if agent_groups.include?(Group::AUTO_GROUPS[:everyone])
       return false if anonymous?
 
-      persona_groups.any? { |group_id| user.group_ids.include?(group_id) }
+      agent_groups.any? { |group_id| user.group_ids.include?(group_id) }
     end
 
     def can_request_summary?
       return false if anonymous?
 
       user_group_ids = user.group_ids
-      if (ai_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)).blank?
+      if (ai_agent = AiAgent.find_by(id: SiteSetting.ai_summarization_agent)).blank?
         return false
       end
 
-      ai_persona.allowed_group_ids.to_a.any? { |group_id| user.group_ids.include?(group_id) }
+      ai_agent.allowed_group_ids.to_a.any? { |group_id| user.group_ids.include?(group_id) }
     end
 
     def can_debug_ai_bot_conversation?(target)

@@ -42,15 +42,15 @@ module DiscourseAi
       values
     end
 
-    def self.available_persona_choices(require_user: true, require_default_llm: true)
-      relation = AiPersona.joins(:user)
+    def self.available_agent_choices(require_user: true, require_default_llm: true)
+      relation = AiAgent.joins(:user)
       relation = relation.where.not(user_id: nil) if require_user
       relation = relation.where.not(default_llm: nil) if require_default_llm
-      relation.map do |persona|
+      relation.map do |agent|
         {
-          id: persona.id,
-          translated_name: persona.name,
-          description: "#{persona.name} (#{persona.user.username})",
+          id: agent.id,
+          translated_name: agent.name,
+          description: "#{agent.name} (#{agent.user.username})",
         }
       end
     end

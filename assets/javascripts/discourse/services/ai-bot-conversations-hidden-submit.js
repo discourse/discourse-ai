@@ -16,7 +16,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   @tracked loading = false;
 
-  personaId;
+  agentId;
   targetUsername;
   uploads = [];
 
@@ -35,12 +35,12 @@ export default class AiBotConversationsHiddenSubmit extends Service {
   async submitToBot() {
     if (
       this.inputValue.length <
-      this.siteSettings.min_personal_message_post_length
+      this.siteSettings.min_agentl_message_post_length
     ) {
       return this.dialog.alert({
         message: i18n(
           "discourse_ai.ai_bot.conversations.min_input_length_message",
-          { count: this.siteSettings.min_personal_message_post_length }
+          { count: this.siteSettings.min_agentl_message_post_length }
         ),
         didConfirm: () => this.focusInput(),
         didCancel: () => this.focusInput(),
@@ -78,7 +78,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
           title,
           archetype: "private_message",
           target_recipients: this.targetUsername,
-          meta_data: { ai_persona_id: this.personaId },
+          meta_data: { ai_agent_id: this.agentId },
         },
       });
 

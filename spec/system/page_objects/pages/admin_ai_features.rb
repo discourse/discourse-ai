@@ -27,9 +27,9 @@ module PageObjects
         page.has_css?("#{UNCONFIGURED_FEATURES_TABLE} .ai-feature-list__row", count: count)
       end
 
-      def has_feature_persona?(name)
+      def has_feature_agent?(name)
         page.has_css?(
-          "#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__persona .d-button-label ",
+          "#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__agent .d-button-label ",
           text: name,
         )
       end

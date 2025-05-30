@@ -8,8 +8,8 @@ export default class AiFeature extends RestModel {
       "ref",
       "description",
       "enable_setting",
-      "persona",
-      "persona_setting"
+      "agent",
+      "agent_setting"
     );
   }
 }

@@ -9,7 +9,7 @@ module DiscourseAi
           name_ref: "summarization",
           name_key: "discourse_ai.features.summarization.name",
           description_key: "discourse_ai.features.summarization.description",
-          persona_setting_name: "ai_summarization_persona",
+          agent_setting_name: "ai_summarization_agent",
           enable_setting_name: "ai_summarization_enabled",
         },
         {
@@ -17,7 +17,7 @@ module DiscourseAi
           name_ref: "gists",
           name_key: "discourse_ai.features.gists.name",
           description_key: "discourse_ai.features.gists.description",
-          persona_setting_name: "ai_summary_gists_persona",
+          agent_setting_name: "ai_summary_gists_agent",
           enable_setting_name: "ai_summary_gists_enabled",
         },
         {
@@ -25,7 +25,7 @@ module DiscourseAi
           name_ref: "discoveries",
           name_key: "discourse_ai.features.discoveries.name",
           description_key: "discourse_ai.features.discoveries.description",
-          persona_setting_name: "ai_bot_discover_persona",
+          agent_setting_name: "ai_bot_discover_agent",
           enable_setting_name: "ai_bot_enabled",
         },
         {
@@ -33,7 +33,7 @@ module DiscourseAi
           name_ref: "discord_search",
           name_key: "discourse_ai.features.discord_search.name",
           description_key: "discourse_ai.features.discord_search.description",
-          persona_setting_name: "ai_discord_search_persona",
+          agent_setting_name: "ai_discord_search_agent",
           enable_setting_name: "ai_discord_search_enabled",
         },
       ]
@@ -46,11 +46,11 @@ module DiscourseAi
           ref: feature[:name_ref],
           name: I18n.t(feature[:name_key]),
           description: I18n.t(feature[:description_key]),
-          persona: AiPersona.find_by(id: SiteSetting.get(feature[:persona_setting_name])),
-          persona_setting: {
-            name: feature[:persona_setting_name],
-            value: SiteSetting.get(feature[:persona_setting_name]),
-            type: SiteSetting.type_supervisor.get_type(feature[:persona_setting_name]),
+          agent: AiAgent.find_by(id: SiteSetting.get(feature[:agent_setting_name])),
+          agent_setting: {
+            name: feature[:agent_setting_name],
+            value: SiteSetting.get(feature[:agent_setting_name]),
+            type: SiteSetting.type_supervisor.get_type(feature[:agent_setting_name]),
           },
           enable_setting: {
             name: feature[:enable_setting_name],
