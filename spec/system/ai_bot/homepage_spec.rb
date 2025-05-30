@@ -222,8 +222,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
 
           expect(ai_pm_homepage).to have_homepage
-          expect(sidebar).to have_section("ai-conversations-history")
-          expect(sidebar).to have_section_link("Today")
+          expect(sidebar).to have_section("Today")
           expect(sidebar).to have_section_link(pm.title)
         end
 
@@ -233,7 +232,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
 
           expect(ai_pm_homepage).to have_homepage
-          expect(sidebar).to have_section_link("Last 7 days")
+          expect(sidebar).to have_section("Last 7 days")
         end
 
         it "displays last_30_days label in the sidebar" do
@@ -242,7 +241,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
 
           expect(ai_pm_homepage).to have_homepage
-          expect(sidebar).to have_section_link("Last 30 days")
+          expect(sidebar).to have_section("Last 30 days")
         end
 
         it "displays month and year label in the sidebar for older conversations" do
@@ -251,7 +250,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
 
           expect(ai_pm_homepage).to have_homepage
-          expect(sidebar).to have_section_link("Apr 2024")
+          expect(sidebar).to have_section("2024-3")
         end
 
         it "navigates to the bot conversation when clicked" do
@@ -326,12 +325,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
           expect(ai_pm_homepage).to have_homepage
           expect(sidebar).to have_no_section_link(pm.title)
-        end
-
-        it "renders empty state in sidebar with no bot PM history" do
-          sign_in(user_2)
-          ai_pm_homepage.visit
-          expect(ai_pm_homepage).to have_empty_state
         end
 
         it "Allows choosing persona and LLM" do

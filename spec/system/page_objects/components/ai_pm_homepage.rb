@@ -52,13 +52,9 @@ module PageObjects
         page.find(".ai-new-question-button").click
       end
 
-      def has_empty_state?
-        page.has_css?(".ai-bot-sidebar-empty-state")
-      end
-
       def click_fist_sidebar_conversation
         page.find(
-          ".sidebar-section[data-section-name='ai-conversations-history'] a.sidebar-section-link:not(.date-heading)",
+          ".sidebar-section-content a.sidebar-section-link",
         ).click
       end
 
