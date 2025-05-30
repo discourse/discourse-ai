@@ -583,6 +583,7 @@ module DiscourseAi
               upload = Upload.find_by(sha1: sha1)
               return nil if upload.nil?
               # TODO we may need to introduce an API to unsecure, secure uploads
+              return nil if upload.secure?
 
               GlobalPath.full_cdn_url(upload.url)
             end
