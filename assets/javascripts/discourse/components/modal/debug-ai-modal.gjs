@@ -144,11 +144,11 @@ export default class DebugAiModal extends Component {
             >{{i18n "discourse_ai.ai_bot.debug_ai_modal.response"}}</a></li>
         </ul>
         <div class="ai-debug-modal__tokens">
-          <span>
+          <span class="ai-debug-modal__tokens__count">
             {{i18n "discourse_ai.ai_bot.debug_ai_modal.request_tokens"}}
             {{this.info.request_tokens}}
           </span>
-          <span>
+          <span class="ai-debug-modal__tokens__count">
             {{i18n "discourse_ai.ai_bot.debug_ai_modal.response_tokens"}}
             {{this.info.response_tokens}}
           </span>
