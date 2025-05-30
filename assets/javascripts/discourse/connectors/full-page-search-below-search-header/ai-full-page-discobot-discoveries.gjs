@@ -15,6 +15,7 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
     );
   }
 
+  @service capabilities;
   @service discobotDiscoveries;
   @service site;
 
