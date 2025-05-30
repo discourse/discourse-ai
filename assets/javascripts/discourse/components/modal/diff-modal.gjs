@@ -5,6 +5,7 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
+import { or } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import DModal from "discourse/components/d-modal";
@@ -41,6 +42,10 @@ export default class ModalDiffModal extends Component {
   }
 
   get diffResult() {
+    if (this.loading) {
+      return this.escapedSelectedText;
+    }
+
     if (this.diffStreamer.diff?.length > 0) {
       return this.diffStreamer.diff;
     }
@@ -50,10 +55,22 @@ export default class ModalDiffModal extends Component {
     return this.escapedSelectedText;
   }
 
+  get smoothStreamerResult() {
+    if (this.loading) {
+      return this.escapedSelectedText;
+    }
+
+    return this.smoothStreamer.renderedText;
+  }
+
   get isStreaming() {
     // diffStreamer stops Streaming when it is finished with a chunk, looking at isDone is safe
     // it starts off not done
-    return !this.diffStreamer.isDone || this.smoothStreamer.isStreaming;
+    if (this.args.model.showResultAsDiff) {
+      return !this.diffStreamer.isDone;
+    }
+
+    return this.smoothStreamer.isStreaming;
   }
 
   get primaryBtnLabel() {
@@ -154,42 +171,37 @@ export default class ModalDiffModal extends Component {
           {{willDestroy this.cleanup}}
           class="text-preview"
         >
-          {{#if this.loading}}
-            <div class="composer-ai-helper-modal__loading">
-              {{~@model.selectedText~}}
-            </div>
-          {{else}}
-            <div
-              class={{concatClass
-                "composer-ai-helper-modal__suggestion"
-                "streamable-content"
-                (if this.isStreaming "streaming")
-                (if @model.showResultAsDiff "inline-diff")
-                (if this.diffStreamer.isThinking "thinking")
-              }}
-            >
-              {{~#if @model.showResultAsDiff~}}
-                <span class="diff-inner">{{htmlSafe this.diffResult}}</span>
+          <div
+            class={{concatClass
+              "composer-ai-helper-modal__suggestion"
+              "streamable-content"
+              (if this.isStreaming "streaming")
+              (if @model.showResultAsDiff "inline-diff")
+              (if this.diffStreamer.isThinking "thinking")
+              (if this.loading "composer-ai-helper-modal__loading")
+            }}
+          >
+            {{~#if @model.showResultAsDiff~}}
+              <span class="diff-inner">{{htmlSafe this.diffResult}}</span>
+            {{else}}
+              {{#if (or this.loading this.smoothStreamer.isStreaming)}}
+                <CookText
+                  @rawText={{this.smoothStreamerResult}}
+                  class="cooked"
+                />
               {{else}}
-                {{#if this.smoothStreamer.isStreaming}}
+                <div class="composer-ai-helper-modal__old-value">
+                  {{~this.escapedSelectedText~}}
+                </div>
+                <div class="composer-ai-helper-modal__new-value">
                   <CookText
-                    @rawText={{this.smoothStreamer.renderedText}}
+                    @rawText={{this.smoothStreamerResult}}
                     class="cooked"
                   />
-                {{else}}
-                  <div class="composer-ai-helper-modal__old-value">
-                    {{@model.selectedText}}
-                  </div>
-                  <div class="composer-ai-helper-modal__new-value">
-                    <CookText
-                      @rawText={{this.smoothStreamer.renderedText}}
-                      class="cooked"
-                    />
-                  </div>
-                {{/if}}
+                </div>
               {{/if}}
-            </div>
-          {{/if}}
+            {{/if}}
+          </div>
         </div>
       </:body>
 

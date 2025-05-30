@@ -1,11 +1,13 @@
 @use "lib/viewport";
 
 .composer-ai-helper-modal {
-  .text-preview,
   .inline-diff {
     font-family: var(--d-font-family--monospace);
     font-variant-ligatures: none;
+  }
 
+  .text-preview,
+  .inline-diff {
     ins {
       background-color: var(--success-low);
       text-decoration: none;
@@ -55,13 +57,16 @@
   }
 
   &__old-value {
-    background-color: var(--danger-low);
+    white-space: pre-wrap;
+    border-left: 2px solid var(--danger);
+    padding-left: 1rem;
     color: var(--danger);
     margin-bottom: 1rem;
   }
 
   &__new-value {
-    background-color: var(--success-low);
+    border-left: 2px solid var(--success);
+    padding-left: 1rem;
     color: var(--success);
   }
 
@@ -77,7 +82,6 @@
 }
 
 .ai-composer-helper-menu {
-  padding: 0.25rem;
   max-width: 25rem;
   list-style: none;
 
@@ -701,7 +705,7 @@
     width: 100%;
     border-radius: 0;
     margin: 0;
-    padding: 0.5em 1rem;
+    padding: 0.7rem 1rem;
 
     &:focus,
     &:hover {
