@@ -42,15 +42,17 @@ module DiscourseAi
 
           return report if grouped_sentiments.empty?
 
-          report.data = {
-            req: "overall_sentiment",
-            color: report.colors[:lime],
-            label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment"),
-            data:
-              grouped_sentiments.map do |gs|
-                { x: gs.posted_at, y: gs.public_send("sentiment_count") }
-              end,
-          }
+          report.data = [
+            {
+              req: "overall_sentiment",
+              color: report.colors[:lime],
+              label: I18n.t("discourse_ai.sentiment.reports.overall_sentiment"),
+              data:
+                grouped_sentiments.map do |gs|
+                  { x: gs.posted_at, y: gs.public_send("sentiment_count") }
+                end,
+            },
+          ]
         end
       end
     end
