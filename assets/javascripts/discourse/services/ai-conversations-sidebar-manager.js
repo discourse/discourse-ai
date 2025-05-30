@@ -224,9 +224,9 @@ export default class AiConversationsSidebarManager extends Service {
       if (diffDays <= 1) {
         dateGroup = "today";
       } else if (diffDays <= 7) {
-        dateGroup = "last_7_days";
+        dateGroup = "last-7-days";
       } else if (diffDays <= 30) {
-        dateGroup = "last_30_days";
+        dateGroup = "last-30-days";
       } else {
         const d = new Date(postedAtMs);
         const key = `${d.getFullYear()}-${d.getMonth()}`;
@@ -240,10 +240,10 @@ export default class AiConversationsSidebarManager extends Service {
           case "today":
             title = i18n("discourse_ai.ai_bot.conversations.today");
             break;
-          case "last_7_days":
+          case "last-7-days":
             title = i18n("discourse_ai.ai_bot.conversations.last_7_days");
             break;
-          case "last_30_days":
+          case "last-30-days":
             title = i18n("discourse_ai.ai_bot.conversations.last_30_days");
             break;
           default:

@@ -250,7 +250,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           header.click_bot_button
 
           expect(ai_pm_homepage).to have_homepage
-          expect(sidebar).to have_section("Apr 2024")
+          expect(sidebar).to have_section("2024-3")
         end
 
         it "navigates to the bot conversation when clicked" do
