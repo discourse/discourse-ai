@@ -11,16 +11,15 @@ RSpec.describe DiscourseAi::Personas::ConceptFinder do
 
   describe "#system_prompt" do
     before do
-      concepts = []
-      concepts << Fabricate(:inferred_concept, name: "programming")
-      concepts << Fabricate(:inferred_concept, name: "testing")
-      concepts << Fabricate(:inferred_concept, name: "ruby")
+      Fabricate(:inferred_concept, name: "programming")
+      Fabricate(:inferred_concept, name: "testing")
+      Fabricate(:inferred_concept, name: "ruby")
     end
 
     it "includes existing concepts when available" do
       prompt = persona.system_prompt
 
-      concepts.each { |concept| expect(prompt).to include(concept.name) }
+      InferredConcept.all.each { |concept| expect(prompt).to include(concept.name) }
     end
 
     it "handles empty existing concepts" do
