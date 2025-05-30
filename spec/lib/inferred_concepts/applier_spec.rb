@@ -134,15 +134,16 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       allow(InferredConcept).to receive(:where).with(name: ["programming"]).and_return([concept1])
 
       # Mock the LLM interaction
-      persona_double = instance_spy(AiPersona)
+      persona_instance_double = instance_spy("DiscourseAi::Personas::Persona")
       bot_double = instance_spy(DiscourseAi::Personas::Bot)
-      structured_output_double = double("StructuredOutput")
-      llm_class_double = double("PersonaClass", default_llm_id: llm_model.id)
+      structured_output_double = instance_double("DiscourseAi::Completions::StructuredOutput")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
 
-      allow(AiPersona).to receive_message_chain(:all_personas, :find, :new).and_return(
-        persona_double,
-      )
-      allow(persona_double).to receive(:class).and_return(llm_class_double)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
       allow(LlmModel).to receive(:find).and_return(llm_model)
       allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
       allow(bot_double).to receive(:reply).and_yield(
@@ -183,15 +184,16 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       allow(InferredConcept).to receive(:where).with(name: ["testing"]).and_return([concept2])
 
       # Mock the LLM interaction
-      persona_double = instance_spy(AiPersona)
+      persona_instance_double = instance_spy("DiscourseAi::Personas::Persona")
       bot_double = instance_spy(DiscourseAi::Personas::Bot)
-      structured_output_double = double("StructuredOutput")
-      llm_class_double = double("PersonaClass", default_llm_id: llm_model.id)
+      structured_output_double = instance_double("DiscourseAi::Completions::StructuredOutput")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
 
-      allow(AiPersona).to receive_message_chain(:all_personas, :find, :new).and_return(
-        persona_double,
-      )
-      allow(persona_double).to receive(:class).and_return(llm_class_double)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
       allow(LlmModel).to receive(:find).and_return(llm_model)
       allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
       allow(bot_double).to receive(:reply).and_yield(
@@ -219,17 +221,17 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
     it "uses ConceptMatcher persona to match concepts" do
       content = "This is about Ruby programming"
       concept_list = %w[programming testing ruby]
-      structured_output_double = double("StructuredOutput")
+      structured_output_double = instance_double("DiscourseAi::Completions::StructuredOutput")
 
-      persona_class_double = double("PersonaClass", default_llm_id: llm_model.id)
-      persona_double = instance_spy(AiPersona)
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = instance_spy("DiscourseAi::Personas::Persona")
       bot_double = instance_spy(DiscourseAi::Personas::Bot)
 
-      allow(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
-        persona_class_double,
-      )
-      allow(persona_class_double).to receive(:new).and_return(persona_double)
-      allow(persona_double).to receive(:class).and_return(persona_class_double)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
       allow(LlmModel).to receive(:find).and_return(llm_model)
       allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
       allow(bot_double).to receive(:reply).and_yield(
@@ -254,18 +256,18 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       content = "Test content"
       concept_list = ["concept1"]
 
-      persona_class_double = double("ConceptMatcherClass", default_llm_id: llm_model.id)
-      persona_double = double("ConceptMatcher")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = instance_double("DiscourseAi::Personas::Persona")
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
-        persona_class_double,
-      )
-      expect(persona_class_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:class).and_return(persona_class_double)
-      expect(LlmModel).to receive(:find).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(nil, nil, :text)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(nil, nil, :text)
 
       result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq([])
@@ -276,18 +278,18 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       concept_list = %w[programming testing]
       expected_response = [['{"matching_concepts": []}']]
 
-      persona_class_double = double("ConceptMatcherClass", default_llm_id: llm_model.id)
-      persona_double = double("ConceptMatcher")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = instance_double("DiscourseAi::Personas::Persona")
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
-        persona_class_double,
-      )
-      expect(persona_class_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:class).and_return(persona_class_double)
-      expect(LlmModel).to receive(:find).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_return(expected_response)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_return(expected_response)
 
       result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq([])
@@ -298,18 +300,18 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       concept_list = ["concept1"]
       expected_response = [['{"other_key": ["value"]}']]
 
-      persona_class_double = double("ConceptMatcherClass", default_llm_id: llm_model.id)
-      persona_double = double("ConceptMatcher")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = instance_double("DiscourseAi::Personas::Persona")
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(
-        persona_class_double,
-      )
-      expect(persona_class_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:class).and_return(persona_class_double)
-      expect(LlmModel).to receive(:find).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_return(expected_response)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
+      allow(LlmModel).to receive(:find).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_return(expected_response)
 
       result = applier.match_concepts_to_content(content, concept_list)
       expect(result).to eq([])

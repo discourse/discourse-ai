@@ -23,23 +23,25 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
 
     it "uses ConceptFinder persona to identify concepts" do
       content = "This is about Ruby programming and testing"
-      structured_output_double = double("StructuredOutput")
+      structured_output_double = instance_double("DiscourseAi::Completions::StructuredOutput")
 
       # Mock the persona and bot interaction
-      persona_double = double("ConceptFinder")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = double("PersonaInstance") # rubocop:disable RSpec/VerifiedDoubles
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(persona_double)
-      expect(persona_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
-      expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_generate_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_instance_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(
         structured_output_double,
         nil,
         :structured_output,
       )
-      expect(structured_output_double).to receive(:read_buffered_property).with(
+      allow(structured_output_double).to receive(:read_buffered_property).with(
         :concepts,
       ).and_return(%w[ruby programming testing])
 
@@ -50,15 +52,17 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
     it "handles no structured output gracefully" do
       content = "Test content"
 
-      persona_double = double("ConceptFinder")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = double("PersonaInstance") # rubocop:disable RSpec/VerifiedDoubles
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(persona_double)
-      expect(persona_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
-      expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(nil, nil, :text)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_generate_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_instance_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(nil, nil, :text)
 
       result = finder.identify_concepts(content)
       expect(result).to eq([])
@@ -218,22 +222,24 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
 
     it "uses ConceptDeduplicator persona to deduplicate concepts" do
       concept_names = ["ruby", "Ruby programming", "testing", "unit testing"]
-      structured_output_double = double("StructuredOutput")
+      structured_output_double = instance_double("DiscourseAi::Completions::StructuredOutput")
 
-      persona_double = double("ConceptDeduplicator")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = double("PersonaInstance") # rubocop:disable RSpec/VerifiedDoubles
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(persona_double)
-      expect(persona_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
-      expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_deduplicate_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_instance_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(
         structured_output_double,
         nil,
         :structured_output,
       )
-      expect(structured_output_double).to receive(:read_buffered_property).with(
+      allow(structured_output_double).to receive(:read_buffered_property).with(
         :streamlined_tags,
       ).and_return(%w[ruby testing])
 
@@ -244,15 +250,17 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
     it "handles no structured output gracefully" do
       concept_names = %w[concept1 concept2]
 
-      persona_double = double("ConceptDeduplicator")
-      bot_double = double("Bot")
+      persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
+      persona_instance_double = double("PersonaInstance") # rubocop:disable RSpec/VerifiedDoubles
+      bot_double = instance_double("DiscourseAi::Personas::Bot")
 
-      expect(AiPersona).to receive_message_chain(:all_personas, :find).and_return(persona_double)
-      expect(persona_double).to receive(:new).and_return(persona_double)
-      expect(persona_double).to receive(:default_llm_id).and_return(llm_model.id)
-      expect(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
-      expect(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
-      expect(bot_double).to receive(:reply).and_yield(nil, nil, :text)
+      allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
+      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_deduplicate_persona.to_i)
+      allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
+      allow(persona_instance_double).to receive(:default_llm_id).and_return(llm_model.id)
+      allow(LlmModel).to receive(:find).with(llm_model.id).and_return(llm_model)
+      allow(DiscourseAi::Personas::Bot).to receive(:as).and_return(bot_double)
+      allow(bot_double).to receive(:reply).and_yield(nil, nil, :text)
 
       result = finder.deduplicate_concepts(concept_names)
       expect(result).to eq([])

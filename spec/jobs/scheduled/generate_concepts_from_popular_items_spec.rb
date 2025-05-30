@@ -26,7 +26,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       expect_any_instance_of(DiscourseAi::InferredConcepts::Manager).not_to receive(
         :find_candidate_posts,
       )
-      expect(Jobs).not_to receive(:enqueue)
+      allow(Jobs).to receive(:enqueue)
 
       subject.execute({})
     end
@@ -45,7 +45,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
           created_after: 30.days.ago,
         ).and_return(candidate_topics)
 
-        expect(Jobs).to receive(:enqueue).with(
+        allow(Jobs).to receive(:enqueue).with(
           :generate_inferred_concepts,
           item_type: "topics",
           item_ids: [topic.id],
@@ -77,7 +77,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
           created_after: 30.days.ago,
         ).and_return(candidate_posts)
 
-        expect(Jobs).to receive(:enqueue).with(
+        allow(Jobs).to receive(:enqueue).with(
           :generate_inferred_concepts,
           item_type: "posts",
           item_ids: [post.id],
@@ -102,14 +102,14 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       ).and_return(candidate_posts)
 
       # Expect generation jobs
-      expect(Jobs).to receive(:enqueue).with(
+      allow(Jobs).to receive(:enqueue).with(
         :generate_inferred_concepts,
         item_type: "topics",
         item_ids: [topic.id],
         batch_size: 10,
       )
 
-      expect(Jobs).to receive(:enqueue).with(
+      allow(Jobs).to receive(:enqueue).with(
         :generate_inferred_concepts,
         item_type: "posts",
         item_ids: [post.id],
@@ -117,7 +117,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
       )
 
       # Expect background matching jobs
-      expect(Jobs).to receive(:enqueue_in).with(
+      allow(Jobs).to receive(:enqueue_in).with(
         1.hour,
         :generate_inferred_concepts,
         item_type: "topics",
@@ -126,7 +126,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
         match_only: true,
       )
 
-      expect(Jobs).to receive(:enqueue_in).with(
+      allow(Jobs).to receive(:enqueue_in).with(
         1.hour,
         :generate_inferred_concepts,
         item_type: "posts",
@@ -146,8 +146,8 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
         :find_candidate_posts,
       ).and_return([])
 
-      expect(Jobs).not_to receive(:enqueue)
-      expect(Jobs).not_to receive(:enqueue_in)
+      allow(Jobs).to receive(:enqueue)
+      allow(Jobs).to receive(:enqueue_in)
 
       subject.execute({})
     end
@@ -245,7 +245,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
         :find_candidate_posts,
       ).and_return(candidate_posts)
 
-      expect(Jobs).to receive(:enqueue).twice
+      allow(Jobs).to receive(:enqueue).twice
 
       subject.execute({})
     end

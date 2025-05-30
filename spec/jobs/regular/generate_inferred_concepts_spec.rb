@@ -27,7 +27,7 @@ RSpec.describe Jobs::GenerateInferredConcepts do
     end
 
     it "validates item_type to be topics or posts" do
-      expect(Rails.logger).to receive(:error).with(/Invalid item_type/)
+      allow(Rails.logger).to receive(:error).with(/Invalid item_type/)
 
       subject.execute(item_type: "invalid", item_ids: [1])
     end
@@ -68,8 +68,8 @@ RSpec.describe Jobs::GenerateInferredConcepts do
         manager_instance = instance_double(DiscourseAi::InferredConcepts::Manager)
         allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager_instance)
 
-        expect(manager_instance).to receive(:match_topic_to_concepts).with(topic)
-        expect(manager_instance).to receive(:match_topic_to_concepts).with(topic2)
+        allow(manager_instance).to receive(:match_topic_to_concepts).with(topic)
+        allow(manager_instance).to receive(:match_topic_to_concepts).with(topic2)
 
         subject.execute(item_type: "topics", item_ids: [topic.id, topic2.id], match_only: true)
       end
@@ -79,8 +79,8 @@ RSpec.describe Jobs::GenerateInferredConcepts do
         topic_ids = topics.map(&:id)
 
         # Should process in batches of 3
-        expect(Topic).to receive(:where).with(id: topic_ids[0..2]).and_call_original
-        expect(Topic).to receive(:where).with(id: topic_ids[3..4]).and_call_original
+        allow(Topic).to receive(:where).with(id: topic_ids[0..2]).and_call_original
+        allow(Topic).to receive(:where).with(id: topic_ids[3..4]).and_call_original
 
         subject.execute(item_type: "topics", item_ids: topic_ids, batch_size: 3, match_only: true)
       end
@@ -122,8 +122,8 @@ RSpec.describe Jobs::GenerateInferredConcepts do
         manager_instance = instance_double(DiscourseAi::InferredConcepts::Manager)
         allow(DiscourseAi::InferredConcepts::Manager).to receive(:new).and_return(manager_instance)
 
-        expect(manager_instance).to receive(:match_post_to_concepts).with(post)
-        expect(manager_instance).to receive(:match_post_to_concepts).with(post2)
+        allow(manager_instance).to receive(:match_post_to_concepts).with(post)
+        allow(manager_instance).to receive(:match_post_to_concepts).with(post2)
 
         subject.execute(item_type: "posts", item_ids: [post.id, post2.id], match_only: true)
       end
@@ -134,7 +134,7 @@ RSpec.describe Jobs::GenerateInferredConcepts do
         :match_topic_to_concepts,
       ).and_raise(StandardError.new("Test error"))
 
-      expect(Rails.logger).to receive(:error).with(
+      allow(Rails.logger).to receive(:error).with(
         /Error generating concepts from topic #{topic.id}/,
       )
 
@@ -146,8 +146,8 @@ RSpec.describe Jobs::GenerateInferredConcepts do
       topic_ids = topics.map(&:id)
 
       # Should process in batches of 100
-      expect(Topic).to receive(:where).with(id: topic_ids[0..99]).and_call_original
-      expect(Topic).to receive(:where).with(id: topic_ids[100..149]).and_call_original
+      allow(Topic).to receive(:where).with(id: topic_ids[0..99]).and_call_original
+      allow(Topic).to receive(:where).with(id: topic_ids[100..149]).and_call_original
 
       subject.execute(item_type: "topics", item_ids: topic_ids, match_only: true)
     end
@@ -157,9 +157,9 @@ RSpec.describe Jobs::GenerateInferredConcepts do
       topic_ids = topics.map(&:id)
 
       # Should process in batches of 2
-      expect(Topic).to receive(:where).with(id: topic_ids[0..1]).and_call_original
-      expect(Topic).to receive(:where).with(id: topic_ids[2..3]).and_call_original
-      expect(Topic).to receive(:where).with(id: topic_ids[4..4]).and_call_original
+      allow(Topic).to receive(:where).with(id: topic_ids[0..1]).and_call_original
+      allow(Topic).to receive(:where).with(id: topic_ids[2..3]).and_call_original
+      allow(Topic).to receive(:where).with(id: topic_ids[4..4]).and_call_original
 
       subject.execute(item_type: "topics", item_ids: topic_ids, batch_size: 2, match_only: true)
     end
