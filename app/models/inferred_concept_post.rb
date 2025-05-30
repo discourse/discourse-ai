@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class InferredConceptPost < ActiveRecord::Base
-  self.table_name = "inferred_concepts_posts"
-
   belongs_to :inferred_concept
   belongs_to :post
 
@@ -13,7 +11,7 @@ end
 
 # == Schema Information
 #
-# Table name: inferred_concepts_posts
+# Table name: inferred_concept_posts
 #
 #  inferred_concept_id :bigint
 #  post_id             :bigint
@@ -22,6 +20,6 @@ end
 #
 # Indexes
 #
-#  index_inferred_concepts_posts_on_inferred_concept_id  (inferred_concept_id)
-#  index_inferred_concepts_posts_uniqueness              (post_id,inferred_concept_id) UNIQUE
+#  index_inferred_concept_posts_on_inferred_concept_id  (inferred_concept_id)
+#  index_inferred_concept_posts_uniqueness              (post_id,inferred_concept_id) UNIQUE
 #

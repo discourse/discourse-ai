@@ -79,7 +79,7 @@ module DiscourseAi
         # Exclude topics that already have concepts
         topics_with_concepts = <<~SQL
           SELECT DISTINCT topic_id
-          FROM inferred_concepts_topics
+          FROM inferred_concept_topics
         SQL
 
         query = query.where("topics.id NOT IN (#{topics_with_concepts})")
@@ -129,7 +129,7 @@ module DiscourseAi
         # Exclude posts that already have concepts
         posts_with_concepts = <<~SQL
           SELECT DISTINCT post_id
-          FROM inferred_concepts_posts
+          FROM inferred_concept_posts
         SQL
 
         query = query.where("posts.id NOT IN (#{posts_with_concepts})")
