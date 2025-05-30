@@ -20,6 +20,6 @@ end
 #
 # Indexes
 #
-#  index_inferred_concepts_topic_on_inferred_concept_id  (inferred_concept_id)
-#  index_inferred_concepts_topic_uniqueness              (topic_id,inferred_concept_id) UNIQUE
+#  index_inferred_concept_topics_on_inferred_concept_id  (inferred_concept_id)
+#  index_inferred_concept_topics_uniqueness              (topic_id,inferred_concept_id) UNIQUE
 #
