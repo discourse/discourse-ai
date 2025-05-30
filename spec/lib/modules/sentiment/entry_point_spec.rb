@@ -55,8 +55,22 @@ RSpec.describe DiscourseAi::Sentiment::EntryPoint do
         sentiment_classification(pm, positive_classification)
 
         report = Report.find("overall_sentiment")
-        overall_sentiment = report.data[:data][0][:y].to_i
+        overall_sentiment = report.data[0][:data][0][:y].to_i
         expect(overall_sentiment).to eq(0)
+      end
+
+      it "exports the report without any errors" do
+        sentiment_classification(post_1, positive_classification)
+        sentiment_classification(post_2, negative_classification)
+        sentiment_classification(pm, positive_classification)
+
+        exporter = Jobs::ExportCsvFile.new
+        exporter.entity = "report"
+        exporter.extra = HashWithIndifferentAccess.new(name: "overall_sentiment")
+        exported_csv = []
+        exporter.report_export { |entry| exported_csv << entry }
+        expect(exported_csv[0]).to eq(["Day", "Overall sentiment (Positive - Negative)"])
+        expect(exported_csv[1]).to eq([post_1.created_at.to_date.to_s, "0"])
       end
     end
 
