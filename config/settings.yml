@@ -421,51 +421,51 @@ discourse_ai:
   inferred_concepts_enabled:
     default: false
     client: true
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_background_match:
     default: false
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_daily_topics_limit:
     default: 20
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_min_posts:
     default: 5
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_min_likes:
     default: 10
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_min_views:
     default: 100
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_lookback_days:
     default: 30
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_daily_posts_limit:
     default: 30
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_post_min_likes:
     default: 5
     client: false
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_generate_persona:
     default: "-15"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_match_persona:
     default: "-16"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
   inferred_concepts_deduplicate_persona:
     default: "-17"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/concepts"
+    area: "ai-features/inferred_concepts"
