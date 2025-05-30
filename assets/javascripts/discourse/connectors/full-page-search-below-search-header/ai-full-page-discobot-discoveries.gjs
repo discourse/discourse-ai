@@ -19,7 +19,9 @@ export default class AiFullPageDiscobotDiscoveries extends Component {
   @service site;
 
   get previewLength() {
-    if (!this.capabilities.viewport.md) {
+    // todo: replace with js breakpoint API
+    // https://github.com/discourse/discourse/pull/32060
+    if (this.site.mobileView || this.site.narrowDesktopView) {
       return 50;
     } else {
       return 10000;
