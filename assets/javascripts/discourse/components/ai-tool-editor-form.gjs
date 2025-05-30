@@ -34,8 +34,8 @@ export default class AiToolEditorForm extends Component {
         const mappedParameter = {
           ...parameter,
         };
-        parameter.isEnum = parameter.enum && parameter.enum.length > 0;
-        if (!parameter.isEnum) {
+        mappedParameter.isEnum = parameter.enum && parameter.enum.length > 0;
+        if (!mappedParameter.isEnum) {
           delete mappedParameter.enum;
         }
         return mappedParameter;
@@ -68,8 +68,19 @@ export default class AiToolEditorForm extends Component {
   async save(data) {
     this.isSaving = true;
 
+    // we injected a isEnum thing, we need to clean it up
+    const copiedData = JSON.parse(JSON.stringify(data));
+    if (copiedData.parameters) {
+      copiedData.parameters.forEach((parameter) => {
+        if (!parameter.isEnum) {
+          delete parameter.enum;
+        }
+        delete parameter.isEnum;
+      });
+    }
+
     try {
-      await this.args.model.save(data);
+      await this.args.model.save(copiedData);
 
       this.toasts.success({
         data: { message: i18n("discourse_ai.tools.saved") },
