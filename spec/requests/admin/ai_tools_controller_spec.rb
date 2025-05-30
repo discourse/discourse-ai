@@ -92,6 +92,40 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
         )
       end
     end
+
+    context "when enum validation fails" do
+      it "fails to create tool with empty enum" do
+        attrs = valid_attributes
+        attrs[:parameters] = [attrs[:parameters].first.merge(enum: [])]
+
+        expect {
+          post "/admin/plugins/discourse-ai/ai-tools.json",
+               params: { ai_tool: attrs }.to_json,
+               headers: {
+                 "CONTENT_TYPE" => "application/json",
+               }
+        }.not_to change(AiTool, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(match(/enum cannot be empty/))
+      end
+
+      it "fails to create tool with duplicate enum values" do
+        attrs = valid_attributes
+        attrs[:parameters] = [attrs[:parameters].first.merge(enum: %w[c f c])]
+
+        expect {
+          post "/admin/plugins/discourse-ai/ai-tools.json",
+               params: { ai_tool: attrs }.to_json,
+               headers: {
+                 "CONTENT_TYPE" => "application/json",
+               }
+        }.not_to change(AiTool, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(match(/enum values must be unique/))
+      end
+    end
   end
 
   describe "PUT #update" do
