@@ -675,4 +675,64 @@ RSpec.describe AiTool do
       expect(ai_persona.temperature).to eq(0.5)
     end
   end
+
+  describe "upload URL resolution" do
+    it "can resolve upload short URLs to public URLs" do
+      upload =
+        Fabricate(
+          :upload,
+          sha1: "abcdef1234567890abcdef1234567890abcdef12",
+          url: "/uploads/default/original/1X/test.jpg",
+          original_filename: "test.jpg",
+        )
+
+      script = <<~JS
+      function invoke(params) {
+        return upload.getUrl(params.short_url);
+      }
+    JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ "short_url" => upload.short_url }, llm: nil, bot_user: nil)
+
+      result = runner.invoke
+
+      expect(result).to eq(GlobalPath.full_cdn_url(upload.url))
+    end
+
+    it "returns null for invalid upload short URLs" do
+      script = <<~JS
+      function invoke(params) {
+        return upload.getUrl(params.short_url);
+      }
+    JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ "short_url" => "upload://invalid" }, llm: nil, bot_user: nil)
+
+      result = runner.invoke
+
+      expect(result).to be_nil
+    end
+
+    it "returns null for non-existent uploads" do
+      script = <<~JS
+      function invoke(params) {
+        return upload.getUrl(params.short_url);
+      }
+    JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { "short_url" => "upload://hwmUkTAL9mwhQuRMLsXw6tvDi5C.jpeg" },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result).to be_nil
+    end
+  end
 end

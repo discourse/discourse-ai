@@ -142,6 +142,7 @@ class AiTool < ActiveRecord::Base
      *      base_64_content (string): Base64 encoded content of the file.
      *    Returns: { id: number, url: string, short_url: string } - Details of the created upload record.
      *
+     *    upload.getUrl(shortUrl): Given a short URL, eg upload://12345, returns the full CDN friendly URL of the upload.
      * 5. chain
      *    Controls the execution flow.
      *

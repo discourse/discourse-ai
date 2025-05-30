@@ -72,6 +72,7 @@ module DiscourseAi
 
         const upload = {
           create: _upload_create,
+          getUrl: _upload_get_url,
         }
 
         const chain = {
@@ -570,6 +571,23 @@ module DiscourseAi
       end
 
       def attach_upload(mini_racer_context)
+        mini_racer_context.attach(
+          "_upload_get_url",
+          ->(short_url) do
+            in_attached_function do
+              return nil if short_url.blank?
+
+              sha1 = Upload.sha1_from_short_url(short_url)
+              return nil if sha1.blank?
+
+              upload = Upload.find_by(sha1: sha1)
+              return nil if upload.nil?
+              # TODO we may need to introduce an API to unsecure, secure uploads
+
+              GlobalPath.full_cdn_url(upload.url)
+            end
+          end,
+        )
         mini_racer_context.attach(
           "_upload_create",
           ->(filename, base_64_content) do
