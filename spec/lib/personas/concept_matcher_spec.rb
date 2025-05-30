@@ -56,7 +56,9 @@ RSpec.describe DiscourseAi::Personas::ConceptMatcher do
     it "defines correct response format" do
       format = persona.response_format
 
-      expect(format).to eq([{ "key" => "matching_concepts", "type" => "array" }])
+      expect(format).to eq(
+        [{ "array_type" => "string", "key" => "matching_concepts", "type" => "array" }],
+      )
     end
   end
 

@@ -55,7 +55,9 @@ RSpec.describe DiscourseAi::Personas::ConceptDeduplicator do
     it "defines correct response format" do
       format = persona.response_format
 
-      expect(format).to eq([{ "key" => "streamlined_tags", "type" => "array" }])
+      expect(format).to eq(
+        [{ "array_type" => "string", "key" => "streamlined_tags", "type" => "array" }],
+      )
     end
   end
 
