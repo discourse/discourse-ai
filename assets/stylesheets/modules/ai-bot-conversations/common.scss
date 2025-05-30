@@ -39,25 +39,22 @@ body.has-ai-conversations-sidebar {
         .sidebar-section-link.date-heading {
           pointer-events: none;
           cursor: default;
-          color: var(--primary-medium);
-          opacity: 0.8;
-          font-weight: 700;
+          color: var(--d-sidebar-header-color);
           margin-top: 1em;
-          font-size: var(--font-down-2);
+          font-weight: bold;
+          font-size: var(--font-down-2-rem);
+          text-transform: uppercase;
+          letter-spacing: 0.05rem;
         }
 
         .sidebar-section-link {
-          height: unset;
-          padding-block: 0.65em;
           font-size: var(--font-down-1);
-          letter-spacing: 0.35px;
-          border-radius: 0 var(--border-radius) var(--border-radius) 0;
 
           .sidebar-section-link-content-text {
             white-space: normal;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             overflow: hidden;
           }
         }
