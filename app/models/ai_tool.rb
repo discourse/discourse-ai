@@ -22,6 +22,8 @@ class AiTool < ActiveRecord::Base
               message: I18n.t("discourse_ai.tools.name.characters"),
             }
 
+  validate :validate_parameters_enum
+
   def signature
     {
       name: function_call_name,
@@ -54,6 +56,30 @@ class AiTool < ActiveRecord::Base
   def regenerate_rag_fragments
     if rag_chunk_tokens_changed? || rag_chunk_overlap_tokens_changed?
       RagDocumentFragment.where(target: self).delete_all
+    end
+  end
+
+  def validate_parameters_enum
+    return unless parameters.is_a?(Array)
+
+    parameters.each_with_index do |param, index|
+      next if !param.is_a?(Hash) || !param.key?("enum")
+      enum_values = param["enum"]
+
+      if enum_values.empty?
+        errors.add(
+          :parameters,
+          "Parameter '#{param["name"]}' at index #{index}: enum cannot be empty",
+        )
+        next
+      end
+
+      if enum_values.uniq.length != enum_values.length
+        errors.add(
+          :parameters,
+          "Parameter '#{param["name"]}' at index #{index}: enum values must be unique",
+        )
+      end
     end
   end
 

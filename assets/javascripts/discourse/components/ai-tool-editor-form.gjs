@@ -30,11 +30,16 @@ export default class AiToolEditorForm extends Component {
 
   get formData() {
     const parameters = (this.args.editingModel.parameters ?? []).map(
-      (parameter) => ({
-        ...parameter,
-        isEnum: !!parameter.enum?.length,
-        enum: (parameter.enum ??= []),
-      })
+      (parameter) => {
+        const mappedParameter = {
+          ...parameter,
+        };
+        parameter.isEnum = parameter.enum && parameter.enum.length > 0;
+        if (!parameter.isEnum) {
+          delete mappedParameter.enum;
+        }
+        return mappedParameter;
+      }
     );
 
     return {
