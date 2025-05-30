@@ -672,5 +672,87 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         expect(structured_output.read_buffered_property(:key)).to eq("Hello!\n There")
       end
     end
+
+    it "works with JSON schema array types" do
+      schema = {
+        type: "json_schema",
+        json_schema: {
+          name: "reply",
+          schema: {
+            type: "object",
+            properties: {
+              plain: {
+                type: "string",
+              },
+              key: {
+                type: "array",
+                items: {
+                  type: "string",
+                },
+              },
+            },
+            required: %w[plain key],
+            additionalProperties: false,
+          },
+          strict: true,
+        },
+      }
+
+      messages =
+        [
+          { type: "message_start", message: { usage: { input_tokens: 9 } } },
+          { type: "content_block_delta", delta: { text: "\"" } },
+          { type: "content_block_delta", delta: { text: "key" } },
+          { type: "content_block_delta", delta: { text: "\":" } },
+          { type: "content_block_delta", delta: { text: " [\"" } },
+          { type: "content_block_delta", delta: { text: "Hello!" } },
+          { type: "content_block_delta", delta: { text: " I am" } },
+          { type: "content_block_delta", delta: { text: " a " } },
+          { type: "content_block_delta", delta: { text: "chunk\"," } },
+          { type: "content_block_delta", delta: { text: "\"There" } },
+          { type: "content_block_delta", delta: { text: "\"]," } },
+          { type: "content_block_delta", delta: { text: " \"plain" } },
+          { type: "content_block_delta", delta: { text: "\":\"" } },
+          { type: "content_block_delta", delta: { text: "I'm here" } },
+          { type: "content_block_delta", delta: { text: " too\"}" } },
+          { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
+        ].map { |message| encode_message(message) }
+
+      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      request = nil
+      bedrock_mock.with_chunk_array_support do
+        stub_request(
+          :post,
+          "https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-sonnet-20240229-v1:0/invoke-with-response-stream",
+        )
+          .with do |inner_request|
+            request = inner_request
+            true
+          end
+          .to_return(status: 200, body: messages)
+
+        structured_output = nil
+        proxy.generate("hello world", response_format: schema, user: user) do |partial|
+          structured_output = partial
+        end
+
+        expected = {
+          "max_tokens" => 4096,
+          "anthropic_version" => "bedrock-2023-05-31",
+          "messages" => [
+            { "role" => "user", "content" => "hello world" },
+            { "role" => "assistant", "content" => "{" },
+          ],
+          "system" => "You are a helpful bot",
+        }
+        expect(JSON.parse(request.body)).to eq(expected)
+
+        expect(structured_output.read_buffered_property(:key)).to contain_exactly(
+          "Hello! I am a chunk",
+          "There",
+        )
+        expect(structured_output.read_buffered_property(:plain)).to eq("I'm here too")
+      end
+    end
   end
 end

@@ -23,9 +23,19 @@ export default class AiPersonaResponseFormatEditor extends Component {
         },
         type: {
           type: "string",
+          enum: ["string", "integer", "boolean", "array"],
+        },
+        array_type: {
+          type: "string",
           enum: ["string", "integer", "boolean"],
+          options: {
+            dependencies: {
+              type: "array",
+            },
+          },
         },
       },
+      required: ["key", "type"],
     },
   };
 
@@ -41,7 +51,11 @@ export default class AiPersonaResponseFormatEditor extends Component {
     const toDisplay = {};
 
     this.args.data.response_format.forEach((keyDesc) => {
-      toDisplay[keyDesc.key] = keyDesc.type;
+      if (keyDesc.type === "array") {
+        toDisplay[keyDesc.key] = `[${keyDesc.array_type}]`;
+      } else {
+        toDisplay[keyDesc.key] = keyDesc.type;
+      }
     });
 
     return prettyJSON(toDisplay);

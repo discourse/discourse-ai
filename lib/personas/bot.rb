@@ -152,10 +152,12 @@ module DiscourseAi
                       raw_context << partial
                       current_thinking << partial
                     end
-                  elsif partial.is_a?(DiscourseAi::Completions::StructuredOutput)
-                    update_blk.call(partial, nil, :structured_output)
-                  else
-                    update_blk.call(partial)
+                  elsif update_blk.present?
+                    if partial.is_a?(DiscourseAi::Completions::StructuredOutput)
+                      update_blk.call(partial, nil, :structured_output)
+                    else
+                      update_blk.call(partial)
+                    end
                   end
                 end
               end
@@ -316,7 +318,13 @@ module DiscourseAi
           response_format
             .to_a
             .reduce({}) do |memo, format|
-              memo[format["key"].to_sym] = { type: format["type"] }
+              type_desc = { type: format["type"] }
+
+              if format["type"] == "array"
+                type_desc[:items] = { type: format["array_type"] || "string" }
+              end
+
+              memo[format["key"].to_sym] = type_desc
               memo
             end
 

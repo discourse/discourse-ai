@@ -36,6 +36,14 @@ module DiscourseAi
           persona_setting_name: "ai_discord_search_persona",
           enable_setting_name: "ai_discord_search_enabled",
         },
+        {
+          id: 5,
+          name_ref: "inferred_concepts",
+          name_key: "discourse_ai.features.inferred_concepts.name",
+          description_key: "discourse_ai.features.inferred_concepts.description",
+          persona_setting_name: "inferred_concepts_generate_persona",
+          enable_setting_name: "inferred_concepts_enabled",
+        },
       ]
     end
 
