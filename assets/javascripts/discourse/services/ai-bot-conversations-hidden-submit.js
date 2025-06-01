@@ -22,6 +22,8 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   inputValue = "";
 
+  const starttime = process.hrtime.bigint();
+	
   @action
   focusInput() {
     this.composer.destroyDraft();
@@ -55,7 +57,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     }
 
     this.loading = true;
-    const title = i18n("discourse_ai.ai_bot.default_pm_prefix");
+    const title = i18n("discourse_ai.ai_bot.default_pm_prefix")+" - "+starttime;
 
     // Prepare the raw content with any uploads appended
     let rawContent = this.inputValue;
