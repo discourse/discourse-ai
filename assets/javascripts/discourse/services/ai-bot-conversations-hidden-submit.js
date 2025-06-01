@@ -81,7 +81,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
           //meta_data: { ai_persona_id: this.personaId },
 	create_as_post_voting: true,
 	wiki: true,
-          category: 1,
+          //category: 1,
         },
       });
 
