@@ -76,8 +76,8 @@ export default class AiBotConversationsHiddenSubmit extends Service {
         data: {
           raw: rawContent,
           title,
-          archetype: "private_message",
-          target_recipients: this.targetUsername,
+          //archetype: "private_message",
+          //target_recipients: this.targetUsername,
           meta_data: { ai_persona_id: this.personaId },
         },
       });
