@@ -79,9 +79,9 @@ export default class AiBotConversationsHiddenSubmit extends Service {
           //archetype: "private_message",
           //target_recipients: this.targetUsername,
           //meta_data: { ai_persona_id: this.personaId },
-			    create_as_post_voting: true,
-			    wiki: true,
-          category: 0,
+	create_as_post_voting: true,
+	wiki: true,
+          //category: 0,
         },
       });
 
