@@ -146,7 +146,7 @@ module DiscourseAi
 
           formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
 
-          if this.context.cancel_manager&.cancelled?
+          if context.cancel_manager&.cancelled?
             {
               dry_run: false,
               goals: goals,
