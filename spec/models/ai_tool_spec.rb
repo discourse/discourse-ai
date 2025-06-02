@@ -676,6 +676,26 @@ RSpec.describe AiTool do
     end
   end
 
+  it "can use sleep function with limits" do
+    script = <<~JS
+      function invoke(params) {
+        let results = [];
+        for (let i = 0; i < 3; i++) {
+          let result = sleep(1); // 1ms sleep
+          results.push(result);
+        }
+        return results;
+      }
+    JS
+
+    tool = create_tool(script: script)
+    runner = tool.runner({}, llm: nil, bot_user: nil)
+
+    result = runner.invoke
+
+    expect(result).to eq([{ "slept" => 1 }, { "slept" => 1 }, { "slept" => 1 }])
+  end
+
   describe "upload URL resolution" do
     it "can resolve upload short URLs to public URLs" do
       upload =
