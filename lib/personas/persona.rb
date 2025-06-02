@@ -52,6 +52,9 @@ module DiscourseAi
             ShortSummarizer => -12,
             Designer => -13,
             ForumResearcher => -14,
+            ConceptFinder => -15,
+            ConceptMatcher => -16,
+            ConceptDeduplicator => -17,
           }
         end
 

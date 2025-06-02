@@ -330,6 +330,15 @@ en:
         short_summarizer:
           name: "Summarizer (short form)"
           description: "Default persona used to power AI short summaries for topic lists' items"
+        concept_finder:
+          name: "Concept Finder"
+          description: "AI Bot specialized in identifying concepts and themes in content"
+        concept_matcher:
+          name: "Concept Matcher"
+          description: "AI Bot specialized in matching content against existing concepts"
+        concept_deduplicator:
+          name: "Concept Deduplicator"
+          description: "AI Bot specialized in deduplicating concepts"
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -549,6 +558,9 @@ en:
       discord_search:
         name: "Discord Search"
         description: "Adds the ability to search Discord channels"
+      inferred_concepts:
+        name: "Inferred Concepts"
+        description: "Classifies topics and posts into areas of interest / labels."
 
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."

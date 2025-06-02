@@ -7,7 +7,7 @@ module DiscourseAi
         @persona =
           AiPersona
             .all_personas(enabled_only: false)
-            .find { |persona| persona.id == SiteSetting.ai_discord_search_persona.to_i }
+            .find { |p| p.id == SiteSetting.ai_discord_search_persona.to_i }
             .new
         @bot =
           DiscourseAi::Personas::Bot.as(

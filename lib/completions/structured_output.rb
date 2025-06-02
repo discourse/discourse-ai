@@ -45,7 +45,7 @@ module DiscourseAi
           @property_cursors[prop_name] = @tracked[prop_name].length
           unread
         else
-          # Ints and bools are always returned as is.
+          # Ints and bools, and arrays are always returned as is.
           @tracked[prop_name]
         end
       end
