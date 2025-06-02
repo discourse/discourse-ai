@@ -15,7 +15,7 @@ module ::Jobs
 
         bot = DiscourseAi::Personas::Bot.as(bot_user, persona: persona.new)
 
-        DiscourseAi::AiBot::Playground.new(bot).reply_to(post)
+        DiscourseAi::AiBot::Playground.new(bot).reply_to(post, feature_name: "bot")
       rescue DiscourseAi::Personas::Bot::BOT_NOT_FOUND
         Rails.logger.warn(
           "Bot not found for post #{post.id} - perhaps persona was deleted or bot was disabled",
