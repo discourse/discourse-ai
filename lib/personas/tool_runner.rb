@@ -13,6 +13,9 @@ module DiscourseAi
       MARSHAL_STACK_DEPTH = 20
       MAX_HTTP_REQUESTS = 20
 
+      MAX_SLEEP_CALLS = 30
+      MAX_SLEEP_DURATION_MS = 60_000
+
       def initialize(parameters:, llm:, bot_user:, context: nil, tool:, timeout: nil)
         if context && !context.is_a?(DiscourseAi::Personas::BotContext)
           raise ArgumentError, "context must be a BotContext object"
@@ -29,6 +32,8 @@ module DiscourseAi
         @running_attached_function = false
 
         @http_requests_made = 0
+        @sleep_calls_made = 0
+        @http_requests_made = 0
       end
 
       def mini_racer_context
@@ -44,6 +49,7 @@ module DiscourseAi
             attach_index(ctx)
             attach_upload(ctx)
             attach_chain(ctx)
+            attach_sleep(ctx)
             attach_discourse(ctx)
             ctx.eval(framework_script)
             ctx
@@ -308,6 +314,33 @@ module DiscourseAi
 
       def attach_chain(mini_racer_context)
         mini_racer_context.attach("_chain_set_custom_raw", ->(raw) { self.custom_raw = raw })
+      end
+
+      # this is useful for polling apis
+      def attach_sleep(mini_racer_context)
+        mini_racer_context.attach(
+          "sleep",
+          ->(duration_ms) do
+            @sleep_calls_made += 1
+            if @sleep_calls_made > MAX_SLEEP_CALLS
+              raise TooManyRequestsError.new("Tool made too many sleep calls")
+            end
+
+            duration_ms = duration_ms.to_i
+            if duration_ms > MAX_SLEEP_DURATION_MS
+              raise ArgumentError.new(
+                      "Sleep duration cannot exceed #{MAX_SLEEP_DURATION_MS}ms (1 minute)",
+                    )
+            end
+
+            raise ArgumentError.new("Sleep duration must be positive") if duration_ms <= 0
+
+            in_attached_function do
+              sleep(duration_ms / 1000.0)
+              { slept: duration_ms }
+            end
+          end,
+        )
       end
 
       def attach_discourse(mini_racer_context)
