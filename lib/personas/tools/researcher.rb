@@ -145,10 +145,23 @@ module DiscourseAi
           results = []
 
           formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
-          { dry_run: false, goals: goals, filter: @filter, results: results }
+
+          if this.context.cancel_manager&.cancelled?
+            {
+              dry_run: false,
+              goals: goals,
+              filter: @filter,
+              results: "Cancelled by user",
+              cancelled_by_user: true,
+            }
+          else
+            { dry_run: false, goals: goals, filter: @filter, results: results }
+          end
         end
 
         def run_inference(chunk_text, goals, post, &blk)
+          return if context.cancel_manager&.cancelled?
+
           system_prompt = goal_system_prompt(goals)
           user_prompt = goal_user_prompt(goals, chunk_text)
 
