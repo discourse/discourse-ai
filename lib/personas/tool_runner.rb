@@ -730,6 +730,7 @@ module DiscourseAi
                 in_attached_function do
                   headers = (options && options["headers"]) || {}
                   body = options && options["body"]
+                  base64_encode = options && options["base64Encode"]
 
                   result = {}
                   DiscourseAi::Personas::Tools::Tool.send_http_request(
@@ -738,7 +739,11 @@ module DiscourseAi
                     headers: headers,
                     body: body,
                   ) do |response|
-                    result[:body] = response.body
+                    if base64_encode
+                      result[:body] = Base64.strict_encode64(response.body)
+                    else
+                      result[:body] = response.body
+                    end
                     result[:status] = response.code.to_i
                   end
 
