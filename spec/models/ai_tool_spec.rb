@@ -75,6 +75,37 @@ RSpec.describe AiTool do
     expect(Base64.strict_decode64(result).bytes).to eq((0..255).to_a)
   end
 
+  it "can base64 encode binary GET responses" do
+    # Create binary data with all possible byte values (0-255)
+    binary_data = (0..255).map(&:chr).join
+    expected_base64 = Base64.strict_encode64(binary_data)
+
+    script = <<~JS
+      function invoke(params) {
+        const result = http.get("https://example.com/binary", {
+          base64Encode: true
+        });
+        return result.body;
+      }
+    JS
+
+    tool = create_tool(script: script)
+    runner = tool.runner({}, llm: nil, bot_user: nil)
+
+    stub_request(:get, "https://example.com/binary").to_return(
+      status: 200,
+      body: binary_data,
+      headers: {
+      },
+    )
+
+    result = runner.invoke
+
+    expect(result).to eq(expected_base64)
+    # Verify we can decode back to original binary data
+    expect(Base64.strict_decode64(result).bytes).to eq((0..255).to_a)
+  end
+
   it "can perform HTTP requests with various verbs" do
     %i[post put delete patch].each do |verb|
       script = <<~JS
