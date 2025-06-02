@@ -21,7 +21,11 @@ export default class AiBotConversationsHiddenSubmit extends Service {
   uploads = [];
 
   inputValue = "";
-
+	
+  get olusturmazamani() {
+    return moment(`${this.date} ${this.time}`, "YYYY-MM-DD HH:mm:ss");
+  }
+	
   @action
   focusInput() {
     this.composer.destroyDraft();
@@ -55,7 +59,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     }
 
     this.loading = true;
-    const title = i18n("discourse_ai.ai_bot.default_pm_prefix")+" - "+current_timestamp;
+    const title = i18n("discourse_ai.ai_bot.default_pm_prefix")+" - "+olusturmazamani;
 
     // Prepare the raw content with any uploads appended
     let rawContent = this.inputValue;
