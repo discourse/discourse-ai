@@ -696,6 +696,67 @@ RSpec.describe AiTool do
     expect(result).to eq([{ "slept" => 1 }, { "slept" => 1 }, { "slept" => 1 }])
   end
 
+  let(:jpg) { plugin_file_from_fixtures("1x1.jpg") }
+
+  describe "upload base64 encoding" do
+    it "can get base64 data from upload ID and short URL" do
+      upload = UploadCreator.new(jpg, "1x1.jpg").create_for(Discourse.system_user.id)
+
+      # Test with upload ID
+      script_id = <<~JS
+        function invoke(params) {
+          return upload.getBase64(params.upload_id, params.max_pixels);
+        }
+      JS
+
+      tool = create_tool(script: script_id)
+      runner =
+        tool.runner(
+          { "upload_id" => upload.id, "max_pixels" => 1_000_000 },
+          llm: nil,
+          bot_user: nil,
+        )
+      result_id = runner.invoke
+
+      expect(result_id).to be_present
+      expect(result_id).to be_a(String)
+      expect(result_id.length).to be > 0
+
+      # Test with short URL
+      script_url = <<~JS
+        function invoke(params) {
+          return upload.getBase64(params.short_url, params.max_pixels);
+        }
+      JS
+
+      tool = create_tool(script: script_url)
+      runner =
+        tool.runner(
+          { "short_url" => upload.short_url, "max_pixels" => 1_000_000 },
+          llm: nil,
+          bot_user: nil,
+        )
+      result_url = runner.invoke
+
+      expect(result_url).to be_present
+      expect(result_url).to be_a(String)
+      expect(result_url).to eq(result_id) # Should return same base64 data
+
+      # Test with invalid upload ID
+      script_invalid = <<~JS
+        function invoke(params) {
+          return upload.getBase64(99999);
+        }
+      JS
+
+      tool = create_tool(script: script_invalid)
+      runner = tool.runner({}, llm: nil, bot_user: nil)
+      result_invalid = runner.invoke
+
+      expect(result_invalid).to be_nil
+    end
+  end
+
   describe "upload URL resolution" do
     it "can resolve upload short URLs to public URLs" do
       upload =

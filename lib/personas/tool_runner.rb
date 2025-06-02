@@ -79,6 +79,9 @@ module DiscourseAi
         const upload = {
           create: _upload_create,
           getUrl: _upload_get_url,
+          getBase64: function(id, maxPixels) {
+            return _upload_get_base64(id, maxPixels);
+          }
         }
 
         const chain = {
@@ -604,6 +607,42 @@ module DiscourseAi
       end
 
       def attach_upload(mini_racer_context)
+        mini_racer_context.attach(
+          "_upload_get_base64",
+          ->(upload_id_or_url, max_pixels) do
+            in_attached_function do
+              return nil if upload_id_or_url.blank?
+
+              upload = nil
+
+              # Handle both upload ID and short URL
+              if upload_id_or_url.to_s.start_with?("upload://")
+                # Handle short URL format
+                sha1 = Upload.sha1_from_short_url(upload_id_or_url)
+                return nil if sha1.blank?
+                upload = Upload.find_by(sha1: sha1)
+              else
+                # Handle numeric ID
+                upload_id = upload_id_or_url.to_i
+                return nil if upload_id <= 0
+                upload = Upload.find_by(id: upload_id)
+              end
+
+              return nil if upload.nil?
+
+              max_pixels = max_pixels&.to_i
+              max_pixels = nil if max_pixels && max_pixels <= 0
+
+              encoded_uploads =
+                DiscourseAi::Completions::UploadEncoder.encode(
+                  upload_ids: [upload.id],
+                  max_pixels: max_pixels || 10_000_000, # Default to 10M pixels if not specified
+                )
+
+              encoded_uploads.first&.dig(:base64)
+            end
+          end,
+        )
         mini_racer_context.attach(
           "_upload_get_url",
           ->(short_url) do
