@@ -33,19 +33,24 @@ module DiscourseAi
             <<~TEXT
               Filter string to target specific content.
               - Supports user (@username)
+              - post_type:first - only includes first posts in topics
+              - post_type:reply - only replies in topics
               - date ranges (after:YYYY-MM-DD, before:YYYY-MM-DD for posts; topic_after:YYYY-MM-DD, topic_before:YYYY-MM-DD for topics)
-              - categories (category:category1,category2)
-              - tags (tag:tag1,tag2)
-              - groups (group:group1,group2).
+              - categories (category:category1,category2 or categories:category1,category2)
+              - tags (tag:tag1,tag2 or tags:tag1,tag2)
+              - groups (group:group1,group2 or groups:group1,group2)
               - status (status:open, status:closed, status:archived, status:noreplies, status:single_user)
-              - keywords (keywords:keyword1,keyword2) - specific words to search for in posts
-              - max_results (max_results:10) the maximum number of results to return (optional)
-              - order (order:latest, order:oldest, order:latest_topic, order:oldest_topic) - the order of the results (optional)
-              - topic (topic:topic_id1,topic_id2) - add specific topics to the filter, topics will unconditionally be included
+              - keywords (keywords:keyword1,keyword2) - searches for specific words within post content using full-text search
+              - topic_keywords (topic_keywords:keyword1,keyword2) - searches for keywords within topics, returns all posts from matching topics
+              - topics (topic:topic_id1,topic_id2 or topics:topic_id1,topic_id2) - target specific topics by ID
+              - max_results (max_results:10) - limits the maximum number of results returned (optional)
+              - order (order:latest, order:oldest, order:latest_topic, order:oldest_topic, order:likes) - controls result ordering (optional, defaults to latest posts)
 
-              If multiple tags or categories are specified, they are treated as OR conditions.
+              Multiple filters can be combined with spaces for AND logic. Example: '@sam after:2023-01-01 tag:feature'
 
-              Multiple filters can be combined with spaces. Example: '@sam after:2023-01-01 tag:feature'
+              Use OR to combine filter segments for inclusive logic.
+              Example: 'category:feature,bug OR tag:feature-tag' - includes posts in feature OR bug categories, OR posts with feature-tag tag
+              Example: '@sam category:bug' - includes posts by @sam AND in bug category
             TEXT
           end
 
@@ -145,10 +150,23 @@ module DiscourseAi
           results = []
 
           formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
-          { dry_run: false, goals: goals, filter: @filter, results: results }
+
+          if context.cancel_manager&.cancelled?
+            {
+              dry_run: false,
+              goals: goals,
+              filter: @filter,
+              results: "Cancelled by user",
+              cancelled_by_user: true,
+            }
+          else
+            { dry_run: false, goals: goals, filter: @filter, results: results }
+          end
         end
 
         def run_inference(chunk_text, goals, post, &blk)
+          return if context.cancel_manager&.cancelled?
+
           system_prompt = goal_system_prompt(goals)
           user_prompt = goal_user_prompt(goals, chunk_text)
 

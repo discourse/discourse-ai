@@ -4,7 +4,6 @@ module DiscourseAi
   module Utils
     module Research
       class Filter
-        # Stores custom filter handlers
         def self.register_filter(matcher, &block)
           (@registered_filters ||= {})[matcher] = block
         end
@@ -19,7 +18,6 @@ module DiscourseAi
 
         attr_reader :term, :filters, :order, :guardian, :limit, :offset, :invalid_filters
 
-        # Define all filters at class level
         register_filter(/\Astatus:open\z/i) do |relation, _, _|
           relation.where("topics.closed = false AND topics.archived = false")
         end
@@ -109,6 +107,30 @@ module DiscourseAi
           end
         end
 
+        register_filter(/\Atopic_keywords?:(.*)\z/i) do |relation, keywords_param, _|
+          if keywords_param.blank?
+            relation
+          else
+            keywords = keywords_param.split(",").map(&:strip).reject(&:blank?)
+            if keywords.empty?
+              relation
+            else
+              ts_query = keywords.map { |kw| kw.gsub(/['\\]/, " ") }.join(" | ")
+
+              relation.where(
+                "posts.topic_id IN (
+                  SELECT posts2.topic_id
+                  FROM posts posts2
+                  JOIN post_search_data ON post_search_data.post_id = posts2.id
+                  WHERE post_search_data.search_data @@ to_tsquery(?, ?)
+                )",
+                ::Search.ts_config,
+                ts_query,
+              )
+            end
+          end
+        end
+
         register_filter(/\A(?:categories?|category):(.*)\z/i) do |relation, category_param, _|
           if category_param.include?(",")
             category_names = category_param.split(",").map(&:strip)
@@ -140,26 +162,36 @@ module DiscourseAi
           end
         end
 
-        register_filter(/\Ain:posted\z/i) do |relation, _, filter|
-          if filter.guardian.user
-            relation.where("posts.user_id = ?", filter.guardian.user.id)
-          else
-            relation.where("1 = 0") # No results if not logged in
-          end
-        end
+        register_filter(/\Agroups?:([a-zA-Z0-9_\-,]+)\z/i) do |relation, groups_param, filter|
+          if groups_param.include?(",")
+            group_names = groups_param.split(",").map(&:strip)
+            found_group_ids = []
+            group_names.each do |name|
+              group = Group.find_by("name ILIKE ?", name)
+              found_group_ids << group.id if group
+            end
 
-        register_filter(/\Agroup:([a-zA-Z0-9_\-]+)\z/i) do |relation, name, filter|
-          group = Group.find_by("name ILIKE ?", name)
-          if group
+            return relation.where("1 = 0") if found_group_ids.empty?
             relation.where(
               "posts.user_id IN (
-              SELECT gu.user_id FROM group_users gu
-              WHERE gu.group_id = ?
-            )",
-              group.id,
+                SELECT gu.user_id FROM group_users gu
+                WHERE gu.group_id IN (?)
+              )",
+              found_group_ids,
             )
           else
-            relation.where("1 = 0") # No results if group doesn't exist
+            group = Group.find_by("name ILIKE ?", groups_param)
+            if group
+              relation.where(
+                "posts.user_id IN (
+                SELECT gu.user_id FROM group_users gu
+                WHERE gu.group_id = ?
+              )",
+                group.id,
+              )
+            else
+              relation.where("1 = 0") # No results if group doesn't exist
+            end
           end
         end
 
@@ -188,20 +220,33 @@ module DiscourseAi
           relation
         end
 
+        register_filter(/\Aorder:likes\z/i) do |relation, order_str, filter|
+          filter.set_order!(:likes)
+          relation
+        end
+
         register_filter(/\Atopics?:(.*)\z/i) do |relation, topic_param, filter|
           if topic_param.include?(",")
             topic_ids = topic_param.split(",").map(&:strip).map(&:to_i).reject(&:zero?)
             return relation.where("1 = 0") if topic_ids.empty?
-            filter.always_return_topic_ids!(topic_ids)
-            relation
+            relation.where("posts.topic_id IN (?)", topic_ids)
           else
             topic_id = topic_param.to_i
             if topic_id > 0
-              filter.always_return_topic_ids!([topic_id])
-              relation
+              relation.where("posts.topic_id = ?", topic_id)
             else
               relation.where("1 = 0") # No results if topic_id is invalid
             end
+          end
+        end
+
+        register_filter(/\Apost_type:(first|reply)\z/i) do |relation, post_type, _|
+          if post_type.downcase == "first"
+            relation.where("posts.post_number = 1")
+          elsif post_type.downcase == "reply"
+            relation.where("posts.post_number > 1")
+          else
+            relation
           end
         end
 
@@ -212,9 +257,9 @@ module DiscourseAi
           @filters = []
           @valid = true
           @order = :latest_post
-          @topic_ids = nil
           @invalid_filters = []
           @term = term.to_s.strip
+          @or_groups = []
 
           process_filters(@term)
         end
@@ -223,42 +268,38 @@ module DiscourseAi
           @order = order
         end
 
-        def always_return_topic_ids!(topic_ids)
-          if @topic_ids
-            @topic_ids = @topic_ids + topic_ids
-          else
-            @topic_ids = topic_ids
-          end
-        end
-
         def limit_by_user!(limit)
           @limit = limit if limit.to_i < @limit.to_i || @limit.nil?
         end
 
         def search
-          filtered =
+          base_relation =
             Post
               .secured(@guardian)
               .joins(:topic)
               .merge(Topic.secured(@guardian))
               .where("topics.archetype = 'regular'")
-          original_filtered = filtered
 
-          @filters.each do |filter_block, match_data|
-            filtered = filter_block.call(filtered, match_data, self)
+          # Handle OR groups
+          if @or_groups.any?
+            or_relations =
+              @or_groups.map do |or_group|
+                group_relation = base_relation
+                or_group.each do |filter_block, match_data|
+                  group_relation = filter_block.call(group_relation, match_data, self)
+                end
+                group_relation
+              end
+
+            # Combine OR groups
+            filtered = or_relations.reduce { |combined, current| combined.or(current) }
+          else
+            filtered = base_relation
           end
 
-          if @topic_ids.present?
-            if original_filtered == filtered
-              filtered = original_filtered.where("posts.topic_id IN (?)", @topic_ids)
-            else
-              filtered =
-                original_filtered.where(
-                  "posts.topic_id IN (?) OR posts.id IN (?)",
-                  @topic_ids,
-                  filtered.select("posts.id"),
-                )
-            end
+          # Apply regular AND filters
+          @filters.each do |filter_block, match_data|
+            filtered = filter_block.call(filtered, match_data, self)
           end
 
           filtered = filtered.limit(@limit) if @limit.to_i > 0
@@ -272,17 +313,36 @@ module DiscourseAi
             filtered = filtered.order("topics.created_at DESC, posts.post_number DESC")
           elsif @order == :oldest_topic
             filtered = filtered.order("topics.created_at ASC, posts.post_number ASC")
+          elsif @order == :likes
+            filtered = filtered.order("posts.like_count DESC, posts.created_at DESC")
           end
 
           filtered
         end
 
-        private
-
         def process_filters(term)
           return if term.blank?
 
-          term
+          # Split by OR first, then process each group
+          or_parts = term.split(/\s+OR\s+/i)
+
+          if or_parts.size > 1
+            # Multiple OR groups
+            or_parts.each do |or_part|
+              group_filters = []
+              process_filter_group(or_part.strip, group_filters)
+              @or_groups << group_filters if group_filters.any?
+            end
+          else
+            # Single group (AND logic)
+            process_filter_group(term, @filters)
+          end
+        end
+
+        private
+
+        def process_filter_group(term_part, filter_collection)
+          term_part
             .to_s
             .scan(/(([^" \t\n\x0B\f\r]+)?(("[^"]+")?))/)
             .to_a
@@ -292,7 +352,7 @@ module DiscourseAi
               found = false
               self.class.registered_filters.each do |matcher, block|
                 if word =~ matcher
-                  @filters << [block, $1]
+                  filter_collection << [block, $1]
                   found = true
                   break
                 end

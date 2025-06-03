@@ -8,12 +8,16 @@ describe DiscourseAi::Utils::Research::Filter do
     end
 
     fab!(:user)
+    fab!(:user2) { Fabricate(:user) }
 
     fab!(:feature_tag) { Fabricate(:tag, name: "feature") }
     fab!(:bug_tag) { Fabricate(:tag, name: "bug") }
 
     fab!(:announcement_category) { Fabricate(:category, name: "Announcements") }
     fab!(:feedback_category) { Fabricate(:category, name: "Feedback") }
+
+    fab!(:group1) { Fabricate(:group, name: "group1") }
+    fab!(:group2) { Fabricate(:group, name: "group2") }
 
     fab!(:feature_topic) do
       Fabricate(
@@ -53,6 +57,32 @@ describe DiscourseAi::Utils::Research::Filter do
     fab!(:bug_post) { Fabricate(:post, topic: bug_topic, user: user) }
     fab!(:feature_bug_post) { Fabricate(:post, topic: feature_bug_topic, user: user) }
     fab!(:no_tag_post) { Fabricate(:post, topic: no_tag_topic, user: user) }
+
+    describe "group filtering" do
+      before do
+        group1.add(user)
+        group2.add(user2)
+      end
+
+      it "supports filtering by groups" do
+        no_tag_post.update!(user_id: user2.id)
+
+        filter = described_class.new("group:group1")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          feature_post.id,
+          bug_post.id,
+          feature_bug_post.id,
+        )
+
+        filter = described_class.new("groups:group1,group2")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          feature_post.id,
+          bug_post.id,
+          feature_bug_post.id,
+          no_tag_post.id,
+        )
+      end
+    end
 
     describe "security filtering" do
       fab!(:secure_group) { Fabricate(:group) }
@@ -122,7 +152,7 @@ describe DiscourseAi::Utils::Research::Filter do
         # it can tack on topics
         filter =
           described_class.new(
-            "category:Announcements topic:#{feature_bug_post.topic.id},#{no_tag_post.topic.id}",
+            "category:Announcements OR topic:#{feature_bug_post.topic.id},#{no_tag_post.topic.id}",
           )
         expect(filter.search.pluck(:id)).to contain_exactly(
           feature_post.id,
@@ -173,6 +203,25 @@ describe DiscourseAi::Utils::Research::Filter do
 
       fab!(:post_with_none) do
         Fabricate(:post, raw: "No fruits here", topic: no_tag_topic, user: user)
+      end
+
+      fab!(:reply_on_bananas) do
+        Fabricate(:post, raw: "Just a reply", topic: post_with_bananas.topic, user: user)
+      end
+
+      it "correctly filters posts by topic_keywords" do
+        topic1 = post_with_bananas.topic
+        topic2 = post_with_both.topic
+
+        filter = described_class.new("topic_keywords:banana")
+        expected = topic1.posts.pluck(:id) + topic2.posts.pluck(:id)
+        expect(filter.search.pluck(:id)).to contain_exactly(*expected)
+
+        filter = described_class.new("topic_keywords:banana post_type:first")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          topic1.posts.order(:post_number).first.id,
+          topic2.posts.order(:post_number).first.id,
+        )
       end
 
       it "correctly filters posts by full text keywords" do
