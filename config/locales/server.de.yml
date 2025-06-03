@@ -59,6 +59,7 @@ de:
     ai_nsfw_flag_threshold_porn: "Schwellenwert, ab dem ein Bild, das als Porno eingestuft wird, als NSFW gilt."
     ai_nsfw_flag_threshold_sexy: "Schwellenwert, ab dem ein Bild, das als sexy eingestuft wird, als NSFW gilt."
     ai_nsfw_models: "Modelle, die für NSFW-Inferenz verwendet werden."
+    ai_spam_detection_enabled: "Aktiviere das KI-Spamerkennungsmodul"
     ai_openai_api_key: "API-Schlüssel für OpenAI-API. Wird NUR für Bilderstellung und -bearbeitung verwendet. Für GPT verwende die Registerkarte für die LLM-Konfiguration"
     ai_openai_image_generation_url: "URL für die OpenAI-Bilderstellungs-API"
     ai_openai_image_edit_url: "URL für die OpenAI-Bildbearbeitungs-API"
@@ -265,6 +266,7 @@ de:
       invalid_error_type: "Ungültiger Fehlertyp angegeben"
       unexpected: "Ein unerwarteter Fehler ist aufgetreten"
       bot_user_update_failed: "Aktualisierung des Spam-Scan-Bot-Benutzers fehlgeschlagen"
+      configuration_missing: "Die Konfiguration der KI-Spamerkennung fehlt. Füge die Konfiguration in „Administration > Plug-ins > Discourse KI > Spam“ hinzu, bevor du sie aktivierst."
     ai_bot:
       reply_error: "Entschuldigung, es sieht so aus, als ob unser System beim Versuch, zu antworten, auf ein unerwartetes Problem gestoßen ist.\n\n[details='Fehlerdetails']\n%{details}\n[/details]"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
@@ -316,6 +318,15 @@ de:
         short_summarizer:
           name: "Zusammenfasser (Kurzform)"
           description: "Standard-Persona zur Erstellung von KI-Kurzzusammenfassungen für die Elemente der Themenlisten"
+        concept_finder:
+          name: "Konzept-Finder"
+          description: "KI-Bot spezialisiert auf die Identifizierung von Konzepten und Themen in Inhalten"
+        concept_matcher:
+          name: "Konzept-Verbinder"
+          description: "KI-Bot spezialisiert auf den Abgleich von Inhalten mit bestehenden Konzepten"
+        concept_deduplicator:
+          name: "Konzept-Deduplikator"
+          description: "KI-Bot spezialisiert auf das Entfernen von redundanten Daten in Konzepten"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
@@ -527,6 +538,9 @@ de:
       discord_search:
         name: "Discord-Suche"
         description: "Fügt die Möglichkeit hinzu, Discord-Kanäle zu durchsuchen"
+      inferred_concepts:
+        name: "Abgeleitete Konzepte"
+        description: "Ordnet Themen und Beiträge in Interessensgebiete / Labels."
     errors:
       quota_exceeded: "Du hast das Kontingent für dieses Modell überschritten. Bitte versuche es erneut in %{relative_time}."
       quota_required: "Du musst die maximale Anzahl an Token oder Verwendungen für dieses Modell angeben"
