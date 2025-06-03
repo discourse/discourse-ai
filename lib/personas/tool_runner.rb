@@ -31,7 +31,6 @@ module DiscourseAi
         @timeout = timeout || DEFAULT_TIMEOUT
         @running_attached_function = false
 
-        @http_requests_made = 0
         @sleep_calls_made = 0
         @http_requests_made = 0
       end
