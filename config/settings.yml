@@ -166,7 +166,7 @@ discourse_ai:
     default: "-22"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-  ai_helper_tittle_suggestions_persona:
+  ai_helper_title_suggestions_persona:
     default: "-23"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"

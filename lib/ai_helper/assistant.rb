@@ -307,7 +307,7 @@ module DiscourseAi
       def personas_prompt_map(include_image_caption: false)
         map = {
           SiteSetting.ai_helper_translator_persona.to_i => TRANSLATE,
-          SiteSetting.ai_helper_tittle_suggestions_persona.to_i => GENERATE_TITLES,
+          SiteSetting.ai_helper_title_suggestions_persona.to_i => GENERATE_TITLES,
           SiteSetting.ai_helper_proofreader_persona.to_i => PROOFREAD,
           SiteSetting.ai_helper_markdown_tables_persona.to_i => MARKDOWN_TABLE,
           SiteSetting.ai_helper_custom_prompt_persona.to_i => CUSTOM_PROMPT,
@@ -325,8 +325,6 @@ module DiscourseAi
       end
 
       def all_prompts
-        personas_and_prompts = personas_prompt_map
-
         AiPersona
           .where(id: personas_prompt_map.keys)
           .map do |ai_persona|
