@@ -319,7 +319,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       DiscourseAi::AiHelper::SemanticCategorizer.any_instance.stubs(:tags).returns(response)
 
       topic_page.visit_topic(topic)
-      page.find(".edit-topic").click
+      page.find(".edit-topic", visible: false).click
       page.find(".ai-tag-suggester-trigger").click
       tag1_css = ".ai-tag-suggester-content btn[data-name='#{video.name}']"
       tag2_css = ".ai-tag-suggester-content btn[data-name='#{music.name}']"
