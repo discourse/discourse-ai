@@ -374,6 +374,7 @@ discourse_ai:
 
   ai_spam_detection_enabled:
     default: false
+    validator: "DiscourseAi::Configuration::SpamDetectionValidator"
   ai_spam_detection_user_id:
     default: ""
     hidden: true
