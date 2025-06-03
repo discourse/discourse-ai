@@ -27,48 +27,6 @@ body.has-ai-conversations-sidebar {
     display: none;
   }
 
-  .sidebar-wrapper,
-  .hamburger-dropdown-wrapper {
-    // ai related sidebar content
-    [data-section-name="ai-conversations-history"] {
-      .sidebar-section-header-wrapper {
-        display: none;
-      }
-
-      .sidebar-section-link-wrapper {
-        .sidebar-section-link.date-heading {
-          pointer-events: none;
-          cursor: default;
-          color: var(--primary-medium);
-          opacity: 0.8;
-          font-weight: 700;
-          margin-top: 1em;
-          font-size: var(--font-down-2);
-        }
-
-        .sidebar-section-link {
-          height: unset;
-          padding-block: 0.65em;
-          font-size: var(--font-down-1);
-          letter-spacing: 0.35px;
-          border-radius: 0 var(--border-radius) var(--border-radius) 0;
-
-          .sidebar-section-link-content-text {
-            white-space: normal;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2;
-            overflow: hidden;
-          }
-        }
-      }
-
-      .sidebar-section-link-prefix {
-        align-self: start;
-      }
-    }
-  }
-
   // topic elements
   #topic-footer-button-share-and-invite,
   body:not(.staff) #topic-footer-button-archive,
