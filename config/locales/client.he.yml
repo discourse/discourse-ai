@@ -498,6 +498,7 @@ he:
           provider_order: "סדר ספקים (רשימה מופרדת בפסיקים)"
           provider_quantizations: "סדר כימות הספקים (רשימה מופרדת בפסיקים, למשל: fp16,fp8)"
           reasoning_effort: "מאמץ נימוק (תקף רק על מודלים של נימוק)"
+          enable_reasoning: "הפעלת נימוק (תקף רק על מודלים עם אפשרות נימוק)"
           enable_thinking: "הפעלת חשיבה (רק במודלים תקפים לדוגמה: flash 2.5)"
           reasoning_tokens: "כמות אסימונים המשמשים לנימוק"
       related_topics:
