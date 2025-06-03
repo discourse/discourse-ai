@@ -216,6 +216,13 @@ export default class AiConversationsSidebarManager extends Service {
     const now = Date.now();
     const fresh = [];
 
+    const todaySection = {
+      name: "today",
+      title: i18n("discourse_ai.ai_bot.conversations.today"),
+      links: new TrackedArray(),
+    };
+    fresh.push(todaySection);
+
     this.topics.forEach((t) => {
       const postedAtMs = new Date(t.last_posted_at || now).valueOf();
       const diffDays = Math.floor((now - postedAtMs) / 86400000);
@@ -233,13 +240,16 @@ export default class AiConversationsSidebarManager extends Service {
         dateGroup = key;
       }
 
-      let sec = fresh.find((s) => s.name === dateGroup);
+      let sec;
+      if (dateGroup === "today") {
+        sec = todaySection;
+      } else {
+        sec = fresh.find((s) => s.name === dateGroup);
+      }
+
       if (!sec) {
         let title;
         switch (dateGroup) {
-          case "today":
-            title = i18n("discourse_ai.ai_bot.conversations.today");
-            break;
           case "last-7-days":
             title = i18n("discourse_ai.ai_bot.conversations.last_7_days");
             break;
