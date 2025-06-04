@@ -144,6 +144,21 @@ describe DiscourseAi::Utils::Research::Filter do
       end
     end
 
+    describe "can find posts by users even with unicode usernames" do
+      before { SiteSetting.unicode_usernames = true }
+      let!(:unicode_user) { Fabricate(:user, username: "aאb") }
+
+      it "can filter by unicode usernames" do
+        post = Fabricate(:post, user: unicode_user, topic: feature_topic)
+        filter = described_class.new("username:aאb")
+        expect(filter.search.pluck(:id)).to contain_exactly(post.id)
+
+        filter = described_class.new("usernames:aאb,#{user.username}")
+        posts_ids = Post.where(user_id: [unicode_user.id, user.id]).pluck(:id)
+        expect(filter.search.pluck(:id)).to contain_exactly(*posts_ids)
+      end
+    end
+
     describe "category filtering" do
       it "correctly filters posts by categories" do
         filter = described_class.new("category:Announcements")

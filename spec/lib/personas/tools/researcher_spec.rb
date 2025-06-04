@@ -21,6 +21,54 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
 
   before { SiteSetting.ai_bot_enabled = true }
 
+  it "uses custom researcher_llm and applies token limits correctly" do
+    # Create a second LLM model to test the researcher_llm option
+    secondary_llm_model = Fabricate(:llm_model, name: "secondary_model")
+
+    # Create test content with long text to test token truncation
+    topic = Fabricate(:topic, category: category, tags: [tag_research])
+    long_content = "zz " * 100 # This will exceed our token limit
+    _test_post =
+      Fabricate(:post, topic: topic, raw: long_content, user: user, skip_validation: true)
+
+    prompts = nil
+    responses = [["Research completed"]]
+    researcher = nil
+
+    DiscourseAi::Completions::Llm.with_prepared_responses(
+      responses,
+      llm: secondary_llm_model,
+    ) do |_, _, _prompts|
+      researcher =
+        described_class.new(
+          { filter: "category:research-category", goals: "analyze test content", dry_run: false },
+          persona_options: {
+            "researcher_llm" => secondary_llm_model.id,
+            "max_tokens_per_post" => 50, # Very small to force truncation
+            "max_tokens_per_batch" => 8000,
+          },
+          bot_user: bot_user,
+          llm: nil,
+          context: DiscourseAi::Personas::BotContext.new(user: user, post: post),
+        )
+
+      results = researcher.invoke(&progress_blk)
+
+      expect(results[:dry_run]).to eq(false)
+      expect(results[:results]).to be_present
+
+      prompts = _prompts
+    end
+
+    expect(prompts).to be_present
+
+    user_message = prompts.first.messages.find { |m| m[:type] == :user }
+    expect(user_message[:content]).to be_present
+
+    # count how many times the the "zz " appears in the content (a bit of token magic, we lose a couple cause we redact)
+    expect(user_message[:content].scan("zz ").count).to eq(48)
+  end
+
   describe "#invoke" do
     it "can correctly filter to a topic id" do
       researcher =
