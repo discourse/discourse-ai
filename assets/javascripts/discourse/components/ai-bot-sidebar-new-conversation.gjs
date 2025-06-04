@@ -4,6 +4,8 @@ import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import { AI_CONVERSATIONS_PANEL } from "../services/ai-conversations-sidebar-manager";
 
+const TEXTAREA_ID = "ai-bot-conversations-input";
+
 export default class AiBotSidebarNewConversation extends Component {
   @service appEvents;
   @service router;
@@ -15,7 +17,7 @@ export default class AiBotSidebarNewConversation extends Component {
 
   @action
   focusTextarea() {
-    document.getElementById("ai-bot-conversations-input")?.focus();
+    document.getElementById(TEXTAREA_ID)?.focus();
   }
 
   @action
