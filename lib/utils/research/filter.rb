@@ -153,12 +153,12 @@ module DiscourseAi
           end
         end
 
-        register_filter(/\A\@(\w+)\z/i) do |relation, username, filter|
-          user = User.find_by(username_lower: username.downcase)
-          if user
-            relation.where("posts.user_id = ?", user.id)
+        register_filter(/\Ausernames?:(.+)\z/i) do |relation, username, filter|
+          user_ids = User.where(username_lower: username.split(",").map(&:downcase)).pluck(:id)
+          if user_ids.empty?
+            relation.where("1 = 0")
           else
-            relation.where("1 = 0") # No results if user doesn't exist
+            relation.where("posts.user_id IN (?)", user_ids)
           end
         end
 

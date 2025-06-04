@@ -344,6 +344,15 @@ en:
       searching: "Searching for: '%{query}'"
       tool_options:
         researcher:
+          researcher_llm:
+            name: "LLM"
+            description: "Language model to use for research (default to current persona's LLM)"
+          max_tokens_per_batch:
+            name: "Maximum tokens per batch"
+            description: "Maximum number of tokens to use for each batch in the research"
+          max_tokens_per_post:
+            name: "Maximum tokens per post"
+            description: "Maximum number of tokens to use for each post in the research"
           max_results:
             name: "Maximum number of results"
             description: "Maximum number of results to include in a filter"
