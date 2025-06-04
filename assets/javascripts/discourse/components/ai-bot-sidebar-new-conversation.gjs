@@ -14,12 +14,20 @@ export default class AiBotSidebarNewConversation extends Component {
   }
 
   @action
+  focusTextarea() {
+    document.getElementById("ai-bot-conversations-input")?.focus();
+  }
+
+  @action
   routeTo() {
     this.appEvents.trigger("discourse-ai:new-conversation-btn-clicked");
 
     if (this.router.currentRouteName !== "discourse-ai-bot-conversations") {
       this.router.transitionTo("/discourse-ai/ai-bot/conversations");
+    } else {
+      this.focusTextarea();
     }
+
     this.args.outletArgs?.toggleNavigationMenu?.();
   }
 
