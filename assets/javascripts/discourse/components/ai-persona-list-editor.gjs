@@ -1,13 +1,12 @@
 import Component from "@glimmer/component";
-import { fn } from "@ember/helper";
-import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
+import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
-import DToggleSwitch from "discourse/components/d-toggle-switch";
 import concatClass from "discourse/helpers/concat-class";
+import icon from "discourse/helpers/d-icon";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
@@ -61,17 +60,18 @@ export default class AiPersonaListEditor extends Component {
             <thead>
               <tr>
                 <th>{{i18n "discourse_ai.ai_persona.name"}}</th>
-                <th>{{i18n "discourse_ai.ai_persona.list.enabled"}}</th>
-                <th></th>
+                <th>{{i18n "discourse_ai.features.short_title"}}</th>
               </tr>
             </thead>
             <tbody>
               {{#each @personas as |persona|}}
+                {{log persona}}
                 <tr
                   data-persona-id={{persona.id}}
                   class={{concatClass
                     "ai-persona-list__row d-admin-row__content"
-                    (if persona.priority "priority")
+                    (if persona.priority "--priority")
+                    (if persona.enabled "--enabled")
                   }}
                 >
                   <td class="d-admin-row__overview">
@@ -79,6 +79,7 @@ export default class AiPersonaListEditor extends Component {
                       <div class="ai-persona-list__name">
                         <strong>
                           {{persona.name}}
+                          {{#if persona.enabled}}{{icon "check"}}{{/if}}
                         </strong>
                       </div>
                       <div class="ai-persona-list__description">
@@ -86,12 +87,20 @@ export default class AiPersonaListEditor extends Component {
                       </div>
                     </div>
                   </td>
-                  <td class="d-admin-row__detail">
-                    <DToggleSwitch
-                      @state={{persona.enabled}}
-                      {{on "click" (fn this.toggleEnabled persona)}}
-                    />
+
+                  <td class="d-admin-row__features">
+                    {{#each persona.features as |feature|}}
+                      {{log persona}}
+                      <DButton
+                        class="btn-flat btn-small ai-persona-list__row-item-feature"
+                        @translatedLabel={{feature.name}}
+                        @route="adminPlugins.show.discourse-ai-features.edit"
+                        @routeModels={{feature.id}}
+                      />
+                    {{/each}}
+
                   </td>
+
                   <td class="d-admin-row__controls">
                     <LinkTo
                       @route="adminPlugins.show.discourse-ai-personas.edit"

@@ -8,16 +8,25 @@ module DiscourseAi
       before_action :find_ai_persona, only: %i[edit update destroy create_user]
 
       def index
+        features_by_persona_id = DiscourseAi::Features.features.group_by { |f| f[:persona]&.id }
+
         ai_personas =
-          AiPersona.ordered.map do |persona|
-            # we use a special serializer here cause names and descriptions are
-            # localized for system personas
-            LocalizedAiPersonaSerializer.new(persona, root: false)
-          end
+          AiPersona
+            .ordered
+            .includes(:user, :uploads)
+            .map do |persona|
+              LocalizedAiPersonaSerializer.new(
+                persona,
+                root: false,
+                features_by_persona_id: features_by_persona_id,
+              )
+            end
+
         tools =
           DiscourseAi::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
+
         AiTool
           .where(enabled: true)
           .each do |tool|
@@ -31,10 +40,12 @@ module DiscourseAi
                 ),
             }
           end
+
         llms =
           DiscourseAi::Configuration::LlmEnumerator.values_for_serialization(
             allowed_seeded_llm_ids: SiteSetting.ai_bot_allowed_seeded_models_map,
           )
+
         render json: {
                  ai_personas: ai_personas,
                  meta: {

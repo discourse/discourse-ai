@@ -21,6 +21,31 @@
   li.disabled {
     opacity: 0.5;
   }
+
+  .ai-persona-list {
+    &__row-item-feature {
+      padding: 0;
+      margin-right: 0.5em;
+      text-align: left;
+    }
+
+    &__name {
+      .d-icon {
+        color: var(--success);
+        font-size: var(--font-down-1);
+      }
+    }
+
+    &__row {
+      &:hover {
+        background: transparent;
+      }
+
+      &__overview {
+        padding-left: var(--space-2);
+      }
+    }
+  }
 }
 
 .ai-persona-tool-option-editor {
