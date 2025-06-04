@@ -152,7 +152,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
       researcher =
         described_class.new(
           {
-            filter: "category:research-category @#{user.username}",
+            filter: "category:research-category username:#{user.username}",
             goals: "find relevant content",
             dry_run: false,
           },
@@ -177,7 +177,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Researcher do
 
       expect(results[:dry_run]).to eq(false)
       expect(results[:goals]).to eq("find relevant content")
-      expect(results[:filter]).to eq("category:research-category @#{user.username}")
+      expect(results[:filter]).to eq("category:research-category username:#{user.username}")
       expect(results[:results].first).to include("Found: Relevant content 1")
     end
   end
