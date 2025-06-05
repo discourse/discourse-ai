@@ -2,91 +2,107 @@
 
 module DiscourseAi
   module Features
-    def self.feature_config
+    def self.features_config
       [
         {
           id: 1,
-          name_ref: "summarization",
-          name_key: "discourse_ai.features.summarization.name",
-          description_key: "discourse_ai.features.summarization.description",
-          persona_setting_name: "ai_summarization_persona",
-          enable_setting_name: "ai_summarization_enabled",
+          module_name: "summarization",
+          module_enabled: "ai_summarization_enabled",
+          features: [
+            { name: "topic_summaries", persona_setting_name: "ai_summarization_persona" },
+            {
+              name: "gists",
+              persona_setting_name: "ai_summary_gists_persona",
+              enabled: "ai_summary_gists_enabled",
+            },
+          ],
         },
         {
           id: 2,
-          name_ref: "gists",
-          name_key: "discourse_ai.features.gists.name",
-          description_key: "discourse_ai.features.gists.description",
-          persona_setting_name: "ai_summary_gists_persona",
-          enable_setting_name: "ai_summary_gists_enabled",
+          module_name: "search",
+          module_enabled: "ai_bot_enabled",
+          features: [{ name: "discoveries", persona_setting_name: "ai_bot_discover_persona" }],
         },
         {
           id: 3,
-          name_ref: "discoveries",
-          name_key: "discourse_ai.features.discoveries.name",
-          description_key: "discourse_ai.features.discoveries.description",
-          persona_setting_name: "ai_bot_discover_persona",
-          enable_setting_name: "ai_bot_enabled",
+          module_name: "discord",
+          module_enabled: "ai_discord_search_enabled",
+          features: [{ name: "search", persona_setting_name: "ai_discord_search_persona" }],
         },
         {
           id: 4,
-          name_ref: "discord_search",
-          name_key: "discourse_ai.features.discord_search.name",
-          description_key: "discourse_ai.features.discord_search.description",
-          persona_setting_name: "ai_discord_search_persona",
-          enable_setting_name: "ai_discord_search_enabled",
+          module_name: "inference",
+          module_enabled: "inferred_concepts_enabled",
+          features: [
+            {
+              name: "generate_concepts",
+              persona_setting_name: "inferred_concepts_generate_persona",
+            },
+            { name: "match_concepts", persona_setting_name: "inferred_concepts_match_persona" },
+            {
+              name: "deduplicate_concepts",
+              persona_setting_name: "inferred_concepts_deduplicate_persona",
+            },
+          ],
         },
         {
           id: 5,
-          name_ref: "inferred_concepts",
-          name_key: "discourse_ai.features.inferred_concepts.name",
-          description_key: "discourse_ai.features.inferred_concepts.description",
-          persona_setting_name: "inferred_concepts_generate_persona",
-          enable_setting_name: "inferred_concepts_enabled",
+          module_name: "ai_helper",
+          module_enabled: "ai_helper_enabled",
+          features: [
+            { name: "proofread", persona_setting_name: "ai_helper_proofreader_persona" },
+            {
+              name: "title_suggestions",
+              persona_setting_name: "ai_helper_title_suggestions_persona",
+            },
+            { name: "explain", persona_setting_name: "ai_helper_explain_persona" },
+            { name: "illustrate_post", persona_setting_name: "ai_helper_post_illustrator_persona" },
+            { name: "smart_dates", persona_setting_name: "ai_helper_smart_dates_persona" },
+            { name: "translate", persona_setting_name: "ai_helper_translator_persona" },
+            { name: "markdown_tables", persona_setting_name: "ai_helper_markdown_tables_persona" },
+            { name: "custom_prompt", persona_setting_name: "ai_helper_custom_prompt_persona" },
+            { name: "image_caption", persona_setting_name: "ai_helper_image_caption_persona" },
+          ],
         },
       ]
     end
 
     def self.features
-      feature_config.map do |feature|
+      features_config.map do |a_module|
         {
-          id: feature[:id],
-          ref: feature[:name_ref],
-          name: I18n.t(feature[:name_key]),
-          description: I18n.t(feature[:description_key]),
-          persona: AiPersona.find_by(id: SiteSetting.get(feature[:persona_setting_name])),
-          persona_setting: {
-            name: feature[:persona_setting_name],
-            value: SiteSetting.get(feature[:persona_setting_name]),
-            type: SiteSetting.type_supervisor.get_type(feature[:persona_setting_name]),
-          },
-          enable_setting: {
-            name: feature[:enable_setting_name],
-            value: SiteSetting.get(feature[:enable_setting_name]),
-            type: SiteSetting.type_supervisor.get_type(feature[:enable_setting_name]),
-          },
+          id: a_module[:id],
+          module_name: a_module[:module_name],
+          module_enabled: SiteSetting.get(a_module[:module_enabled]),
+          features:
+            a_module[:features].map do |feature|
+              {
+                name: feature[:name],
+                persona: AiPersona.find_by(id: SiteSetting.get(feature[:persona_setting_name])),
+                enabled: feature[:enabled].present? ? SiteSetting.get(feature[:enabled]) : true,
+              }
+            end,
         }
       end
     end
 
-    def self.find_feature_by_id(id)
+    def self.find_module_by_id(id)
       lookup = features.index_by { |f| f[:id] }
       lookup[id]
     end
 
-    def self.find_feature_by_ref(name_ref)
-      lookup = features.index_by { |f| f[:ref] }
-      lookup[name_ref]
+    def self.find_module_by_name(module_name)
+      lookup = features.index_by { |f| f[:module] }
+      lookup[module_name]
     end
 
-    def self.find_feature_id_by_ref(name_ref)
-      find_feature_by_ref(name_ref)&.dig(:id)
+    def self.find_module_id_by_name(module_name)
+      find_module_by_name(module_name)&.dig(:id)
     end
 
-    def self.feature_area(name_ref)
-      name_ref = name_ref.to_s if name_ref.is_a?(Symbol)
-      find_feature_by_ref(name_ref) || raise(ArgumentError, "Feature not found: #{name_ref}")
-      "ai-features/#{name_ref}"
+    def self.feature_area(module_name)
+      name_s = module_name.to_s
+      find_module_by_name(name_s) || raise(ArgumentError, "Feature not found: #{name_s}")
+      "ai-features/#{name_s}"
     end
   end
 end

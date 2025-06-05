@@ -90,15 +90,18 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+    area: "ai-features/ai_helper"
   composer_ai_helper_allowed_groups:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
     allow_any: false
     refresh: true
+    area: "ai-features/ai_helper"
   ai_helper_allowed_in_pm:
     default: false
     client: true
+    area: "ai-features/ai_helper"
   ai_helper_model:
     default: ""
     allow_any: false
@@ -118,10 +121,13 @@ discourse_ai:
     default: "3|14" # 3: @staff, 14: @trust_level_4
     allow_any: false
     refresh: true
+    area: "ai-features/ai_helper"
   ai_helper_automatic_chat_thread_title:
     default: false
+    area: "ai-features/ai_helper"
   ai_helper_automatic_chat_thread_title_delay:
     default: 5
+    area: "ai-features/ai_helper"
   ai_helper_illustrate_post_model:
     default: disabled
     type: enum
@@ -129,6 +135,7 @@ discourse_ai:
       - stable_diffusion_xl
       - dall_e_3
       - disabled
+    area: "ai-features/ai_helper"
   ai_helper_enabled_features:
     client: true
     default: "suggestions|context_menu"
@@ -140,6 +147,7 @@ discourse_ai:
       - "suggestions"
       - "context_menu"
       - "image_caption"
+    area: "ai-features/ai_helper"
   ai_helper_image_caption_model:
     default: ""
     type: enum
@@ -152,6 +160,7 @@ discourse_ai:
     default: "10" # 10: @trust_level_0
     allow_any: false
     refresh: true
+    area: "ai-features/ai_helper"
   ai_helper_model_allowed_seeded_models:
     default: ""
     hidden: true
@@ -166,38 +175,47 @@ discourse_ai:
     default: "-22"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_title_suggestions_persona:
     default: "-23"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_explain_persona:
     default: "-24"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_post_illustrator_persona:
     default: "-21"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_smart_dates_persona:
     default: "-19"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_translator_persona:
     default: "-25"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_markdown_tables_persona:
     default: "-20"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_custom_prompt_persona:
     default: "-18"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
   ai_helper_image_caption_persona:
     default: "-26"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/ai_helper"
 
   ai_embeddings_enabled:
     default: false
@@ -298,12 +316,12 @@ discourse_ai:
     hidden: true
   ai_summary_gists_enabled:
     default: false
-    area: "ai-features/gists"
+    area: "ai-features/summarization"
   ai_summary_gists_persona:
     default: "-12"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/gists"
+    area: "ai-features/summarization"
   ai_summary_gists_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -331,7 +349,7 @@ discourse_ai:
   ai_bot_enabled:
     default: false
     client: true
-    area: "ai-features/discoveries"
+    area: "ai-features/search"
   ai_bot_enable_chat_warning:
     default: false
     client: true
@@ -367,7 +385,7 @@ discourse_ai:
     type: enum
     client: true
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/discoveries"
+    area: "ai-features/search"
   ai_automation_max_triage_per_minute:
     default: 60
     hidden: true
@@ -383,32 +401,32 @@ discourse_ai:
   ai_discord_search_enabled:
     default: false
     client: true
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
   ai_discord_app_id:
     default: ""
     client: false
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
   ai_discord_app_public_key:
     default: ""
     client: false
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
   ai_discord_search_mode:
     default: "search"
     type: enum
     choices:
       - search
       - persona
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
   ai_discord_search_persona:
     default: ""
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
   ai_discord_allowed_guilds:
     type: list
     list_type: compact
     default: ""
-    area: "ai-features/discord_search"
+    area: "ai-features/discord"
 
   ai_spam_detection_enabled:
     default: false
@@ -458,51 +476,51 @@ discourse_ai:
   inferred_concepts_enabled:
     default: false
     client: true
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_background_match:
     default: false
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_daily_topics_limit:
     default: 20
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_min_posts:
     default: 5
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_min_likes:
     default: 10
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_min_views:
     default: 100
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_lookback_days:
     default: 30
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_daily_posts_limit:
     default: 30
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_post_min_likes:
     default: 5
     client: false
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_generate_persona:
     default: "-15"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_match_persona:
     default: "-16"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   inferred_concepts_deduplicate_persona:
     default: "-17"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"

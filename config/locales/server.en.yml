@@ -579,23 +579,6 @@ en:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to use this model."
 
-    features:
-      summarization:
-        name: "Summaries"
-        description: "Makes a summarization button available that allows visitors to summarize topics"
-      gists:
-        name: "Short Summaries"
-        description: "Adds the ability to view short summaries of topics on the topic list"
-      discoveries:
-        name: "Discobot Discoveries"
-        description: "Enhances search experience by providing AI-generated answers to queries"
-      discord_search:
-        name: "Discord Search"
-        description: "Adds the ability to search Discord channels"
-      inferred_concepts:
-        name: "Inferred Concepts"
-        description: "Classifies topics and posts into areas of interest / labels."
-
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."
       quota_required: "You must specify maximum tokens or usages for this model"
