@@ -1,3 +1,5 @@
+@use "lib/viewport";
+
 .admin-contents .ai-persona-list-editor {
   margin-top: 0;
 }
@@ -22,6 +24,101 @@
     opacity: 0.5;
   }
 
+  &__controls {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+
+    .filter-input-container {
+      flex: 4 1 auto;
+    }
+
+    .d-select {
+      flex: 1 1 auto;
+      width: auto;
+      height: auto;
+    }
+  }
+
+  &__no-results {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    padding: var(--space-6);
+    gap: var(--space-2);
+
+    h3 {
+      font-weight: normal;
+    }
+
+    .btn {
+      align-self: center;
+    }
+  }
+
+  &.--layout-card {
+    tbody {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(18em, 1fr));
+      gap: var(--space-4);
+      border: none;
+    }
+
+    thead {
+      display: none;
+    }
+
+    .d-admin-row__content {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      grid-template-columns: 1fr auto;
+      border: 1px solid var(--primary-low);
+      padding: var(--space-2) var(--space-4) var(--space-4);
+      border-radius: var(--d-border-radius);
+
+      .d-admin-row__overview,
+      .ai-persona-list__name-with-description {
+        display: contents;
+      }
+
+      .ai-persona-list__name {
+        grid-row: 1;
+        grid-column: 1;
+        font-size: var(--font-up-1);
+        display: inline;
+        align-self: center;
+
+        .avatar {
+          height: 1.25em;
+          position: relative;
+          bottom: 0.15em;
+        }
+      }
+
+      .ai-persona-list__description {
+        grid-row: 2;
+        grid-column: 1;
+        margin: var(--space-2) 0;
+      }
+
+      .d-admin-row__controls {
+        grid-row: 1;
+        grid-column: 2;
+      }
+
+      .d-admin-row__features {
+        grid-row: 3;
+        grid-column: 1 / span 2;
+        padding: 0;
+
+        .btn {
+          margin-top: var(--space-2);
+        }
+      }
+    }
+  }
+
   .ai-persona-list {
     &__row-item-feature {
       padding: 0;
@@ -29,10 +126,23 @@
       text-align: left;
     }
 
+    &__description {
+      color: var(--primary-high);
+    }
+
     &__name {
-      .d-icon {
-        color: var(--success);
-        font-size: var(--font-down-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--font-up-0);
+      color: var(--primary);
+      margin: 0;
+      padding: 0;
+      line-height: var(--line-height-medium);
+
+      .avatar {
+        width: auto;
+        height: 1.25em;
       }
     }
 
