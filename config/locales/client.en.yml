@@ -215,6 +215,10 @@ en:
       modals:
         select_option: "Select an option..."
 
+      layout:
+        table: "Table"
+        card: "Card"
+
       spam:
         short_title: "Spam"
         title: "Configure spam handling"
@@ -378,6 +382,12 @@ en:
         ai_bot:
           title: "AI bot options"
           save_first: "More AI bot options will become available once you save the persona."
+
+        filters:
+          text: "Find a persona"
+          reset: "Reset"
+          no_results: "No personas found matching your filters."
+          all_features: "Any feature"
 
       rag:
         title: "RAG"
