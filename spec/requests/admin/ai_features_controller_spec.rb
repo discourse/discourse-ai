@@ -26,7 +26,7 @@ RSpec.describe DiscourseAi::Admin::AiFeaturesController do
   describe "#edit" do
     it "returns a success response" do
       get "/admin/plugins/discourse-ai/ai-features/1/edit.json"
-      expect(response.parsed_body["name"]).to eq(I18n.t "discourse_ai.features.summarization.name")
+      expect(response.parsed_body["module_name"]).to eq("summarization")
     end
   end
 end
