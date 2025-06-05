@@ -64,7 +64,7 @@ export default class AiPersonaToolOptions extends Component {
                 <div class="ai-persona-editor__tool-options-name">
                   {{toolMeta.name}}
                 </div>
-                <toolObj.Object @name={{toolId}} as |optionsObj optionData|>
+                <toolObj.Object @name={{toolId}} as |optionsObj|>
                   {{#each (this.toolOptionKeys toolId) as |optionName|}}
                     {{#let (get toolMeta optionName) as |optionMeta|}}
                       <optionsObj.Field
