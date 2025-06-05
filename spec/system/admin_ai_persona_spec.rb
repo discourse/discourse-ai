@@ -51,6 +51,15 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
 
     expected_tools = [["Read", { "read_private" => nil }, true], ["ListCategories", {}, true]]
     expect(persona.tools).to contain_exactly(*expected_tools)
+
+    # lets also test upgrades here... particularly one options was deleted and another added
+    # this ensurse that we can still edit the tool correctly and all options are present
+    persona.update!(tools: [["Read", { "got_deleted" => true }]])
+
+    visit "/admin/plugins/discourse-ai/ai-personas/#{persona_id}/edit"
+
+    expect(page).to have_selector("input[name='toolOptions.Read.read_private']")
+    expect(page).not_to have_selector("input[name='toolOptions.Read.got_deleted']")
   end
 
   it "will not allow deletion or editing of system personas" do
