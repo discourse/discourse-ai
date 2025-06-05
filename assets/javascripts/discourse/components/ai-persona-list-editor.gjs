@@ -65,7 +65,6 @@ export default class AiPersonaListEditor extends Component {
             </thead>
             <tbody>
               {{#each @personas as |persona|}}
-                {{log persona}}
                 <tr
                   data-persona-id={{persona.id}}
                   class={{concatClass
@@ -90,7 +89,6 @@ export default class AiPersonaListEditor extends Component {
 
                   <td class="d-admin-row__features">
                     {{#each persona.features as |feature|}}
-                      {{log persona}}
                       <DButton
                         class="btn-flat btn-small ai-persona-list__row-item-feature"
                         @translatedLabel={{feature.name}}
