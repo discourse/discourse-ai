@@ -11,8 +11,10 @@ describe DiscourseAi::Translation::PostLocalizer do
     def post_raw_translator_stub(opts)
       mock = instance_double(DiscourseAi::Translation::PostRawTranslator)
       allow(DiscourseAi::Translation::PostRawTranslator).to receive(:new).with(
-        opts[:value],
-        opts[:locale],
+        text: opts[:text],
+        target_locale: opts[:target_locale],
+        post_id: opts[:post_id] || post.id,
+        topic_id: opts[:topic_id] || post.topic_id,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
@@ -33,19 +35,19 @@ describe DiscourseAi::Translation::PostLocalizer do
     end
 
     it "translates with post and locale" do
-      post_raw_translator_stub({ value: post.raw, locale: :ja, translated: translated_raw })
+      post_raw_translator_stub({ text: post.raw, target_locale: "ja", translated: translated_raw })
 
       described_class.localize(post, "ja")
     end
 
     it "normalizes dashes to underscores and symbol type for locale" do
-      post_raw_translator_stub({ value: post.raw, locale: :zh_CN, translated: "你好，世界" })
+      post_raw_translator_stub({ text: post.raw, target_locale: "zh_CN", translated: "你好，世界" })
 
       described_class.localize(post, "zh-CN")
     end
 
     it "finds or creates a PostLocalization and sets its fields" do
-      post_raw_translator_stub({ value: post.raw, locale: :ja, translated: translated_raw })
+      post_raw_translator_stub({ text: post.raw, target_locale: "ja", translated: translated_raw })
       expect {
         res = described_class.localize(post, target_locale)
         expect(res).to be_a(PostLocalization)
@@ -61,7 +63,7 @@ describe DiscourseAi::Translation::PostLocalizer do
     end
 
     it "updates an existing PostLocalization if present" do
-      post_raw_translator_stub({ value: post.raw, locale: :ja, translated: translated_raw })
+      post_raw_translator_stub({ text: post.raw, target_locale: "ja", translated: translated_raw })
       localization =
         Fabricate(:post_localization, post: post, locale: "ja", raw: "old", cooked: "old_cooked")
       expect {

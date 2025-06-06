@@ -6,12 +6,12 @@ module DiscourseAi
       def self.localize(category, target_locale = I18n.locale)
         return if category.blank? || target_locale.blank?
 
-        target_locale_sym = target_locale.to_s.sub("-", "_").to_sym
+        target_locale = target_locale.to_s.sub("-", "_")
 
-        translated_name = ShortTextTranslator.new(category.name, target_locale_sym).translate
+        translated_name = ShortTextTranslator.new(text: category.name, target_locale:).translate
         translated_description =
           if category.description.present?
-            PostRawTranslator.new(category.description, target_locale_sym).translate
+            PostRawTranslator.new(text: category.description, target_locale:).translate
           else
             ""
           end
@@ -19,7 +19,7 @@ module DiscourseAi
         localization =
           CategoryLocalization.find_or_initialize_by(
             category_id: category.id,
-            locale: target_locale_sym.to_s,
+            locale: target_locale,
           )
 
         localization.name = translated_name
