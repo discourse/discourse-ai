@@ -3,6 +3,11 @@
 class LocalizedAiPersonaSerializer < ApplicationSerializer
   root "ai_persona"
 
+  def initialize(object, options = {})
+    @features_by_persona_id = options.delete(:features_by_persona_id)
+    super(object, options)
+  end
+
   attributes :id,
              :name,
              :description,
@@ -32,7 +37,8 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allow_personal_messages,
              :force_default_llm,
              :response_format,
-             :examples
+             :examples,
+             :features
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object
@@ -47,5 +53,20 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
 
   def description
     object.class_instance.description
+  end
+
+  def features
+    return [] unless @features_by_persona_id.is_a?(Hash)
+
+    Array(@features_by_persona_id[object.id]).map do |feature|
+      { id: feature[:id], name: feature[:name] }
+    end
+  rescue => e
+    Rails.logger.warn("Persona serializer error: #{e.class} - #{e.message}")
+    []
+  end
+
+  def include_features?
+    @features_by_persona_id.is_a?(Hash)
   end
 end
