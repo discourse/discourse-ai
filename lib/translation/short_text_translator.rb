@@ -15,18 +15,18 @@ module DiscourseAi
       Provide your translation in the following JSON format:
 
       <output>
-      {"translation": "target_language translation here"}
+      {"translation": "target_locale translation here"}
       </output>
 
       Here are three examples of correct translation
 
-      Original: {"content":"Japan", "target_language":"Spanish"}
+      Original: {"content":"Japan", "target_locale":"es"}
       Correct translation: {"translation": "Japón"}
 
-      Original: {"name":"Cats and Dogs", "target_language":"Chinese"}
+      Original: {"name":"Cats and Dogs", "target_locale":"zh_CN"}
       Correct translation: {"translation": "猫和狗"}
 
-      Original: {"name": "Q&A", "target_language": "Portuguese"}
+      Original: {"name": "Q&A", "target_locale": "pt"}
       Correct translation: {"translation": "Perguntas e Respostas"}
 
       Remember to keep proper nouns like "Minecraft" and "Toyota" in their original form. Translate the text now and provide your answer in the specified JSON format.

@@ -3,9 +3,11 @@
 module DiscourseAi
   module Translation
     class BaseTranslator
-      def initialize(text, target_language)
+      def initialize(text:, target_locale:, topic_id: nil, post_id: nil)
         @text = text
-        @target_language = target_language
+        @target_locale = target_locale
+        @topic_id = topic_id
+        @post_id = post_id
       end
 
       def translate
@@ -13,6 +15,8 @@ module DiscourseAi
           DiscourseAi::Completions::Prompt.new(
             prompt_template,
             messages: [{ type: :user, content: formatted_content, id: "user" }],
+            topic_id: @topic_id,
+            post_id: @post_id,
           )
 
         structured_output =
@@ -27,7 +31,7 @@ module DiscourseAi
       end
 
       def formatted_content
-        { content: @text, target_language: @target_language }.to_json
+        { content: @text, target_locale: @target_locale }.to_json
       end
 
       def response_format
