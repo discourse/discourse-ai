@@ -9,9 +9,12 @@ module DiscourseAi
         target_locale_sym = target_locale.to_s.sub("-", "_").to_sym
 
         translated_name = ShortTextTranslator.new(category.name, target_locale_sym).translate
-        # category descriptions are first paragraphs of posts
         translated_description =
-          PostRawTranslator.new(category.description, target_locale_sym).translate
+          if category.description.present?
+            PostRawTranslator.new(category.description, target_locale_sym).translate
+          else
+            ""
+          end
 
         localization =
           CategoryLocalization.find_or_initialize_by(
