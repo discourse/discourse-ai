@@ -47,6 +47,7 @@ module DiscourseAi
 
         if llm_model.save
           llm_model.toggle_companion_user
+          log_llm_model_creation(llm_model)
           render json: LlmModelSerializer.new(llm_model), status: :created
         else
           render_json_error llm_model
@@ -55,6 +56,10 @@ module DiscourseAi
 
       def update
         llm_model = LlmModel.find(params[:id])
+
+        # Capture initial state for logging
+        initial_attributes = llm_model.attributes.dup
+        initial_quotas = llm_model.llm_quotas.map(&:attributes)
 
         if params[:ai_llm].key?(:llm_quotas)
           if quota_params
@@ -81,6 +86,7 @@ module DiscourseAi
 
         if llm_model.update(ai_llm_params(updating: llm_model))
           llm_model.toggle_companion_user
+          log_llm_model_update(llm_model, initial_attributes, initial_quotas)
           render json: LlmModelSerializer.new(llm_model)
         else
           render_json_error llm_model
@@ -109,11 +115,20 @@ module DiscourseAi
           )
         end
 
+        # Capture model details for logging before destruction
+        model_details = {
+          model_id: llm_model.id,
+          display_name: llm_model.display_name,
+          name: llm_model.name,
+          provider: llm_model.provider
+        }
+
         # Clean up companion users
         llm_model.enabled_chat_bot = false
         llm_model.toggle_companion_user
 
         if llm_model.destroy
+          log_llm_model_deletion(model_details)
           head :no_content
         else
           render_json_error llm_model
@@ -189,6 +204,96 @@ module DiscourseAi
         end
 
         permitted
+      end
+
+      def log_llm_model_creation(llm_model)
+        log_details = {
+          model_id: llm_model.id,
+          display_name: llm_model.display_name,
+          name: llm_model.name,
+          provider: llm_model.provider,
+          tokenizer: llm_model.tokenizer,
+          enabled_chat_bot: llm_model.enabled_chat_bot,
+          vision_enabled: llm_model.vision_enabled,
+        }
+
+        # Add cost details if present
+        if llm_model.input_cost.present?
+          log_details[:input_cost] = llm_model.input_cost
+        end
+        if llm_model.output_cost.present?
+          log_details[:output_cost] = llm_model.output_cost
+        end
+        if llm_model.cached_input_cost.present?
+          log_details[:cached_input_cost] = llm_model.cached_input_cost
+        end
+
+        # Add quota information if present
+        if llm_model.llm_quotas.any?
+          log_details[:quotas] = llm_model.llm_quotas.map do |quota|
+            "Group #{quota.group_id}: #{quota.max_tokens} tokens, #{quota.max_usages} usages, #{quota.duration_seconds}s"
+          end.join("; ")
+        end
+
+        StaffActionLogger.new(current_user).log_custom(
+          "create_ai_llm_model",
+          log_details
+        )
+      end
+
+      def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
+        current_attributes = llm_model.attributes
+        current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
+
+        # Track changes to main attributes
+        changes = {}
+        trackable_fields = %w[
+          display_name name provider tokenizer url max_prompt_tokens max_output_tokens
+          enabled_chat_bot vision_enabled input_cost output_cost cached_input_cost
+          provider_params
+        ]
+
+        trackable_fields.each do |field|
+          initial_value = initial_attributes[field]
+          current_value = current_attributes[field]
+          
+          if initial_value != current_value
+            # Handle API key specially - don't log the actual values for security
+            if field == "api_key"
+              changes[field] = initial_value.present? && current_value.present? ? 
+                "updated" : (current_value.present? ? "set" : "removed")
+            else
+              changes[field] = "#{initial_value} → #{current_value}"
+            end
+          end
+        end
+
+        # Track quota changes
+        if initial_quotas != current_quotas
+          initial_quota_summary = initial_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
+          current_quota_summary = current_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
+          changes[:quotas] = "#{initial_quota_summary} → #{current_quota_summary}"
+        end
+
+        # Only log if there are actual changes
+        if changes.any?
+          log_details = {
+            model_id: llm_model.id,
+            model_name: llm_model.display_name || llm_model.name,
+          }.merge(changes)
+
+          StaffActionLogger.new(current_user).log_custom(
+            "update_ai_llm_model",
+            log_details
+          )
+        end
+      end
+
+      def log_llm_model_deletion(model_details)
+        StaffActionLogger.new(current_user).log_custom(
+          "delete_ai_llm_model",
+          model_details
+        )
       end
     end
   end

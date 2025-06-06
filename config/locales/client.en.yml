@@ -24,6 +24,12 @@ en:
               label: "Sort by"
             tag:
               label: "Tag"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "Create LLM model"
+            update_ai_llm_model: "Update LLM model"
+            delete_ai_llm_model: "Delete LLM model"
 
   js:
     discourse_automation:
