@@ -168,7 +168,7 @@ module DiscourseAi
         end
 
         register_filter(/\Aassigned_to:(.+)\z/i) do |relation, name, filter|
-          if assign_allowed?(filter.guardian)
+          if !assign_allowed?(filter.guardian)
             raise Discourse::InvalidAccess.new(
                     "Assigns are not enabled or you do not have permission to see assigns.",
                   )
@@ -185,7 +185,7 @@ module DiscourseAi
           else
             usernames = name.split(",").map(&:strip).map(&:downcase)
             relation.joins("JOIN assignments a ON a.topic_id = topics.id AND a.active").where(
-              assigned_to_id: User.where(username_lower: usernames).select(:id),
+              "a.assigned_to_id" => User.where(username_lower: usernames).select(:id),
             )
           end
         end
