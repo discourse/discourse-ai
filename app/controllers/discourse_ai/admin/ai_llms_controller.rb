@@ -235,10 +235,8 @@ module DiscourseAi
           end.join("; ")
         end
 
-        StaffActionLogger.new(current_user).log_custom(
-          "create_ai_llm_model",
-          log_details
-        )
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_custom("create_ai_llm_model", log_details)
       end
 
       def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
@@ -282,18 +280,14 @@ module DiscourseAi
             model_name: llm_model.display_name || llm_model.name,
           }.merge(changes)
 
-          StaffActionLogger.new(current_user).log_custom(
-            "update_ai_llm_model",
-            log_details
-          )
+          logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+          logger.log_custom("update_ai_llm_model", log_details)
         end
       end
 
       def log_llm_model_deletion(model_details)
-        StaffActionLogger.new(current_user).log_custom(
-          "delete_ai_llm_model",
-          model_details
-        )
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("llm_model", model_details)
       end
     end
   end
