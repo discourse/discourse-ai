@@ -17,7 +17,8 @@ module Jobs
       cat_id = args[:from_category_id] || Category.order(:id).first&.id
       last_id = nil
 
-      categories = Category.where("id >= ?", cat_id).order(:id).limit(BATCH_SIZE)
+      categories =
+        Category.where("id >= ? AND locale IS NOT NULL", cat_id).order(:id).limit(BATCH_SIZE)
       return if categories.empty?
 
       categories.each do |category|
@@ -26,9 +27,13 @@ module Jobs
           next
         end
 
-        CategoryLocalization.transaction do
-          locales.each do |locale|
-            next if CategoryLocalization.exists?(category_id: category.id, locale: locale)
+        locales.each do |locale|
+          localization = category.category_localizations.find_by(locale:)
+
+          if locale == category.locale && localization
+            localization.destroy
+          else
+            next if locale == category.locale
             begin
               DiscourseAi::Translation::CategoryLocalizer.localize(category, locale)
             rescue FinalDestination::SSRFDetector::LookupFailedError
