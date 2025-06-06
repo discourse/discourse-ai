@@ -8,7 +8,8 @@ module DiscourseAi
       end
 
       def valid_value?(val)
-        return true if Rails.env.test?
+        # only validate when enabling spam detection
+        return true if val == "f" || val == "false"
         return true if AiModerationSetting.spam
 
         false

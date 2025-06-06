@@ -209,7 +209,10 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
 
   describe "#show" do
     context "when logged in as admin" do
-      before { sign_in(admin) }
+      before do
+        sign_in(admin)
+        AiModerationSetting.create!(setting_type: :spam, llm_model_id: llm_model.id)
+      end
 
       it "correctly filters seeded llms" do
         SiteSetting.ai_spam_detection_enabled = true
@@ -248,7 +251,7 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
       it "return proper settings when spam detection is enabled" do
         SiteSetting.ai_spam_detection_enabled = true
 
-        AiModerationSetting.create(
+        AiModerationSetting.update!(
           {
             setting_type: :spam,
             llm_model_id: llm_model.id,
