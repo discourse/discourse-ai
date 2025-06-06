@@ -47,6 +47,7 @@ module DiscourseAi
               - status:open|closed|archived|noreplies|single_user - topic status filters
               - max_results:N - limit results (per OR group)
               - order:latest|oldest|latest_topic|oldest_topic|likes - sort order
+              #{assign_tip}
 
               **OR Logic:** Each OR group processes independently - filters don't cross boundaries.
 
@@ -54,6 +55,16 @@ module DiscourseAi
               - 'username:sam after:2023-01-01' - sam's posts after date
               - 'max_results:50 category:bugs OR tag:urgent' - (≤50 bug posts) OR (all urgent posts)
             TEXT
+          end
+
+          def assign_tip
+            if SiteSetting.respond_to?(:assign_enabled) && SiteSetting.assign_enabled
+              (<<~TEXT).strip
+                assigned_to:username or assigned_to:username1,username2 - topics assigned to a specific user
+                assigned_to:* - topics assigned to any user
+                assigned_to:nobody - topics not assigned to any user
+              TEXT
+            end
           end
 
           def name
@@ -113,6 +124,8 @@ module DiscourseAi
           else
             process_filter(filter, goals, post, &blk)
           end
+        rescue StandardError => e
+          { error: "Error processing research: #{e.message}" }
         end
 
         def details

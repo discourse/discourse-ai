@@ -134,7 +134,7 @@ module DiscourseAi
               json_summary_schema_key = bot.persona.response_format&.first.to_h
               helper_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
 
-              if helper_chunk.present?
+              if !helper_chunk.nil? && !helper_chunk.empty?
                 helper_response << helper_chunk
                 block.call(helper_chunk) if block
               end

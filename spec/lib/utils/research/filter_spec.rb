@@ -57,6 +57,8 @@ describe DiscourseAi::Utils::Research::Filter do
     fab!(:bug_post) { Fabricate(:post, topic: bug_topic, user: user) }
     fab!(:feature_bug_post) { Fabricate(:post, topic: feature_bug_topic, user: user) }
     fab!(:no_tag_post) { Fabricate(:post, topic: no_tag_topic, user: user) }
+    fab!(:admin1) { Fabricate(:admin, username: "admin1") }
+    fab!(:admin2) { Fabricate(:admin, username: "admin2") }
 
     describe "group filtering" do
       before do
@@ -189,6 +191,51 @@ describe DiscourseAi::Utils::Research::Filter do
 
         filter = described_class.new("category:Feedback tag:feature")
         expect(filter.search.pluck(:id)).to contain_exactly(feature_bug_post.id)
+      end
+    end
+
+    if SiteSetting.respond_to?(:assign_enabled)
+      describe "assign filtering" do
+        before do
+          SiteSetting.assign_enabled = true
+          assigner = Assigner.new(feature_topic, admin1)
+          assigner.assign(admin1)
+
+          assigner = Assigner.new(bug_topic, admin1)
+          assigner.assign(admin2)
+        end
+
+        let(:admin_guardian) { Guardian.new(admin1) }
+
+        it "can find topics assigned to a user" do
+          filter = described_class.new("assigned_to:#{admin1.username}", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id)
+        end
+
+        it "can find topics assigned to multiple users" do
+          filter =
+            described_class.new(
+              "assigned_to:#{admin1.username},#{admin2.username}",
+              guardian: admin_guardian,
+            )
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id, bug_post.id)
+        end
+
+        it "can find topics assigned to nobody" do
+          filter = described_class.new("assigned_to:nobody", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_bug_post.id, no_tag_post.id)
+        end
+
+        it "can find all assigned topics" do
+          filter = described_class.new("assigned_to:*", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id, bug_post.id)
+        end
+
+        it "raises an error if assigns are disabled" do
+          SiteSetting.assign_enabled = false
+          filter = described_class.new("assigned_to:sam")
+          expect { filter.search }.to raise_error(Discourse::InvalidAccess)
+        end
       end
     end
 
