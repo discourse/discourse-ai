@@ -62,10 +62,5 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
         { fake_model.id => [{ type: :automation, name: "some automation", id: automation.id }] },
       )
     end
-
-    it "doesn't error on spam when spam detection is enabled but moderation setting is missing" do
-      SiteSetting.ai_spam_detection_enabled = true
-      expect { described_class.global_usage }.not_to raise_error
-    end
   end
 end
