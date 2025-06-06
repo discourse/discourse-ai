@@ -359,6 +359,7 @@ export default class AiToolEditorForm extends Component {
           @name="rag_uploads"
           @title={{i18n "discourse_ai.rag.uploads.title"}}
           @tooltip={{this.ragUploadsDescription}}
+          @format="full"
           as |field|
         >
           <field.Custom>

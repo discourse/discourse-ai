@@ -80,7 +80,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     end
 
     context "when using proofread mode" do
-      let(:mode) { CompletionPrompt::PROOFREAD }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
       let(:proofread_response) do
         "The Toyota Supra delivers 382 horsepower making it a very fast car."
       end

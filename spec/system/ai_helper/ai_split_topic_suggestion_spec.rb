@@ -54,7 +54,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
   describe "moving posts to a new topic" do
     context "when suggesting titles with AI title suggester" do
-      let(:mode) { CompletionPrompt::GENERATE_TITLES }
+      let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
       let(:titles) do
         "<item>Pie: A delicious dessert</item><item>Cake is the best!</item><item>Croissants are delightful</item><item>Some great desserts</item><item>What is the best dessert?</item>"
       end

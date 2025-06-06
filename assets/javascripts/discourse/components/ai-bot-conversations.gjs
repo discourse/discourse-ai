@@ -10,6 +10,7 @@ import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import $ from "jquery";
 import DButton from "discourse/components/d-button";
 import PluginOutlet from "discourse/components/plugin-outlet";
+import bodyClass from "discourse/helpers/body-class";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import userAutocomplete from "discourse/lib/autocomplete/user";
 import { setupHashtagAutocomplete } from "discourse/lib/hashtag-autocomplete";
@@ -279,6 +280,7 @@ export default class AiBotConversations extends Component {
 
   <template>
     <div class="ai-bot-conversations">
+      {{bodyClass "ai-bot-conversations-page"}}
       <AiPersonaLlmSelector
         @showLabels={{true}}
         @setPersonaId={{this.setPersonaId}}

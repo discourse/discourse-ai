@@ -3,9 +3,11 @@
 RSpec.describe DiscourseAi::AiHelper::Assistant do
   fab!(:user)
   fab!(:empty_locale_user) { Fabricate(:user, locale: "") }
-  let(:prompt) { CompletionPrompt.find_by(id: mode) }
 
-  before { assign_fake_provider_to(:ai_helper_model) }
+  before do
+    assign_fake_provider_to(:ai_helper_model)
+    Group.refresh_automatic_groups!
+  end
 
   let(:english_text) { <<~STRING }
     To perfect his horror, Caesar, surrounded at the base of the statue by the impatient daggers of his friends,
@@ -48,15 +50,12 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     it "returns all available prompts" do
       prompts = subject.available_prompts(user)
 
-      expect(prompts.length).to eq(8)
       expect(prompts.map { |p| p[:name] }).to contain_exactly(
         "translate",
         "generate_titles",
         "proofread",
         "markdown_table",
-        "custom_prompt",
         "explain",
-        "detect_text_locale",
         "replace_dates",
       )
     end
@@ -64,13 +63,12 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     it "returns all prompts to be shown in the composer" do
       prompts = subject.available_prompts(user)
       filtered_prompts = prompts.select { |prompt| prompt[:location].include?("composer") }
-      expect(filtered_prompts.length).to eq(6)
+
       expect(filtered_prompts.map { |p| p[:name] }).to contain_exactly(
         "translate",
         "generate_titles",
         "proofread",
         "markdown_table",
-        "custom_prompt",
         "replace_dates",
       )
     end
@@ -78,12 +76,11 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     it "returns all prompts to be shown in the post menu" do
       prompts = subject.available_prompts(user)
       filtered_prompts = prompts.select { |prompt| prompt[:location].include?("post") }
-      expect(filtered_prompts.length).to eq(4)
+
       expect(filtered_prompts.map { |p| p[:name] }).to contain_exactly(
         "translate",
         "explain",
         "proofread",
-        "custom_prompt",
       )
     end
 
@@ -101,90 +98,69 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       it "returns the illustrate_post prompt in the list of all prompts" do
         prompts = subject.available_prompts(user)
 
-        expect(prompts.length).to eq(9)
         expect(prompts.map { |p| p[:name] }).to contain_exactly(
           "translate",
           "generate_titles",
           "proofread",
           "markdown_table",
-          "custom_prompt",
           "explain",
           "illustrate_post",
-          "detect_text_locale",
           "replace_dates",
         )
       end
     end
   end
 
-  describe("#localize_prompt!") do
+  describe("#attach_user_context") do
     before { SiteSetting.allow_user_locale = true }
 
+    let(:context) { DiscourseAi::Personas::BotContext.new(user: user) }
+
     it "is able to perform %LANGUAGE% replacements" do
-      prompt =
-        CompletionPrompt.new(messages: { insts: "This is a %LANGUAGE% test" }).messages_with_input(
-          "test",
-        )
+      subject.attach_user_context(context, user)
 
-      subject.localize_prompt!(prompt, user)
-
-      expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
+      expect(context.user_language).to eq("English (US)")
     end
 
     it "handles users with empty string locales" do
-      prompt =
-        CompletionPrompt.new(messages: { insts: "This is a %LANGUAGE% test" }).messages_with_input(
-          "test",
-        )
+      subject.attach_user_context(context, empty_locale_user)
 
-      subject.localize_prompt!(prompt, empty_locale_user)
-
-      expect(prompt.messages[0][:content].strip).to eq("This is a English (US) test")
+      expect(context.user_language).to eq("English (US)")
     end
 
     context "with temporal context" do
-      let(:prompt) do
-        CompletionPrompt.new(
-          messages: {
-            insts: "Current context: {{temporal_context}}",
-          },
-        ).messages_with_input("test")
-      end
-
       it "replaces temporal context with timezone information" do
         timezone = "America/New_York"
         user.user_option.update!(timezone: timezone)
         freeze_time "2024-01-01 12:00:00"
 
-        subject.localize_prompt!(prompt, user)
+        subject.attach_user_context(context, user)
 
-        content = prompt.messages[0][:content]
-
-        expect(content).to include(%("timezone":"America/New_York"))
+        expect(context.temporal_context).to include(%("timezone":"America/New_York"))
       end
 
       it "uses UTC as default timezone when user timezone is not set" do
         user.user_option.update!(timezone: nil)
 
         freeze_time "2024-01-01 12:00:00" do
-          subject.localize_prompt!(prompt, user)
+          subject.attach_user_context(context, user)
 
-          parsed_context = JSON.parse(prompt.messages[0][:content].match(/context: (.+)$/)[1])
-          expect(parsed_context["user"]["timezone"]).to eq("UTC")
+          parsed_context = JSON.parse(context.temporal_context)
+          expect(parsed_context.dig("user", "timezone")).to eq("UTC")
         end
       end
 
       it "does not replace temporal context when user is nil" do
-        prompt_content = prompt.messages[0][:content].dup
-        subject.localize_prompt!(prompt, nil)
-        expect(prompt.messages[0][:content]).to eq(prompt_content)
+        subject.attach_user_context(context, nil)
+
+        expect(context.temporal_context).to be_nil
       end
     end
   end
 
   describe "#generate_and_send_prompt" do
     context "when using a prompt that returns text" do
-      let(:mode) { CompletionPrompt::TRANSLATE }
+      let(:mode) { described_class::TRANSLATE }
 
       let(:text_to_translate) { <<~STRING }
         Para que su horror sea perfecto, César, acosado al pie de la estatua por lo impacientes puñales de sus amigos,
@@ -195,7 +171,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       it "Sends the prompt to the LLM and returns the response" do
         response =
           DiscourseAi::Completions::Llm.with_prepared_responses([english_text]) do
-            subject.generate_and_send_prompt(prompt, text_to_translate, user)
+            subject.generate_and_send_prompt(mode, text_to_translate, user)
           end
 
         expect(response[:suggestions]).to contain_exactly(english_text)
@@ -203,7 +179,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
     end
 
     context "when using a prompt that returns a list" do
-      let(:mode) { CompletionPrompt::GENERATE_TITLES }
+      let(:mode) { described_class::GENERATE_TITLES }
 
       let(:titles) do
         "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>"
@@ -220,7 +196,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
 
         response =
           DiscourseAi::Completions::Llm.with_prepared_responses([titles]) do
-            subject.generate_and_send_prompt(prompt, english_text, user)
+            subject.generate_and_send_prompt(mode, english_text, user)
           end
 
         expect(response[:suggestions]).to contain_exactly(*expected)

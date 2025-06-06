@@ -104,13 +104,14 @@ discourse_ai:
     allow_any: false
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    validator: "DiscourseAi::Configuration::LlmValidator"
-  ai_helper_custom_prompts_allowed_groups:
+    hidden: true
+  ai_helper_custom_prompts_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
     default: "3" # 3: @staff
     allow_any: false
     refresh: true
+    hidden: true
   post_ai_helper_allowed_groups:
     type: group_list
     list_type: compact
@@ -143,6 +144,7 @@ discourse_ai:
     default: ""
     type: enum
     enum: "DiscourseAi::Configuration::LlmVisionEnumerator"
+    hidden: true
   ai_auto_image_caption_allowed_groups:
     client: true
     type: group_list
@@ -160,6 +162,42 @@ discourse_ai:
     hidden: true
     type: list
     list_type: compact
+  ai_helper_proofreader_persona:
+    default: "-22"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_title_suggestions_persona:
+    default: "-23"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_explain_persona:
+    default: "-24"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_post_illustrator_persona:
+    default: "-21"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_smart_dates_persona:
+    default: "-19"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_translator_persona:
+    default: "-25"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_markdown_tables_persona:
+    default: "-20"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_custom_prompt_persona:
+    default: "-18"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+  ai_helper_image_caption_persona:
+    default: "-26"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
 
   ai_embeddings_enabled:
     default: false

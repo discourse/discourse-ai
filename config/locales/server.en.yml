@@ -339,6 +339,34 @@ en:
         concept_deduplicator:
           name: "Concept Deduplicator"
           description: "AI Bot specialized in deduplicating concepts"
+        custom_prompt:
+          name: "Custom prompt"
+          description: "Default persona powering the Helper's custom prompt feature"
+        smart_dates:
+          name: "Smart dates"
+          description: "Default persona powering the Helper's smart dates feature"
+        markdown_table_generator:
+          name: "Markdown table generator"
+          description: "Default persona powering the Helper's generate Markdown table feature"
+        post_illustrator:
+          name: "Post illustrator"
+          description: "Generates StableDiffusion prompts to power the Helper's illustrate post feature"
+        proofreader:
+          name: "Proofreader"
+          description: "Default persona powering the Helper's proofread text feature"
+        titles_generator:
+          name: "Titles generator"
+          description: "Default persona powering the Helper's suggest topic titles feature"
+        tutor:
+          name: "Tutor"
+          description: "Default persona powering the Helper's explain feature"
+        translator:
+          name: "Translator"
+          description: "Default persona powering the Helper's translator feature"
+        image_captioner:
+          name: "Image captions"
+          description: "Default persona powering the Helper's image caption feature"
+
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
@@ -359,9 +387,6 @@ en:
           include_private:
             name: "Include private"
             description: "Include private topics in the filters"
-          max_tokens_per_post:
-            name: "Maximum tokens per post"
-            description: "Maximum number of tokens to use for each post in the filter"
         create_artifact:
           creator_llm:
             name: "LLM"

@@ -44,7 +44,7 @@ function initializeAiHelperTrigger(api) {
 
         const mode = currentUser?.ai_helper_prompts.find(
           (p) => p.name === "proofread"
-        ).id;
+        ).name;
 
         modal.show(ModalDiffModal, {
           model: {

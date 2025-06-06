@@ -41,8 +41,6 @@ module DiscourseAi
                   "The number of completions you requested exceed the number of canned responses"
           end
 
-          response = as_structured_output(response) if model_params[:response_format].present?
-
           raise response if response.is_a?(StandardError)
 
           @completions += 1
@@ -57,8 +55,9 @@ module DiscourseAi
                 yield(response, cancel_fn)
               elsif is_thinking?(response)
                 yield(response, cancel_fn)
-              elsif is_structured_output?(response)
-                yield(response, cancel_fn)
+              elsif model_params[:response_format].present?
+                structured_output = as_structured_output(response)
+                yield(structured_output, cancel_fn)
               else
                 response.each_char do |char|
                   break if cancelled
@@ -69,6 +68,7 @@ module DiscourseAi
           end
 
           response = response.first if response.is_a?(Array) && response.length == 1
+          response = as_structured_output(response) if model_params[:response_format].present?
 
           response
         end
@@ -85,10 +85,6 @@ module DiscourseAi
 
         def is_tool?(response)
           response.is_a?(DiscourseAi::Completions::ToolCall)
-        end
-
-        def is_structured_output?(response)
-          response.is_a?(DiscourseAi::Completions::StructuredOutput)
         end
 
         def as_structured_output(response)

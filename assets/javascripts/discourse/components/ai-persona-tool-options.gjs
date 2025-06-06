@@ -33,6 +33,19 @@ export default class AiPersonaToolOptions extends Component {
     return toolOptions ? Object.keys(toolOptions) : [];
   }
 
+  @action
+  toolOptionKeys(toolId) {
+    // this is important, some tools may not have all options defined (for example if a tool option is added)
+    const metadata = this.toolsMetadata[toolId];
+    if (!metadata) {
+      return [];
+    }
+
+    // a bit more verbose for clarity of our selection
+    const availableOptions = Object.keys(metadata).filter((k) => k !== "name");
+    return availableOptions;
+  }
+
   <template>
     {{#if this.showToolOptions}}
       <@form.Container
@@ -51,8 +64,8 @@ export default class AiPersonaToolOptions extends Component {
                 <div class="ai-persona-editor__tool-options-name">
                   {{toolMeta.name}}
                 </div>
-                <toolObj.Object @name={{toolId}} as |optionsObj optionData|>
-                  {{#each (this.formObjectKeys optionData) as |optionName|}}
+                <toolObj.Object @name={{toolId}} as |optionsObj|>
+                  {{#each (this.toolOptionKeys toolId) as |optionName|}}
                     {{#let (get toolMeta optionName) as |optionMeta|}}
                       <optionsObj.Field
                         @name={{optionName}}

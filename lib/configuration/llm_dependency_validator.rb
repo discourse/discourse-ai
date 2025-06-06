@@ -10,7 +10,7 @@ module DiscourseAi
       def valid_value?(val)
         return true if val == "f"
 
-        if @opts[:name] == :ai_summarization_enabled
+        if @opts[:name] == :ai_summarization_enabled || @opts[:name] == :ai_helper_enabled
           has_llms = LlmModel.count > 0
           @no_llms_configured = !has_llms
           has_llms

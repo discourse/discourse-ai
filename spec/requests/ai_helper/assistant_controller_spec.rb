@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
                    text: "hello wrld",
                    location: "composer",
                    client_id: "1234",
-                   mode: CompletionPrompt::PROOFREAD,
+                   mode: DiscourseAi::AiHelper::Assistant::PROOFREAD,
                  }
 
             expect(response.status).to eq(200)
@@ -41,7 +41,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
   describe "#suggest" do
     let(:text_to_proofread) { "The rain in spain stays mainly in the plane." }
     let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
-    let(:mode) { CompletionPrompt::PROOFREAD }
+    let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
 
     context "when not logged in" do
       it "returns a 403 response" do
@@ -121,7 +121,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
         DiscourseAi::Completions::Llm.with_prepared_responses([translated_text]) do
           post "/discourse-ai/ai-helper/suggest",
                params: {
-                 mode: CompletionPrompt::CUSTOM_PROMPT,
+                 mode: DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT,
                  text: "A user wrote this",
                  custom_prompt: "Translate to Spanish",
                }
@@ -137,7 +137,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           expect {
             post "/discourse-ai/ai-helper/suggest",
                  params: {
-                   mode: CompletionPrompt::ILLUSTRATE_POST,
+                   mode: DiscourseAi::AiHelper::Assistant::ILLUSTRATE_POST,
                    text: text_to_proofread,
                    force_default_locale: true,
                  }
@@ -153,8 +153,14 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           amount = rate_limit[:amount]
 
           amount.times do
-            post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }
-            expect(response.status).to eq(200)
+            DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
+              post "/discourse-ai/ai-helper/suggest",
+                   params: {
+                     mode: mode,
+                     text: text_to_proofread,
+                   }
+              expect(response.status).to eq(200)
+            end
           end
           DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
             post "/discourse-ai/ai-helper/suggest", params: { mode: mode, text: text_to_proofread }

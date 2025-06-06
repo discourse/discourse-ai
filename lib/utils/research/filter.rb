@@ -162,6 +162,34 @@ module DiscourseAi
           end
         end
 
+        def self.assign_allowed?(guardian)
+          SiteSetting.respond_to?(:assign_enabled) && SiteSetting.assign_enabled &&
+            (guardian.can_assign? || SiteSetting.assigns_public)
+        end
+
+        register_filter(/\Aassigned_to:(.+)\z/i) do |relation, name, filter|
+          if !assign_allowed?(filter.guardian)
+            raise Discourse::InvalidAccess.new(
+                    "Assigns are not enabled or you do not have permission to see assigns.",
+                  )
+          end
+
+          if (name == "nobody")
+            relation.joins("LEFT JOIN assignments a ON a.topic_id = topics.id AND a.active").where(
+              "a.assigned_to_id IS NULL",
+            )
+          elsif name == "*"
+            relation.joins("JOIN assignments a ON a.topic_id = topics.id AND a.active").where(
+              "a.assigned_to_id IS NOT NULL",
+            )
+          else
+            usernames = name.split(",").map(&:strip).map(&:downcase)
+            relation.joins("JOIN assignments a ON a.topic_id = topics.id AND a.active").where(
+              "a.assigned_to_id" => User.where(username_lower: usernames).select(:id),
+            )
+          end
+        end
+
         register_filter(/\Agroups?:([a-zA-Z0-9_\-,]+)\z/i) do |relation, groups_param, filter|
           if groups_param.include?(",")
             group_names = groups_param.split(",").map(&:strip)
