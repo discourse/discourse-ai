@@ -74,8 +74,8 @@ Rails.autoloaders.main.push_dir(File.join(__dir__, "lib"), namespace: ::Discours
 require_relative "lib/engine"
 require_relative "lib/features"
 
-DiscourseAi::Features.feature_config.each do |feature|
-  register_site_setting_area("ai-features/#{feature[:name_ref]}")
+DiscourseAi::Features.features_config.each do |feature|
+  register_site_setting_area("ai-features/#{feature[:module_name]}")
 end
 
 after_initialize do

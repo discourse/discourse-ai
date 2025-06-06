@@ -169,15 +169,48 @@ en:
         short_title: "Features"
         description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
         back: "Back"
-        list:
-          header:
-            name: "Name"
-            persona: "Persona"
-            groups: "Groups"
-          edit: "Edit"
-          set_up: "Set up"
-          configured_features: "Configured features"
-          unconfigured_features: "Unconfigured features"
+        disabled: "(disabled)"
+        persona: "Persona:"
+        groups: "Groups:"
+        no_persona: "Not set"
+        no_groups: "None"
+        edit: "Edit"
+        nav:
+          configured: "Configured"
+          unconfigured: "Unconfigured"
+        summarization:
+          name: "Summaries"
+          description: "Makes a summarization button available that allows visitors to summarize topics"
+          topic_summaries: "Topic summaries"
+          gists: "Topic list's short summaries"
+        search:
+          name: "Search"
+          description: "Enhances search experience by providing AI-generated answers to queries"
+          discoveries: "Discoveries"
+        discord:
+          name: "Discord integration"
+          description: "Adds the ability to search Discord channels"
+          search: "Discord search"
+        inference:
+          name: "Inferred concepts"
+          description: "Classifies topics and posts into areas of interest / labels."
+          generate_concepts: "Concepts inference"
+          match_concepts: "Concepts matching"
+          deduplicate_concepts: "Concepts deduplication"
+
+        ai_helper:
+          name: "Helper"
+          description: "Assists users in community interaction, such as creating topics, writing posts, and reading content."
+          proofread: Proofread text
+          title_suggestions: "Suggest titles"
+          explain: "Explain"
+          illustrate_post: "Illustrate post"
+          smart_dates: "Smart dates"
+          translate: "Translate"
+          markdown_tables: "Generate Markdown table"
+          custom_prompt: "Custom prompt"
+          image_caption: "Caption images"
+
 
       modals:
         select_option: "Select an option..."
