@@ -58,6 +58,7 @@ module DiscourseAi
         ai_persona = AiPersona.new(ai_persona_params.except(:rag_uploads))
         if ai_persona.save
           RagDocumentFragment.link_target_and_uploads(ai_persona, attached_upload_ids)
+          log_ai_persona_creation(ai_persona)
 
           render json: {
                    ai_persona: LocalizedAiPersonaSerializer.new(ai_persona, root: false),
@@ -74,8 +75,12 @@ module DiscourseAi
       end
 
       def update
+        # Capture initial state for logging
+        initial_attributes = @ai_persona.attributes.dup
+
         if @ai_persona.update(ai_persona_params.except(:rag_uploads))
           RagDocumentFragment.update_target_uploads(@ai_persona, attached_upload_ids)
+          log_ai_persona_update(@ai_persona, initial_attributes)
 
           render json: LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         else
@@ -84,7 +89,15 @@ module DiscourseAi
       end
 
       def destroy
+        # Capture persona details for logging before destruction
+        persona_details = {
+          persona_id: @ai_persona.id,
+          name: @ai_persona.name,
+          description: @ai_persona.description
+        }
+
         if @ai_persona.destroy
+          log_ai_persona_deletion(persona_details)
           head :no_content
         else
           render_json_error @ai_persona
@@ -260,6 +273,48 @@ module DiscourseAi
         return [] if !examples.is_a?(Array)
 
         examples.map { |example_arr| example_arr.take(2).map(&:to_s) }
+      end
+
+      def log_ai_persona_creation(ai_persona)
+        # Extract standard attributes
+        log_details = {
+          persona_id: ai_persona.id,
+          name: ai_persona.name,
+          description: ai_persona.description,
+          enabled: ai_persona.enabled,
+          priority: ai_persona.priority,
+          system_prompt: ai_persona.system_prompt&.truncate(100),
+          default_llm_id: ai_persona.default_llm_id,
+          temperature: ai_persona.temperature,
+          top_p: ai_persona.top_p,
+          user_id: ai_persona.user_id,
+          vision_enabled: ai_persona.vision_enabled,
+          tools_count: (ai_persona.tools || []).size,
+          allowed_group_ids: ai_persona.allowed_group_ids
+        }
+        
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_custom("create_ai_persona", log_details)
+      end
+
+      def log_ai_persona_update(ai_persona, initial_attributes)
+        trackable_fields = %w[
+          name description enabled system_prompt priority temperature top_p default_llm_id
+          user_id max_context_posts vision_enabled vision_max_pixels rag_chunk_tokens
+          rag_chunk_overlap_tokens rag_conversation_chunks rag_llm_model_id
+          question_consolidator_llm_id tool_details forced_tool_count
+          allow_chat_channel_mentions allow_chat_direct_messages allow_topic_mentions allow_personal_messages
+        ]
+
+        json_fields = %w[allowed_group_ids tools response_format examples]
+        
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_update("persona", ai_persona, initial_attributes, trackable_fields, json_fields)
+      end
+
+      def log_ai_persona_deletion(persona_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("persona", persona_details)
       end
     end
   end
