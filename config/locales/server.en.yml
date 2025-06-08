@@ -219,6 +219,10 @@ en:
 
   discourse_ai:
     ai_artifact:
+      errors:
+        max_keys_exceeded:
+          one: "You can only have %{max} key in the artifact."
+          other: "You can only have %{max} keys in the artifact."
       link: "Show Artifact in new tab"
       view_source: "View Source"
       view_changes: "View Changes"

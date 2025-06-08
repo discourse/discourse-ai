@@ -46,6 +46,11 @@ DiscourseAi::Engine.routes.draw do
     get "/:id/:version" => "artifacts#show"
   end
 
+  scope module: :ai_bot, path: "/ai-bot/artifact-key-values/:artifact_id" do
+    get "/" => "artifact_key_values#index"
+    post "/" => "artifact_key_values#create"
+  end
+
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do
     get "/t/:topic_id" => "summary#show", :constraints => { topic_id: /\d+/ }
     get "/channels/:channel_id" => "chat_summary#show"

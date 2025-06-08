@@ -2,6 +2,7 @@
 
 class AiArtifact < ActiveRecord::Base
   has_many :versions, class_name: "AiArtifactVersion", dependent: :destroy
+  has_many :key_values, class_name: "AiArtifactKeyValue", dependent: :destroy
   belongs_to :user
   belongs_to :post
   validates :html, length: { maximum: 65_535 }
