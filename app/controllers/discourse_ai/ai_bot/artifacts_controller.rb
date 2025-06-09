@@ -100,12 +100,18 @@ module DiscourseAi
         js
       end
 
+      def user_data
+        {
+          username: current_user ? current_user.username : nil,
+          user_id: current_user ? current_user.id : nil,
+          name: current_user ? current_user.name : nil,
+        }
+      end
+
       def build_iframe_javascript
         <<~JAVASCRIPT
           <script>
-            window._discourse_user_data = {
-              #{current_user ? "username: #{current_user.username.to_json}" : "username: null"}
-            };
+            window._discourse_user_data = #{user_data.to_json};
 
             window.discourseArtifactReady = new Promise(resolve => {
               window._resolveArtifactData = resolve;

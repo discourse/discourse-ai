@@ -21,7 +21,8 @@ module DiscourseAi
             - Write clean, efficient code
             - Build progressively (HTML structure → CSS styling → JavaScript interactivity)
             - Artifacts run in a sandboxed IFRAME environmment
-            - Artifacts optionally have support for a Discourse user persistent storage
+            - Artifacts Discourse persistent storage - requires storage support
+            - Artifacts have access to current user data (username, name, id) - requires storage support
 
             When creating:
             1. Understand the desired user experience

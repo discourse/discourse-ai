@@ -321,6 +321,14 @@ module DiscourseAi
 
             - avatar_template: string - URL template for user avatars, MUST replace {size} with desired size in pixels (eg: 22)
 
+            ### User info:
+
+            To get current user info:
+            const initData = await window.discourseArtifactReady;
+            initData.username; // current username
+            initData.name; // current user's name
+            initData.user_id; // current user ID
+
             ### Storage Rules:
             - Each user can store up to 100 keys per artifact
             - Keys are scoped to the current user and artifact
