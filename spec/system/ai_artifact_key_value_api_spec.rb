@@ -53,8 +53,8 @@ RSpec.describe "AI Artifact Key-Value API", type: :system, js: true do
     visit "/discourse-ai/ai-bot/artifacts/#{artifact.id}"
 
     within_frame(find("iframe")) do
-      expect(page).to have_selector("#log", wait: 10)
-      expect(page).to have_selector("#log[data-test-complete='true']", wait: 15)
+      expect(page).to have_selector("#log", wait: 2)
+      expect(page).to have_selector("#log[data-test-complete='true']", wait: 2)
       expect(page).to have_no_selector("#log[data-test-error]")
     end
 
