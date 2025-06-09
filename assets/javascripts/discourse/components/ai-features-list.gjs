@@ -6,7 +6,7 @@ import { i18n } from "discourse-i18n";
 const AiFeaturesList = <template>
   <div class="ai-features-list">
     {{#each @modules as |module|}}
-      <div class="ai-module">
+      <div class="ai-module" data-module-name={{module.module_name}}>
         <div class="ai-module__header">
           <div class="ai-module__module-title">
             <h3>{{i18n
@@ -28,7 +28,10 @@ const AiFeaturesList = <template>
 
         <div class="admin-section-landing-wrapper ai-feature-cards">
           {{#each module.features as |feature|}}
-            <div class="admin-section-landing-item ai-feature-card">
+            <div
+              class="admin-section-landing-item ai-feature-card"
+              data-feature-name={{feature.name}}
+            >
               <div class="admin-section-landing-item__content">
                 <div class="ai-feature-card__feature-name">
                   {{i18n

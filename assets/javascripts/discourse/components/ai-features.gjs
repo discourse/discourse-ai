@@ -7,6 +7,7 @@ import { eq } from "truth-helpers";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
+import concatClass from "discourse/helpers/concat-class";
 import { i18n } from "discourse-i18n";
 import AiFeaturesList from "./ai-features-list";
 
@@ -55,7 +56,7 @@ export default class AiFeatures extends Component {
       @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-features"
       @label={{i18n "discourse_ai.features.short_title"}}
     />
-    <section class="ai-feature-list admin-detail">
+    <section class="ai-features admin-detail">
       <DPageSubheader
         @titleLabel={{i18n "discourse_ai.features.short_title"}}
         @descriptionLabel={{i18n "discourse_ai.features.description"}}
@@ -65,10 +66,13 @@ export default class AiFeatures extends Component {
       <div class="ai-feature-groups">
         {{#each this.featureGroups as |groupData|}}
           <DButton
-            class={{if
-              (eq this.selectedFeatureGroup groupData.id)
-              "btn-primary"
-              "btn-default"
+            class={{concatClass
+              groupData.id
+              (if
+                (eq this.selectedFeatureGroup groupData.id)
+                "btn-primary"
+                "btn-default"
+              )
             }}
             @action={{fn this.selectFeatureGroup groupData.id}}
             @label={{groupData.label}}
