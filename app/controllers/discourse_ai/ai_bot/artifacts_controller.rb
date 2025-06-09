@@ -20,14 +20,15 @@ module DiscourseAi
         end
 
         name = artifact.name
+        artifact_version = nil
 
         if params[:version].present?
-          artifact = artifact.versions.find_by(version_number: params[:version])
-          raise Discourse::NotFound if !artifact
+          artifact_version = artifact.versions.find_by(version_number: params[:version])
+          raise Discourse::NotFound if !artifact_version
         end
 
-        untrusted_html = build_untrusted_html(artifact, name)
-        trusted_html = build_trusted_html(artifact, name, untrusted_html)
+        untrusted_html = build_untrusted_html(artifact_version || artifact, name)
+        trusted_html = build_trusted_html(artifact, artifact_version, name, untrusted_html)
 
         set_security_headers
         render html: trusted_html.html_safe, layout: false, content_type: "text/html"
@@ -57,7 +58,7 @@ module DiscourseAi
         HTML
       end
 
-      def build_trusted_html(artifact, name, untrusted_html)
+      def build_trusted_html(artifact, artifact_version, name, untrusted_html)
         <<~HTML
           <!DOCTYPE html>
           <html>

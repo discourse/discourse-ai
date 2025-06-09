@@ -76,6 +76,8 @@ module DiscourseAi
             JavaScript libraries must be sourced from the following CDNs, otherwise CSP will reject it:
             #{AiArtifact::ALLOWED_CDN_SOURCES.join("\n")}
 
+            #{storage_api}
+
             Always adhere to the format when replying:
 
             [HTML]
