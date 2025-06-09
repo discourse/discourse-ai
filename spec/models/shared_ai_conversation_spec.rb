@@ -74,6 +74,44 @@ RSpec.describe SharedAiConversation, type: :model do
       expect(populated_context[1].user.id).to eq(post2.user.id)
     end
 
+    it "shares artifacts publicly when conversation is shared" do
+      # Create a post with an AI artifact
+      artifact =
+        Fabricate(
+          :ai_artifact,
+          post: post1,
+          user: user,
+          metadata: {
+            public: false,
+            something: "good",
+          },
+        )
+
+      _post_with_artifact =
+        Fabricate(
+          :post,
+          topic: topic,
+          post_number: 3,
+          raw: "Here's an artifact",
+          cooked:
+            "<div class='ai-artifact' data-ai-artifact-id='#{artifact.id}' data-ai-artifact-version='1'></div>",
+        )
+
+      expect(artifact.public?).to be_falsey
+
+      conversation = described_class.share_conversation(user, topic)
+      artifact.reload
+
+      expect(artifact.metadata["something"]).to eq("good")
+      expect(artifact.public?).to be_truthy
+
+      described_class.destroy_conversation(conversation)
+      artifact.reload
+
+      expect(artifact.metadata["something"]).to eq("good")
+      expect(artifact.public?).to be_falsey
+    end
+
     it "escapes HTML" do
       conversation = described_class.share_conversation(user, topic)
       onebox = conversation.onebox
