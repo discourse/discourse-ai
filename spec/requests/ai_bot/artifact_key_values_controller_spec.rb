@@ -63,6 +63,12 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
         )
         expect(json["has_more"]).to eq(false)
         expect(json["total_count"]).to eq(2)
+
+        expect(json["key_values"].map { |kv| kv["user_id"] }).to contain_exactly(
+          user.id,
+          other_user.id,
+        )
+        expect(json["users"].map { |u| u["id"] }).to contain_exactly(user.id, other_user.id)
       end
 
       it "returns 404 for private artifact" do

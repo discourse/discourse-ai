@@ -37,6 +37,11 @@ module DiscourseAi
                    ).as_json,
                  has_more: has_more,
                  total_count: total_count,
+                 users:
+                   key_values
+                     .map { |kv| kv.user }
+                     .uniq
+                     .map { |u| BasicUserSerializer.new(u, root: nil).as_json },
                }
       end
 
