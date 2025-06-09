@@ -96,9 +96,14 @@ export default class ShareModal extends Component {
     }
     event.stopPropagation();
     event.preventDefault();
-    const iframeEmbed = `<iframe src="${event.target.dataset.url}" width="600px" height="600px" frameborder="0"></iframe>`;
+
+    let version = "";
+    if (event.target.dataset.artifactVersion) {
+      version = `data-ai-artifact-version="${event.target.dataset.artifactVersion}"`;
+    }
+    const artifactEmbed = `<div class="ai-artifact" ${version} data-ai-artifact-id="${event.target.dataset.artifactId}"></div>`;
     const promise = new Promise((resolve) => {
-      resolve(iframeEmbed);
+      resolve(artifactEmbed);
     });
 
     await clipboardCopyAsync(() => promise);

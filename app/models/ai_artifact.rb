@@ -18,13 +18,21 @@ class AiArtifact < ActiveRecord::Base
     https://code.jquery.com
   ]
 
+  def self.artifact_version_attribute(version)
+    if version
+      "data-artifact-version='#{version}'"
+    else
+      ""
+    end
+  end
+
   def self.iframe_for(id, version = nil)
     <<~HTML
       <div class='ai-artifact'>
         <iframe src='#{url(id, version)}' frameborder="0" height="100%" width="100%"></iframe>
         <div class='ai-artifact-controls'>
           <a href='#{url(id, version)}' class='link-artifact' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
-          <a href class='copy-embed' data-url="#{url(id, version)}">#{I18n.t("discourse_ai.ai_artifact.copy_embed")}</a>
+          <a href class='copy-embed' data-artifact-id="#{id}" #{artifact_version_attribute(version)} data-url="#{url(id, version)}">#{I18n.t("discourse_ai.ai_artifact.copy_embed")}</a>
         </div>
       </div>
     HTML
