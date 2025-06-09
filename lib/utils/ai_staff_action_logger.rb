@@ -3,109 +3,152 @@
 module DiscourseAi
   module Utils
     class AiStaffActionLogger
+      # Maximum length for text fields before truncation/simplification
+      MAX_TEXT_LENGTH = 100
+
       def initialize(current_user)
         @current_user = current_user
         @staff_logger = ::StaffActionLogger.new(current_user)
       end
 
       # Log creation of an AI entity (LLM model or persona)
-      def log_creation(entity_type, entity, attributes_to_log)
-        log_details = extract_entity_attributes(entity, attributes_to_log)
-        
+      def log_creation(entity_type, entity, field_config = {}, entity_details = {})
+        # Start with provided entity details (id, name, etc.)
+        # Convert all keys to strings for consistent handling in StaffActionLogger
+        log_details = {}
+        entity_details.each { |k, v| log_details[k.to_s] = v }
+
+        # Extract attributes based on field configuration and ensure string keys
+        extract_entity_attributes(entity, field_config).each do |key, value|
+          log_details[key.to_s] = value
+        end
+
         @staff_logger.log_custom("create_ai_#{entity_type}", log_details)
       end
 
       # Log update of an AI entity with before/after comparison
-      def log_update(entity_type, entity, initial_attributes, trackable_fields, json_fields = [])
+      def log_update(
+        entity_type,
+        entity,
+        initial_attributes,
+        field_config = {},
+        entity_details = {}
+      )
         current_attributes = entity.attributes
         changes = {}
 
-        # Track changes to standard fields
-        trackable_fields.each do |field|
-          initial_value = initial_attributes[field]
-          current_value = current_attributes[field]
-          
-          if initial_value != current_value
-            # For large text fields, don't show the entire content
-            if should_simplify_field?(field, initial_value, current_value)
-              changes[field] = "updated"
-            else
-              changes[field] = "#{initial_value} → #{current_value}"
+        # Process changes based on field configuration
+        field_config
+          .except(:json_fields)
+          .each do |field, options|
+            # Skip if field is not to be tracked
+            next if options[:track] == false
+
+            initial_value = initial_attributes[field.to_s]
+            current_value = current_attributes[field.to_s]
+
+            # Only process if there's an actual change
+            if initial_value != current_value
+              # Format the change based on field type
+              changes[field.to_s] = format_field_change(
+                field,
+                initial_value,
+                current_value,
+                options,
+              )
             end
           end
-        end
 
-        # Track changes to arrays and JSON fields
-        json_fields.each do |field|
-          if initial_attributes[field].to_s != current_attributes[field].to_s
-            changes[field] = "updated"
+        # Process simple JSON fields (arrays, hashes) that should be tracked as "updated"
+        if field_config[:json_fields].present?
+          field_config[:json_fields].each do |field|
+            field_str = field.to_s
+            if initial_attributes[field_str].to_s != current_attributes[field_str].to_s
+              changes[field_str] = "updated"
+            end
           end
         end
 
         # Only log if there are actual changes
         if changes.any?
-          log_details = entity_identifier(entity, entity_type).merge(changes)
+          log_details = {}
+          # Convert entity_details keys to strings
+          entity_details.each { |k, v| log_details[k.to_s] = v }
+          # Merge changes (already with string keys)
+          log_details.merge!(changes)
+
           @staff_logger.log_custom("update_ai_#{entity_type}", log_details)
         end
       end
 
       # Log deletion of an AI entity
       def log_deletion(entity_type, entity_details)
-        @staff_logger.log_custom("delete_ai_#{entity_type}", entity_details)
+        # Convert all keys to strings for consistent handling in StaffActionLogger
+        string_details = {}
+        entity_details.each { |k, v| string_details[k.to_s] = v }
+
+        @staff_logger.log_custom("delete_ai_#{entity_type}", string_details)
       end
-      
+
       # Direct custom logging for complex cases
       def log_custom(action_type, log_details)
-        @staff_logger.log_custom(action_type, log_details)
+        # Convert all keys to strings for consistent handling in StaffActionLogger
+        string_details = {}
+        log_details.each { |k, v| string_details[k.to_s] = v }
+
+        @staff_logger.log_custom(action_type, string_details)
       end
 
       private
 
-      def extract_entity_attributes(entity, attributes_to_log)
+      def format_field_change(field, initial_value, current_value, options = {})
+        # Handle different field types based on controller-provided options
+        if options[:type] == :sensitive
+          return format_sensitive_field_change(initial_value, current_value)
+        elsif options[:type] == :large_text ||
+              (initial_value.is_a?(String) && initial_value.length > MAX_TEXT_LENGTH) ||
+              (current_value.is_a?(String) && current_value.length > MAX_TEXT_LENGTH)
+          return "updated"
+        end
+
+        # Default formatting: "old_value → new_value"
+        "#{initial_value} → #{current_value}"
+      end
+
+      def format_sensitive_field_change(initial_value, current_value)
+        if initial_value.present? && current_value.present?
+          "updated"
+        elsif current_value.present?
+          "set"
+        else
+          "removed"
+        end
+      end
+
+      def extract_entity_attributes(entity, field_config)
         result = {}
-        
-        attributes_to_log.each do |attr|
-          value = entity.public_send(attr)
-          
-          # Handle large text fields
-          if attr == :system_prompt && value.is_a?(String) && value.length > 100
-            result[attr] = value.truncate(100)
+
+        # Process each field according to its configuration
+        field_config.each do |field, options|
+          # Skip fields explicitly marked as not to be extracted
+          next if options[:extract] == false
+
+          # Get the actual field value
+          field_sym = field.to_sym
+          value = entity.respond_to?(field_sym) ? entity.public_send(field_sym) : nil
+
+          # Apply field-specific handling
+          if options[:type] == :sensitive
+            result[field] = value.present? ? "[FILTERED]" : nil
+          elsif options[:type] == :large_text && value.is_a?(String) &&
+                value.length > MAX_TEXT_LENGTH
+            result[field] = value.truncate(MAX_TEXT_LENGTH)
           else
-            result[attr] = value
+            result[field] = value
           end
         end
-        
+
         result
-      end
-
-      def should_simplify_field?(field, initial_value, current_value)
-        # For large text fields, or sensitive data, don't show the entire content
-        return true if field == "system_prompt" && 
-                       initial_value.present? && 
-                       current_value.present? && 
-                       (initial_value.length > 100 || current_value.length > 100)
-        
-        return true if field.include?("api_key") || field.include?("secret") || field.include?("password")
-        
-        false
-      end
-
-      def entity_identifier(entity, entity_type)
-        case entity_type
-        when "llm_model"
-          {
-            model_id: entity.id,
-            model_name: entity.name,
-            display_name: entity.display_name
-          }
-        when "persona"
-          {
-            persona_id: entity.id,
-            persona_name: entity.name
-          }
-        else
-          { id: entity.id }
-        end
       end
     end
   end

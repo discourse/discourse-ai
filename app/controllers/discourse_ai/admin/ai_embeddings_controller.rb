@@ -40,6 +40,7 @@ module DiscourseAi
         embedding_def = EmbeddingDefinition.new(ai_embeddings_params)
 
         if embedding_def.save
+          log_ai_embedding_creation(embedding_def)
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def), status: :created
         else
           render_json_error embedding_def
@@ -55,7 +56,11 @@ module DiscourseAi
           )
         end
 
+        # Capture initial state for logging
+        initial_attributes = embedding_def.attributes.dup
+        
         if embedding_def.update(ai_embeddings_params.except(:dimensions))
+          log_ai_embedding_update(embedding_def, initial_attributes)
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def)
         else
           render_json_error embedding_def
@@ -75,7 +80,16 @@ module DiscourseAi
           return render_json_error(I18n.t("discourse_ai.embeddings.delete_failed"), status: 409)
         end
 
+        # Capture embedding details for logging before destruction
+        embedding_details = {
+          embedding_id: embedding_def.id,
+          display_name: embedding_def.display_name,
+          provider: embedding_def.provider,
+          dimensions: embedding_def.dimensions
+        }
+        
         if embedding_def.destroy
+          log_ai_embedding_deletion(embedding_details)
           head :no_content
         else
           render_json_error embedding_def
@@ -127,6 +141,75 @@ module DiscourseAi
         end
 
         permitted
+      end
+      
+      def log_ai_embedding_creation(embedding_def)
+        # Create log details
+        log_details = {
+          embedding_id: embedding_def.id,
+          display_name: embedding_def.display_name,
+          provider: embedding_def.provider,
+          dimensions: embedding_def.dimensions
+        }
+        
+        # Only include tokenizer if present
+        if embedding_def.tokenizer_class.present?
+          log_details[:tokenizer] = embedding_def.tokenizer_class
+        end
+        
+        # For sensitive fields, don't include the actual content
+        if embedding_def.api_key.present?
+          log_details[:api_key_set] = true
+        end
+        
+        # Log the action
+        StaffActionLogger.new(current_user).log_custom("create_ai_embedding", log_details)
+      end
+      
+      def log_ai_embedding_update(embedding_def, initial_attributes)
+        # Create log details
+        log_details = {
+          embedding_id: embedding_def.id,
+          display_name: embedding_def.display_name
+        }
+        
+        # Track changes in fields
+        changed_fields = []
+        
+        # Fields to check for changes
+        %w[display_name provider url tokenizer_class max_sequence_length embed_prompt search_prompt matryoshka_dimensions].each do |field|
+          if initial_attributes[field] != embedding_def.attributes[field]
+            changed_fields << field
+            log_details["#{field}_changed"] = true
+          end
+        end
+        
+        # Special handling for API key (sensitive)
+        if initial_attributes['api_key'].present? != embedding_def.api_key.present?
+          changed_fields << 'api_key'
+          
+          if embedding_def.api_key.present?
+            log_details[:api_key_set] = true
+          else
+            log_details[:api_key_removed] = true
+          end
+        end
+        
+        # Special handling for provider_params (JSON)
+        if initial_attributes['provider_params'].to_s != embedding_def.provider_params.to_s
+          changed_fields << 'provider_params'
+          log_details[:provider_params_changed] = true
+        end
+        
+        # Only log if there are actual changes
+        if changed_fields.any?
+          log_details[:changed_fields] = changed_fields
+          StaffActionLogger.new(current_user).log_custom("update_ai_embedding", log_details)
+        end
+      end
+      
+      def log_ai_embedding_deletion(embedding_details)
+        StaffActionLogger.new(current_user).log_custom("delete_ai_embedding", embedding_details)
       end
     end
   end

@@ -136,6 +136,20 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         model = LlmModel.find(created_model["id"])
         expect(model.display_name).to eq(valid_attrs[:display_name])
       end
+      
+      it "logs staff action when creating an LLM model" do
+        logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
+        expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
+        expect(logger).to receive(:log_custom).with("create_ai_llm_model", hash_including(
+          model_id: an_instance_of(Integer),
+          display_name: valid_attrs[:display_name],
+          name: valid_attrs[:name],
+          provider: valid_attrs[:provider]
+        ))
+        
+        post "/admin/plugins/discourse-ai/ai-llms.json", params: { ai_llm: valid_attrs }
+        expect(response.status).to eq(201)
+      end
 
       it "creates a companion user" do
         post "/admin/plugins/discourse-ai/ai-llms.json",
@@ -329,6 +343,30 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(response.status).to eq(200)
         expect(llm_model.reload.provider).to eq(update_attrs[:provider])
       end
+      
+      it "logs staff action when updating an LLM model" do
+        # The initial provider is different from the update
+        original_provider = llm_model.provider
+        
+        logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
+        expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
+        
+        # Verify the log_custom is called with the right arguments
+        expect(logger).to receive(:log_custom).with(
+          "update_ai_llm_model",
+          hash_including(
+            model_id: llm_model.id,
+            provider: "#{original_provider} → #{update_attrs[:provider]}"
+          )
+        )
+        
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: update_attrs,
+            }
+            
+        expect(response.status).to eq(200)
+      end
 
       it "returns a 404 if there is no model with the given Id" do
         put "/admin/plugins/discourse-ai/ai-llms/9999999.json"
@@ -456,6 +494,29 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
         expect(response).to have_http_status(:no_content)
       }.to change(LlmModel, :count).by(-1)
+    end
+    
+    it "logs staff action when deleting an LLM model" do
+      # Capture the model details before deletion for comparison
+      model_id = llm_model.id
+      model_name = llm_model.name
+      model_display_name = llm_model.display_name
+      
+      logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
+      expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
+      
+      # It should use log_deletion with details about the deleted model
+      expect(logger).to receive(:log_deletion).with(
+        "llm_model",
+        hash_including(
+          model_id: model_id,
+          name: model_name,
+          display_name: model_display_name
+        )
+      )
+      
+      delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+      expect(response).to have_http_status(:no_content)
     end
 
     it "validates the model is not in use" do

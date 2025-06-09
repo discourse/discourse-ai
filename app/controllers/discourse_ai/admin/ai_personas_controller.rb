@@ -276,40 +276,93 @@ module DiscourseAi
       end
 
       def log_ai_persona_creation(ai_persona)
-        # Extract standard attributes
-        log_details = {
-          persona_id: ai_persona.id,
-          name: ai_persona.name,
-          description: ai_persona.description,
-          enabled: ai_persona.enabled,
-          priority: ai_persona.priority,
-          system_prompt: ai_persona.system_prompt&.truncate(100),
-          default_llm_id: ai_persona.default_llm_id,
-          temperature: ai_persona.temperature,
-          top_p: ai_persona.top_p,
-          user_id: ai_persona.user_id,
-          vision_enabled: ai_persona.vision_enabled,
-          tools_count: (ai_persona.tools || []).size,
-          allowed_group_ids: ai_persona.allowed_group_ids
+        # Create field configuration with appropriate types
+        field_config = {
+          name: {},
+          description: {},
+          enabled: {},
+          priority: {},
+          system_prompt: { type: :large_text },
+          default_llm_id: {},
+          temperature: {},
+          top_p: {},
+          user_id: {},
+          vision_enabled: {},
+          vision_max_pixels: {},
+          max_context_posts: {},
+          rag_chunk_tokens: {},
+          rag_chunk_overlap_tokens: {},
+          rag_conversation_chunks: {},
+          rag_llm_model_id: {},
+          question_consolidator_llm_id: {},
+          tool_details: {},
+          forced_tool_count: {},
+          allow_chat_channel_mentions: {},
+          allow_chat_direct_messages: {},
+          allow_topic_mentions: {},
+          allow_personal_messages: {}
         }
         
+        # Create basic entity details
+        entity_details = {
+          persona_id: ai_persona.id,
+          persona_name: ai_persona.name
+        }
+        
+        # Create logger instance
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        
+        # Extract attributes based on field configuration
+        log_details = entity_details.dup
+        log_details.merge!(logger.send(:extract_entity_attributes, ai_persona, field_config))
+        
+        # Add tools count separately as it's not a direct attribute
+        log_details[:tools_count] = (ai_persona.tools || []).size
+        
+        # Add allowed_group_ids
+        log_details[:allowed_group_ids] = ai_persona.allowed_group_ids if ai_persona.allowed_group_ids.present?
+        
         logger.log_custom("create_ai_persona", log_details)
       end
 
       def log_ai_persona_update(ai_persona, initial_attributes)
-        trackable_fields = %w[
-          name description enabled system_prompt priority temperature top_p default_llm_id
-          user_id max_context_posts vision_enabled vision_max_pixels rag_chunk_tokens
-          rag_chunk_overlap_tokens rag_conversation_chunks rag_llm_model_id
-          question_consolidator_llm_id tool_details forced_tool_count
-          allow_chat_channel_mentions allow_chat_direct_messages allow_topic_mentions allow_personal_messages
-        ]
-
-        json_fields = %w[allowed_group_ids tools response_format examples]
+        # Create field configuration with appropriate types
+        field_config = {
+          name: {},
+          description: {},
+          enabled: {},
+          priority: {},
+          system_prompt: { type: :large_text },
+          default_llm_id: {},
+          temperature: {},
+          top_p: {},
+          user_id: {},
+          vision_enabled: {},
+          vision_max_pixels: {},
+          max_context_posts: {},
+          rag_chunk_tokens: {},
+          rag_chunk_overlap_tokens: {},
+          rag_conversation_chunks: {},
+          rag_llm_model_id: {},
+          question_consolidator_llm_id: {},
+          tool_details: {},
+          forced_tool_count: {},
+          allow_chat_channel_mentions: {},
+          allow_chat_direct_messages: {},
+          allow_topic_mentions: {},
+          allow_personal_messages: {},
+          json_fields: %w[allowed_group_ids tools response_format examples]
+        }
         
+        # Create basic entity details
+        entity_details = {
+          persona_id: ai_persona.id,
+          persona_name: ai_persona.name
+        }
+        
+        # Create logger instance and log the update
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
-        logger.log_update("persona", ai_persona, initial_attributes, trackable_fields, json_fields)
+        logger.log_update("persona", ai_persona, initial_attributes, field_config, entity_details)
       end
 
       def log_ai_persona_deletion(persona_details)

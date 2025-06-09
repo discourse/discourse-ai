@@ -34,6 +34,17 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
         expect(created_def.search_prompt).to eq(valid_attrs[:search_prompt])
         expect(created_def.matryoshka_dimensions).to eq(true)
       end
+      
+      it "logs the creation with StaffActionLogger" do
+        expect {
+          post "/admin/plugins/discourse-ai/ai-embeddings.json", params: { ai_embedding: valid_attrs }
+        }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_embedding").count }.by(1)
+        
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_embedding").last
+        expect(history.details).to include("display_name: Embedding config test")
+        expect(history.details).to include("provider: hugging_face")
+        expect(history.details).to include("dimensions: 1001")
+      end
 
       it "stores provider-specific config params" do
         post "/admin/plugins/discourse-ai/ai-embeddings.json",
@@ -95,6 +106,20 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
         expect(response.status).to eq(200)
         expect(embedding_definition.reload.provider).to eq(update_attrs[:provider])
       end
+      
+      it "logs the update with StaffActionLogger" do
+        expect {
+          put "/admin/plugins/discourse-ai/ai-embeddings/#{embedding_definition.id}.json",
+              params: {
+                ai_embedding: update_attrs,
+              }
+        }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_embedding").count }.by(1)
+        
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_embedding").last
+        expect(history.details).to include("embedding_id: #{embedding_definition.id}")
+        expect(history.details).to include("provider_changed: true")
+        expect(history.details).to include("changed_fields:")
+      end
 
       it "returns a 404 if there is no model with the given Id" do
         put "/admin/plugins/discourse-ai/ai-embeddings/9999999.json"
@@ -140,6 +165,19 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
 
         expect(response).to have_http_status(:no_content)
       }.to change(EmbeddingDefinition, :count).by(-1)
+    end
+    
+    it "logs the deletion with StaffActionLogger" do
+      embedding_id = embedding_definition.id
+      display_name = embedding_definition.display_name
+      
+      expect {
+        delete "/admin/plugins/discourse-ai/ai-embeddings/#{embedding_definition.id}.json"
+      }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_embedding").count }.by(1)
+      
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_embedding").last
+      expect(history.details).to include("embedding_id: #{embedding_id}")
+      expect(history.details).to include("display_name: #{display_name}")
     end
 
     it "validates the model is not in use" do

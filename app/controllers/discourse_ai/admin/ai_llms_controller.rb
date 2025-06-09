@@ -207,81 +207,95 @@ module DiscourseAi
       end
 
       def log_llm_model_creation(llm_model)
-        log_details = {
-          model_id: llm_model.id,
-          display_name: llm_model.display_name,
-          name: llm_model.name,
-          provider: llm_model.provider,
-          tokenizer: llm_model.tokenizer,
-          enabled_chat_bot: llm_model.enabled_chat_bot,
-          vision_enabled: llm_model.vision_enabled,
+        # Create field configuration with appropriate types
+        field_config = {
+          display_name: {},
+          name: {},
+          provider: {},
+          tokenizer: {},
+          url: {},
+          api_key: { type: :sensitive },
+          max_prompt_tokens: {},
+          max_output_tokens: {},
+          enabled_chat_bot: {},
+          vision_enabled: {},
+          input_cost: {},
+          output_cost: {},
+          cached_input_cost: {},
+          provider_params: {}
         }
-
-        # Add cost details if present
-        if llm_model.input_cost.present?
-          log_details[:input_cost] = llm_model.input_cost
-        end
-        if llm_model.output_cost.present?
-          log_details[:output_cost] = llm_model.output_cost
-        end
-        if llm_model.cached_input_cost.present?
-          log_details[:cached_input_cost] = llm_model.cached_input_cost
-        end
-
-        # Add quota information if present
+        
+        # Create basic entity details
+        entity_details = {
+          model_id: llm_model.id,
+          model_name: llm_model.name,
+          display_name: llm_model.display_name
+        }
+        
+        # Create logger instance
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        
+        # Extract attributes based on field configuration
+        log_details = entity_details.dup
+        log_details.merge!(logger.send(:extract_entity_attributes, llm_model, field_config))
+        
+        # Add quota information as a special case
         if llm_model.llm_quotas.any?
           log_details[:quotas] = llm_model.llm_quotas.map do |quota|
             "Group #{quota.group_id}: #{quota.max_tokens} tokens, #{quota.max_usages} usages, #{quota.duration_seconds}s"
           end.join("; ")
         end
-
-        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        
         logger.log_custom("create_ai_llm_model", log_details)
       end
 
       def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
-        current_attributes = llm_model.attributes
-        current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
-
-        # Track changes to main attributes
+        # Create field configuration with appropriate types
+        field_config = {
+          display_name: {},
+          name: {},
+          provider: {},
+          tokenizer: {},
+          url: {},
+          api_key: { type: :sensitive },
+          max_prompt_tokens: {},
+          max_output_tokens: {},
+          enabled_chat_bot: {},
+          vision_enabled: {},
+          input_cost: {},
+          output_cost: {},
+          cached_input_cost: {},
+          provider_params: {},
+          json_fields: %w[provider_params]
+        }
+        
+        # Create basic entity details
+        entity_details = {
+          model_id: llm_model.id,
+          model_name: llm_model.name,
+          display_name: llm_model.display_name
+        }
+        
+        # Create logger instance
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        
+        # Create a changes hash to track all changes
         changes = {}
-        trackable_fields = %w[
-          display_name name provider tokenizer url max_prompt_tokens max_output_tokens
-          enabled_chat_bot vision_enabled input_cost output_cost cached_input_cost
-          provider_params
-        ]
-
-        trackable_fields.each do |field|
-          initial_value = initial_attributes[field]
-          current_value = current_attributes[field]
-          
-          if initial_value != current_value
-            # Handle API key specially - don't log the actual values for security
-            if field == "api_key"
-              changes[field] = initial_value.present? && current_value.present? ? 
-                "updated" : (current_value.present? ? "set" : "removed")
-            else
-              changes[field] = "#{initial_value} → #{current_value}"
-            end
-          end
-        end
-
-        # Track quota changes
+        current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
+        
+        # Track quota changes separately as they're a special case
         if initial_quotas != current_quotas
           initial_quota_summary = initial_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
           current_quota_summary = current_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
           changes[:quotas] = "#{initial_quota_summary} → #{current_quota_summary}"
         end
-
-        # Only log if there are actual changes
-        if changes.any?
-          log_details = {
-            model_id: llm_model.id,
-            model_name: llm_model.display_name || llm_model.name,
-          }.merge(changes)
-
-          logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
-          logger.log_custom("update_ai_llm_model", log_details)
+        
+        # Let the logger handle standard field changes
+        logger.log_update("llm_model", llm_model, initial_attributes, field_config, entity_details)
+        
+        # If we have quota changes but no other changes were detected, log them separately
+        if changes.key?(:quotas)
+          logger.log_custom("update_ai_llm_model", entity_details.merge(changes))
         end
       end
 

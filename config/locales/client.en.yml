@@ -33,6 +33,12 @@ en:
             create_ai_persona: "Create AI persona"
             update_ai_persona: "Update AI persona"
             delete_ai_persona: "Delete AI persona"
+            create_ai_tool: "Create AI tool"
+            update_ai_tool: "Update AI tool"
+            delete_ai_tool: "Delete AI tool"
+            create_ai_embedding: "Create AI embedding"
+            update_ai_embedding: "Update AI embedding"
+            delete_ai_embedding: "Delete AI embedding"
 
   js:
     discourse_automation:
