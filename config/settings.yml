@@ -524,7 +524,7 @@ discourse_ai:
     default: "-17"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
-    area: "ai-features/inferred_concepts"
+    area: "ai-features/inference"
   ai_artifact_kv_value_max_length:
     default: 5000
     hidden: true
