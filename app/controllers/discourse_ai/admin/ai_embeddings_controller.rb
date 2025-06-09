@@ -56,9 +56,8 @@ module DiscourseAi
           )
         end
 
-        # Capture initial state for logging
         initial_attributes = embedding_def.attributes.dup
-        
+
         if embedding_def.update(ai_embeddings_params.except(:dimensions))
           log_ai_embedding_update(embedding_def, initial_attributes)
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def)
@@ -80,15 +79,14 @@ module DiscourseAi
           return render_json_error(I18n.t("discourse_ai.embeddings.delete_failed"), status: 409)
         end
 
-        # Capture embedding details for logging before destruction
         embedding_details = {
           embedding_id: embedding_def.id,
           display_name: embedding_def.display_name,
           provider: embedding_def.provider,
           dimensions: embedding_def.dimensions,
-          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
+          subject: embedding_def.display_name,
         }
-        
+
         if embedding_def.destroy
           log_ai_embedding_deletion(embedding_details)
           head :no_content
@@ -143,88 +141,56 @@ module DiscourseAi
 
         permitted
       end
-      
+
+      def ai_embeddings_logger_fields
+        {
+          display_name: {
+          },
+          provider: {
+          },
+          url: {
+          },
+          tokenizer_class: {
+          },
+          max_sequence_length: {
+          },
+          embed_prompt: {
+            type: :large_text,
+          },
+          search_prompt: {
+            type: :large_text,
+          },
+          matryoshka_dimensions: {
+          },
+          api_key: {
+            type: :sensitive,
+          },
+          # JSON fields should be tracked as simple changes
+          json_fields: [:provider_params],
+        }
+      end
+
       def log_ai_embedding_creation(embedding_def)
-        # Create log details
-        log_details = {
-          embedding_id: embedding_def.id,
-          display_name: embedding_def.display_name,
-          provider: embedding_def.provider,
-          dimensions: embedding_def.dimensions,
-          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
-        }
-        
-        # Only include tokenizer if present
-        if embedding_def.tokenizer_class.present?
-          log_details[:tokenizer] = embedding_def.tokenizer_class
-        end
-        
-        # For sensitive fields, don't include the actual content
-        if embedding_def.api_key.present?
-          log_details[:api_key_set] = true
-        end
-        
-        # Get subject for the log
-        subject = log_details[:subject]
-        
-        # Log the action
-        StaffActionLogger.new(current_user).log_custom("create_ai_embedding", log_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { embedding_id: embedding_def.id, subject: embedding_def.display_name }
+        logger.log_creation("embedding", embedding_def, ai_embeddings_logger_fields, entity_details)
       end
-      
+
       def log_ai_embedding_update(embedding_def, initial_attributes)
-        # Create log details
-        log_details = {
-          embedding_id: embedding_def.id,
-          display_name: embedding_def.display_name,
-          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
-        }
-        
-        # Track changes in fields
-        changed_fields = []
-        
-        # Fields to check for changes
-        %w[display_name provider url tokenizer_class max_sequence_length embed_prompt search_prompt matryoshka_dimensions].each do |field|
-          if initial_attributes[field] != embedding_def.attributes[field]
-            changed_fields << field
-            log_details["#{field}_changed"] = true
-          end
-        end
-        
-        # Special handling for API key (sensitive)
-        if initial_attributes['api_key'].present? != embedding_def.api_key.present?
-          changed_fields << 'api_key'
-          
-          if embedding_def.api_key.present?
-            log_details[:api_key_set] = true
-          else
-            log_details[:api_key_removed] = true
-          end
-        end
-        
-        # Special handling for provider_params (JSON)
-        if initial_attributes['provider_params'].to_s != embedding_def.provider_params.to_s
-          changed_fields << 'provider_params'
-          log_details[:provider_params_changed] = true
-        end
-        
-        # Only log if there are actual changes
-        if changed_fields.any?
-          log_details[:changed_fields] = changed_fields
-          
-          # Get subject for the log
-          subject = log_details[:subject]
-          
-          # Log the action
-          StaffActionLogger.new(current_user).log_custom("update_ai_embedding", log_details)
-        end
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { embedding_id: embedding_def.id, subject: embedding_def.display_name }
+        logger.log_update(
+          "embedding",
+          embedding_def,
+          initial_attributes,
+          ai_embeddings_logger_fields,
+          entity_details,
+        )
       end
-      
+
       def log_ai_embedding_deletion(embedding_details)
-        # Get subject for the log (but keep it in the details hash)
-        subject = embedding_details[:subject]
-        
-        # Log the action
-        StaffActionLogger.new(current_user).log_custom("delete_ai_embedding", embedding_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("embedding", embedding_details)
       end
     end
   end

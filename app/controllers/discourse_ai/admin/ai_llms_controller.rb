@@ -120,7 +120,7 @@ module DiscourseAi
           model_id: llm_model.id,
           display_name: llm_model.display_name,
           name: llm_model.name,
-          provider: llm_model.provider
+          provider: llm_model.provider,
         }
 
         # Clean up companion users
@@ -206,97 +206,87 @@ module DiscourseAi
         permitted
       end
 
-      def log_llm_model_creation(llm_model)
-        # Create basic entity details with important attributes
-        log_details = {
-          model_id: llm_model.id,
-          model_name: llm_model.name,
-          display_name: llm_model.display_name,
-          provider: llm_model.provider,
-          tokenizer: llm_model.tokenizer
+      def ai_llm_logger_fields
+        {
+          display_name: {
+          },
+          name: {
+          },
+          provider: {
+          },
+          tokenizer: {
+          },
+          url: {
+          },
+          max_prompt_tokens: {
+          },
+          max_output_tokens: {
+          },
+          enabled_chat_bot: {
+          },
+          vision_enabled: {
+          },
+          api_key: {
+            type: :sensitive,
+          },
+          input_cost: {
+          },
+          output_cost: {
+          },
+          # JSON fields should be tracked as simple changes
+          json_fields: [:provider_params],
         }
-        
-        # Add API key indication if present (without showing the key)
-        if llm_model.api_key.present?
-          log_details[:api_key_set] = true
-        end
+      end
 
-        # Add token limits if set
-        if llm_model.max_prompt_tokens.present?
-          log_details[:max_prompt_tokens] = llm_model.max_prompt_tokens
-        end
-        
-        if llm_model.max_output_tokens.present?
-          log_details[:max_output_tokens] = llm_model.max_output_tokens
-        end
-          
+      def log_llm_model_creation(llm_model)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { model_id: llm_model.id, subject: llm_model.display_name }
+
         # Add quota information as a special case
         if llm_model.llm_quotas.any?
-          log_details[:quotas] = llm_model.llm_quotas.map do |quota|
-            "Group #{quota.group_id}: #{quota.max_tokens} tokens, #{quota.max_usages} usages, #{quota.duration_seconds}s"
-          end.join("; ")
+          entity_details[:quotas] = llm_model
+            .llm_quotas
+            .map do |quota|
+              "Group #{quota.group_id}: #{quota.max_tokens} tokens, #{quota.max_usages} usages, #{quota.duration_seconds}s"
+            end
+            .join("; ")
         end
-        
-        # Use StaffActionLogger directly with the proper subject
-        StaffActionLogger.new(current_user).log_custom("create_ai_llm_model", log_details.merge(subject: llm_model.display_name))
+
+        logger.log_creation("llm_model", llm_model, ai_llm_logger_fields, entity_details)
       end
 
       def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
-        # Create basic entity details
-        log_details = {
-          model_id: llm_model.id,
-          model_name: llm_model.name,
-          display_name: llm_model.display_name
-        }
-        
-        # Track simple changes
-        %w[display_name name provider tokenizer url max_prompt_tokens max_output_tokens enabled_chat_bot vision_enabled].each do |field|
-          if initial_attributes[field] != llm_model.attributes[field]
-            log_details["#{field}_changed"] = true
-            
-            # For simple fields, show the before/after values
-            unless field == "api_key" # Skip sensitive fields
-              initial_value = initial_attributes[field]
-              current_value = llm_model.attributes[field]
-              log_details[field] = "#{initial_value} → #{current_value}"
-            end
-          end
-        end
-        
-        # Handle API key changes specially
-        if initial_attributes["api_key"].present? != llm_model.api_key.present?
-          log_details[:api_key_changed] = true
-          if llm_model.api_key.present?
-            log_details[:api_key_status] = "set"
-          else
-            log_details[:api_key_status] = "removed"
-          end
-        end
-        
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { model_id: llm_model.id, subject: llm_model.display_name }
+
         # Track quota changes separately as they're a special case
         current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
         if initial_quotas != current_quotas
-          initial_quota_summary = initial_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
-          current_quota_summary = current_quotas.map { |q| "Group #{q['group_id']}: #{q['max_tokens']} tokens" }.join("; ")
-          log_details[:quotas_changed] = true
-          log_details[:quotas] = "#{initial_quota_summary} → #{current_quota_summary}"
+          initial_quota_summary =
+            initial_quotas
+              .map { |q| "Group #{q["group_id"]}: #{q["max_tokens"]} tokens" }
+              .join("; ")
+          current_quota_summary =
+            current_quotas
+              .map { |q| "Group #{q["group_id"]}: #{q["max_tokens"]} tokens" }
+              .join("; ")
+          entity_details[:quotas_changed] = true
+          entity_details[:quotas] = "#{initial_quota_summary} → #{current_quota_summary}"
         end
-        
-        # Check JSON fields like provider_params
-        if initial_attributes["provider_params"].to_s != llm_model.attributes["provider_params"].to_s
-          log_details[:provider_params_changed] = true
-        end
-        
-        # Only log if there are actual changes
-        if log_details.keys.any? { |k| k.to_s.end_with?("_changed") }
-          # Use StaffActionLogger directly with the proper subject
-          StaffActionLogger.new(current_user).log_custom("update_ai_llm_model", log_details.merge(subject: llm_model.display_name))
-        end
+
+        logger.log_update(
+          "llm_model",
+          llm_model,
+          initial_attributes,
+          ai_llm_logger_fields,
+          entity_details,
+        )
       end
 
       def log_llm_model_deletion(model_details)
-        # Use StaffActionLogger directly with the proper subject
-        StaffActionLogger.new(current_user).log_custom("delete_ai_llm_model", model_details.merge(subject: model_details[:display_name]))
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        model_details[:subject] = model_details[:display_name]
+        logger.log_deletion("llm_model", model_details)
       end
     end
   end

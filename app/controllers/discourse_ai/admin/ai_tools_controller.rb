@@ -33,9 +33,8 @@ module DiscourseAi
       end
 
       def update
-        # Capture initial state for logging
         initial_attributes = @ai_tool.attributes.dup
-        
+
         if @ai_tool.update(ai_tool_params)
           RagDocumentFragment.update_target_uploads(@ai_tool, attached_upload_ids)
           log_ai_tool_update(@ai_tool, initial_attributes)
@@ -46,16 +45,15 @@ module DiscourseAi
       end
 
       def destroy
-        # Capture tool details for logging before destruction
-        tool_details = {
+        tool_logger_details = {
           tool_id: @ai_tool.id,
           name: @ai_tool.name,
           tool_name: @ai_tool.tool_name,
-          subject: @ai_tool.name # Use name as the subject for AiTools
+          subject: @ai_tool.name,
         }
 
         if @ai_tool.destroy
-          log_ai_tool_deletion(tool_details)
+          log_ai_tool_deletion(tool_logger_details)
           head :no_content
         else
           render_json_error @ai_tool
@@ -110,87 +108,59 @@ module DiscourseAi
           )
           .except(:rag_uploads)
       end
-      
+
+      def ai_tool_logger_fields
+        {
+          name: {
+          },
+          tool_name: {
+          },
+          description: {
+          },
+          summary: {
+          },
+          enabled: {
+          },
+          rag_chunk_tokens: {
+          },
+          rag_chunk_overlap_tokens: {
+          },
+          rag_llm_model_id: {
+          },
+          script: {
+            type: :large_text,
+          },
+          parameters: {
+            type: :large_text,
+          },
+        }
+      end
+
       def log_ai_tool_creation(ai_tool)
-        # Create log details
-        log_details = {
-          tool_id: ai_tool.id,
-          name: ai_tool.name,
-          tool_name: ai_tool.tool_name,
-          description: ai_tool.description,
-          subject: ai_tool.name # Use name as the subject for AiTools
-        }
-        
-        # Add parameter count if available
-        if ai_tool.parameters.present?
-          log_details[:parameter_count] = ai_tool.parameters.size
-        end
-        
-        # For sensitive/large fields, don't include the full content
-        if ai_tool.script.present?
-          log_details[:script_size] = ai_tool.script.size
-        end
-        
-        # Get subject for the log
-        subject = log_details[:subject]
-        
-        # Add subject to the details if present
-        log_details[:subject] = subject if subject.present?
-        
-        # Log the action
-        StaffActionLogger.new(current_user).log_custom("create_ai_tool", log_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+
+        entity_details = { tool_id: ai_tool.id, subject: ai_tool.name }
+        entity_details[:parameter_count] = ai_tool.parameters.size if ai_tool.parameters.present?
+
+        logger.log_creation("tool", ai_tool, ai_tool_logger_fields, entity_details)
       end
-      
+
       def log_ai_tool_update(ai_tool, initial_attributes)
-        # Create log details
-        log_details = {
-          tool_id: ai_tool.id,
-          name: ai_tool.name,
-          tool_name: ai_tool.tool_name,
-          subject: ai_tool.name # Use name as the subject for AiTools
-        }
-        
-        # Track changes in fields
-        changed_fields = []
-        
-        # Check for changes in basic fields
-        %w[name tool_name description summary enabled].each do |field|
-          if initial_attributes[field] != ai_tool.attributes[field]
-            changed_fields << field
-            log_details["#{field}_changed"] = true
-          end
-        end
-        
-        # Special handling for script (sensitive/large)
-        if initial_attributes['script'] != ai_tool.script
-          changed_fields << 'script'
-          log_details[:script_changed] = true
-        end
-        
-        # Special handling for parameters (JSON)
-        if initial_attributes['parameters'].to_s != ai_tool.parameters.to_s
-          changed_fields << 'parameters'
-          log_details[:parameters_changed] = true
-        end
-        
-        # Only log if there are actual changes
-        if changed_fields.any?
-          log_details[:changed_fields] = changed_fields
-          
-          # Get subject for the log
-          subject = log_details[:subject]
-          
-          # Log the action
-          StaffActionLogger.new(current_user).log_custom("update_ai_tool", log_details)
-        end
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { tool_id: ai_tool.id, subject: ai_tool.name }
+
+        logger.log_update(
+          "tool",
+          ai_tool,
+          initial_attributes,
+          ai_tool_logger_fields,
+          entity_details,
+        )
       end
-      
+
       def log_ai_tool_deletion(tool_details)
-        # Get subject for the log
-        subject = tool_details[:subject]
-        
-        # Log the action
-        StaffActionLogger.new(current_user).log_custom("delete_ai_tool", tool_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("tool", tool_details)
       end
     end
   end

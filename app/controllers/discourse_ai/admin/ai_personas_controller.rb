@@ -75,7 +75,6 @@ module DiscourseAi
       end
 
       def update
-        # Capture initial state for logging
         initial_attributes = @ai_persona.attributes.dup
 
         if @ai_persona.update(ai_persona_params.except(:rag_uploads))
@@ -89,11 +88,10 @@ module DiscourseAi
       end
 
       def destroy
-        # Capture persona details for logging before destruction
         persona_details = {
           persona_id: @ai_persona.id,
           name: @ai_persona.name,
-          description: @ai_persona.description
+          description: @ai_persona.description,
         }
 
         if @ai_persona.destroy
@@ -275,84 +273,90 @@ module DiscourseAi
         examples.map { |example_arr| example_arr.take(2).map(&:to_s) }
       end
 
-      def log_ai_persona_creation(ai_persona)
-        # Create basic entity details with important attributes
-        log_details = {
-          persona_id: ai_persona.id,
-          persona_name: ai_persona.name,
-          description: ai_persona.description
+      def ai_persona_logger_fields
+        {
+          name: {
+          },
+          description: {
+          },
+          enabled: {
+          },
+          priority: {
+          },
+          system_prompt: {
+            type: :large_text,
+          },
+          default_llm_id: {
+          },
+          temperature: {
+          },
+          top_p: {
+          },
+          user_id: {
+          },
+          max_context_posts: {
+          },
+          vision_enabled: {
+          },
+          vision_max_pixels: {
+          },
+          rag_chunk_tokens: {
+          },
+          rag_chunk_overlap_tokens: {
+          },
+          rag_conversation_chunks: {
+          },
+          rag_llm_model_id: {
+          },
+          question_consolidator_llm_id: {
+          },
+          allow_chat_channel_mentions: {
+          },
+          allow_chat_direct_messages: {
+          },
+          allow_topic_mentions: {
+          },
+          allow_personal_messages: {
+          },
+          tool_details: {
+            type: :large_text,
+          },
+          forced_tool_count: {
+          },
+          force_default_llm: {
+          },
+          # JSON fields
+          json_fields: %i[tools response_format examples allowed_group_ids],
         }
-        
-        # Include basic configuration fields if present
-        %w[enabled priority temperature top_p default_llm_id].each do |field|
-          value = ai_persona.send(field) if ai_persona.respond_to?(field)
-          log_details[field] = value if value.present?
-        end
-        
-        # Handle system prompt specially (truncate if too long)
-        if ai_persona.system_prompt.present?
-          if ai_persona.system_prompt.length > 100
-            log_details[:system_prompt] = ai_persona.system_prompt.truncate(100)
-          else
-            log_details[:system_prompt] = ai_persona.system_prompt
-          end
-        end
-        
-        # Add tools count separately as it's not a direct attribute
-        log_details[:tools_count] = (ai_persona.tools || []).size
-        
-        # Add allowed_group_ids
-        log_details[:allowed_group_ids] = ai_persona.allowed_group_ids if ai_persona.allowed_group_ids.present?
-        
-        # Use StaffActionLogger directly with the proper subject
-        StaffActionLogger.new(current_user).log_custom("create_ai_persona", log_details.merge(subject: ai_persona.name))
+      end
+
+      def log_ai_persona_creation(ai_persona)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { persona_id: ai_persona.id, subject: ai_persona.name }
+        entity_details[:tools_count] = (ai_persona.tools || []).size
+
+        logger.log_creation("persona", ai_persona, ai_persona_logger_fields, entity_details)
       end
 
       def log_ai_persona_update(ai_persona, initial_attributes)
-        # Create basic entity details
-        log_details = {
-          persona_id: ai_persona.id,
-          persona_name: ai_persona.name
-        }
-        
-        # Track simple changes
-        %w[name description enabled priority system_prompt default_llm_id temperature top_p
-           vision_enabled vision_max_pixels max_context_posts rag_chunk_tokens rag_chunk_overlap_tokens
-           rag_conversation_chunks rag_llm_model_id question_consolidator_llm_id forced_tool_count
-           allow_chat_channel_mentions allow_chat_direct_messages allow_topic_mentions allow_personal_messages].each do |field|
-          
-          if initial_attributes[field] != ai_persona.attributes[field]
-            log_details["#{field}_changed"] = true
-            
-            # For large text fields, don't include the values
-            if field == "system_prompt"
-              log_details["#{field}_updated"] = true
-            else 
-              # For simple fields, show the before/after values
-              initial_value = initial_attributes[field]
-              current_value = ai_persona.attributes[field]
-              log_details[field] = "#{initial_value} → #{current_value}"
-            end
-          end
-        end
-        
-        # Check JSON fields
-        %w[allowed_group_ids tools response_format examples].each do |field|
-          if initial_attributes[field].to_s != ai_persona.attributes[field].to_s
-            log_details["#{field}_changed"] = true
-          end
-        end
-        
-        # Only log if there are actual changes
-        if log_details.keys.any? { |k| k.to_s.end_with?("_changed") }
-          # Use StaffActionLogger directly with the proper subject
-          StaffActionLogger.new(current_user).log_custom("update_ai_persona", log_details.merge(subject: ai_persona.name))
-        end
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { persona_id: ai_persona.id, subject: ai_persona.name }
+        entity_details[:tools_count] = ai_persona.tools.size if ai_persona.tools.present?
+
+        logger.log_update(
+          "persona",
+          ai_persona,
+          initial_attributes,
+          ai_persona_logger_fields,
+          entity_details,
+        )
       end
 
       def log_ai_persona_deletion(persona_details)
-        # Use StaffActionLogger directly with the proper subject
-        StaffActionLogger.new(current_user).log_custom("delete_ai_persona", persona_details.merge(subject: persona_details[:name]))
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        persona_details[:subject] = persona_details[:name]
+
+        logger.log_deletion("persona", persona_details)
       end
     end
   end
