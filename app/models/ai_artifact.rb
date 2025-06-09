@@ -22,7 +22,10 @@ class AiArtifact < ActiveRecord::Base
     <<~HTML
       <div class='ai-artifact'>
         <iframe src='#{url(id, version)}' frameborder="0" height="100%" width="100%"></iframe>
-        <a href='#{url(id, version)}' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
+        <div class='ai-artifact-controls'>
+          <a href='#{url(id, version)}' class='link-artifact' target='_blank'>#{I18n.t("discourse_ai.ai_artifact.link")}</a>
+          <a href class='copy-embed' data-url="#{url(id, version)}">#{I18n.t("discourse_ai.ai_artifact.copy_embed")}</a>
+        </div>
       </div>
     HTML
   end

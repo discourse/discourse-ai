@@ -223,10 +223,12 @@ en:
         max_keys_exceeded:
           one: "You can only have %{max} key in the artifact."
           other: "You can only have %{max} keys in the artifact."
-      link: "Show Artifact in new tab"
+      link: "Show in new tab"
+      copy_embed: "Copy embed"
       view_source: "View Source"
       view_changes: "View Changes"
       change_description: "Change Description"
+      copied: "Copied to clipboard"
     unknown_model: "Unknown AI model"
 
     tools:
