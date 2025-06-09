@@ -316,8 +316,10 @@ module DiscourseAi
               - keys_only (boolean) - Return only keys, not values
               - page (number) - Page number for pagination
               - per_page (number) - Items per page (max 100, default 100)
-            - Returns: Promise<object> - { key_values: Array(key, value), has_more: boolean, total_count: number }
+            - Returns: Promise<object> - { key_values: Array(key, value, user(username, name, avatar_template)), has_more: boolean, total_count: number }
             - Example: `const result = await window.discourseArtifact.index({ keys_only: true });`
+
+            - avatar_template: string - URL template for user avatars, MUST replace {size} with desired size in pixels (eg: 22)
 
             ### Storage Rules:
             - Each user can store up to 100 keys per artifact

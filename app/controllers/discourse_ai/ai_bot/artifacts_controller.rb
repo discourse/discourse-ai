@@ -302,7 +302,18 @@ module DiscourseAi
 
               if (!response.ok) throw new Error('Failed to get key-values');
 
-              return await response.json();
+              const result = await response.json();
+              const userMap = {};
+              result.users.forEach(user => {
+                userMap[user.id] = user;
+              });
+              result.key_values.forEach(kv => {
+                if (kv.user_id && userMap[kv.user_id]) {
+                  kv.user = userMap[kv.user_id];
+                }
+              });
+
+              return result;
             }
           </script>
         JAVASCRIPT
