@@ -55,7 +55,7 @@ RSpec.describe "AI Artifact Key-Value API", type: :system, js: true do
     within_frame(find("iframe")) do
       expect(page).to have_selector("#log", wait: 10)
       expect(page).to have_selector("#log[data-test-complete='true']", wait: 15)
-      expect(page).not_to have_selector("#log[data-test-error]")
+      expect(page).to have_no_selector("#log[data-test-error]")
     end
 
     expect(artifact.key_values.find_by(key: "test_key", user: user)).to be_nil
