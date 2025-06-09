@@ -123,12 +123,14 @@ export default class ShareModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
+        {{!-- template-lint-disable no-invalid-interactive  --}}
         <div
           class="ai-share-full-topic-modal__body"
           {{on "click" this.maybeCopyEmbed}}
         >
           {{this.htmlContext}}
         </div>
+        {{!-- template-lint-enable}}
       </:body>
 
       <:footer>
