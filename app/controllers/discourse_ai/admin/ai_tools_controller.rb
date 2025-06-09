@@ -50,7 +50,8 @@ module DiscourseAi
         tool_details = {
           tool_id: @ai_tool.id,
           name: @ai_tool.name,
-          tool_name: @ai_tool.tool_name
+          tool_name: @ai_tool.tool_name,
+          subject: @ai_tool.name # Use name as the subject for AiTools
         }
 
         if @ai_tool.destroy
@@ -116,7 +117,8 @@ module DiscourseAi
           tool_id: ai_tool.id,
           name: ai_tool.name,
           tool_name: ai_tool.tool_name,
-          description: ai_tool.description
+          description: ai_tool.description,
+          subject: ai_tool.name # Use name as the subject for AiTools
         }
         
         # Add parameter count if available
@@ -129,6 +131,12 @@ module DiscourseAi
           log_details[:script_size] = ai_tool.script.size
         end
         
+        # Get subject for the log
+        subject = log_details[:subject]
+        
+        # Add subject to the details if present
+        log_details[:subject] = subject if subject.present?
+        
         # Log the action
         StaffActionLogger.new(current_user).log_custom("create_ai_tool", log_details)
       end
@@ -138,7 +146,8 @@ module DiscourseAi
         log_details = {
           tool_id: ai_tool.id,
           name: ai_tool.name,
-          tool_name: ai_tool.tool_name
+          tool_name: ai_tool.tool_name,
+          subject: ai_tool.name # Use name as the subject for AiTools
         }
         
         # Track changes in fields
@@ -167,11 +176,20 @@ module DiscourseAi
         # Only log if there are actual changes
         if changed_fields.any?
           log_details[:changed_fields] = changed_fields
+          
+          # Get subject for the log
+          subject = log_details[:subject]
+          
+          # Log the action
           StaffActionLogger.new(current_user).log_custom("update_ai_tool", log_details)
         end
       end
       
       def log_ai_tool_deletion(tool_details)
+        # Get subject for the log
+        subject = tool_details[:subject]
+        
+        # Log the action
         StaffActionLogger.new(current_user).log_custom("delete_ai_tool", tool_details)
       end
     end

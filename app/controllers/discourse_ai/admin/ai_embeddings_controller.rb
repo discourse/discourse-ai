@@ -85,7 +85,8 @@ module DiscourseAi
           embedding_id: embedding_def.id,
           display_name: embedding_def.display_name,
           provider: embedding_def.provider,
-          dimensions: embedding_def.dimensions
+          dimensions: embedding_def.dimensions,
+          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
         }
         
         if embedding_def.destroy
@@ -149,7 +150,8 @@ module DiscourseAi
           embedding_id: embedding_def.id,
           display_name: embedding_def.display_name,
           provider: embedding_def.provider,
-          dimensions: embedding_def.dimensions
+          dimensions: embedding_def.dimensions,
+          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
         }
         
         # Only include tokenizer if present
@@ -162,6 +164,9 @@ module DiscourseAi
           log_details[:api_key_set] = true
         end
         
+        # Get subject for the log
+        subject = log_details[:subject]
+        
         # Log the action
         StaffActionLogger.new(current_user).log_custom("create_ai_embedding", log_details)
       end
@@ -170,7 +175,8 @@ module DiscourseAi
         # Create log details
         log_details = {
           embedding_id: embedding_def.id,
-          display_name: embedding_def.display_name
+          display_name: embedding_def.display_name,
+          subject: embedding_def.display_name # Use display_name as the subject for EmbeddingDefinition
         }
         
         # Track changes in fields
@@ -204,11 +210,20 @@ module DiscourseAi
         # Only log if there are actual changes
         if changed_fields.any?
           log_details[:changed_fields] = changed_fields
+          
+          # Get subject for the log
+          subject = log_details[:subject]
+          
+          # Log the action
           StaffActionLogger.new(current_user).log_custom("update_ai_embedding", log_details)
         end
       end
       
       def log_ai_embedding_deletion(embedding_details)
+        # Get subject for the log (but keep it in the details hash)
+        subject = embedding_details[:subject]
+        
+        # Log the action
         StaffActionLogger.new(current_user).log_custom("delete_ai_embedding", embedding_details)
       end
     end

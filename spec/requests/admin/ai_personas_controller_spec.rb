@@ -225,19 +225,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       end
       
       it "logs staff action when creating a persona" do
-        logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
-        expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
-        
-        # Verify logging happens with the right parameters
-        expect(logger).to receive(:log_custom).with(
-          "create_ai_persona",
-          hash_including(
-            name: "superbot",
-            description: "Assists with tasks",
-            system_prompt: "you are a helpful bot"
-          )
-        )
-        
+        # Create the persona
         post "/admin/plugins/discourse-ai/ai-personas.json",
              params: { ai_persona: valid_attributes }.to_json,
              headers: {
@@ -245,6 +233,11 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
              }
              
         expect(response).to be_successful
+        
+        # Now verify the log was created with the right subject
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_persona").last
+        expect(history).to be_present
+        expect(history.subject).to eq("superbot") # Verify subject is set to name
       end
     end
 
@@ -336,18 +329,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     it "logs staff action when updating a persona" do
       persona = Fabricate(:ai_persona, name: "original_name", description: "original description")
       
-      logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
-      expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
-      
-      # It should detect and log the changes to name and description
-      expect(logger).to receive(:log_update) do |entity_type, entity, initial_attributes, trackable_fields, json_fields|
-        expect(entity_type).to eq("persona")
-        expect(entity).to eq(persona)
-        expect(trackable_fields).to include("name", "description")
-        expect(initial_attributes["name"]).to eq("original_name")
-        expect(initial_attributes["description"]).to eq("original description")
-      end
-      
+      # Update the persona
       put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
           params: {
             ai_persona: {
@@ -360,6 +342,11 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       persona.reload
       expect(persona.name).to eq("updated_name")
       expect(persona.description).to eq("updated description")
+      
+      # Now verify the log was created with the right subject
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_persona").last
+      expect(history).to be_present
+      expect(history.subject).to eq("updated_name") # Verify subject is set to the new name
     end
 
     it "supports updating rag params" do
@@ -518,23 +505,15 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       # Capture persona details before deletion
       persona_id = ai_persona.id
       persona_name = ai_persona.name
-      persona_description = ai_persona.description
       
-      logger = instance_double(DiscourseAi::Utils::AiStaffActionLogger)
-      expect(DiscourseAi::Utils::AiStaffActionLogger).to receive(:new).with(admin).and_return(logger)
-      
-      # It should use log_deletion with the correct entity details
-      expect(logger).to receive(:log_deletion).with(
-        "persona", 
-        hash_including(
-          persona_id: persona_id,
-          name: persona_name,
-          description: persona_description
-        )
-      )
-      
+      # Delete the persona
       delete "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
       expect(response).to have_http_status(:no_content)
+      
+      # Now verify the log was created with the right subject
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_persona").last
+      expect(history).to be_present
+      expect(history.subject).to eq(persona_name) # Verify subject is set to name
     end
 
     it "is not allowed to delete system personas" do

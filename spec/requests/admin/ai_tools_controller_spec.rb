@@ -84,6 +84,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_tool").last
       expect(history.details).to include("name: Test Tool 1")
       expect(history.details).to include("tool_name: test_tool_1")
+      expect(history.subject).to eq("Test Tool 1") # Verify subject field is included
     end
 
     context "when the parameter is a enum" do
@@ -169,6 +170,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_tool").last
       expect(history.details).to include("tool_id: #{ai_tool.id}")
       expect(history.details).to include("name_changed: true")
+      expect(history.subject).to eq("Updated Tool") # Verify subject field is included with new name
     end
 
     context "when updating an enum parameters" do
@@ -212,6 +214,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       
       history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_tool").last
       expect(history.details).to include("tool_id: #{tool_id}")
+      expect(history.subject).to eq("Test Tool") # Verify subject field is included
     end
   end
 

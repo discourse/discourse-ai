@@ -44,6 +44,7 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
         expect(history.details).to include("display_name: Embedding config test")
         expect(history.details).to include("provider: hugging_face")
         expect(history.details).to include("dimensions: 1001")
+        expect(history.subject).to eq("Embedding config test") # Verify subject field is included
       end
 
       it "stores provider-specific config params" do
@@ -119,6 +120,7 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
         expect(history.details).to include("embedding_id: #{embedding_definition.id}")
         expect(history.details).to include("provider_changed: true")
         expect(history.details).to include("changed_fields:")
+        expect(history.subject).to eq(embedding_definition.display_name) # Verify subject field is included
       end
 
       it "returns a 404 if there is no model with the given Id" do
@@ -178,6 +180,7 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
       history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_embedding").last
       expect(history.details).to include("embedding_id: #{embedding_id}")
       expect(history.details).to include("display_name: #{display_name}")
+      expect(history.subject).to eq(display_name) # Verify subject field is included
     end
 
     it "validates the model is not in use" do
