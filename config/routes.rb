@@ -48,7 +48,9 @@ DiscourseAi::Engine.routes.draw do
 
   scope module: :ai_bot, path: "/ai-bot/artifact-key-values/:artifact_id" do
     get "/" => "artifact_key_values#index"
-    post "/" => "artifact_key_values#create"
+    post "/" => "artifact_key_values#set"
+    delete "/:key" => "artifact_key_values#destroy"
+    delete "/" => "artifact_key_values#destroy"
   end
 
   scope module: :summarization, path: "/summarization", defaults: { format: :json } do

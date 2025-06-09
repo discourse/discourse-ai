@@ -195,7 +195,164 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
     end
   end
 
-  describe "#create" do
+  describe "#destroy" do
+    fab!(:key_value_to_delete) do
+      Fabricate(
+        :ai_artifact_key_value,
+        ai_artifact: artifact,
+        user: user,
+        key: "delete_me",
+        value: "delete_value",
+        public: false,
+      )
+    end
+
+    fab!(:other_user_key_value_to_delete) do
+      Fabricate(
+        :ai_artifact_key_value,
+        ai_artifact: artifact,
+        user: other_user,
+        key: "other_delete_me",
+        value: "other_delete_value",
+        public: false,
+      )
+    end
+
+    context "when not logged in" do
+      it "returns 403 forbidden" do
+        delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/delete_me.json"
+        expect(response.status).to eq(403)
+      end
+    end
+
+    context "when logged in" do
+      before { sign_in(user) }
+
+      it "deletes own key value successfully" do
+        expect {
+          delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/delete_me.json"
+          expect(response.status).to eq(200)
+        }.to change { artifact.key_values.count }.by(-1)
+
+        expect(artifact.key_values.find_by(key: "delete_me")).to be_nil
+      end
+
+      it "returns 404 for non-existent key" do
+        delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/non_existent_key.json"
+
+        expect(response.status).to eq(404)
+        json = response.parsed_body
+        expect(json["error"]).to eq("Key not found")
+      end
+
+      it "returns 404 when trying to delete another user's key" do
+        delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/other_delete_me.json"
+
+        expect(response.status).to eq(404)
+        json = response.parsed_body
+        expect(json["error"]).to eq("Key not found")
+
+        # Verify the key still exists
+        expect(artifact.key_values.find_by(key: "other_delete_me")).to be_present
+      end
+
+      it "returns 404 for non-existent artifact" do
+        delete "/discourse-ai/ai-bot/artifact-key-values/999999/delete_me.json"
+
+        expect(response.status).to eq(404)
+      end
+
+      it "returns 404 for private artifact user cannot see" do
+        topic = Fabricate(:private_message_topic, user: other_user)
+        private_post = Fabricate(:post, topic: topic)
+        private_artifact = Fabricate(:ai_artifact, post: private_post)
+        Fabricate(
+          :ai_artifact_key_value,
+          ai_artifact: private_artifact,
+          user: other_user,
+          key: "private_key",
+        )
+
+        delete "/discourse-ai/ai-bot/artifact-key-values/#{private_artifact.id}/private_key.json"
+
+        expect(response.status).to eq(404)
+      end
+
+      context "with URL encoding" do
+        fab!(:special_key_value) do
+          Fabricate(
+            :ai_artifact_key_value,
+            ai_artifact: artifact,
+            user: user,
+            key: "key with spaces & symbols!",
+            value: "special_value",
+          )
+        end
+
+        it "handles URL encoded keys correctly" do
+          expect {
+            delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json",
+                   params: {
+                     key: "key with spaces & symbols!",
+                   }
+            expect(response.status).to eq(200)
+          }.to change { artifact.key_values.count }.by(-1)
+
+          expect(artifact.key_values.find_by(key: "key with spaces & symbols!")).to be_nil
+        end
+      end
+    end
+
+    context "when logged in as admin" do
+      before { sign_in(admin) }
+
+      it "can only delete own keys, not other users' keys" do
+        # Even admins should only be able to delete their own keys in this context
+        delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/other_delete_me.json"
+
+        expect(response.status).to eq(404)
+        json = response.parsed_body
+        expect(json["error"]).to eq("Key not found")
+
+        # Verify the key still exists
+        expect(artifact.key_values.find_by(key: "other_delete_me")).to be_present
+      end
+
+      it "can delete own keys" do
+        _admin_key =
+          Fabricate(
+            :ai_artifact_key_value,
+            ai_artifact: artifact,
+            user: admin,
+            key: "admin_key",
+            value: "admin_value",
+          )
+
+        expect {
+          delete "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}/admin_key.json"
+          expect(response.status).to eq(200)
+        }.to change { artifact.key_values.count }.by(-1)
+      end
+
+      it "can access private artifacts" do
+        _admin_key =
+          Fabricate(
+            :ai_artifact_key_value,
+            ai_artifact: private_artifact,
+            user: admin,
+            key: "private_admin_key",
+            value: "private_admin_value",
+          )
+
+        expect {
+          delete "/discourse-ai/ai-bot/artifact-key-values/#{private_artifact.id}/private_admin_key.json"
+          expect(response.status).to eq(200)
+        }.to change { private_artifact.key_values.count }.by(-1)
+      end
+    end
+  end
+
+  describe "#set" do
     let(:valid_params) do
       { artifact_id: artifact.id, key: "new_key", value: "new_value", public: true }
     end

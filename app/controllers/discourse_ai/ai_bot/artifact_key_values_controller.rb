@@ -4,7 +4,7 @@ module DiscourseAi
   module AiBot
     class ArtifactKeyValuesController < ::ApplicationController
       requires_plugin DiscourseAi::PLUGIN_NAME
-      before_action :ensure_logged_in, only: %i[create]
+      before_action :ensure_logged_in, only: %i[set destroy]
       before_action :find_artifact
 
       PER_PAGE_MAX = 100
@@ -40,9 +40,31 @@ module DiscourseAi
                }
       end
 
-      def create
-        key_value = @artifact.key_values.build(key_value_params)
-        key_value.user = current_user
+      def destroy
+        if params[:key].blank?
+          render json: { error: "Key parameter is required" }, status: :bad_request
+          return
+        end
+
+        key_value = @artifact.key_values.find_by(user_id: current_user.id, key: params[:key])
+
+        if key_value.nil?
+          render json: { error: "Key not found" }, status: :not_found
+        elsif key_value.destroy
+          head :ok
+        else
+          render json: { errors: key_value.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
+      def set
+        key_value =
+          @artifact.key_values.find_or_initialize_by(
+            user: current_user,
+            key: key_value_params[:key],
+          )
+
+        key_value.assign_attributes(key_value_params.except(:key))
 
         if key_value.save
           render json: AiArtifactKeyValueSerializer.new(key_value).as_json
