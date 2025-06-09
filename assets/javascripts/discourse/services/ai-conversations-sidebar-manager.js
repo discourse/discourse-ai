@@ -86,13 +86,15 @@ export default class AiConversationsSidebarManager extends Service {
 
   forceCustomSidebar() {
     document.body.classList.add("has-ai-conversations-sidebar");
+    if (!this.sidebarState.isForcingSidebar) {
+      this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
+    }
+
     this.sidebarState.isForcingSidebar = true;
 
     // calling this before fetching data
     // helps avoid flash of main sidebar mode
     this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
-
-    this.appEvents.trigger("discourse-ai:force-conversations-sidebar");
     this.sidebarState.setSeparatedMode();
     this.sidebarState.hideSwitchPanelButtons();
 
