@@ -11,19 +11,22 @@ module DiscourseAi
 
       def edit
         raise Discourse::InvalidParameters.new(:id) if params[:id].blank?
-        render json: serialize_feature(DiscourseAi::Features.find_feature_by_id(params[:id].to_i))
+        render json: serialize_module(DiscourseAi::Features.find_module_by_id(params[:id].to_i))
       end
 
       private
 
-      def serialize_features(features)
-        features.map { |feature| feature.merge(persona: serialize_persona(feature[:persona])) }
+      def serialize_features(modules)
+        modules.map { |a_module| serialize_module(a_module) }
       end
 
-      def serialize_feature(feature)
-        return nil if feature.blank?
+      def serialize_module(a_module)
+        return nil if a_module.blank?
 
-        feature.merge(persona: serialize_persona(feature[:persona]))
+        a_module.merge(
+          features:
+            a_module[:features].map { |f| f.merge(persona: serialize_persona(f[:persona])) },
+        )
       end
 
       def serialize_persona(persona)

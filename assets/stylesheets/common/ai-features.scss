@@ -1,28 +1,51 @@
-.ai-feature-list {
-  &__configured-features {
-    margin-block: 2rem;
+.ai-features-list {
+  margin-block: 2rem;
+}
+
+.ai-module {
+  &__header {
+    border-bottom: 1px solid var(--primary-low);
+    padding-bottom: 0.5rem;
   }
 
-  &__row-item-name,
-  &__row-item-description {
-    display: block;
+  &__module-title {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.ai-feature-cards {
+  margin-top: 0.5rem;
+}
+
+.ai-feature-card {
+  background: var(--primary-very-low);
+  border: 1px solid var(--primary-low);
+  padding: 0.5rem;
+  display: block;
+
+  &__persona,
+  &__groups {
+    font-size: var(--font-down-1-rem);
   }
 
-  &__row-item-persona {
-    padding: 0;
-    text-align: left;
-
+  &__persona {
     @include ellipsis;
   }
 
-  &__row-item-groups {
+  &__persona-button {
+    padding-left: 0;
+  }
+
+  &__item-groups {
     list-style: none;
     display: flex;
     flex-flow: row wrap;
     gap: 0.25em;
+    margin: 0.5em 0;
 
     li {
-      font-size: var(--font-down-2);
+      font-size: var(--font-down-1);
       border-radius: var(--d-border-radius);
       background: var(--primary-very-low);
       border: 1px solid var(--primary-low);
