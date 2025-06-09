@@ -10,6 +10,11 @@ module DiscourseAi
       end
 
       def update
+        # Get the initial settings for logging changes
+        initial_settings = AiModerationSetting.spam
+        initial_custom_instructions = initial_settings&.data&.dig("custom_instructions")
+        initial_llm_model_id = initial_settings&.llm_model_id
+        
         updated_params = {}
         if allowed_params.key?(:llm_model_id)
           llm_model_id = updated_params[:llm_model_id] = allowed_params[:llm_model_id]
@@ -36,6 +41,9 @@ module DiscourseAi
           else
             AiModerationSetting.create!(updated_params.merge(setting_type: :spam))
           end
+          
+          # Log any changes to custom_instructions or llm_model_id
+          log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, allowed_params)
         end
 
         is_enabled = ActiveModel::Type::Boolean.new.cast(allowed_params[:is_enabled])
@@ -112,6 +120,34 @@ module DiscourseAi
       end
 
       private
+      
+      def log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, params)
+        # Track changes for logging
+        changes_to_log = {}
+        
+        # Only track llm_model_id changes when it's in the params AND has actually changed
+        if params.key?(:llm_model_id) && initial_llm_model_id.to_s != params[:llm_model_id].to_s
+          # Get model names for better logging
+          old_model_name = LlmModel.find_by(id: initial_llm_model_id)&.display_name || initial_llm_model_id
+          new_model_name = LlmModel.find_by(id: params[:llm_model_id])&.display_name || params[:llm_model_id]
+          
+          changes_to_log[:llm_model_id] = "#{old_model_name} → #{new_model_name}"
+        end
+        
+        # Only track custom_instructions changes when it's in the params AND has actually changed
+        if params.key?(:custom_instructions) && initial_custom_instructions != params[:custom_instructions]
+          changes_to_log[:custom_instructions] = params[:custom_instructions]
+        end
+        
+        # Log the changes if any were made to llm_model_id or custom_instructions
+        if changes_to_log.present?
+          # Log the changes using StaffActionLogger (without a subject as requested)
+          StaffActionLogger.new(current_user).log_custom(
+            "update_ai_spam_settings", 
+            changes_to_log
+          )
+        end
+      end
 
       def allowed_params
         params.permit(:is_enabled, :llm_model_id, :custom_instructions)
