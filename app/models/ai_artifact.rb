@@ -16,6 +16,7 @@ class AiArtifact < ActiveRecord::Base
     https://ajax.googleapis.com
     https://d3js.org
     https://code.jquery.com
+    https://esm.sh
   ]
 
   def self.artifact_version_attribute(version)
