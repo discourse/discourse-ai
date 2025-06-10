@@ -89,7 +89,7 @@ module DiscourseAi
             context << "Your task is to capture the meaning of the initial statement."
           end
 
-          context
+          [{ type: :user, content: context }]
         end
       end
     end
