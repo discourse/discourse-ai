@@ -8,19 +8,11 @@ module DiscourseAi
       before_action :find_ai_persona, only: %i[edit update destroy create_user]
 
       def index
-        features_by_persona_id = DiscourseAi::Features.features.group_by { |f| f[:persona]&.id }
-
         ai_personas =
           AiPersona
             .ordered
             .includes(:user, :uploads)
-            .map do |persona|
-              LocalizedAiPersonaSerializer.new(
-                persona,
-                root: false,
-                features_by_persona_id: features_by_persona_id,
-              )
-            end
+            .map { |persona| LocalizedAiPersonaSerializer.new(persona, root: false) }
 
         tools =
           DiscourseAi::Personas::Persona.all_available_tools.map do |tool|

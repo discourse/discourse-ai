@@ -3,11 +3,6 @@
 class LocalizedAiPersonaSerializer < ApplicationSerializer
   root "ai_persona"
 
-  def initialize(object, options = {})
-    @features_by_persona_id = options.delete(:features_by_persona_id)
-    super(object, options)
-  end
-
   attributes :id,
              :name,
              :description,
@@ -58,5 +53,9 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
 
   def default_llm
     LlmModel.find_by(id: object.default_llm_id)
+  end
+
+  def features
+    object.features.map { |feature| { id: feature.module_id, name: feature.module_name } }
   end
 end

@@ -98,7 +98,10 @@ export default class AiPersonaListEditor extends Component {
         value: "all",
         label: i18n("discourse_ai.ai_persona.filters.all_features"),
       },
-      ...features.map((name) => ({ value: name, label: name })),
+      ...features.map((name) => ({
+        value: name,
+        label: i18n(`discourse_ai.features.${name}.name`),
+      })),
     ];
   }
 
@@ -275,7 +278,9 @@ export default class AiPersonaListEditor extends Component {
                     {{#each persona.features as |feature|}}
                       <DButton
                         class="btn-flat btn-small ai-persona-list__row-item-feature"
-                        @translatedLabel={{feature.name}}
+                        @translatedLabel={{i18n
+                          (concat "discourse_ai.features." feature.name ".name")
+                        }}
                         @route="adminPlugins.show.discourse-ai-features.edit"
                         @routeModels={{feature.id}}
                       />
