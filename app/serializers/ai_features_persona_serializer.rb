@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AiFeaturesPersonaSerializer < ApplicationSerializer
-  attributes :id, :name, :system_prompt, :allowed_groups, :enabled
+  attributes :id, :name, :allowed_groups
 
   def allowed_groups
     Group
