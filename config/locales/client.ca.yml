@@ -36,11 +36,12 @@ ca:
     discourse_ai:
       features:
         back: "Enrere"
-        list:
-          header:
-            name: "Nom"
-            groups: "Grups"
-          edit: "Edita"
+        disabled: "(desactivat)"
+        groups: "Grups:"
+        no_groups: "Cap"
+        edit: "Edita"
+        search:
+          name: "Cerca"
       modals:
         select_option: "Trieu una opció..."
       spam:

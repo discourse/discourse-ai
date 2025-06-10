@@ -36,11 +36,11 @@ be:
     discourse_ai:
       features:
         back: "Назад"
-        list:
-          header:
-            name: "Імя"
-            groups: "групы"
-          edit: "Рэдагаваць"
+        disabled: "(адключана)"
+        groups: "групы:"
+        edit: "Рэдагаваць"
+        search:
+          name: "Пошук"
       spam:
         short_title: "Спам"
         enable: "Уключыць"

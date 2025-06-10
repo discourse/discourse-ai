@@ -38,11 +38,13 @@ zh_TW:
     discourse_ai:
       features:
         back: "上一步"
-        list:
-          header:
-            name: "名字"
-            groups: "群組"
-          edit: "編輯"
+        disabled: "(停用)"
+        groups: "群組:"
+        no_persona: "未設定"
+        no_groups: "無"
+        edit: "編輯"
+        search:
+          name: "搜尋"
       spam:
         short_title: "垃圾內容"
         last_seven_days: "過去 7 天"

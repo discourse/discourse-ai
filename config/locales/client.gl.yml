@@ -38,11 +38,12 @@ gl:
     discourse_ai:
       features:
         back: "Volver"
-        list:
-          header:
-            name: "Nome"
-            groups: "Grupos"
-          edit: "Editar"
+        disabled: "(desactivado)"
+        groups: "Grupos:"
+        no_groups: "Ningunha"
+        edit: "Editar"
+        search:
+          name: "Buscar"
       modals:
         select_option: "Seleccione unha opción..."
       spam:

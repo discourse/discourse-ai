@@ -272,6 +272,10 @@ ja:
         web_artifact_creator:
           name: "ウェブアーティファクトクリエーター"
           description: "インタラクティブなウェブアーティファクトの作成に特化した AI ボット"
+        custom_prompt:
+          name: "カスタムプロンプト"
+        smart_dates:
+          name: "スマート日付"
       topic_not_found: "要約がありません。トピックが見つかりません！"
       summarizing: "トピックの要約を生成中"
       searching: "検索中: '%{query}'"

@@ -274,6 +274,10 @@ fi:
         web_artifact_creator:
           name: "Verkkoartefaktien luontityökalu"
           description: "Interaktiivisten verkkoartefaktien luomiseen erikoistunut tekoälybotti"
+        custom_prompt:
+          name: "Mukautettu kehote"
+        smart_dates:
+          name: "Älykkäät päivämäärät"
       topic_not_found: "Yhteenveto ei ole saatavilla, ketjua ei löydy!"
       summarizing: "Laaditaan yhteenvetoa ketjusta"
       searching: "Haetaan: \"%{query}\""

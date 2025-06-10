@@ -38,11 +38,13 @@ hu:
     discourse_ai:
       features:
         back: "Vissza"
-        list:
-          header:
-            name: "Név"
-            groups: "Csoportok"
-          edit: "Szerkesztés"
+        disabled: "(kikapcsolt)"
+        groups: "Csoportok:"
+        no_persona: "Nincs beállítva"
+        no_groups: "Egyik sem"
+        edit: "Szerkesztés"
+        search:
+          name: "Keresés"
       modals:
         select_option: "Válasszon egy lehetőséget…"
       spam:

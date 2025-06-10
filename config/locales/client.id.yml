@@ -97,11 +97,12 @@ id:
       title: "AI"
       features:
         back: "Kembali"
-        list:
-          header:
-            name: "Nama"
-            groups: "Grup"
-          edit: "Ubah"
+        disabled: "(dinonaktifkan)"
+        groups: "Grup:"
+        no_groups: "Tidak ada"
+        edit: "Ubah"
+        search:
+          name: "Cari"
       modals:
         select_option: "Memilih sebuah pilihan..."
       spam:

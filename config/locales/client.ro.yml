@@ -38,11 +38,12 @@ ro:
     discourse_ai:
       features:
         back: "Înapoi"
-        list:
-          header:
-            name: "Nume"
-            groups: "Grupuri"
-          edit: "Modifică"
+        disabled: "(dezactivat)"
+        groups: "Grupuri:"
+        no_groups: "Nimic"
+        edit: "Modifică"
+        search:
+          name: "Căutare"
       modals:
         select_option: "Alege o opțiune..."
       spam:

@@ -36,11 +36,13 @@ sl:
     discourse_ai:
       features:
         back: "Nazaj"
-        list:
-          header:
-            name: "Ime"
-            groups: "Skupine"
-          edit: "Uredi"
+        disabled: "(onemogočeno)"
+        groups: "Skupine:"
+        no_persona: "Ni nastavljeno"
+        no_groups: "Brez"
+        edit: "Uredi"
+        search:
+          name: "Išči"
       modals:
         select_option: "Izberi možnost..."
       spam:

@@ -274,6 +274,10 @@ fr:
         web_artifact_creator:
           name: "Créateur d'artefacts Web"
           description: "Robot IA spécialisé dans la création d'artefacts Web interactifs"
+        custom_prompt:
+          name: "Invite personnalisée"
+        smart_dates:
+          name: "Dates intelligentes"
       topic_not_found: "Résumé indisponible, sujet introuvable !"
       summarizing: "Synthèse du sujet"
       searching: "Recherche de : '%{query}'"

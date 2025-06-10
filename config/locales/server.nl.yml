@@ -274,6 +274,10 @@ nl:
         web_artifact_creator:
           name: "Webartefactmaker"
           description: "AI-bot gespecialiseerd in het maken van interactieve webartefacten"
+        custom_prompt:
+          name: "Aangepaste prompt"
+        smart_dates:
+          name: "Slimme datums"
       topic_not_found: "Samenvatting niet beschikbaar, topic niet gevonden!"
       summarizing: "Topic samenvatten"
       searching: "Zoeken naar: '%{query}'"
