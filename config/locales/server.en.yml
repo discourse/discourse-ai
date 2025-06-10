@@ -221,8 +221,8 @@ en:
     ai_artifact:
       errors:
         max_keys_exceeded:
-          one: "You can only have %{max} key in the artifact."
-          other: "You can only have %{max} keys in the artifact."
+          one: "You can only have %{count} key in the artifact."
+          other: "You can only have %{count} keys in the artifact."
       link: "Show in new tab"
       copy_embed: "Copy embed"
       view_source: "View Source"
