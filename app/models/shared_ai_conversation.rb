@@ -37,7 +37,9 @@ class SharedAiConversation < ActiveRecord::Base
 
     maybe_topic = conversation.target
     if maybe_topic.is_a?(Topic)
-      AiArtifact.where(post: maybe_topic.posts).update_all(metadata: { public: false })
+      AiArtifact.where(post: maybe_topic.posts).update_all(
+        "metadata = jsonb_set(COALESCE(metadata, '{}'), '{public}', 'false')",
+      )
     end
 
     ::Jobs.enqueue(

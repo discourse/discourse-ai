@@ -722,6 +722,7 @@ en:
         shortcut_title: "Start a PM with an AI bot"
         share: "Copy AI conversation"
         conversation_shared: "Conversation copied"
+        embed_copied: "Embed copied to clipboard"
         debug_ai: "View raw AI request and response"
         sidebar_empty: "Bot conversation history will appear here."
         debug_ai_modal:

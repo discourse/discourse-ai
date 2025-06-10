@@ -134,3 +134,10 @@ html.ai-artifact-expanded {
     z-index: z("fullscreen");
   }
 }
+
+.ai-share-full-topic-modal__body {
+  .ai-artifact-controls {
+    display: flex;
+    justify-content: space-between;
+  }
+}
