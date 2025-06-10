@@ -140,12 +140,20 @@ ja:
       title: "AI"
       features:
         back: "戻る"
-        list:
-          header:
-            name: "名前"
-            groups: "グループ"
-          edit: "編集"
-          set_up: "セットアップ"
+        disabled: "(無効)"
+        groups: "グループ:"
+        no_persona: "未設定"
+        no_groups: "なし"
+        edit: "編集"
+        search:
+          name: "検索"
+        ai_helper:
+          name: "ヘルパー"
+          proofread: テキストを構成
+          explain: "説明"
+          smart_dates: "スマート日付"
+          markdown_tables: "Markdown テーブルを生成"
+          custom_prompt: "カスタムプロンプト"
       modals:
         select_option: "オプションを選択..."
       spam:

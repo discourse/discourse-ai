@@ -158,15 +158,27 @@ he:
         short_title: "יכולות"
         description: "אלו יכולות בינה מלאכותית שזמינות למבקרים באתר שלך. אפשר להגדיר אותן להשתמש בדמויות וב־LLMים (מש״גים) מסוימים ואפשר לשלוט בגישה אליהן על ידי קבוצות."
         back: "חזרה"
-        list:
-          header:
-            name: "שם"
-            persona: "דמות"
-            groups: "קבוצות"
-          edit: "עריכה"
-          set_up: "הגדרה"
-          configured_features: "יכולות מוגדרות"
-          unconfigured_features: "יכולות לא מוגדרות"
+        disabled: "(כבוי)"
+        persona: "דמות:"
+        groups: "קבוצות:"
+        no_persona: "לא מוגדר"
+        no_groups: "ללא"
+        edit: "עריכה"
+        summarization:
+          name: "סיכומים"
+          description: "להנגיש את כפתור הסיכום שמאפשר למבקרים לסכם נושאים"
+        search:
+          name: "חיפוש"
+          description: "שיפור חוויית החיפוש על ידי אספקת תשובות שנוצרו על ידי בינה מלאכותית לשאילתות"
+        discord:
+          description: "הוספת היכולת לחפש בערוצי Discord"
+        ai_helper:
+          name: "מסייע"
+          proofread: הגהת הטקסט
+          explain: "הסבר"
+          smart_dates: "תאריכים חכמים"
+          markdown_tables: "יצירת טבלה ב־Markdown"
+          custom_prompt: "בקשה מותאמת אישית"
       modals:
         select_option: "בחירת אפשרות…"
       spam:

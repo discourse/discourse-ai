@@ -62,11 +62,13 @@ fa_IR:
       title: "هوش مصنوعی"
       features:
         back: "بازگشت"
-        list:
-          header:
-            name: "نام"
-            groups: "گروه‌ها"
-          edit: "ویرایش"
+        disabled: "(غیرفعال)"
+        groups: "گروه‌ها:"
+        no_persona: "تنظیم نشده"
+        no_groups: "هیچ کدام"
+        edit: "ویرایش"
+        search:
+          name: "جستجو"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       spam:

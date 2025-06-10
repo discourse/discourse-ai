@@ -149,6 +149,8 @@ pl_PL:
           description: "Bot AI specjalizujący się w generowaniu obrazów przy użyciu DALL-E 3"
         short_summarizer:
           name: "Podsumowanie (forma krótka)"
+        custom_prompt:
+          name: "Niestandardowy prompt"
       topic_not_found: "Podsumowanie niedostępne, nie znaleziono tematu!"
       summarizing: "Podsumowanie tematu"
       searching: "Wyszukiwanie: '%{query}'"

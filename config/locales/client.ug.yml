@@ -40,11 +40,13 @@ ug:
     discourse_ai:
       features:
         back: "كەينى"
-        list:
-          header:
-            name: "ئىسمى"
-            groups: "گۇرۇپپا"
-          edit: "تەھرىر"
+        disabled: "(چەكلەندى)"
+        groups: "گۇرۇپپا:"
+        no_persona: "تەڭشەلمىدى"
+        no_groups: "يوق"
+        edit: "تەھرىر"
+        search:
+          name: "ئىزدە"
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
       spam:

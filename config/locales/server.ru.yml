@@ -274,6 +274,10 @@ ru:
         web_artifact_creator:
           name: "Создатель веб-артефактов"
           description: "AI-бот, специализирующийся на создании интерактивных веб-артефактов"
+        custom_prompt:
+          name: "Пользовательский запрос"
+        smart_dates:
+          name: "Умные даты"
       topic_not_found: "Сводка недоступна: тема не найдена!"
       summarizing: "Аналитик темы"
       searching: "Поиск: '%{query}'"

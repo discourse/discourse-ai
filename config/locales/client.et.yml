@@ -36,11 +36,12 @@ et:
     discourse_ai:
       features:
         back: "Tagasi"
-        list:
-          header:
-            name: "Nimi"
-            groups: "Grupid"
-          edit: "Muuda"
+        disabled: "(välja lülitatud)"
+        groups: "Rühmad:"
+        no_groups: "Pole"
+        edit: "Muuda"
+        search:
+          name: "Otsi"
       modals:
         select_option: "Vali võimalus..."
       spam:

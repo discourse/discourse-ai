@@ -38,11 +38,11 @@ te:
     discourse_ai:
       features:
         back: "వెనుకకు"
-        list:
-          header:
-            name: "పేరు"
-            groups: "సమూహాలు"
-          edit: "సవరించండి"
+        no_persona: "సెట్ చేయబడలేదు"
+        no_groups: "ఏదీ లేదు"
+        edit: "సవరించండి"
+        search:
+          name: "శోధించండి"
       spam:
         short_title: "స్పామ్"
         enable: "ప్రారంభించండి"

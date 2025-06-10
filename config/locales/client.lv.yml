@@ -36,11 +36,12 @@ lv:
     discourse_ai:
       features:
         back: "Atpakaļ"
-        list:
-          header:
-            name: "Vārds"
-            groups: "Grupas"
-          edit: "Rediģēt"
+        disabled: "(atslēgt)"
+        groups: "Grupas:"
+        no_groups: "Nav"
+        edit: "Rediģēt"
+        search:
+          name: "Meklēt"
       modals:
         select_option: "Izvēlieties opciju..."
       spam:

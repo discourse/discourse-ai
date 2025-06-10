@@ -36,11 +36,12 @@ vi:
     discourse_ai:
       features:
         back: "Quay lại"
-        list:
-          header:
-            name: "Tên"
-            groups: "Nhóm"
-          edit: "Sửa"
+        disabled: "(vô hiệu hóa)"
+        groups: "Nhóm:"
+        no_groups: "Không có gì"
+        edit: "Sửa"
+        search:
+          name: "Tìm kiếm"
       modals:
         select_option: "Chọn một tùy Chọn..."
       spam:

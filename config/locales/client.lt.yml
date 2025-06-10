@@ -74,11 +74,12 @@ lt:
       title: "AI"
       features:
         back: "Atgal"
-        list:
-          header:
-            name: "Vardas"
-            groups: "Grupės"
-          edit: "Redaguoti"
+        disabled: "(uždrausta)"
+        groups: "Grupės:"
+        no_groups: "Nieko"
+        edit: "Redaguoti"
+        search:
+          name: "Paieška"
       modals:
         select_option: "Pasirink nustatymą..."
       spam:

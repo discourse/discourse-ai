@@ -169,15 +169,29 @@ de:
         short_title: "Funktionen"
         description: "Dies sind die KI-Funktionen, die den Besuchern deiner Website zur Verfügung stehen. Sie können so konfiguriert werden, dass sie bestimmte Personas und LLM verwenden, und der Zugriff kann mithilfe von Gruppen gesteuert werden."
         back: "Zurück"
-        list:
-          header:
-            name: "Name"
-            persona: "Persona"
-            groups: "Gruppen"
-          edit: "Bearbeiten"
-          set_up: "Einrichten"
-          configured_features: "Konfigurierte Funktionen"
-          unconfigured_features: "Unkonfigurierte Funktionen"
+        disabled: "(deaktiviert)"
+        persona: "Persona:"
+        groups: "Gruppen:"
+        no_persona: "Nicht festgelegt"
+        no_groups: "Keiner"
+        edit: "Bearbeiten"
+        summarization:
+          name: "Zusammenfassungen"
+          description: "Stellt eine Schaltfläche für Zusammenfassungen zur Verfügung, mit der Besucher Themen zusammenfassen können"
+        search:
+          name: "Suche"
+          description: "Verbessert das Sucherlebnis durch KI-generierte Antworten auf Suchanfragen"
+        discord:
+          description: "Fügt die Möglichkeit hinzu, Discord-Kanäle zu durchsuchen"
+        inference:
+          description: "Ordnet Themen und Beiträge in Interessensgebiete / Labels."
+        ai_helper:
+          name: "Helfer"
+          proofread: Text korrekturlesen
+          explain: "Erklären"
+          smart_dates: "Intelligente Termine"
+          markdown_tables: "Markdown-Tabelle generieren"
+          custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
       modals:
         select_option: "Wähle eine Option aus..."
       spam:

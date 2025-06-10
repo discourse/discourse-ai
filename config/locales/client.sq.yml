@@ -36,11 +36,13 @@ sq:
     discourse_ai:
       features:
         back: "Kthehu mbrapa"
-        list:
-          header:
-            name: "Emri"
-            groups: "Grupet"
-          edit: "Redaktoni"
+        disabled: "(e çaktivizuar)"
+        groups: "Grupet:"
+        no_persona: "Nuk është vendosur"
+        no_groups: "Asnjë"
+        edit: "Redaktoni"
+        search:
+          name: "Kërko"
       modals:
         select_option: "Zgjidhni një opsion..."
       spam:

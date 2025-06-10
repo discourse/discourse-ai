@@ -140,12 +140,20 @@ fr:
       title: "IA"
       features:
         back: "Retour"
-        list:
-          header:
-            name: "Nom"
-            groups: "Groupes"
-          edit: "Modifier"
-          set_up: "Configurer"
+        disabled: "(désactivée)"
+        groups: "Groupes:"
+        no_persona: "Non défini"
+        no_groups: "Jamais"
+        edit: "Modifier"
+        search:
+          name: "Recherche"
+        ai_helper:
+          name: "Assistant"
+          proofread: Relisez le texte
+          explain: "Expliquer"
+          smart_dates: "Dates intelligentes"
+          markdown_tables: "Générer un tableau Markdown"
+          custom_prompt: "Invite personnalisée"
       modals:
         select_option: "Sélectionnez une option..."
       spam:

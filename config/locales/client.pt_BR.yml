@@ -140,12 +140,20 @@ pt_BR:
       title: "IA"
       features:
         back: "Voltar"
-        list:
-          header:
-            name: "Nome"
-            groups: "Grupos"
-          edit: "Editar"
-          set_up: "Configurar"
+        disabled: "(desativada)"
+        groups: "Grupos:"
+        no_persona: "Não configurado"
+        no_groups: "Nenhum"
+        edit: "Editar"
+        search:
+          name: "Pesquisar"
+        ai_helper:
+          name: "Ajudante"
+          proofread: Revisar texto
+          explain: "Explicar"
+          smart_dates: "Datas inteligentes"
+          markdown_tables: "Gerar tabela de Markdown"
+          custom_prompt: "Prompt personalizado"
       modals:
         select_option: "Selecione uma opção..."
       spam:

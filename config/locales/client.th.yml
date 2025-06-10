@@ -36,11 +36,12 @@ th:
     discourse_ai:
       features:
         back: "กลับ"
-        list:
-          header:
-            name: "ชื่อ"
-            groups: "กลุ่ม"
-          edit: "แก้ไข"
+        disabled: "(ปิดใช้งานแล้ว)"
+        groups: "กลุ่ม:"
+        no_groups: "ไม่มี"
+        edit: "แก้ไข"
+        search:
+          name: "ค้นหา"
       modals:
         select_option: "เลือกตัวเลือก..."
       spam:

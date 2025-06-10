@@ -274,6 +274,10 @@ it:
         web_artifact_creator:
           name: "Creatore di artefatti web"
           description: "Bot IA specializzato nella creazione di artefatti web interattivi"
+        custom_prompt:
+          name: "Comando personalizzato"
+        smart_dates:
+          name: "Date smart"
       topic_not_found: "Riepilogo non disponibile, argomento non trovato!"
       summarizing: "Riepilogo argomento"
       searching: "Ricerca di: '%{query}'"
