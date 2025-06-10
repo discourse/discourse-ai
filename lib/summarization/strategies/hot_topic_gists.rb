@@ -89,9 +89,7 @@ module DiscourseAi
             context << "Your task is to capture the meaning of the initial statement."
           end
 
-          [{ type: :user, content: <<~TEXT.strip }]
-            #{context} Return the 40-word summary inside <ai></ai> tags.
-          TEXT
+          context
         end
       end
     end
