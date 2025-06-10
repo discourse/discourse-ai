@@ -20,12 +20,15 @@ module Jobs
         end
       end
 
-      begin
-        detected_locale = DiscourseAi::Translation::PostLocaleDetector.detect_locale(post)
-      rescue FinalDestination::SSRFDetector::LookupFailedError
-        # this job is non-critical
-        # the backfill job will handle failures
-        return
+      # the user may fill locale in manually
+      if (detected_locale = post.locale).blank?
+        begin
+          detected_locale = DiscourseAi::Translation::PostLocaleDetector.detect_locale(post)
+        rescue FinalDestination::SSRFDetector::LookupFailedError
+          # this job is non-critical
+          # the backfill job will handle failures
+          return
+        end
       end
 
       locales = SiteSetting.experimental_content_localization_supported_locales.split("|")
@@ -33,6 +36,7 @@ module Jobs
 
       locales.each do |locale|
         next if locale == detected_locale
+        next if post.post_localizations.exists?(locale:)
 
         begin
           DiscourseAi::Translation::PostLocalizer.localize(post, locale)
