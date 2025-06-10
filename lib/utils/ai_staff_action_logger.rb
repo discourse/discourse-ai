@@ -130,8 +130,11 @@ module DiscourseAi
 
         # Process each field according to its configuration
         field_config.each do |field, options|
-          # Skip fields explicitly marked as not to be extracted
-          next if options[:extract] == false
+          # Skip special keys like :json_fields which are arrays, not field configurations
+          next if field == :json_fields
+          
+          # Skip if options is not a hash or if explicitly marked as not to be extracted
+          next if !options.is_a?(Hash) || options[:extract] == false
 
           # Get the actual field value
           field_sym = field.to_sym
