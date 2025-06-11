@@ -60,7 +60,7 @@ export default class AiPersonaListEditor extends Component {
     if (this.featureFilter !== "all") {
       personas = personas.filter((persona) =>
         (persona.features || []).some(
-          (feature) => feature.name === this.featureFilter
+          (feature) => feature.module_name === this.featureFilter
         )
       );
     }
@@ -74,7 +74,7 @@ export default class AiPersonaListEditor extends Component {
           persona.description?.toLowerCase().includes(term);
 
         const featureMatches = (persona.features || []).some((feature) =>
-          feature.name?.toLowerCase().includes(term)
+          feature.module_name?.toLowerCase().includes(term)
         );
 
         const llmMatches = persona.default_llm?.display_name
@@ -92,8 +92,8 @@ export default class AiPersonaListEditor extends Component {
     let features = [];
     (this.args.personas || []).forEach((persona) => {
       (persona.features || []).forEach((feature) => {
-        if (feature?.name && !features.includes(feature.name)) {
-          features.push(feature.name);
+        if (feature?.module_name && !features.includes(feature.module_name)) {
+          features.push(feature.module_name);
         }
       });
     });
@@ -308,7 +308,9 @@ export default class AiPersonaListEditor extends Component {
                             class="btn-flat btn-small ai-persona-list__row-item-feature"
                             @translatedLabel={{i18n
                               (concat
-                                "discourse_ai.features." feature.name ".name"
+                                "discourse_ai.features."
+                                feature.module_name
+                                ".name"
                               )
                             }}
                             @route="adminPlugins.show.discourse-ai-features.edit"
