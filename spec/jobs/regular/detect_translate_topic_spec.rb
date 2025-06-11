@@ -39,6 +39,14 @@ describe Jobs::DetectTranslateTopic do
     job.execute({ topic_id: topic.id })
   end
 
+  it "skips locale detection when topic has a locale" do
+    topic.update!(locale: "en")
+    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).never
+    DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").once
+
+    job.execute({ topic_id: topic.id })
+  end
+
   it "skips bot topics" do
     topic.update!(user: Discourse.system_user)
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
@@ -56,16 +64,22 @@ describe Jobs::DetectTranslateTopic do
 
   it "skips translating to the topic's language" do
     topic.update(locale: "en")
-    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).returns("en")
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "en").never
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").once
 
     job.execute({ topic_id: topic.id })
   end
 
+  it "skips translating if the topic is already localized" do
+    topic.update(locale: "en")
+    Fabricate(:topic_localization, topic:, locale: "ja")
+    DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
+
+    job.execute({ topic_id: topic.id })
+  end
+
   it "handles translation errors gracefully" do
     topic.update(locale: "en")
-    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).returns("en")
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).raises(
       StandardError.new("API error"),
     )

@@ -18,12 +18,14 @@ module Jobs
         return if topic.category&.read_restricted?
       end
 
-      begin
-        detected_locale = DiscourseAi::Translation::TopicLocaleDetector.detect_locale(topic)
-      rescue FinalDestination::SSRFDetector::LookupFailedError
-        # this job is non-critical
-        # the backfill job will handle failures
-        return
+      if (detected_locale = topic.locale).blank?
+        begin
+          detected_locale = DiscourseAi::Translation::TopicLocaleDetector.detect_locale(topic)
+        rescue FinalDestination::SSRFDetector::LookupFailedError
+          # this job is non-critical
+          # the backfill job will handle failures
+          return
+        end
       end
 
       locales = SiteSetting.experimental_content_localization_supported_locales.split("|")
@@ -31,6 +33,7 @@ module Jobs
 
       locales.each do |locale|
         next if locale == detected_locale
+        next if topic.topic_localizations.exists?(locale:)
 
         begin
           DiscourseAi::Translation::TopicLocalizer.localize(topic, locale)
