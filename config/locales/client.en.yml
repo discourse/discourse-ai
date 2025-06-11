@@ -599,7 +599,7 @@ en:
           trigger: "Ask AI"
           loading: "AI is generating"
           cancel: "Cancel"
-          regen: "Try Again"
+          regen: "Try again"
           confirm: "Confirm"
           discard: "Discard"
           changes: "Suggested edits"
