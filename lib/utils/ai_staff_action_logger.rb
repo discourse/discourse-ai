@@ -16,14 +16,19 @@ module DiscourseAi
         # Start with provided entity details (id, name, etc.)
         # Convert all keys to strings for consistent handling in StaffActionLogger
         log_details = {}
-        entity_details.each { |k, v| log_details[k.to_s] = v }
+        
+        # Extract subject for StaffActionLogger.base_attrs
+        subject = entity_details[:subject] || (entity.respond_to?(:display_name) ? entity.display_name : nil)
+        
+        # Add the entity details but preserve subject as a top-level attribute
+        entity_details.each { |k, v| log_details[k.to_s] = v unless k == :subject }
 
         # Extract attributes based on field configuration and ensure string keys
         extract_entity_attributes(entity, field_config).each do |key, value|
           log_details[key.to_s] = value
         end
 
-        @staff_logger.log_custom("create_ai_#{entity_type}", log_details)
+        @staff_logger.log_custom("create_ai_#{entity_type}", log_details.merge(subject: subject))
       end
 
       # Log update of an AI entity with before/after comparison
@@ -71,32 +76,41 @@ module DiscourseAi
 
         # Only log if there are actual changes
         if changes.any?
+          # Extract subject for StaffActionLogger.base_attrs
+          subject = entity_details[:subject] || (entity.respond_to?(:display_name) ? entity.display_name : nil)
+          
           log_details = {}
-          # Convert entity_details keys to strings
-          entity_details.each { |k, v| log_details[k.to_s] = v }
+          # Convert entity_details keys to strings, but preserve subject as a top-level attribute
+          entity_details.each { |k, v| log_details[k.to_s] = v unless k == :subject }
           # Merge changes (already with string keys)
           log_details.merge!(changes)
 
-          @staff_logger.log_custom("update_ai_#{entity_type}", log_details)
+          @staff_logger.log_custom("update_ai_#{entity_type}", log_details.merge(subject: subject))
         end
       end
 
       # Log deletion of an AI entity
       def log_deletion(entity_type, entity_details)
+        # Extract subject for StaffActionLogger.base_attrs
+        subject = entity_details[:subject]
+        
         # Convert all keys to strings for consistent handling in StaffActionLogger
         string_details = {}
-        entity_details.each { |k, v| string_details[k.to_s] = v }
+        entity_details.each { |k, v| string_details[k.to_s] = v unless k == :subject }
 
-        @staff_logger.log_custom("delete_ai_#{entity_type}", string_details)
+        @staff_logger.log_custom("delete_ai_#{entity_type}", string_details.merge(subject: subject))
       end
 
       # Direct custom logging for complex cases
       def log_custom(action_type, log_details)
+        # Extract subject for StaffActionLogger.base_attrs if present
+        subject = log_details[:subject]
+        
         # Convert all keys to strings for consistent handling in StaffActionLogger
         string_details = {}
-        log_details.each { |k, v| string_details[k.to_s] = v }
+        log_details.each { |k, v| string_details[k.to_s] = v unless k == :subject }
 
-        @staff_logger.log_custom(action_type, string_details)
+        @staff_logger.log_custom(action_type, string_details.merge(subject: subject))
       end
 
       private

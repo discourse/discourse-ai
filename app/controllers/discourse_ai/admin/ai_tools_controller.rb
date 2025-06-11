@@ -148,7 +148,12 @@ module DiscourseAi
       def log_ai_tool_update(ai_tool, initial_attributes)
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
         entity_details = { tool_id: ai_tool.id, subject: ai_tool.name }
-
+        
+        # Add flags for specific field changes
+        if initial_attributes["name"] != ai_tool.name
+          entity_details[:name_changed] = true
+        end
+        
         logger.log_update(
           "tool",
           ai_tool,
