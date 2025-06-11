@@ -89,6 +89,7 @@ module DiscourseAi
             # We'll fallback to guess this using the tokenizer.
             payload[:stream_options] = { include_usage: true } if llm_model.provider == "open_ai"
           end
+
           if !xml_tools_enabled?
             if dialect.tools.present?
               payload[:tools] = dialect.tools
@@ -96,17 +97,37 @@ module DiscourseAi
                 if dialect.tool_choice == :none
                   payload[:tool_choice] = "none"
                 else
-                  payload[:tool_choice] = {
-                    type: "function",
-                    function: {
-                      name: dialect.tool_choice,
-                    },
-                  }
+                  if responses_api?
+                    payload[:tool_choice] = { type: "function", name: dialect.tool_choice }
+                  else
+                    payload[:tool_choice] = {
+                      type: "function",
+                      function: {
+                        name: dialect.tool_choice,
+                      },
+                    }
+                  end
                 end
               end
             end
           end
+
+          convert_payload_to_responses_api!(payload) if responses_api?
+
           payload
+        end
+
+        def responses_api?
+          return @responses_api if defined?(@responses_api)
+          @responses_api = llm_model.lookup_custom_param("enable_responses_api")
+        end
+
+        def convert_payload_to_responses_api!(payload)
+          payload[:input] = payload.delete(:messages)
+          completion_tokens = payload.delete(:max_completion_tokens) || payload.delete(:max_tokens)
+          payload[:max_output_tokens] = completion_tokens if completion_tokens
+          # not supported in responses api
+          payload.delete(:stream_options)
         end
 
         def prepare_request(payload)
@@ -159,7 +180,12 @@ module DiscourseAi
         private
 
         def processor
-          @processor ||= OpenAiMessageProcessor.new(partial_tool_calls: partial_tool_calls)
+          @processor ||=
+            if responses_api?
+              OpenAiResponsesMessageProcessor.new(partial_tool_calls: partial_tool_calls)
+            else
+              OpenAiMessageProcessor.new(partial_tool_calls: partial_tool_calls)
+            end
         end
       end
     end
