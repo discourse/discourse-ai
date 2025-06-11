@@ -74,7 +74,7 @@ module DiscourseAi
       private
 
       def try_escape_and_parse(raw_json)
-        if raw_json.blank? || !raw_json.is_a?(String)
+        if !raw_json.is_a?(String)
           @broken = true
           return
         end
