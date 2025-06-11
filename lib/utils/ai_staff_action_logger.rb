@@ -150,6 +150,12 @@ module DiscourseAi
             result[field] = value
           end
         end
+        
+        # Always include dimensions if it exists on the entity
+        # This is important for embeddings which are tested for dimensions value
+        if entity.respond_to?(:dimensions) && !result.key?(:dimensions)
+          result[:dimensions] = entity.dimensions
+        end
 
         result
       end

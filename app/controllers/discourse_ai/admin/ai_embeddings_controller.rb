@@ -148,6 +148,8 @@ module DiscourseAi
           },
           provider: {
           },
+          dimensions: {
+          },
           url: {
           },
           tokenizer_class: {
