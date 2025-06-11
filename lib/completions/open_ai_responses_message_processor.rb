@@ -14,26 +14,20 @@ module DiscourseAi::Completions
       @has_new_data = false
     end
 
-    # -------- non-streamed --------------------------------------------------
-
     # @param json [Hash] full JSON response from responses.create / retrieve
     # @return [Array<String,ToolCall>] pieces in the order they were produced
     def process_message(json)
       result = []
 
-      (json[:output] || json["output"] || []).each do |item|
-        type = (item[:type] || item["type"]).to_s
+      (json[:output] || []).each do |item|
+        type = item[:type]
 
         case type
+        when "function_call"
+          result << build_tool_call_from_item(item)
         when "message"
           text = extract_text(item)
-          result << text if text&.strip&.length&.positive?
-        when /_tool_call$/, "web_search_call", "image_generation_call", "code_interpreter_call",
-             "computer_tool_call"
-          result << build_tool_call_from_item(item)
-          # TODO we need to implement this
-        else
-          # ignore other output types for now (e.g. code_interpreter outputs)
+          result << text if text
         end
       end
 
@@ -106,9 +100,9 @@ module DiscourseAi::Completions
     end
 
     def build_tool_call_from_item(item)
-      id = item[:id] || item["id"]
-      name = item[:name] || item["name"]
-      arguments = item[:arguments] || item["arguments"] || ""
+      id = item[:call_id]
+      name = item[:name]
+      arguments = item[:arguments] || ""
       params = arguments.empty? ? {} : JSON.parse(arguments, symbolize_names: true)
 
       ToolCall.new(id: id, name: name, parameters: params)
@@ -130,7 +124,10 @@ module DiscourseAi::Completions
     end
 
     def start_tool_stream(data)
-      id = data[:id]
+      # important note... streaming API has both id and call_id
+      # both seem to work as identifiers, api examples seem to favor call_id
+      # so I am using it here
+      id = data[:call_id]
       name = data[:name]
 
       @tool_arguments = +""

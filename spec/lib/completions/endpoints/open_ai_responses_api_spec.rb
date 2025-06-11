@@ -14,6 +14,22 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     )
   end
 
+  let(:prompt_with_tools) do
+    prompt = DiscourseAi::Completions::Prompt.new("echo: Hello")
+    prompt.tools = [
+      DiscourseAi::Completions::ToolDefinition.new(
+        name: "echo",
+        description: "Used for testing of llms, will echo the param given to it",
+        parameters: [
+          DiscourseAi::Completions::ToolDefinition::ParameterDefinition.from_hash(
+            { name: "string", description: "string to echo", type: :string, required: true },
+          ),
+        ],
+      ),
+    ]
+    prompt
+  end
+
   it "can perform simple streaming completion" do
     response_payload = <<~TEXT
       event: response.created
@@ -109,19 +125,6 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
     TEXT
 
-    prompt = DiscourseAi::Completions::Prompt.new("echo: Hello")
-    prompt.tools = [
-      DiscourseAi::Completions::ToolDefinition.new(
-        name: "echo",
-        description: "Used for testing of llms, will echo the param given to it",
-        parameters: [
-          DiscourseAi::Completions::ToolDefinition::ParameterDefinition.from_hash(
-            { name: "string", description: "string to echo", type: :string, required: true },
-          ),
-        ],
-      ),
-    ]
-
     partials = []
 
     stub_request(:post, "https://api.openai.com/v1/responses").to_return(
@@ -132,7 +135,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     model
       .to_llm
       .generate(
-        "Say: Hello World",
+        prompt_with_tools,
         user: Discourse.system_user,
         partial_tool_calls: true,
       ) { |partial| partials << partial.dup }
@@ -143,5 +146,95 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     expect(partials.first).to be_a(DiscourseAi::Completions::ToolCall)
     expect(partials.first.name).to eq("echo")
     expect(partials.first.parameters).to eq({ string: "hello" })
+    expect(partials.first.id).to eq("call_TQyfNmFnKblzXl5rlcGeIsg5")
+  end
+
+  it "can handle non streaming tool calls" do
+    response_object = {
+      id: "resp_68491ed72974819f94652a73fb58109c08901d75ebf6c66e",
+      object: "response",
+      created_at: 1_749_622_487,
+      status: "completed",
+      background: false,
+      error: nil,
+      incomplete_details: nil,
+      instructions: nil,
+      max_output_tokens: nil,
+      model: "gpt-4.1-nano-2025-04-14",
+      output: [
+        {
+          id: "fc_68491ed75e0c819f87462ff642c58d2e08901d75ebf6c66e",
+          type: "function_call",
+          status: "completed",
+          arguments: "{\"string\":\"sam\"}",
+          call_id: "call_UdxBpinIVc5nRZ0VnWJIgneA",
+          name: "echo",
+        },
+      ],
+      parallel_tool_calls: true,
+      previous_response_id: nil,
+      reasoning: {
+        effort: nil,
+        summary: nil,
+      },
+      service_tier: "default",
+      store: true,
+      temperature: 1.0,
+      text: {
+        format: {
+          type: "text",
+        },
+      },
+      tool_choice: {
+        type: "function",
+        name: "echo",
+      },
+      tools: [
+        {
+          type: "function",
+          description: "Used for testing of llms, will echo the param given to it",
+          name: "echo",
+          parameters: {
+            type: "object",
+            properties: {
+              string: {
+                type: "string",
+                description: "string to echo",
+              },
+            },
+            required: ["string"],
+          },
+          strict: true,
+        },
+      ],
+      top_p: 1.0,
+      truncation: "disabled",
+      usage: {
+        input_tokens: 73,
+        input_tokens_details: {
+          cached_tokens: 0,
+        },
+        output_tokens: 6,
+        output_tokens_details: {
+          reasoning_tokens: 0,
+        },
+        total_tokens: 79,
+      },
+      user: nil,
+      metadata: {
+      },
+    }
+
+    stub_request(:post, "https://api.openai.com/v1/responses").to_return(
+      status: 200,
+      body: response_object.to_json,
+    )
+
+    result = model.to_llm.generate(prompt_with_tools, user: Discourse.system_user)
+
+    expect(result).to be_a(DiscourseAi::Completions::ToolCall)
+    expect(result.name).to eq("echo")
+    expect(result.parameters).to eq({ string: "sam" })
+    expect(result.id).to eq("call_UdxBpinIVc5nRZ0VnWJIgneA")
   end
 end
