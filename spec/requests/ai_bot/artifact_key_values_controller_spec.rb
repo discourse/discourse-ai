@@ -50,9 +50,23 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
       )
     end
 
+    fab!(:admin_key_value) do
+      Fabricate(
+        :ai_artifact_key_value,
+        ai_artifact: artifact,
+        user: admin,
+        key: "admin_key",
+        value: "admin_value",
+        public: false,
+      )
+    end
+
     context "when not logged in" do
       it "returns only public key values" do
-        get "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json"
+        get "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json",
+            params: {
+              all_users: true,
+            }
 
         expect(response.status).to eq(200)
         json = response.parsed_body
@@ -86,7 +100,10 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
       before { sign_in(user) }
 
       it "returns public key values and own private key values" do
-        get "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json"
+        get "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json",
+            params: {
+              all_users: true,
+            }
 
         expect(response.status).to eq(200)
         json = response.parsed_body
@@ -138,17 +155,13 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
     context "when logged in as admin" do
       before { sign_in(admin) }
 
-      it "returns all key values including private ones from other users" do
+      it "returns only my own keys by default" do
         get "/discourse-ai/ai-bot/artifact-key-values/#{artifact.id}.json"
 
         expect(response.status).to eq(200)
         json = response.parsed_body
-        expect(json["key_values"].length).to eq(3)
-        expect(json["key_values"].map { |kv| kv["key"] }).to contain_exactly(
-          "test_key",
-          "private_key",
-          "other_key",
-        )
+        expect(json["key_values"].length).to eq(1)
+        expect(json["key_values"].map { |kv| kv["key"] }).to contain_exactly("admin_key")
       end
 
       it "can access private artifacts" do
@@ -417,26 +430,6 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
              params: valid_params
 
         expect(response.status).to eq(404)
-      end
-    end
-  end
-
-  describe "private methods" do
-    let(:controller) { described_class.new }
-
-    before do
-      controller.instance_variable_set(:@artifact, artifact)
-      allow(controller).to receive(:params).and_return(
-        ActionController::Parameters.new(test_params),
-      )
-    end
-
-    describe "#key_value_params" do
-      let(:test_params) { { key: "test", value: "value", public: true, extra: "ignored" } }
-
-      it "permits only allowed parameters" do
-        # This would need to be tested by calling the actual method or through integration tests
-        # since private methods are typically tested through their public interfaces
       end
     end
   end

@@ -102,8 +102,12 @@ module DiscourseAi
 
         query = query.where("key = ?", index_params[:key]) if index_params[:key].present?
 
-        if !index_params[:all_users].to_s == "true" && current_user
-          query = query.where(user_id: current_user.id)
+        if index_params[:all_users].to_s != "true"
+          if current_user
+            query = query.where(user_id: current_user.id)
+          else
+            query = query.where("1 = 0")
+          end
         end
 
         query
