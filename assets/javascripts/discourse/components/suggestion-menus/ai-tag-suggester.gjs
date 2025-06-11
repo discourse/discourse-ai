@@ -11,7 +11,10 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
-import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
+import {
+  MIN_CHARACTER_COUNT,
+  showSuggestionsError,
+} from "../../lib/ai-helper-suggestions";
 
 export default class AiTagSuggester extends Component {
   @service siteSettings;
@@ -79,6 +82,7 @@ export default class AiTagSuggester extends Component {
         method: "POST",
         data,
       });
+
       this.suggestions = assistant;
 
       const model = this.args.composer
@@ -92,15 +96,7 @@ export default class AiTagSuggester extends Component {
       }
 
       if (this.suggestions?.length <= 0) {
-        this.toasts.error({
-          class: "ai-suggestion-error",
-          duration: 3000,
-          data: {
-            message: i18n(
-              "discourse_ai.ai_helper.suggest_errors.no_suggestions"
-            ),
-          },
-        });
+        showSuggestionsError(this, this.loadSuggestions.bind(this));
         return;
       }
     } catch (error) {
