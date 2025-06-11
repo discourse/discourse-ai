@@ -20,10 +20,17 @@ module DiscourseAi
         def embed_user_ids?
           return @embed_user_ids if defined?(@embed_user_ids)
 
-          @embed_user_ids =
+          @embed_user_ids = true if responses_api?
+
+          @embed_user_ids ||=
             prompt.messages.any? do |m|
               m[:id] && m[:type] == :user && !m[:id].to_s.match?(VALID_ID_REGEX)
             end
+        end
+
+        def responses_api?
+          return @responses_api if defined?(@responses_api)
+          @responses_api = llm_model.lookup_custom_param("enable_responses_api")
         end
 
         def max_prompt_tokens
@@ -51,7 +58,11 @@ module DiscourseAi
           if disable_native_tools?
             super
           else
-            @tools_dialect ||= DiscourseAi::Completions::Dialects::OpenAiTools.new(prompt.tools)
+            @tools_dialect ||=
+              DiscourseAi::Completions::Dialects::OpenAiTools.new(
+                prompt.tools,
+                responses_api: responses_api?,
+              )
           end
         end
 
@@ -120,7 +131,7 @@ module DiscourseAi
             to_encoded_content_array(
               content: content_array.flatten,
               image_encoder: ->(details) { image_node(details) },
-              text_encoder: ->(text) { { type: "text", text: text } },
+              text_encoder: ->(text) { text_node(text) },
               allow_vision: vision_support?,
             )
 
@@ -136,13 +147,21 @@ module DiscourseAi
           end
         end
 
+        def text_node(text)
+          if responses_api?
+            { type: "input_text", text: text }
+          else
+            { type: "text", text: text }
+          end
+        end
+
         def image_node(details)
-          {
-            type: "image_url",
-            image_url: {
-              url: "data:#{details[:mime_type]};base64,#{details[:base64]}",
-            },
-          }
+          encoded_image = "data:#{details[:mime_type]};base64,#{details[:base64]}"
+          if responses_api?
+            { type: "input_image", image_url: encoded_image }
+          else
+            { type: "image_url", image_url: { url: encoded_image } }
+          end
         end
 
         def per_message_overhead
