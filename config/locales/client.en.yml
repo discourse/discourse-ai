@@ -211,6 +211,7 @@ en:
           custom_prompt: "Custom prompt"
           image_caption: "Caption images"
 
+
       modals:
         select_option: "Select an option..."
 
@@ -387,12 +388,6 @@ en:
           reset: "Reset"
           no_results: "No personas found matching your filters."
           all_features: "Any feature"
-
-        features_list:
-          one: "Feature:"
-          other: "Features:"
-
-        llms_list: "LLM:"
 
       rag:
         title: "RAG"
