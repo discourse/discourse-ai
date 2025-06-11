@@ -13,7 +13,7 @@ describe DiscourseAi::Translation::LanguageDetector do
 
     it "creates the correct prompt" do
       allow(DiscourseAi::Completions::Prompt).to receive(:new).with(
-        DiscourseAi::Translation::LanguageDetector::PROMPT_TEXT,
+        AiPersona.find_by(id: SiteSetting.ai_translation_locale_detection_persona).system_prompt,
         messages: [{ type: :user, content: "meow", id: "user" }],
       ).and_call_original
 

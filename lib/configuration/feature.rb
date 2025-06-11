@@ -118,6 +118,17 @@ module DiscourseAi
           ]
         end
 
+        def translation_features
+          feature_cache[:translation] ||= [
+            new(
+              "locale_detection",
+              "ai_translation_locale_detection_persona",
+              DiscourseAi::Configuration::Module::TRANSLATION_ID,
+              DiscourseAi::Configuration::Module::TRANSLATION,
+            ),
+          ]
+        end
+
         def all
           [
             summarization_features,
@@ -125,6 +136,7 @@ module DiscourseAi
             discord_features,
             inference_features,
             ai_helper_features,
+            translation_features,
           ].flatten
         end
 

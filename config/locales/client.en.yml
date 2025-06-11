@@ -211,6 +211,11 @@ en:
           custom_prompt: "Custom prompt"
           image_caption: "Caption images"
 
+        translation:
+          name: "Translation"
+          description: "Translates content into supported languages"
+          locale_detection: "Locale detection"
+
       modals:
         select_option: "Select an option..."
 

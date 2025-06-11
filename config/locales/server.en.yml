@@ -372,6 +372,9 @@ en:
         image_captioner:
           name: "Image captions"
           description: "Default persona powering the Helper's image caption feature"
+        locale_detection:
+          name: "Locale detection"
+          description: "Powers the translation feature by detecting the locale of a given text"
 
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
