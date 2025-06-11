@@ -56,8 +56,6 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
   end
 
   def features
-    object.features.map do |feature|
-      { id: feature.module_id, module_name: feature.module_name, name: feature.name }
-    end
+    object.features.map { |feature| { id: feature.module_id, name: feature.module_name } }
   end
 end

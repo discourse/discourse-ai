@@ -4,6 +4,7 @@ import { concat, fn, hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { LinkTo } from "@ember/routing";
 import { service } from "@ember/service";
+import { gt } from "truth-helpers";
 import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
@@ -59,7 +60,7 @@ export default class AiPersonaListEditor extends Component {
     if (this.featureFilter !== "all") {
       personas = personas.filter((persona) =>
         (persona.features || []).some(
-          (feature) => feature.module_name === this.featureFilter
+          (feature) => feature.name === this.featureFilter
         )
       );
     }
@@ -76,7 +77,11 @@ export default class AiPersonaListEditor extends Component {
           feature.name?.toLowerCase().includes(term)
         );
 
-        return textMatches || featureMatches;
+        const llmMatches = persona.default_llm?.display_name
+          ?.toLowerCase()
+          .includes(term);
+
+        return textMatches || featureMatches || llmMatches;
       });
     }
 
@@ -87,8 +92,8 @@ export default class AiPersonaListEditor extends Component {
     let features = [];
     (this.args.personas || []).forEach((persona) => {
       (persona.features || []).forEach((feature) => {
-        if (feature?.module_name && !features.includes(feature.module_name)) {
-          features.push(feature.module_name);
+        if (feature?.name && !features.includes(feature.name)) {
+          features.push(feature.name);
         }
       });
     });
@@ -98,9 +103,9 @@ export default class AiPersonaListEditor extends Component {
         value: "all",
         label: i18n("discourse_ai.ai_persona.filters.all_features"),
       },
-      ...features.map((module_name) => ({
-        value: module_name,
-        label: i18n(`discourse_ai.features.${module_name}.name`),
+      ...features.map((name) => ({
+        value: name,
+        label: i18n(`discourse_ai.features.${name}.name`),
       })),
     ];
   }
@@ -248,6 +253,7 @@ export default class AiPersonaListEditor extends Component {
             <thead>
               <tr>
                 <th>{{i18n "discourse_ai.ai_persona.name"}}</th>
+                <th>{{i18n "discourse_ai.llms.short_title"}}</th>
                 <th>{{i18n "discourse_ai.features.short_title"}}</th>
               </tr>
             </thead>
@@ -274,22 +280,43 @@ export default class AiPersonaListEditor extends Component {
                       </div>
                     </div>
                   </td>
-                  <td class="d-admin-row__features">
-                    {{#each persona.features as |feature|}}
+                  <td class="d-admin-row__llms">
+                    {{#if persona.default_llm}}
+                      <span class="--card-label">
+                        {{i18n "discourse_ai.ai_persona.llms_list"}}
+                      </span>
                       <DButton
                         class="btn-flat btn-small ai-persona-list__row-item-feature"
-                        @translatedLabel={{i18n
-                          (concat
-                            "discourse_ai.features."
-                            feature.module_name
-                            "."
-                            feature.name
-                          )
-                        }}
-                        @route="adminPlugins.show.discourse-ai-features.edit"
-                        @routeModels={{feature.id}}
+                        @translatedLabel={{persona.default_llm.display_name}}
+                        @route="adminPlugins.show.discourse-ai-llms.edit"
+                        @routeModels={{persona.default_llm.id}}
                       />
-                    {{/each}}
+                    {{/if}}
+                  </td>
+                  <td class="d-admin-row__features">
+                    {{#if persona.features.length}}
+                      <span class="--card-label">
+                        {{i18n
+                          "discourse_ai.ai_persona.features_list"
+                          count=persona.features.length
+                        }}
+                      </span>
+                      {{#each persona.features as |feature index|}}
+                        <span class="d-admin-row__row-feature-list">
+                          {{#if (gt index 0)}}, {{/if}}
+                          <DButton
+                            class="btn-flat btn-small ai-persona-list__row-item-feature"
+                            @translatedLabel={{i18n
+                              (concat
+                                "discourse_ai.features." feature.name ".name"
+                              )
+                            }}
+                            @route="adminPlugins.show.discourse-ai-features.edit"
+                            @routeModels={{feature.id}}
+                          />
+                        </span>
+                      {{/each}}
+                    {{/if}}
                   </td>
                   <td class="d-admin-row__controls">
                     <LinkTo
