@@ -2,7 +2,7 @@
 
 module DiscourseAi
   module Personas
-    class LocaleDetection < Persona
+    class LocaleDetector < Persona
       def self.default_enabled
         false
       end

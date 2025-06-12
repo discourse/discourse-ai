@@ -372,8 +372,8 @@ en:
         image_captioner:
           name: "Image captions"
           description: "Default persona powering the Helper's image caption feature"
-        locale_detection:
-          name: "Locale detection"
+        locale_detector:
+          name: "Locale detector"
           description: "Powers the translation feature by detecting the locale of a given text (posts, titles, etc.)"
         post_raw_translator:
           name: "Post translator"

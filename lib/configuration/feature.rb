@@ -121,8 +121,8 @@ module DiscourseAi
         def translation_features
           feature_cache[:translation] ||= [
             new(
-              "locale_detection",
-              "ai_translation_locale_detection_persona",
+              "locale_detector",
+              "ai_translation_locale_detector_persona",
               DiscourseAi::Configuration::Module::TRANSLATION_ID,
               DiscourseAi::Configuration::Module::TRANSLATION,
             ),

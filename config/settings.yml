@@ -460,7 +460,7 @@ discourse_ai:
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
     area: "ai-features/translation"
-  ai_translation_locale_detection_persona:
+  ai_translation_locale_detector_persona:
     default: "-27"
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"

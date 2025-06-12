@@ -214,7 +214,11 @@ en:
         translation:
           name: "Translation"
           description: "Translates content into supported languages"
-          locale_detection: "Locale detection"
+          locale_detector: "Locale detector"
+          post_raw_translator: "Post raw translator"
+          topic_title_translator: "Topic title translator"
+          short_text_translator: "Short text translator"
+
 
       modals:
         select_option: "Select an option..."
