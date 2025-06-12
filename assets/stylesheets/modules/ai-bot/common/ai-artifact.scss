@@ -20,7 +20,15 @@
     height: calc(100% - 2em);
   }
 
-  &:not(.ai-artifact__expanded) {
+  &.ai-artifact__seamless {
+    padding-bottom: 1em;
+
+    iframe {
+      height: 100%;
+    }
+  }
+
+  &:not(.ai-artifact__expanded, .ai-artifact__seamless) {
     iframe {
       box-shadow: var(--shadow-card);
     }

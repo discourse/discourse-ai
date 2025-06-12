@@ -25,7 +25,7 @@ en:
         description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
-    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode disables sharing and forces an extra click to run code. Lax mode allows sharing of artifacts and runs code directly. Disabled mode disables the artifact system."
+    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode forces an extra click to run code. Lax mode runs code immediately. Hybrid mode allows user to supply data-ai-artifact-autorun to show right away. Disabled mode disables the artifact system."
     ai_toxicity_enabled: "Enable the toxicity module."
     ai_toxicity_inference_service_api_endpoint: "URL where the API is running for the toxicity module"
     ai_toxicity_inference_service_api_key: "API key for the toxicity API"

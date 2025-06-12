@@ -51,7 +51,21 @@ export default class AiArtifactComponent extends Component {
     if (this.showingArtifact) {
       return false;
     }
-    return this.siteSettings.ai_artifact_security === "strict";
+
+    if (this.siteSettings.ai_artifact_security === "strict") {
+      return true;
+    }
+
+    if (this.siteSettings.ai_artifact_security === "hybrid") {
+      const shouldAutorun =
+        this.args.autorun === "true" ||
+        this.args.autorun === true ||
+        this.args.autorun === "1";
+
+      return !shouldAutorun;
+    }
+
+    return this.siteSettings.ai_artifact_security !== "lax";
   }
 
   get artifactUrl() {
@@ -86,7 +100,7 @@ export default class AiArtifactComponent extends Component {
   get wrapperClasses() {
     return `ai-artifact__wrapper ${
       this.expanded ? "ai-artifact__expanded" : ""
-    }`;
+    } ${this.seamless ? "ai-artifact__seamless" : ""}`;
   }
 
   @action
@@ -98,11 +112,38 @@ export default class AiArtifactComponent extends Component {
     }
   }
 
+  get heightStyle() {
+    if (this.args.artifactHeight) {
+      let height = parseInt(this.args.artifactHeight, 10);
+      if (isNaN(height) || height <= 0) {
+        height = 500; // default height if the provided value is invalid
+      }
+
+      if (height > 2000) {
+        height = 2000; // cap the height to a maximum of 2000px
+      }
+
+      return `height: ${height}px;`;
+    }
+  }
+
+  get seamless() {
+    return (
+      this.args.seamless === "true" ||
+      this.args.seamless === true ||
+      this.args.seamless === "1"
+    );
+  }
+
+  get showFooter() {
+    return !this.seamless && !this.requireClickToRun;
+  }
+
   <template>
     {{#if this.expanded}}
       {{htmlClass "ai-artifact-expanded"}}
     {{/if}}
-    <div class={{this.wrapperClasses}}>
+    <div class={{this.wrapperClasses}} style="{{this.heightStyle}}">
       <div class="ai-artifact__panel--wrapper">
         <div class="ai-artifact__panel">
           <DButton
@@ -131,7 +172,7 @@ export default class AiArtifactComponent extends Component {
           {{didInsert this.setDataAttributes}}
         ></iframe>
       {{/if}}
-      {{#unless this.requireClickToRun}}
+      {{#if this.showFooter}}
         <div class="ai-artifact__footer">
           <DButton
             class="btn-transparent btn-icon-text ai-artifact__expand-button"
@@ -140,7 +181,7 @@ export default class AiArtifactComponent extends Component {
             @action={{this.toggleView}}
           />
         </div>
-      {{/unless}}
+      {{/if}}
     </div>
   </template>
 }
