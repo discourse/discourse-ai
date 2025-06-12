@@ -144,7 +144,7 @@ export default class AiArtifactComponent extends Component {
     {{#if this.expanded}}
       {{htmlClass "ai-artifact-expanded"}}
     {{/if}}
-    <div class={{this.wrapperClasses}} style="{{this.heightStyle}}">
+    <div class={{this.wrapperClasses}} style={{this.heightStyle}}>
       <div class="ai-artifact__panel--wrapper">
         <div class="ai-artifact__panel">
           <DButton
