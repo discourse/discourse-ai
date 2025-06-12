@@ -129,18 +129,15 @@ module DiscourseAi
             LlmModel.find_by(id: params[:llm_model_id])&.display_name || params[:llm_model_id]
 
           changes_to_log[:llm_model_id] = "#{old_model_name} → #{new_model_name}"
-          changes_to_log[:llm_model_changed] = true
         end
 
         if params.key?(:custom_instructions) &&
              initial_custom_instructions != params[:custom_instructions]
           changes_to_log[:custom_instructions] = params[:custom_instructions]
-          changes_to_log[:custom_instructions_changed] = true
         end
 
         if changes_to_log.present?
-          # Add a subject for the history record
-          changes_to_log[:subject] = "AI Spam Settings"
+          changes_to_log[:subject] = I18n.t("discourse_ai.spam_detection.logging_subject")
           logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
           logger.log_custom("update_ai_spam_settings", changes_to_log)
         end

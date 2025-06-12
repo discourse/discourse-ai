@@ -345,18 +345,6 @@ module DiscourseAi
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
         entity_details = { persona_id: ai_persona.id, subject: ai_persona.name }
         entity_details[:tools_count] = ai_persona.tools.size if ai_persona.tools.present?
-        
-        # Check for name changes
-        if initial_attributes["name"] != ai_persona.name
-          entity_details[:name_changed] = true
-        end
-        
-        # Add flags for other important changes
-        %w[system_prompt description default_llm_id tools].each do |field|
-          if initial_attributes[field].to_s != ai_persona.public_send(field).to_s
-            entity_details["#{field}_changed"] = true
-          end
-        end
 
         logger.log_update(
           "persona",

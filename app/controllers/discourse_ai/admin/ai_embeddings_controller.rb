@@ -181,19 +181,7 @@ module DiscourseAi
       def log_ai_embedding_update(embedding_def, initial_attributes)
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
         entity_details = { embedding_id: embedding_def.id, subject: embedding_def.display_name }
-        
-        # Add flags for specific field changes
-        if initial_attributes["provider"] != embedding_def.provider
-          entity_details[:provider_changed] = true
-        end
-        
-        # Add a list of changed fields
-        changed_fields = []
-        embedding_def.previous_changes.each_key do |field|
-          changed_fields << field
-        end
-        entity_details[:changed_fields] = changed_fields.join(", ") if changed_fields.any?
-        
+
         logger.log_update(
           "embedding",
           embedding_def,

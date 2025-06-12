@@ -258,13 +258,6 @@ module DiscourseAi
       def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
         entity_details = { model_id: llm_model.id, subject: llm_model.display_name }
-        
-        # Track specific field changes
-        %w[name display_name provider api_key enabled_chat_bot vision_enabled].each do |field|
-          if initial_attributes[field].to_s != llm_model.read_attribute(field).to_s
-            entity_details["#{field}_changed"] = true
-          end
-        end
 
         # Track quota changes separately as they're a special case
         current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
