@@ -18,55 +18,37 @@ module DiscourseAi
         end
 
         persona_klass = ai_persona.class_instance
+        persona = persona_klass.new
 
-        llm_model = preferred_llm_model(ai_persona, persona_klass)
+        llm_model = LlmModel.find_by(id: preferred_llm_model(persona_klass))
         return nil if llm_model.blank?
 
-        prompt =
-          DiscourseAi::Completions::Prompt.new(
-            ai_persona.system_prompt,
-            messages: [{ type: :user, content: @text, id: "user" }],
+        bot =
+          DiscourseAi::Personas::Bot.as(
+            ai_persona.user || Discourse.system_user,
+            persona: persona,
+            model: llm_model,
           )
-        response_format = persona_klass.new.response_format
-        structured_output =
-          DiscourseAi::Completions::Llm.proxy(llm_model).generate(
-            prompt,
+
+        context =
+          DiscourseAi::Personas::BotContext.new(
             user: ai_persona.user || Discourse.system_user,
+            skip_tool_details: true,
             feature_name: "translation",
-            response_format:,
+            messages: [{ type: :user, content: @text }],
           )
 
-        structured_output&.read_buffered_property(:locale)
-      end
-
-      def response_format
-        {
-          type: "json_schema",
-          json_schema: {
-            name: "reply",
-            schema: {
-              type: "object",
-              properties: {
-                locale: {
-                  type: "string",
-                },
-              },
-              required: ["locale"],
-              additionalProperties: false,
-            },
-            strict: true,
-          },
-        }
+        structured_output = nil
+        bot.reply(context) do |partial, _, type|
+          structured_output = partial if type == :structured_output
+        end
+        structured_output&.read_buffered_property(:locale) || []
       end
 
       private
 
-      def preferred_llm_model(ai_persona, persona_klass)
-        if ai_persona.force_default_llm
-          persona_klass.default_llm_id
-        else
-          SiteSetting.ai_translation_model.presence || persona_klass.default_llm_id
-        end
+      def preferred_llm_model(persona_klass)
+        persona_klass.default_llm_id || SiteSetting.ai_translation_model&.split(":")&.last
       end
     end
   end

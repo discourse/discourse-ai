@@ -46,23 +46,7 @@ module DiscourseAi
       end
 
       def response_format
-        {
-          type: "json_schema",
-          json_schema: {
-            name: "reply",
-            schema: {
-              type: "object",
-              properties: {
-                locale: {
-                  type: "string",
-                },
-              },
-              required: ["locale"],
-              additionalProperties: false,
-            },
-            strict: true,
-          },
-        }
+        [{ "key" => "locale", "type" => "string" }]
       end
 
       def temperature
