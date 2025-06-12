@@ -19,7 +19,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     form.field("enabled_chat_bot").toggle
     form.submit
 
-    expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-llms")
+    expect(page).to have_current_path(%r{/admin/plugins/discourse-ai/ai-llms/\d+/edit})
 
     llm = LlmModel.order(:id).last
 
