@@ -15,7 +15,7 @@ module DiscourseAi
           1. Keep proper nouns and technical terms in their original language
           2. Keep the translated content close to the original length
           3. Translation maintains the original meaning
-          4. Preserving any Markdown, HTML elements, links, parenthesis, or newlines
+          4. Preserve any Markdown, HTML elements, links, parenthesis, or newlines
 
           The text to translate will be provided in JSON format with the following structure:
           {"content": "Text to translate", "target_locale": "Target language code"}

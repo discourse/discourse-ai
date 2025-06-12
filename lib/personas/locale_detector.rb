@@ -15,7 +15,7 @@ module DiscourseAi
 
           1. Carefully read and analyze the provided text.
           2. Determine the language of the text based on its characteristics, such as vocabulary, grammar, and sentence structure.
-          3. Do not use links or programing code in the text to detect the locale
+          3. Do not use links or programming code in the text to detect the locale
           4. Identify the appropriate language code for the detected language.
 
           Here is a list of common language codes for reference:
