@@ -25,6 +25,7 @@ module DiscourseAi
 
         if ai_tool.save
           RagDocumentFragment.link_target_and_uploads(ai_tool, attached_upload_ids)
+          log_ai_tool_creation(ai_tool)
           render_serialized(ai_tool, AiCustomToolSerializer, status: :created)
         else
           render_json_error ai_tool
@@ -32,8 +33,11 @@ module DiscourseAi
       end
 
       def update
+        initial_attributes = @ai_tool.attributes.dup
+
         if @ai_tool.update(ai_tool_params)
           RagDocumentFragment.update_target_uploads(@ai_tool, attached_upload_ids)
+          log_ai_tool_update(@ai_tool, initial_attributes)
           render_serialized(@ai_tool, AiCustomToolSerializer)
         else
           render_json_error @ai_tool
@@ -41,7 +45,15 @@ module DiscourseAi
       end
 
       def destroy
+        tool_logger_details = {
+          tool_id: @ai_tool.id,
+          name: @ai_tool.name,
+          tool_name: @ai_tool.tool_name,
+          subject: @ai_tool.name,
+        }
+
         if @ai_tool.destroy
+          log_ai_tool_deletion(tool_logger_details)
           head :no_content
         else
           render_json_error @ai_tool
@@ -95,6 +107,60 @@ module DiscourseAi
             parameters: [:name, :type, :description, :required, enum: []],
           )
           .except(:rag_uploads)
+      end
+
+      def ai_tool_logger_fields
+        {
+          name: {
+          },
+          tool_name: {
+          },
+          description: {
+          },
+          summary: {
+          },
+          enabled: {
+          },
+          rag_chunk_tokens: {
+          },
+          rag_chunk_overlap_tokens: {
+          },
+          rag_llm_model_id: {
+          },
+          script: {
+            type: :large_text,
+          },
+          parameters: {
+            type: :large_text,
+          },
+        }
+      end
+
+      def log_ai_tool_creation(ai_tool)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+
+        entity_details = { tool_id: ai_tool.id, subject: ai_tool.name }
+        entity_details[:parameter_count] = ai_tool.parameters.size if ai_tool.parameters.present?
+
+        logger.log_creation("tool", ai_tool, ai_tool_logger_fields, entity_details)
+      end
+
+      def log_ai_tool_update(ai_tool, initial_attributes)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { tool_id: ai_tool.id, subject: ai_tool.name }
+
+        logger.log_update(
+          "tool",
+          ai_tool,
+          initial_attributes,
+          ai_tool_logger_fields,
+          entity_details,
+        )
+      end
+
+      def log_ai_tool_deletion(tool_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("tool", tool_details)
       end
     end
   end

@@ -119,6 +119,90 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
             "custom instructions new",
           )
         end
+
+        it "logs staff action when custom_instructions change" do
+          put "/admin/plugins/discourse-ai/ai-spam.json",
+              params: {
+                is_enabled: true,
+                llm_model_id: llm_model.id,
+                custom_instructions: "updated instructions",
+              }
+
+          expect(response.status).to eq(200)
+
+          history =
+            UserHistory.where(
+              action: UserHistory.actions[:custom_staff],
+              custom_type: "update_ai_spam_settings",
+            ).last
+          expect(history).to be_present
+          expect(history.details).to include("custom_instructions")
+        end
+
+        it "logs staff action when llm_model_id changes" do
+          # Create another model to change to
+          new_llm_model =
+            Fabricate(:llm_model, name: "New Test Model", display_name: "New Test Model")
+
+          put "/admin/plugins/discourse-ai/ai-spam.json", params: { llm_model_id: new_llm_model.id }
+
+          expect(response.status).to eq(200)
+
+          # Verify the log was created with the right subject
+          history =
+            UserHistory.where(
+              action: UserHistory.actions[:custom_staff],
+              custom_type: "update_ai_spam_settings",
+            ).last
+          expect(history).to be_present
+          expect(history.details).to include("llm_model_id")
+        end
+
+        it "does not log staff action when only is_enabled changes" do
+          # Check initial count of logs
+          initial_count =
+            UserHistory.where(
+              action: UserHistory.actions[:custom_staff],
+              custom_type: "update_ai_spam_settings",
+            ).count
+
+          # Update only the is_enabled setting
+          put "/admin/plugins/discourse-ai/ai-spam.json", params: { is_enabled: false }
+
+          expect(response.status).to eq(200)
+
+          # Verify no new log was created
+          current_count =
+            UserHistory.where(
+              action: UserHistory.actions[:custom_staff],
+              custom_type: "update_ai_spam_settings",
+            ).count
+          expect(current_count).to eq(initial_count)
+        end
+
+        it "logs both custom_instructions and llm_model_id changes in one entry" do
+          # Create another model to change to
+          new_llm_model =
+            Fabricate(:llm_model, name: "Another Test Model", display_name: "Another Test Model")
+
+          put "/admin/plugins/discourse-ai/ai-spam.json",
+              params: {
+                llm_model_id: new_llm_model.id,
+                custom_instructions: "new instructions for both changes",
+              }
+
+          expect(response.status).to eq(200)
+
+          # Verify the log was created with all changes
+          history =
+            UserHistory.where(
+              action: UserHistory.actions[:custom_staff],
+              custom_type: "update_ai_spam_settings",
+            ).last
+          expect(history).to be_present
+          expect(history.details).to include("llm_model_id")
+          expect(history.details).to include("custom_instructions")
+        end
       end
     end
   end

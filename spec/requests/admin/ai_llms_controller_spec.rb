@@ -136,6 +136,17 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         model = LlmModel.find(created_model["id"])
         expect(model.display_name).to eq(valid_attrs[:display_name])
       end
+      
+      it "logs staff action when creating an LLM model" do
+        # Log the creation
+        post "/admin/plugins/discourse-ai/ai-llms.json", params: { ai_llm: valid_attrs }
+        expect(response.status).to eq(201)
+        
+        # Now verify the log was created with the right subject
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_llm_model").last
+        expect(history).to be_present
+        expect(history.subject).to eq(valid_attrs[:display_name]) # Verify subject is set to display_name
+      end
 
       it "creates a companion user" do
         post "/admin/plugins/discourse-ai/ai-llms.json",
@@ -329,6 +340,25 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         expect(response.status).to eq(200)
         expect(llm_model.reload.provider).to eq(update_attrs[:provider])
       end
+      
+      it "logs staff action when updating an LLM model" do
+        # The initial provider is different from the update
+        original_provider = llm_model.provider
+        display_name = llm_model.display_name
+        
+        # Perform the update
+        put "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json",
+            params: {
+              ai_llm: update_attrs,
+            }
+            
+        expect(response.status).to eq(200)
+        
+        # Now verify the log was created with the right subject
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_llm_model").last
+        expect(history).to be_present
+        expect(history.subject).to eq(display_name) # Verify subject is set to display_name
+      end
 
       it "returns a 404 if there is no model with the given Id" do
         put "/admin/plugins/discourse-ai/ai-llms/9999999.json"
@@ -456,6 +486,21 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
         expect(response).to have_http_status(:no_content)
       }.to change(LlmModel, :count).by(-1)
+    end
+    
+    it "logs staff action when deleting an LLM model" do
+      # Capture the model details before deletion for comparison
+      model_id = llm_model.id
+      model_display_name = llm_model.display_name
+      
+      # Delete the model
+      delete "/admin/plugins/discourse-ai/ai-llms/#{llm_model.id}.json"
+      expect(response).to have_http_status(:no_content)
+      
+      # Now verify the log was created with the right subject
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_llm_model").last
+      expect(history).to be_present
+      expect(history.subject).to eq(model_display_name) # Verify subject is set to display_name
     end
 
     it "validates the model is not in use" do

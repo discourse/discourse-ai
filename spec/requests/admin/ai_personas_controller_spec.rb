@@ -223,6 +223,22 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona.temperature).to eq(0.5)
         }.to change(AiPersona, :count).by(1)
       end
+      
+      it "logs staff action when creating a persona" do
+        # Create the persona
+        post "/admin/plugins/discourse-ai/ai-personas.json",
+             params: { ai_persona: valid_attributes }.to_json,
+             headers: {
+               "CONTENT_TYPE" => "application/json",
+             }
+             
+        expect(response).to be_successful
+        
+        # Now verify the log was created with the right subject
+        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_persona").last
+        expect(history).to be_present
+        expect(history.subject).to eq("superbot") # Verify subject is set to name
+      end
     end
 
     context "with invalid params" do
@@ -308,6 +324,29 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
       expect(persona.top_p).to eq(nil)
       expect(persona.temperature).to eq(nil)
+    end
+    
+    it "logs staff action when updating a persona" do
+      persona = Fabricate(:ai_persona, name: "original_name", description: "original description")
+      
+      # Update the persona
+      put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
+          params: {
+            ai_persona: {
+              name: "updated_name",
+              description: "updated description",
+            },
+          }
+          
+      expect(response).to have_http_status(:ok)
+      persona.reload
+      expect(persona.name).to eq("updated_name")
+      expect(persona.description).to eq("updated description")
+      
+      # Now verify the log was created with the right subject
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_persona").last
+      expect(history).to be_present
+      expect(history.subject).to eq("updated_name") # Verify subject is set to the new name
     end
 
     it "supports updating rag params" do
@@ -460,6 +499,21 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
 
         expect(response).to have_http_status(:no_content)
       }.to change(AiPersona, :count).by(-1)
+    end
+    
+    it "logs staff action when deleting a persona" do
+      # Capture persona details before deletion
+      persona_id = ai_persona.id
+      persona_name = ai_persona.name
+      
+      # Delete the persona
+      delete "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
+      expect(response).to have_http_status(:no_content)
+      
+      # Now verify the log was created with the right subject
+      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_persona").last
+      expect(history).to be_present
+      expect(history.subject).to eq(persona_name) # Verify subject is set to name
     end
 
     it "is not allowed to delete system personas" do

@@ -24,6 +24,22 @@ en:
               label: "Sort by"
             tag:
               label: "Tag"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "Create LLM model"
+            update_ai_llm_model: "Update LLM model"
+            delete_ai_llm_model: "Delete LLM model"
+            create_ai_persona: "Create AI persona"
+            update_ai_persona: "Update AI persona"
+            delete_ai_persona: "Delete AI persona"
+            create_ai_tool: "Create AI tool"
+            update_ai_tool: "Update AI tool"
+            delete_ai_tool: "Delete AI tool"
+            create_ai_embedding: "Create AI embedding"
+            update_ai_embedding: "Update AI embedding"
+            delete_ai_embedding: "Delete AI embedding"
+            update_ai_spam_settings: "Update AI spam settings"
 
   js:
     discourse_automation:

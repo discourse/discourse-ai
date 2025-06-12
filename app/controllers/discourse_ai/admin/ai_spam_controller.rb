@@ -10,6 +10,10 @@ module DiscourseAi
       end
 
       def update
+        initial_settings = AiModerationSetting.spam
+        initial_custom_instructions = initial_settings&.data&.dig("custom_instructions")
+        initial_llm_model_id = initial_settings&.llm_model_id
+
         updated_params = {}
         if allowed_params.key?(:llm_model_id)
           llm_model_id = updated_params[:llm_model_id] = allowed_params[:llm_model_id]
@@ -36,6 +40,8 @@ module DiscourseAi
           else
             AiModerationSetting.create!(updated_params.merge(setting_type: :spam))
           end
+
+          log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, allowed_params)
         end
 
         is_enabled = ActiveModel::Type::Boolean.new.cast(allowed_params[:is_enabled])
@@ -112,6 +118,30 @@ module DiscourseAi
       end
 
       private
+
+      def log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, params)
+        changes_to_log = {}
+
+        if params.key?(:llm_model_id) && initial_llm_model_id.to_s != params[:llm_model_id].to_s
+          old_model_name =
+            LlmModel.find_by(id: initial_llm_model_id)&.display_name || initial_llm_model_id
+          new_model_name =
+            LlmModel.find_by(id: params[:llm_model_id])&.display_name || params[:llm_model_id]
+
+          changes_to_log[:llm_model_id] = "#{old_model_name} → #{new_model_name}"
+        end
+
+        if params.key?(:custom_instructions) &&
+             initial_custom_instructions != params[:custom_instructions]
+          changes_to_log[:custom_instructions] = params[:custom_instructions]
+        end
+
+        if changes_to_log.present?
+          changes_to_log[:subject] = I18n.t("discourse_ai.spam_detection.logging_subject")
+          logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+          logger.log_custom("update_ai_spam_settings", changes_to_log)
+        end
+      end
 
       def allowed_params
         params.permit(:is_enabled, :llm_model_id, :custom_instructions)
