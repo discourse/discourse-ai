@@ -78,6 +78,8 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    const event = new PointerEvent("pointerup");
+    document.dispatchEvent(event);
     await settled();
   }
 
