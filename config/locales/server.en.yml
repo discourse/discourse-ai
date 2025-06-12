@@ -374,7 +374,16 @@ en:
           description: "Default persona powering the Helper's image caption feature"
         locale_detection:
           name: "Locale detection"
-          description: "Powers the translation feature by detecting the locale of a given text"
+          description: "Powers the translation feature by detecting the locale of a given text (posts, titles, etc.)"
+        post_raw_translator:
+          name: "Post translator"
+          description: "Powers the translation feature by translating posts containing Discourse Markdown"
+        topic_title_translator:
+          name: "Topic title translator"
+          description: "Powers the translation feature by translating topic titles"
+        short_text_translator:
+          name: "Short text translator"
+          description: "Powers the translation feature by as a generic text translator, used for short texts like category names or tags"
 
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"

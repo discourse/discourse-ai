@@ -10,14 +10,7 @@ module DiscourseAi
         translated_raw =
           ContentSplitter
             .split(post.raw)
-            .map do |text|
-              PostRawTranslator.new(
-                text:,
-                target_locale:,
-                topic_id: post.topic_id,
-                post_id: post.id,
-              ).translate
-            end
+            .map { |text| PostRawTranslator.new(text:, target_locale:, post:).translate }
             .join("")
 
         localization =

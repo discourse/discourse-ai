@@ -25,6 +25,7 @@ module DiscourseAi
 
       def initialize(
         post: nil,
+        topic: nil,
         participants: nil,
         user: nil,
         skip_tool_details: nil,
@@ -70,7 +71,14 @@ module DiscourseAi
           @topic_id = post.topic_id
           @private_message = post.topic.private_message?
           @participants ||= post.topic.allowed_users.map(&:username).join(", ") if @private_message
-          @user = post.user
+          @user ||= post.user
+        end
+
+        if topic
+          @topic_id ||= topic.id
+          @private_message ||= topic.private_message?
+          @participants ||= topic.allowed_users.map(&:username).join(", ") if @private_message
+          @user ||= topic.user
         end
       end
 

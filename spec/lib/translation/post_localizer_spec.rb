@@ -13,8 +13,7 @@ describe DiscourseAi::Translation::PostLocalizer do
       allow(DiscourseAi::Translation::PostRawTranslator).to receive(:new).with(
         text: opts[:text],
         target_locale: opts[:target_locale],
-        post_id: opts[:post_id] || post.id,
-        topic_id: opts[:topic_id] || post.topic_id,
+        post: opts[:post] || post,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end

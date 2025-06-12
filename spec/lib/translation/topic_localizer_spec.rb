@@ -20,17 +20,17 @@ describe DiscourseAi::Translation::TopicLocalizer do
       allow(DiscourseAi::Translation::TopicTitleTranslator).to receive(:new).with(
         text: opts[:text],
         target_locale: opts[:target_locale],
-        topic_id: opts[:topic_id] || topic.id,
+        topic: opts[:topic] || topic,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
 
-    def short_text_translator_stub(opts)
-      mock = instance_double(DiscourseAi::Translation::ShortTextTranslator)
-      allow(DiscourseAi::Translation::ShortTextTranslator).to receive(:new).with(
+    def post_raw_translator_stub(opts)
+      mock = instance_double(DiscourseAi::Translation::PostRawTranslator)
+      allow(DiscourseAi::Translation::PostRawTranslator).to receive(:new).with(
         text: opts[:text],
         target_locale: opts[:target_locale],
-        topic_id: opts[:topic_id] || topic.id,
+        topic: opts[:topic] || topic,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
@@ -54,7 +54,7 @@ describe DiscourseAi::Translation::TopicLocalizer do
       topic_title_translator_stub(
         { text: topic.title, target_locale: "ja", translated: translated_title },
       )
-      short_text_translator_stub(
+      post_raw_translator_stub(
         { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
@@ -65,7 +65,7 @@ describe DiscourseAi::Translation::TopicLocalizer do
       topic_title_translator_stub(
         { text: topic.title, target_locale: "zh_CN", translated: "这是一个猫主题 :)" },
       )
-      short_text_translator_stub(
+      post_raw_translator_stub(
         { text: topic.excerpt, target_locale: "zh_CN", translated: "这是一个猫主题 :)" },
       )
 
@@ -76,7 +76,7 @@ describe DiscourseAi::Translation::TopicLocalizer do
       topic_title_translator_stub(
         { text: topic.title, target_locale: "ja", translated: translated_title },
       )
-      short_text_translator_stub(
+      post_raw_translator_stub(
         { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
@@ -98,7 +98,7 @@ describe DiscourseAi::Translation::TopicLocalizer do
       topic_title_translator_stub(
         { text: topic.title, target_locale: "ja", translated: translated_title },
       )
-      short_text_translator_stub(
+      post_raw_translator_stub(
         { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
