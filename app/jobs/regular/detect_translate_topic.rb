@@ -15,7 +15,12 @@ module Jobs
       end
 
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        return if topic.category&.read_restricted?
+        return if topic.category&.read_restricted? || topic.archetype == Archetype.private_message
+      else
+        if topic.archetype == Archetype.private_message &&
+             !TopicAllowedGroup.exists?(topic_id: topic.id)
+          return
+        end
       end
 
       if (detected_locale = topic.locale).blank?

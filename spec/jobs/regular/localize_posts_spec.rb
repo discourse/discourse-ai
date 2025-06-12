@@ -127,36 +127,57 @@ describe Jobs::LocalizePosts do
     fab!(:private_topic) { Fabricate(:topic, category: private_category) }
     fab!(:private_post) { Fabricate(:post, topic: private_topic, locale: "es") }
 
-    fab!(:pm_post) { Fabricate(:post, topic: Fabricate(:private_message_topic), locale: "es") }
-
     fab!(:public_post) { Fabricate(:post, locale: "es") }
 
-    before do
-      SiteSetting.ai_translation_backfill_limit_to_public_content = true
-      SiteSetting.experimental_content_localization_supported_locales = "ja"
+    fab!(:personal_pm_topic) { Fabricate(:private_message_topic) }
+    fab!(:personal_pm_post) { Fabricate(:post, topic: personal_pm_topic, locale: "es") }
+
+    fab!(:group)
+    fab!(:group_pm_topic) { Fabricate(:group_private_message_topic, recipient_group: group) }
+    fab!(:group_pm_post) { Fabricate(:post, topic: group_pm_topic, locale: "es") }
+
+    before { SiteSetting.experimental_content_localization_supported_locales = "ja" }
+
+    context "when ai_translation_backfill_limit_to_public_content is true" do
+      before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
+
+      it "only processes posts from public categories" do
+        DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
+
+        DiscourseAi::Translation::PostLocalizer
+          .expects(:localize)
+          .with(private_post, any_parameters)
+          .never
+
+        DiscourseAi::Translation::PostLocalizer
+          .expects(:localize)
+          .with(personal_pm_post, any_parameters)
+          .never
+        DiscourseAi::Translation::PostLocalizer
+          .expects(:localize)
+          .with(group_pm_post, any_parameters)
+          .never
+
+        job.execute({})
+      end
     end
 
-    it "only processes posts from public categories" do
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
+    context "when ai_translation_backfill_limit_to_public_content is false" do
+      before { SiteSetting.ai_translation_backfill_limit_to_public_content = false }
 
-      DiscourseAi::Translation::PostLocalizer
-        .expects(:localize)
-        .with(private_post, any_parameters)
-        .never
+      it "processes public posts and group PMs but not personal PMs" do
+        DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
+        DiscourseAi::Translation::PostLocalizer.expects(:localize).with(private_post, "ja").once
 
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(pm_post, any_parameters).never
+        DiscourseAi::Translation::PostLocalizer.expects(:localize).with(group_pm_post, "ja").once
 
-      job.execute({})
-    end
+        DiscourseAi::Translation::PostLocalizer
+          .expects(:localize)
+          .with(personal_pm_post, any_parameters)
+          .never
 
-    it "processes all posts when setting is disabled" do
-      SiteSetting.ai_translation_backfill_limit_to_public_content = false
-
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(public_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(pm_post, "ja").once
-      DiscourseAi::Translation::PostLocalizer.expects(:localize).with(private_post, "ja").once
-
-      job.execute({})
+        job.execute({})
+      end
     end
   end
 

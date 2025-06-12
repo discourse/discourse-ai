@@ -133,33 +133,56 @@ describe Jobs::LocalizeTopics do
     fab!(:private_topic) { Fabricate(:topic, category: private_category, locale: "es") }
     fab!(:public_topic) { Fabricate(:topic, locale: "es") }
 
-    before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
+    fab!(:personal_pm_topic) { Fabricate(:private_message_topic, locale: "es") }
 
-    it "only processes topics from public categories" do
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "en").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "ja").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "de").once
-
-      DiscourseAi::Translation::TopicLocalizer
-        .expects(:localize)
-        .with(private_topic, any_parameters)
-        .never
-
-      job.execute({})
+    fab!(:group_pm_topic) do
+      Fabricate(:group_private_message_topic, recipient_group: Fabricate(:group), locale: "es")
     end
 
-    it "processes all topics when setting is disabled" do
-      SiteSetting.ai_translation_backfill_limit_to_public_content = false
+    before { SiteSetting.experimental_content_localization_supported_locales = "ja" }
 
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "en").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "ja").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "de").once
+    context "when ai_translation_backfill_limit_to_public_content is true" do
+      before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
 
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(private_topic, "en").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(private_topic, "ja").once
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(private_topic, "de").once
+      it "only processes topics from public categories" do
+        DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "ja").once
 
-      job.execute({})
+        DiscourseAi::Translation::TopicLocalizer
+          .expects(:localize)
+          .with(private_topic, any_parameters)
+          .never
+
+        DiscourseAi::Translation::TopicLocalizer
+          .expects(:localize)
+          .with(personal_pm_topic, any_parameters)
+          .never
+
+        DiscourseAi::Translation::TopicLocalizer
+          .expects(:localize)
+          .with(group_pm_topic, any_parameters)
+          .never
+
+        job.execute({})
+      end
+    end
+
+    context "when ai_translation_backfill_limit_to_public_content is false" do
+      before { SiteSetting.ai_translation_backfill_limit_to_public_content = false }
+
+      it "processes public topics, private topics and group PMs but not personal PMs" do
+        DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(public_topic, "ja").once
+
+        DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(private_topic, "ja").once
+
+        DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(group_pm_topic, "ja").once
+
+        DiscourseAi::Translation::TopicLocalizer
+          .expects(:localize)
+          .with(personal_pm_topic, any_parameters)
+          .never
+
+        job.execute({})
+      end
     end
   end
 
