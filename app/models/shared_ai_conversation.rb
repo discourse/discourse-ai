@@ -178,7 +178,7 @@ class SharedAiConversation < ActiveRecord::Base
 
   def self.cook_artifacts(post)
     html = post.cooked
-    return html if !%w[lax strict].include?(SiteSetting.ai_artifact_security)
+    return html if !%w[lax hybrid strict].include?(SiteSetting.ai_artifact_security)
 
     doc = Nokogiri::HTML5.fragment(html)
     doc

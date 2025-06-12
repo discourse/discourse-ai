@@ -335,7 +335,7 @@ module DiscourseAi
 
       def require_site_settings!
         if !SiteSetting.discourse_ai_enabled ||
-             !SiteSetting.ai_artifact_security.in?(%w[lax strict])
+             !SiteSetting.ai_artifact_security.in?(%w[lax hybrid strict])
           raise Discourse::NotFound
         end
       end

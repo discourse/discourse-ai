@@ -9,6 +9,7 @@ discourse_ai:
     choices:
       - "disabled"
       - "lax"
+      - "hybrid"
       - "strict"
 
   ai_sentiment_enabled:
