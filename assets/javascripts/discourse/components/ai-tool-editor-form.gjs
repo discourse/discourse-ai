@@ -91,7 +91,7 @@ export default class AiToolEditorForm extends Component {
         this.args.tools.pushObject(this.args.model);
       }
 
-      this.router.replaceWith(
+      await this.router.replaceWith(
         "adminPlugins.show.discourse-ai-tools.edit",
         this.args.model
       );
