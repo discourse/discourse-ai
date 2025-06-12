@@ -586,6 +586,11 @@ en:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to use this model."
 
+    ai_staff_action_logger:
+      updated: "updated"
+      set: "set"
+      removed: "removed"
+
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."
       quota_required: "You must specify maximum tokens or usages for this model"
