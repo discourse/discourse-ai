@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
+import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
@@ -88,6 +89,33 @@ export default class ShareModal extends Component {
     });
   }
 
+  @action
+  async maybeCopyEmbed(event) {
+    if (!event.target.classList.contains("copy-embed")) {
+      return true;
+    }
+    event.stopPropagation();
+    event.preventDefault();
+
+    let version = "";
+    if (event.target.dataset.artifactVersion) {
+      version = `data-ai-artifact-version="${event.target.dataset.artifactVersion}"`;
+    }
+    const artifactEmbed = `<div class="ai-artifact" ${version} data-ai-artifact-id="${event.target.dataset.artifactId}"></div>`;
+    const promise = new Promise((resolve) => {
+      resolve(artifactEmbed);
+    });
+
+    await clipboardCopyAsync(() => promise);
+
+    this.toasts.success({
+      duration: 3000,
+      data: {
+        message: i18n("discourse_ai.ai_bot.embed_copied"),
+      },
+    });
+  }
+
   <template>
     <DModal
       class="ai-share-full-topic-modal"
@@ -95,9 +123,14 @@ export default class ShareModal extends Component {
       @closeModal={{@closeModal}}
     >
       <:body>
-        <div class="ai-share-full-topic-modal__body">
+        {{! template-lint-disable no-invalid-interactive }}
+        <div
+          class="ai-share-full-topic-modal__body"
+          {{on "click" this.maybeCopyEmbed}}
+        >
           {{this.htmlContext}}
         </div>
+        {{! template-lint-enable}}
       </:body>
 
       <:footer>

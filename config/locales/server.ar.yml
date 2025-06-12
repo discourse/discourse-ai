@@ -273,6 +273,10 @@ ar:
         web_artifact_creator:
           name: "مُنشئ الملفات الثانوية على الويب"
           description: "روبوت الذكاء الاصطناعي المتخصص في إنشاء ملفات ثانوية تفاعلية على الويب"
+        custom_prompt:
+          name: "رسالة مطالبة مخصَّصة"
+        smart_dates:
+          name: "التواريخ الذكية"
       topic_not_found: "الملخص غير متوفر، الموضوع غير موجود!"
       summarizing: "جارٍ تلخيص الموضوع"
       searching: "جارٍ البحث عن: '%{query}'"

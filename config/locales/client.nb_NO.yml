@@ -36,11 +36,13 @@ nb_NO:
     discourse_ai:
       features:
         back: "Forrige"
-        list:
-          header:
-            name: "Navn"
-            groups: "Grupper"
-          edit: "Endre"
+        disabled: "(deaktivert)"
+        groups: "Grupper:"
+        no_persona: "Ikke angitt"
+        no_groups: "Ingen"
+        edit: "Endre"
+        search:
+          name: "Søk"
       modals:
         select_option: "Velg et alternativ..."
       spam:

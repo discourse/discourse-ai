@@ -272,6 +272,10 @@ zh_CN:
         web_artifact_creator:
           name: "Web 工件创建者"
           description: "专注于创建交互式 Web 工件的 AI 机器人"
+        custom_prompt:
+          name: "自定义提示"
+        smart_dates:
+          name: "智能日期"
       topic_not_found: "总结不可用，找不到话题！"
       summarizing: "正在总结话题"
       searching: "搜索：'%{query}'"

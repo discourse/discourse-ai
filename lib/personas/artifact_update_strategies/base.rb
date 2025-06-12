@@ -31,6 +31,12 @@ module DiscourseAi
           apply_changes(parsed_changes)
         end
 
+        def storage_api
+          if @artifact.metadata.is_a?(Hash) && @artifact.metadata["requires_storage"]
+            DiscourseAi::Personas::Tools::CreateArtifact.storage_api
+          end
+        end
+
         private
 
         def generate_changes(&progress)

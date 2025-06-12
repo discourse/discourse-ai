@@ -20,7 +20,9 @@ module DiscourseAi
             - Focus on visual appeal and smooth animations
             - Write clean, efficient code
             - Build progressively (HTML structure → CSS styling → JavaScript interactivity)
-            - Keep components focused and purposeful
+            - Artifacts run in a sandboxed IFRAME environmment
+            - Artifacts Discourse persistent storage - requires storage support
+            - Artifacts have access to current user data (username, name, id) - requires storage support
 
             When creating:
             1. Understand the desired user experience

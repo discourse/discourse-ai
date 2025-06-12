@@ -25,7 +25,7 @@ en:
         description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
-    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode disables sharing and forces an extra click to run code. Lax mode allows sharing of artifacts and runs code directly. Disabled mode disables the artifact system."
+    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode forces an extra click to run code. Lax mode runs code immediately. Hybrid mode allows user to supply data-ai-artifact-autorun to show right away. Disabled mode disables the artifact system."
     ai_toxicity_enabled: "Enable the toxicity module."
     ai_toxicity_inference_service_api_endpoint: "URL where the API is running for the toxicity module"
     ai_toxicity_inference_service_api_key: "API key for the toxicity API"
@@ -219,10 +219,16 @@ en:
 
   discourse_ai:
     ai_artifact:
-      link: "Show Artifact in new tab"
+      errors:
+        max_keys_exceeded:
+          one: "You can only have %{count} key in the artifact."
+          other: "You can only have %{count} keys in the artifact."
+      link: "Show in new tab"
+      copy_embed: "Copy embed"
       view_source: "View Source"
       view_changes: "View Changes"
       change_description: "Change Description"
+      copied: "Copied to clipboard"
     unknown_model: "Unknown AI model"
 
     tools:
@@ -578,23 +584,6 @@ en:
     llm_models:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to use this model."
-
-    features:
-      summarization:
-        name: "Summaries"
-        description: "Makes a summarization button available that allows visitors to summarize topics"
-      gists:
-        name: "Short Summaries"
-        description: "Adds the ability to view short summaries of topics on the topic list"
-      discoveries:
-        name: "Discobot Discoveries"
-        description: "Enhances search experience by providing AI-generated answers to queries"
-      discord_search:
-        name: "Discord Search"
-        description: "Adds the ability to search Discord channels"
-      inferred_concepts:
-        name: "Inferred Concepts"
-        description: "Classifies topics and posts into areas of interest / labels."
 
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."

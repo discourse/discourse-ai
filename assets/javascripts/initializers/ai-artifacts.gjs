@@ -18,12 +18,27 @@ function initializeAiArtifacts(api) {
             "data-ai-artifact-version"
           );
 
+          const artifactHeight = artifactElement.getAttribute(
+            "data-ai-artifact-height"
+          );
+
+          const autorun =
+            artifactElement.getAttribute("data-ai-artifact-autorun") ||
+            artifactElement.hasAttribute("data-ai-artifact-autorun");
+
+          const seamless =
+            artifactElement.getAttribute("data-ai-artifact-seamless") ||
+            artifactElement.hasAttribute("data-ai-artifact-seamless");
+
           const dataAttributes = {};
           for (const attr of artifactElement.attributes) {
             if (
               attr.name.startsWith("data-") &&
               attr.name !== "data-ai-artifact-id" &&
-              attr.name !== "data-ai-artifact-version"
+              attr.name !== "data-ai-artifact-version" &&
+              attr.name !== "data-ai-artifact-height" &&
+              attr.name !== "data-ai-artifact-autorun" &&
+              attr.name !== "data-ai-artifact-seamless"
             ) {
               dataAttributes[attr.name] = attr.value;
             }
@@ -35,6 +50,9 @@ function initializeAiArtifacts(api) {
               <AiArtifact
                 @artifactId={{artifactId}}
                 @artifactVersion={{artifactVersion}}
+                @artifactHeight={{artifactHeight}}
+                @autorun={{autorun}}
+                @seamless={{seamless}}
                 @dataAttributes={{dataAttributes}}
               />
             </template>

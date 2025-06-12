@@ -140,12 +140,20 @@ tr_TR:
       title: "YZ"
       features:
         back: "Geri"
-        list:
-          header:
-            name: "Ad"
-            groups: "Gruplar"
-          edit: "Düzenle"
-          set_up: "Kur"
+        disabled: "(devre Dışı)"
+        groups: "Grup:"
+        no_persona: "Ayarlanmamış"
+        no_groups: "Yok"
+        edit: "Düzenle"
+        search:
+          name: "Ara"
+        ai_helper:
+          name: "Yardımcı"
+          proofread: Yazım hataları düzeltilmiş metin
+          explain: "Açıkla"
+          smart_dates: "Akıllı tarihler"
+          markdown_tables: "Markdown tablosu oluştur"
+          custom_prompt: "Özel istem"
       modals:
         select_option: "Seçenek belirleyin..."
       spam:

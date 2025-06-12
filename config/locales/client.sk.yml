@@ -40,11 +40,13 @@ sk:
     discourse_ai:
       features:
         back: "Späť"
-        list:
-          header:
-            name: "Meno"
-            groups: "Skupiny"
-          edit: "Upraviť"
+        disabled: "(vypnuté)"
+        groups: "Skupiny:"
+        no_persona: "Nie je nastavené"
+        no_groups: "Žiadny"
+        edit: "Upraviť"
+        search:
+          name: "Hľadať"
       modals:
         select_option: "Vyberte možnosť..."
       spam:

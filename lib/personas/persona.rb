@@ -119,7 +119,7 @@ module DiscourseAi
             Tools::Researcher,
           ]
 
-          if SiteSetting.ai_artifact_security.in?(%w[lax strict])
+          if SiteSetting.ai_artifact_security.in?(%w[lax hybrid strict])
             tools << Tools::CreateArtifact
             tools << Tools::UpdateArtifact
             tools << Tools::ReadArtifact

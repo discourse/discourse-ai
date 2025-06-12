@@ -79,13 +79,8 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
 
   persona.tools = tools.map { |name, value| [name, value] }
 
-  # Only set response_format if it's not defined as a method in the persona class
-  if !instance.class.instance_methods.include?(:response_format)
-    persona.response_format = instance.response_format
-  end
-
-  # Only set examples if it's not defined as a method in the persona class
-  persona.examples = instance.examples if !instance.class.instance_methods.include?(:examples)
+  persona.response_format = instance.response_format
+  persona.examples = instance.examples
 
   persona.system_prompt = instance.system_prompt
   persona.top_p = instance.top_p

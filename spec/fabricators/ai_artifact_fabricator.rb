@@ -9,6 +9,14 @@ Fabricator(:ai_artifact) do
   metadata { { public: false } }
 end
 
+Fabricator(:ai_artifact_key_value) do
+  ai_artifact
+  user
+  key { sequence(:key) { |i| "key_#{i}" } }
+  value { "value" }
+  public { false }
+end
+
 Fabricator(:ai_artifact_version) do
   ai_artifact
   version_number { sequence(:version_number) { |i| i } }

@@ -12,6 +12,11 @@ export default {
     withPluginApi("1.1.0", (api) => {
       api.addAdminPluginConfigurationNav("discourse-ai", [
         {
+          label: "discourse_ai.features.short_title",
+          route: "adminPlugins.show.discourse-ai-features",
+          description: "discourse_ai.features.description",
+        },
+        {
           label: "discourse_ai.usage.short_title",
           route: "adminPlugins.show.discourse-ai-usage",
           description: "discourse_ai.usage.subheader_description",
@@ -41,12 +46,6 @@ export default {
           route: "adminPlugins.show.discourse-ai-spam",
           description: "discourse_ai.spam.spam_description",
         },
-        // TODO(@keegan / @roman): Uncomment this when structured output is merged
-        // {
-        //   label: "discourse_ai.features.short_title",
-        //   route: "adminPlugins.show.discourse-ai-features",
-        //   description: "discourse_ai.features.description",
-        // },
       ]);
     });
   },

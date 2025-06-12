@@ -32,11 +32,12 @@ sr:
     discourse_ai:
       features:
         back: "Nazad"
-        list:
-          header:
-            name: "Ime foruma"
-            groups: "Grupe"
-          edit: "Izmeni"
+        disabled: "(isključeno)"
+        groups: "Grupe:"
+        no_groups: "Ništa"
+        edit: "Izmeni"
+        search:
+          name: "Pretraži"
       modals:
         select_option: "Izaberi jednu od opcija..."
       spam:

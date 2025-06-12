@@ -20,7 +20,15 @@
     height: calc(100% - 2em);
   }
 
-  &:not(.ai-artifact__expanded) {
+  &.ai-artifact__seamless {
+    padding-bottom: 1em;
+
+    iframe {
+      height: 100%;
+    }
+  }
+
+  &:not(.ai-artifact__expanded, .ai-artifact__seamless) {
     iframe {
       box-shadow: var(--shadow-card);
     }
@@ -132,5 +140,12 @@ html.ai-artifact-expanded {
     right: 0;
     bottom: 0;
     z-index: z("fullscreen");
+  }
+}
+
+.ai-share-full-topic-modal__body {
+  .ai-artifact-controls {
+    display: flex;
+    justify-content: space-between;
   }
 }

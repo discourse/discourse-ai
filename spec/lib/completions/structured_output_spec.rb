@@ -112,6 +112,14 @@ RSpec.describe DiscourseAi::Completions::StructuredOutput do
         ["Hello! I am a chunk", "There"],
       )
     end
+
+    it "handles empty newline chunks" do
+      chunks = [+"{\"", +"message", +"\":\"", +"Hello!", +"\n", +"\"", +"}"]
+
+      chunks.each { |c| structured_output << c }
+
+      expect(structured_output.read_buffered_property(:message)).to eq("Hello!\n")
+    end
   end
 
   describe "dealing with non-JSON responses" do

@@ -140,12 +140,20 @@ it:
       title: "IA"
       features:
         back: "Indietro"
-        list:
-          header:
-            name: "Nome"
-            groups: "Gruppi"
-          edit: "Modifica"
-          set_up: "Configura"
+        disabled: "(disabilitati)"
+        groups: "Gruppi:"
+        no_persona: "Non impostato"
+        no_groups: "Nessuna"
+        edit: "Modifica"
+        search:
+          name: "Cerca"
+        ai_helper:
+          name: "Assistente"
+          proofread: Testo corretto
+          explain: "Spiega"
+          smart_dates: "Date smart"
+          markdown_tables: "Genera tabella di markdown"
+          custom_prompt: "Comando personalizzato"
       modals:
         select_option: "Scegli un'opzione..."
       spam:

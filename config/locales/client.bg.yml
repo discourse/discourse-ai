@@ -36,11 +36,13 @@ bg:
     discourse_ai:
       features:
         back: "Назад"
-        list:
-          header:
-            name: "Име "
-            groups: "Групи"
-          edit: "Редактирай"
+        disabled: "(деактивирани)"
+        groups: "Групи:"
+        no_persona: "Не е зададено"
+        no_groups: "Без"
+        edit: "Редактирай"
+        search:
+          name: "Търсене"
       modals:
         select_option: "Изберете опция..."
       spam:

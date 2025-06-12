@@ -274,6 +274,10 @@ es:
         web_artifact_creator:
           name: "Creador de artefactos web"
           description: "Bot de IA especializado en crear artefactos web interactivos"
+        custom_prompt:
+          name: "Instruccón personalizada"
+        smart_dates:
+          name: "Fechas inteligentes"
       topic_not_found: "¡Resumen no disponible, tema no encontrado!"
       summarizing: "Resumiendo tema"
       searching: "Buscando: '%{query}'"

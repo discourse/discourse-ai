@@ -3,48 +3,44 @@
 module PageObjects
   module Pages
     class AdminAiFeatures < PageObjects::Pages::Base
-      CONFIGURED_FEATURES_TABLE = ".ai-feature-list__configured-features .d-admin-table"
-      UNCONFIGURED_FEATURES_TABLE = ".ai-feature-list__unconfigured-features .d-admin-table"
+      FEATURES_PAGE = ".ai-features"
 
       def visit
         page.visit("/admin/plugins/discourse-ai/ai-features")
         self
       end
 
-      def configured_features_table
-        page.find(CONFIGURED_FEATURES_TABLE)
+      def toggle_configured
+        page.find("#{FEATURES_PAGE} .ai-feature-groups .configured").click
       end
 
-      def unconfigured_features_table
-        page.find(UNCONFIGURED_FEATURES_TABLE)
+      def toggle_unconfigured
+        page.find("#{FEATURES_PAGE} .ai-feature-groups .unconfigured").click
       end
 
-      def has_configured_feature_items?(count)
-        page.has_css?("#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__row", count: count)
+      def has_listed_modules?(count)
+        page.has_css?("#{FEATURES_PAGE} .ai-module", count: count)
       end
 
-      def has_unconfigured_feature_items?(count)
-        page.has_css?("#{UNCONFIGURED_FEATURES_TABLE} .ai-feature-list__row", count: count)
-      end
-
-      def has_feature_persona?(name)
+      def has_feature_persona?(feature_name, name)
         page.has_css?(
-          "#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__persona .d-button-label ",
+          "#{FEATURES_PAGE} .ai-feature-card[data-feature-name='#{feature_name}'] .ai-feature-card__persona-button .d-button-label",
           text: name,
         )
       end
 
-      def has_feature_groups?(groups)
-        listed_groups = page.find("#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__groups")
+      def has_feature_groups?(feature_name, groups)
+        listed_groups =
+          page.find(
+            "#{FEATURES_PAGE} .ai-feature-card[data-feature-name='#{feature_name}'] .ai-feature-card__item-groups",
+          )
         list_items = listed_groups.all("li", visible: true).map(&:text)
 
         list_items.sort == groups.sort
       end
 
-      def click_edit_feature(feature_name)
-        page.find(
-          "#{CONFIGURED_FEATURES_TABLE} .ai-feature-list__row[data-feature-name='#{feature_name}'] .edit",
-        ).click
+      def click_edit_module(module_name)
+        page.find("#{FEATURES_PAGE} .ai-module[data-module-name='#{module_name}'] .edit").click
       end
     end
   end

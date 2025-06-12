@@ -120,12 +120,17 @@ uk:
       title: "ШІ"
       features:
         back: "Назад"
-        list:
-          header:
-            name: "Імʼя"
-            groups: "Групи"
-          edit: "Редагувати"
-          set_up: "Налаштувати"
+        disabled: "(вимкнено)"
+        groups: "Групи:"
+        no_persona: "Не встановлено"
+        no_groups: "Немає"
+        edit: "Редагувати"
+        search:
+          name: "Пошук"
+        ai_helper:
+          proofread: Перевірити текст
+          explain: "Пояснити"
+          markdown_tables: "Створити таблицю у форматі Markdown"
       modals:
         select_option: "Вибрати опцію..."
       spam:

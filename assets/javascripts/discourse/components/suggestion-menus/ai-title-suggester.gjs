@@ -9,7 +9,10 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import DMenu from "float-kit/components/d-menu";
-import { MIN_CHARACTER_COUNT } from "../../lib/ai-helper-suggestions";
+import {
+  MIN_CHARACTER_COUNT,
+  showSuggestionsError,
+} from "../../lib/ai-helper-suggestions";
 
 export default class AiTitleSuggester extends Component {
   @tracked loading = false;
@@ -46,9 +49,20 @@ export default class AiTitleSuggester extends Component {
     return showTrigger;
   }
 
+  get showDropdown() {
+    if (this.suggestions?.length <= 0) {
+      this.dMenu.close();
+    }
+    return !this.loading && this.suggestions?.length > 0;
+  }
+
   @action
   async loadSuggestions() {
-    if (this.suggestions && !this.dMenu.expanded) {
+    if (
+      this.suggestions &&
+      this.suggestions?.length > 0 &&
+      !this.dMenu.expanded
+    ) {
       return this.suggestions;
     }
 
@@ -70,7 +84,13 @@ export default class AiTitleSuggester extends Component {
           data,
         }
       );
+
       this.suggestions = suggestions;
+
+      if (this.suggestions?.length <= 0) {
+        showSuggestionsError(this, this.loadSuggestions.bind(this));
+        return;
+      }
     } catch (error) {
       popupAjaxError(error);
     } finally {
@@ -99,7 +119,13 @@ export default class AiTitleSuggester extends Component {
 
   @action
   onClose() {
-    this.triggerIcon = "discourse-sparkles";
+    if (this.suggestions?.length > 0) {
+      // If all suggestions have been used,
+      // re-triggering when no suggestions present
+      // will cause computation issues with
+      // setting the icon, so we prevent it
+      this.triggerIcon = "discourse-sparkles";
+    }
   }
 
   <template>
@@ -120,7 +146,7 @@ export default class AiTitleSuggester extends Component {
         {{on "click" this.loadSuggestions}}
       >
         <:content>
-          {{#unless this.loading}}
+          {{#if this.showDropdown}}
             <DropdownMenu as |dropdown|>
               {{#each this.suggestions as |suggestion index|}}
                 <dropdown.item>
@@ -135,7 +161,7 @@ export default class AiTitleSuggester extends Component {
                 </dropdown.item>
               {{/each}}
             </DropdownMenu>
-          {{/unless}}
+          {{/if}}
         </:content>
       </DMenu>
     {{/if}}

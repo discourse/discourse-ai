@@ -38,11 +38,13 @@ sv:
     discourse_ai:
       features:
         back: "Tillbaka"
-        list:
-          header:
-            name: "Namn"
-            groups: "Grupper"
-          edit: "Redigera"
+        disabled: "(inaktiverad)"
+        groups: "Grupper:"
+        no_persona: "Inte inställd"
+        no_groups: "Ingen"
+        edit: "Redigera"
+        search:
+          name: "Sök"
       modals:
         select_option: "Välj ett alternativ..."
       spam:

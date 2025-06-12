@@ -39,7 +39,8 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       "var element = document.querySelector('#{topic_page.post_by_number_selector(selected_post.post_number)} .cooked p'); " +
         "var range = document.createRange(); " + "range.selectNodeContents(element); " +
         "var selection = window.getSelection(); " + "selection.removeAllRanges(); " +
-        "selection.addRange(range);",
+        "selection.addRange(range);" + "const event = new PointerEvent('pointerup');" +
+        "document.dispatchEvent(event);",
     )
   end
 

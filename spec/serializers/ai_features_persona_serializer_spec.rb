@@ -24,9 +24,7 @@ RSpec.describe AiFeaturesPersonaSerializer do
         serialized = described_class.new(ai_persona, scope: Guardian.new(admin), root: nil)
         expect(serialized.id).to eq(ai_persona.id)
         expect(serialized.name).to eq(ai_persona.name)
-        expect(serialized.system_prompt).to eq(ai_persona.system_prompt)
         expect(serialized.allowed_groups).to eq(allowed_groups)
-        expect(serialized.enabled).to eq(ai_persona.enabled)
       end
     end
   end

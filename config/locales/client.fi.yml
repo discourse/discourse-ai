@@ -140,12 +140,20 @@ fi:
       title: "Tekoäly"
       features:
         back: "Takaisin"
-        list:
-          header:
-            name: "Nimi"
-            groups: "Ryhmät"
-          edit: "Muokkaa"
-          set_up: "Määritä"
+        disabled: "(pois käytöstä)"
+        groups: "Ryhmät:"
+        no_persona: "Ei asetettu"
+        no_groups: "Ei valittu"
+        edit: "Muokkaa"
+        search:
+          name: "Hae"
+        ai_helper:
+          name: "Apuri"
+          proofread: Oikolue teksti
+          explain: "Selitä"
+          smart_dates: "Älykkäät päivämäärät"
+          markdown_tables: "Luo markdown-taulukko"
+          custom_prompt: "Mukautettu kehote"
       modals:
         select_option: "Valitse vaihtoehto..."
       spam:

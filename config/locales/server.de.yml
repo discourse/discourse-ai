@@ -327,20 +327,53 @@ de:
         concept_deduplicator:
           name: "Konzept-Deduplikator"
           description: "KI-Bot spezialisiert auf das Entfernen von redundanten Daten in Konzepten"
+        custom_prompt:
+          name: "Benutzerdefinierte Eingabeaufforderung"
+          description: "Standard-Persona für die „Benutzerdefinierte Eingabeaufforderungs“-Funktion des Helfers"
+        smart_dates:
+          name: "Intelligente Termine"
+          description: "Standard-Persona für die „Intelligente Termine“-Funktion des Helfers"
+        markdown_table_generator:
+          name: "Markdown-Tabellengenerator"
+          description: "Standard-Persona für die „Generiere Markdown-Tabelle“-Funktion des Helfers"
+        post_illustrator:
+          name: "Beitragsillustrator"
+          description: "Generiert StableDiffusion-Eingabeaufforderungen, für die Funktion „Beitrag illustrieren“ des Helfers"
+        proofreader:
+          name: "Korrekturleser"
+          description: "Standard-Persona für die „Korrekturlesen“-Funktion des Helfers"
+        titles_generator:
+          name: "Titelgenerator"
+          description: "Standard-Persona für die „Thementitel vorschlagen“-Funktion des Helfers"
+        tutor:
+          name: "Tutor"
+          description: "Standard-Persona für die „Erklären“-Funktion des Helfers"
+        translator:
+          name: "Übersetzer"
+          description: "Standard-Persona für die Übersetzerfunktion des Helfers"
+        image_captioner:
+          name: "Bildbeschriftungen"
+          description: "Standard-Persona für die Bildbeschriftungsfunktion des Helfers"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
       tool_options:
         researcher:
+          researcher_llm:
+            name: "LLM"
+            description: "Für die Recherche zu verwendendes Sprachmodell (standardmäßig das LLM der aktuellen Persona)"
+          max_tokens_per_batch:
+            name: "Maximale Token pro Bündel"
+            description: "Maximale Anzahl von Token, die für jedes Bündel in der Recherche verwendet werden"
+          max_tokens_per_post:
+            name: "Maximale Token pro Beitrag"
+            description: "Maximale Anzahl von Token, die für jeden Beitrag in der Recherche verwendet werden können"
           max_results:
             name: "Maximale Anzahl von Ergebnissen"
             description: "Maximale Anzahl von Ergebnissen, die in einen Filter aufgenommen werden"
           include_private:
             name: "Private einschließen"
             description: "Private Themen in die Filter einbeziehen"
-          max_tokens_per_post:
-            name: "Maximale Token pro Beitrag"
-            description: "Maximale Anzahl von Token, die für jeden Beitrag im Filter verwendet werden"
         create_artifact:
           creator_llm:
             name: "LLM"
@@ -525,22 +558,6 @@ de:
     llm_models:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Modell zu verwenden."
-    features:
-      summarization:
-        name: "Zusammenfassungen"
-        description: "Stellt eine Schaltfläche für Zusammenfassungen zur Verfügung, mit der Besucher Themen zusammenfassen können"
-      gists:
-        name: "Kurze Zusammenfassungen"
-        description: "Fügt die Möglichkeit hinzu, kurze Zusammenfassungen von Themen in der Themenliste anzuzeigen"
-      discoveries:
-        name: "Discobot Entdeckungen"
-        description: "Verbessert das Sucherlebnis durch KI-generierte Antworten auf Suchanfragen"
-      discord_search:
-        name: "Discord-Suche"
-        description: "Fügt die Möglichkeit hinzu, Discord-Kanäle zu durchsuchen"
-      inferred_concepts:
-        name: "Abgeleitete Konzepte"
-        description: "Ordnet Themen und Beiträge in Interessensgebiete / Labels."
     errors:
       quota_exceeded: "Du hast das Kontingent für dieses Modell überschritten. Bitte versuche es erneut in %{relative_time}."
       quota_required: "Du musst die maximale Anzahl an Token oder Verwendungen für dieses Modell angeben"

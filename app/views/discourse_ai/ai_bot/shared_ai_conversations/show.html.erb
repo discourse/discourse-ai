@@ -59,6 +59,22 @@
       document.querySelectorAll('pre code').forEach((el) => {
         hljs.highlightElement(el);
       });
+
+      document.querySelectorAll('.ai-artifact-controls .copy-embed').forEach((el) => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          const url = el.dataset.url;
+          const embedCode = `<iframe src="${url}" width="100%" height="600" frameborder="0"></iframe>`;
+          navigator.clipboard.writeText(embedCode).then(() => {
+            el.textContent = '<%= I18n.t("discourse_ai.ai_artifact.copied") %>';
+            setTimeout(() => {
+              el.textContent = '<%= I18n.t("discourse_ai.ai_artifact.copy_embed") %>';
+            }, 2000);
+          }).catch(err => {
+            console.error('Failed to copy: ', err);
+          });
+        });
+      });
     </script>
   </body>
 </html>
