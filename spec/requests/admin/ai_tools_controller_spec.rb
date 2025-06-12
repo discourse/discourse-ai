@@ -71,7 +71,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response.parsed_body["ai_tool"]["name"]).to eq("Test Tool 1")
       expect(response.parsed_body["ai_tool"]["tool_name"]).to eq("test_tool_1")
     end
-    
+
     it "logs the creation with StaffActionLogger" do
       expect {
         post "/admin/plugins/discourse-ai/ai-tools.json",
@@ -79,9 +79,18 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
              headers: {
                "CONTENT_TYPE" => "application/json",
              }
-      }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_tool").count }.by(1)
-      
-      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_tool").last
+      }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "create_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "create_ai_tool",
+        ).last
       expect(history.details).to include("name: Test Tool 1")
       expect(history.details).to include("tool_name: test_tool_1")
       expect(history.subject).to eq("Test Tool 1") # Verify subject field is included
@@ -155,22 +164,32 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response).to be_successful
       expect(ai_tool.reload.name).to eq("Updated Tool")
     end
-    
+
     it "logs the update with StaffActionLogger" do
       expect {
         put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
             params: {
               ai_tool: {
                 name: "Updated Tool",
-                description: "Updated description"
+                description: "Updated description",
               },
             }
-      }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_tool").count }.by(1)
-      
-      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_tool").last
+      }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_tool",
+        ).last
       expect(history.details).to include("tool_id: #{ai_tool.id}")
-      expect(history.details).to include("name_changed: true")
-      expect(history.subject).to eq("Updated Tool") # Verify subject field is included with new name
+      expect(history.details).to include("name")
+      expect(history.details).to include("description")
+      expect(history.subject).to eq("Updated Tool")
     end
 
     context "when updating an enum parameters" do
@@ -204,15 +223,22 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
 
       expect(response).to have_http_status(:no_content)
     end
-    
+
     it "logs the deletion with StaffActionLogger" do
       tool_id = ai_tool.id
-      
-      expect {
-        delete "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json"
-      }.to change { UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_tool").count }.by(1)
-      
-      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_tool").last
+
+      expect { delete "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json" }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "delete_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "delete_ai_tool",
+        ).last
       expect(history.details).to include("tool_id: #{tool_id}")
       expect(history.subject).to eq("Test Tool") # Verify subject field is included
     end

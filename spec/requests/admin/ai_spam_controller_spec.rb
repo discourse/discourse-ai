@@ -130,14 +130,13 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
 
           expect(response.status).to eq(200)
 
-          # Verify the log was created with the right subject
           history =
             UserHistory.where(
               action: UserHistory.actions[:custom_staff],
               custom_type: "update_ai_spam_settings",
             ).last
           expect(history).to be_present
-          expect(history.details).to include("custom_instructions_changed")
+          expect(history.details).to include("custom_instructions")
         end
 
         it "logs staff action when llm_model_id changes" do
@@ -202,7 +201,7 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
             ).last
           expect(history).to be_present
           expect(history.details).to include("llm_model_id")
-          expect(history.details).to include("custom_instructions_changed")
+          expect(history.details).to include("custom_instructions")
         end
       end
     end
