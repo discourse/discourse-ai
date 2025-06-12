@@ -202,13 +202,15 @@ export default class AiLlmEditorForm extends Component {
 
       if (isNew) {
         this.args.llms.addObject(this.args.model);
-        this.router.transitionTo("adminPlugins.show.discourse-ai-llms.index");
-      } else {
-        this.toasts.success({
-          data: { message: i18n("discourse_ai.llms.saved") },
-          duration: 2000,
-        });
+        await this.router.replaceWith(
+          "adminPlugins.show.discourse-ai-llms.edit",
+          this.args.model.id
+        );
       }
+      this.toasts.success({
+        data: { message: i18n("discourse_ai.llms.saved") },
+        duration: 2000,
+      });
     } catch (e) {
       popupAjaxError(e);
     } finally {
@@ -340,7 +342,7 @@ export default class AiLlmEditorForm extends Component {
         @format="large"
         as |field|
       >
-        <field.Password />
+        <field.Password autocomplete="off" data-1p-ignore />
       </form.Field>
 
       <form.Object @name="provider_params" as |object providerParamsData|>

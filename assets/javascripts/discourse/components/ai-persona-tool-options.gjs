@@ -16,16 +16,16 @@ export default class AiPersonaToolOptions extends Component {
   }
 
   get toolsMetadata() {
-    const metatada = {};
+    const metadata = {};
 
     this.args.allTools.map((t) => {
-      metatada[t.id] = {
+      metadata[t.id] = {
         name: t.name,
         ...t?.options,
       };
     });
 
-    return metatada;
+    return metadata;
   }
 
   @action
@@ -76,7 +76,7 @@ export default class AiPersonaToolOptions extends Component {
                       >
                         {{#if (eq optionMeta.type "enum")}}
                           <field.Select @includeNone={{false}} as |select|>
-                            {{#each optionsObj.values as |v|}}
+                            {{#each optionMeta.values as |v|}}
                               <select.Option @value={{v}}>{{v}}</select.Option>
                             {{/each}}
                           </field.Select>
