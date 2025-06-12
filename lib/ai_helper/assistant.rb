@@ -140,8 +140,8 @@ module DiscourseAi
               end
             elsif type.blank?
               # Assume response is a regular completion.
-              helper_response << helper_chunk
-              block.call(helper_chunk) if block
+              helper_response << partial
+              block.call(partial) if block
             end
           end
 

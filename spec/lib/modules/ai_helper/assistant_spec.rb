@@ -176,6 +176,20 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
 
         expect(response[:suggestions]).to contain_exactly(english_text)
       end
+
+      context "when the persona is not using structured outputs" do
+        it "still works" do
+          regular_persona = Fabricate(:ai_persona, response_format: nil)
+          SiteSetting.ai_helper_translator_persona = regular_persona.id
+
+          response =
+            DiscourseAi::Completions::Llm.with_prepared_responses([english_text]) do
+              subject.generate_and_send_prompt(mode, text_to_translate, user)
+            end
+
+          expect(response[:suggestions]).to contain_exactly(english_text)
+        end
+      end
     end
 
     context "when using a prompt that returns a list" do
