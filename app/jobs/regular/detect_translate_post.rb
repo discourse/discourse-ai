@@ -12,10 +12,14 @@ module Jobs
       post = Post.find_by(id: args[:post_id])
       return if post.blank? || post.raw.blank? || post.deleted_at.present? || post.user_id <= 0
 
+      topic = post.topic
+      return if topic.blank?
+
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        topic = post.topic
-        if topic.blank? || topic.category&.read_restricted? ||
-             topic.archetype == Archetype.private_message
+        return if topic.category&.read_restricted? || topic.archetype == Archetype.private_message
+      else
+        if topic.archetype == Archetype.private_message &&
+             !TopicAllowedGroup.exists?(topic_id: topic.id)
           return
         end
       end
