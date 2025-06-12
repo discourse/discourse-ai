@@ -38,6 +38,8 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
   end
 
   it "manually configures an LLM" do
+    llm_count = LlmModel.count
+
     visit "/admin/plugins/discourse-ai/ai-llms"
 
     expect(page_header).to be_visible
@@ -58,19 +60,32 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     form.field("enabled_chat_bot").toggle
     form.submit
 
-    expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-llms")
-
+    expect(page).to have_current_path(%r{/admin/plugins/discourse-ai/ai-llms/\d+/edit})
     llm = LlmModel.order(:id).last
+    expect(llm.max_output_tokens.to_i).to eq(2000)
 
+    expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-llms/#{llm.id}/edit")
+
+    form.field("max_output_tokens").fill_in(2001)
+    form.submit
+
+    # should go to llm list and see the llms correctly configured
+    page.go_back
+
+    expect(page).to have_selector(".ai-llms-list-editor__configured .ai-llm-list__row", count: 1)
+
+    llm.reload
     expect(llm.display_name).to eq("Self-hosted LLM")
     expect(llm.name).to eq("llava-hf/llava-v1.6-mistral-7b-hf")
     expect(llm.url).to eq("srv://self-hostest.test")
     expect(llm.tokenizer).to eq("DiscourseAi::Tokenizer::Llama3Tokenizer")
     expect(llm.max_prompt_tokens.to_i).to eq(8000)
     expect(llm.provider).to eq("vllm")
-    expect(llm.max_output_tokens.to_i).to eq(2000)
+    expect(llm.max_output_tokens.to_i).to eq(2001)
     expect(llm.vision_enabled).to eq(true)
     expect(llm.user_id).not_to be_nil
+
+    expect(LlmModel.count).to eq(llm_count + 1)
   end
 
   context "when changing the provider" do
