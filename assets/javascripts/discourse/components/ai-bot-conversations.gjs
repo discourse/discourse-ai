@@ -5,6 +5,7 @@ import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
 import didInsert from "@ember/render-modifiers/modifiers/did-insert";
+import { scheduleOnce } from "@ember/runloop";
 import { service } from "@ember/service";
 import { TrackedArray } from "@ember-compat/tracked-built-ins";
 import $ from "jquery";
@@ -164,6 +165,12 @@ export default class AiBotConversations extends Component {
   setTextArea(element) {
     this.textarea = element;
     this.setupAutocomplete(element);
+    scheduleOnce("afterRender", this, this.focusTextarea);
+  }
+
+  @action
+  focusTextarea() {
+    this.textarea?.focus();
   }
 
   @action
@@ -199,7 +206,7 @@ export default class AiBotConversations extends Component {
       transformComplete: (obj) => obj.username || obj.name,
       afterComplete: (text) => {
         this.textarea.value = text;
-        this.textarea.focus();
+        this.focusTextarea();
         this.updateInputValue({ target: { value: text } });
       },
       onClose: destroyUserStatuses,
@@ -216,7 +223,7 @@ export default class AiBotConversations extends Component {
       treatAsTextarea: true,
       afterComplete: (text) => {
         this.textarea.value = text;
-        this.textarea.focus();
+        this.focusTextarea();
         this.updateInputValue({ target: { value: text } });
       },
     });
