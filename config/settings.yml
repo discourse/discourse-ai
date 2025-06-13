@@ -452,28 +452,54 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+    area: "ai-features/translation"
   ai_translation_model:
     default: ""
     type: enum
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+    area: "ai-features/translation"
+  ai_translation_locale_detector_persona:
+    default: "-27"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/translation"
+  ai_translation_post_raw_translator_persona:
+    default: "-28"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/translation"
+  ai_translation_topic_title_translator_persona:
+    default: "-29"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/translation"
+  ai_translation_short_text_translator_persona:
+    default: "-30"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/translation"
   ai_translation_backfill_rate:
     default: 0
+    min: 0
+    max: 1000
     client: false
     hidden: true
+    area: "ai-features/translation"
   ai_translation_backfill_limit_to_public_content:
     default: true
     client: false
-    hidden: true
+    area: "ai-features/translation"
   ai_translation_backfill_max_age_days:
     default: 5
     client: false
-    hidden: true
+    area: "ai-features/translation"
   ai_translation_verbose_logs:
     default: false
     client: false
     hidden: true
+    area: "ai-features/translation"
 
   inferred_concepts_enabled:
     default: false

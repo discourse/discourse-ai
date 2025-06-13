@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::Admin::AiFeaturesController do
       get "/admin/plugins/discourse-ai/ai-features.json"
 
       expect(response.status).to eq(200)
-      expect(response.parsed_body["ai_features"].count).to eq(5)
+      expect(response.parsed_body["ai_features"].count).to eq(6)
     end
   end
 

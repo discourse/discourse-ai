@@ -64,6 +64,10 @@ module DiscourseAi
             Tutor => -24,
             Translator => -25,
             ImageCaptioner => -26,
+            LocaleDetector => -27,
+            PostRawTranslator => -28,
+            TopicTitleTranslator => -29,
+            ShortTextTranslator => -30,
           }
         end
 

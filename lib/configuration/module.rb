@@ -8,14 +8,16 @@ module DiscourseAi
       DISCORD = "discord"
       INFERENCE = "inference"
       AI_HELPER = "ai_helper"
+      TRANSLATION = "translation"
 
-      NAMES = [SUMMARIZATION, SEARCH, DISCORD, INFERENCE, AI_HELPER]
+      NAMES = [SUMMARIZATION, SEARCH, DISCORD, INFERENCE, AI_HELPER, TRANSLATION]
 
       SUMMARIZATION_ID = 1
       SEARCH_ID = 2
       DISCORD_ID = 3
       INFERENCE_ID = 4
       AI_HELPER_ID = 5
+      TRANSLATION_ID = 6
 
       class << self
         def all
@@ -49,6 +51,12 @@ module DiscourseAi
               AI_HELPER,
               "ai_helper_enabled",
               features: DiscourseAi::Configuration::Feature.ai_helper_features,
+            ),
+            new(
+              TRANSLATION_ID,
+              TRANSLATION,
+              "ai_translation_enabled",
+              features: DiscourseAi::Configuration::Feature.translation_features,
             ),
           ]
         end

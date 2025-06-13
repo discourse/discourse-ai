@@ -9,9 +9,9 @@ module DiscourseAi
         target_locale = target_locale.to_s.sub("-", "_")
 
         translated_title =
-          TopicTitleTranslator.new(text: topic.title, target_locale:, topic_id: topic.id).translate
+          TopicTitleTranslator.new(text: topic.title, target_locale:, topic:).translate
         translated_excerpt =
-          ShortTextTranslator.new(text: topic.excerpt, target_locale:, topic_id: topic.id).translate
+          PostRawTranslator.new(text: topic.excerpt, target_locale:, topic:).translate
 
         localization =
           TopicLocalization.find_or_initialize_by(topic_id: topic.id, locale: target_locale)
