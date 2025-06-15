@@ -78,23 +78,6 @@ export default class AiPostHelperMenu extends Component {
 
   @tracked _activeAiRequest = null;
 
-  constructor() {
-    super(...arguments);
-
-    withPluginApi((api) => {
-      api.registerValueTransformer(
-        "post-text-selection-prevent-close",
-        ({ value }) => {
-          if (this.menuState === this.MENU_STATES.result) {
-            return true;
-          }
-
-          return value;
-        }
-      );
-    });
-  }
-
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
   }
@@ -338,7 +321,7 @@ export default class AiPostHelperMenu extends Component {
       (and this.site.mobileView (eq this.menuState this.MENU_STATES.options))
     }}
       <div class="ai-post-helper-menu__selected-text">
-        {{@data.selectedText}}
+        {{@data.quoteState.buffer}}
       </div>
     {{/if}}
 
