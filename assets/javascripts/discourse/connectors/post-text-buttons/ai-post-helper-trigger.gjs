@@ -131,8 +131,8 @@ export default class AiPostHelperTrigger extends Component {
       closeOnScroll: false,
       modalForMobile: true,
       data: this.menuData,
-      placement: "bottom",
-      fallbackPlacements: ["top"],
+      placement: "top-start",
+      fallbackPlacements: ["bottom-start"],
       inline: true,
       onClose: () => {
         this.removeHighlightedText();
