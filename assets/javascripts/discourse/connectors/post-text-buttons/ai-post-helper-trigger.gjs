@@ -19,9 +19,7 @@ export default class AiPostHelperTrigger extends Component {
     "post-text-selection-toolbar"
   );
 
-  MENU_STATES = {
-    triggers: "TRIGGERS",
-    options: "OPTIONS",
+  // capture the state at the moment the toolbar is rendered
   // so we ensure change of state (selection change for example)
   // is not impacting the menu data
   menuData = {
