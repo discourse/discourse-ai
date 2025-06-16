@@ -221,7 +221,7 @@ export default class AiPostHelperMenu extends Component {
       data: {
         location: "post",
         mode: option.name,
-        text: this.args.data.selectedText,
+        text: this.args.data.quoteState.buffer,
         post_id: this.args.data.quoteState.postId,
         custom_prompt: this.customPromptValue,
         client_id: this.messageBus.clientId,
@@ -299,9 +299,9 @@ export default class AiPostHelperMenu extends Component {
         const credits = i18n(
           "discourse_ai.ai_helper.post_options_menu.footnote_credits"
         );
-        const withFootnote = `${this.args.data.selectedText} ^[${sanitizedSuggestion} (${credits})]`;
+        const withFootnote = `${this.args.data.quoteState.buffer} ^[${sanitizedSuggestion} (${credits})]`;
         const newRaw = result.raw.replace(
-          this.args.data.selectedText,
+          this.args.data.quoteState.buffer,
           withFootnote
         );
 
