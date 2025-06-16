@@ -18,19 +18,42 @@ module DiscourseAi
           can have a capital letter, and acronyms like LLM can use capital letters. Format some titles
           as questions, some as statements. Make sure to use question marks if the title is a question.
           You will find the text between <input></input> XML tags.
-          Wrap each title between <item></item> XML tags.
+
+          The title suggestions should be returned in a JSON array, under the `output` key, like this:
+
+          {
+            "output": [
+              "suggeested title #1",
+              "suggeested title #2",
+              "suggeested title #3",
+              "suggeested title #4",
+              "suggeested title #5"
+            ]
+          }
+
+          Return only the JSON
         PROMPT
       end
 
       def response_format
-        [{ "key" => "output", "type" => "string" }]
+        [{ "key" => "output", "type" => "array", "array_type" => "string" }]
       end
 
       def examples
         [
           [
             "<input>In the labyrinth of time, a solitary horse, etched in gold by the setting sun, embarked on an infinite journey.</input>",
-            "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>",
+            <<~OUTPUT,
+            {
+              "output": [
+                "The solitary horse",
+                "The horse etched in gold",
+                "A horse's infinite journey",
+                "A horse lost in time",
+                "A horse's last rid"
+              ]
+            }
+            OUTPUT
           ],
         ]
       end
