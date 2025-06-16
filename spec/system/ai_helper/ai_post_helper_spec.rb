@@ -30,6 +30,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
     SiteSetting.ai_helper_enabled = true
+    Jobs.run_immediately!
     sign_in(user)
   end
 
@@ -87,13 +88,33 @@ RSpec.describe "AI Post helper", type: :system, js: true do
       end
 
       it "pre-fills fast edit with proofread text" do
-        skip("Test is flaky in CI, possibly some timing issue?") if ENV["CI"]
         select_post_text(post_3)
         post_ai_helper.click_ai_button
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
           post_ai_helper.select_helper_model(mode)
-          wait_for { fast_editor.has_content?(proofread_response) }
-          expect(fast_editor).to have_content(proofread_response)
+          expect(page.find("#fast-edit-input")).to have_content(proofread_response)
+        end
+      end
+    end
+
+    context "when using explain mode" do
+      let(:mode) { DiscourseAi::AiHelper::Assistant::EXPLAIN }
+      let(:explain_response) { "This is about pie." }
+
+      it "shows the explanation in the AI helper" do
+        select_post_text(post)
+        post_ai_helper.click_ai_button
+
+        DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
+          post_ai_helper.select_helper_model(mode)
+
+          MessageBus.publish(
+            "/discourse-ai/ai-helper/stream_suggestion/#{post.id}",
+            { result: explain_response, done: true },
+            user_ids: [user.id],
+          )
+
+          expect(post_ai_helper.suggestion_value).to eq(explain_response)
         end
       end
     end
@@ -128,13 +149,11 @@ RSpec.describe "AI Post helper", type: :system, js: true do
     end
 
     it "pre-fills fast edit with proofread text" do
-      skip("Test is flaky in CI, possibly some timing issue?") if ENV["CI"]
       select_post_text(post_3)
       find(".quote-edit-label").click
       DiscourseAi::Completions::Llm.with_prepared_responses([proofread_response]) do
         find(".btn-ai-suggest-edit", visible: :all).click
-        wait_for { fast_editor.has_content?(proofread_response) }
-        expect(fast_editor).to have_content(proofread_response)
+        expect(page.find("#fast-edit-input")).to have_content(proofread_response)
       end
     end
   end

@@ -9,7 +9,6 @@ module PageObjects
       SHARE_SELECTOR = ".quote-sharing"
 
       AI_HELPER_SELECTOR = ".ai-post-helper"
-      AI_HELPER_MOBILE_SELECTOR = ".ai-post-helper-menu-content"
       TRIGGER_SELECTOR = "#{AI_HELPER_SELECTOR}__trigger"
       OPTIONS_SELECTOR = ".ai-helper-options"
       LOADING_SELECTOR = ".ai-helper-context-menu__loading"
@@ -28,6 +27,10 @@ module PageObjects
         find("#{OPTIONS_SELECTOR} .btn[data-name=\"#{mode}\"]").click
       end
 
+      def has_suggestion_value?
+        page.has_css?("#{SUGGESTION_SELECTOR}__text")
+      end
+
       def suggestion_value
         find("#{SUGGESTION_SELECTOR}__text").text
       end
@@ -41,11 +44,11 @@ module PageObjects
       end
 
       def has_mobile_post_ai_helper?
-        page.has_css?(AI_HELPER_MOBILE_SELECTOR)
+        page.has_css?(".fk-d-menu-modal #{AI_HELPER_SELECTOR}")
       end
 
       def has_no_mobile_post_ai_helper?
-        page.has_no_css?(AI_HELPER_MOBILE_SELECTOR)
+        page.has_no_css?(".fk-d-menu-modal #{AI_HELPER_SELECTOR}")
       end
 
       def has_post_ai_helper?
@@ -80,6 +83,10 @@ module PageObjects
       def has_no_post_selection_primary_buttons?
         page.has_no_css?(QUOTE_SELECTOR) || page.has_no_css?(EDIT_SELECTOR) ||
           page.has_no_css?(SHARE_SELECTOR)
+      end
+
+      def has_suggestions?
+        page.has_css?(SUGGESTION_SELECTOR)
       end
     end
   end
