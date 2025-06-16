@@ -186,7 +186,15 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       context "when suggesting titles with a topic_id" do
         let(:title_suggestions) do
-          "<item>What are your favourite fruits?</item><item>Love for fruits</item><item>Fruits are amazing</item><item>Favourite fruit list</item><item>Fruit share topic</item>"
+          {
+            output: [
+              "What are your favourite fruits?",
+              "Love for fruits",
+              "Fruits are amazing",
+              "Favourite fruit list",
+              "Fruit share topic",
+            ],
+          }
         end
         let(:title_suggestions_array) do
           [
@@ -210,7 +218,15 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
       context "when suggesting titles with input text" do
         let(:title_suggestions) do
-          "<item>Apples - the best fruit</item><item>Why apples are great</item><item>Apples are the best fruit</item><item>My love for apples</item><item>I love apples</item>"
+          {
+            output: [
+              "Apples - the best fruit",
+              "Why apples are great",
+              "Apples are the best fruit",
+              "My love for apples",
+              "I love apples",
+            ],
+          }
         end
         let(:title_suggestions_array) do
           [

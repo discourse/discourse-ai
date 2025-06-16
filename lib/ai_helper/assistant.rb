@@ -130,12 +130,16 @@ module DiscourseAi
 
         buffer_blk =
           Proc.new do |partial, _, type|
+            json_summary_schema_key = bot.persona.response_format&.first.to_h
+            helper_response = [] if json_summary_schema_key["type"] == "array"
             if type == :structured_output
-              json_summary_schema_key = bot.persona.response_format&.first.to_h
               helper_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
-
               if !helper_chunk.nil? && !helper_chunk.empty?
-                helper_response << helper_chunk
+                if json_summary_schema_key["type"] != "array"
+                  helper_response = helper_chunk
+                else
+                  helper_response << helper_chunk
+                end
                 block.call(helper_chunk) if block
               end
             elsif type.blank?
@@ -169,7 +173,7 @@ module DiscourseAi
 
         result[:suggestions] = (
           if result[:type] == :list
-            parse_list(helper_response).map { |suggestion| sanitize_result(suggestion) }
+            helper_response.flatten.map { |suggestion| sanitize_result(suggestion) }
           else
             sanitized = sanitize_result(helper_response)
             result[:diff] = parse_diff(input, sanitized) if result[:type] == :diff
@@ -435,10 +439,6 @@ module DiscourseAi
         cooked_suggestion = PrettyText.cook(suggestion)
 
         DiscourseDiff.new(cooked_text, cooked_suggestion).inline_html
-      end
-
-      def parse_list(list)
-        Nokogiri::HTML5.fragment(list).css("item").map(&:text)
       end
     end
   end

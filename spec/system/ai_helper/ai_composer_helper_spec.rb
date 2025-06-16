@@ -185,7 +185,15 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     let(:mode) { DiscourseAi::AiHelper::Assistant::GENERATE_TITLES }
 
     let(:titles) do
-      "<item>Rainy Spain</item><item>Plane-Bound Delights</item><item>Mysterious Spain</item><item>Plane-Rain Chronicles</item><item>Unveiling Spain</item>"
+      {
+        output: [
+          "Rainy Spain",
+          "Plane-Bound Delights",
+          "Mysterious Spain",
+          "Plane-Rain Chronicles",
+          "Unveiling Spain",
+        ],
+      }
     end
 
     it "opens a menu with title suggestions" do
