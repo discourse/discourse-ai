@@ -196,7 +196,15 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
       let(:mode) { described_class::GENERATE_TITLES }
 
       let(:titles) do
-        "<item>The solitary horse</item><item>The horse etched in gold</item><item>A horse's infinite journey</item><item>A horse lost in time</item><item>A horse's last ride</item>"
+        {
+          output: [
+            "The solitary horse",
+            "The horse etched in gold",
+            "A horse's infinite journey",
+            "A horse lost in time",
+            "A horse's last ride",
+          ],
+        }
       end
 
       it "returns an array with each title" do
