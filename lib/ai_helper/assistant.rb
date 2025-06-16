@@ -131,9 +131,7 @@ module DiscourseAi
         buffer_blk =
           Proc.new do |partial, _, type|
             json_summary_schema_key = bot.persona.response_format&.first.to_h
-
             helper_response = [] if json_summary_schema_key["type"] == "array"
-
             if type == :structured_output
               helper_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
               if !helper_chunk.nil? && !helper_chunk.empty?
