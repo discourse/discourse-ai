@@ -114,6 +114,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
             user_ids: [user.id],
           )
 
+          wait_for { post_ai_helper.has_suggestion_value? }
           expect(post_ai_helper.suggestion_value).to eq(explain_response)
         end
       end
