@@ -38,11 +38,13 @@ hr:
     discourse_ai:
       features:
         back: "Natrag"
-        list:
-          header:
-            name: "Ime"
-            groups: "Grupe"
-          edit: "Uredi"
+        disabled: "(onemogućeno)"
+        groups: "Grupe:"
+        no_persona: "Nije postavljeno"
+        no_groups: "Ništa"
+        edit: "Uredi"
+        search:
+          name: "Pretraživanje"
       modals:
         select_option: "Odaberi opciju..."
       spam:

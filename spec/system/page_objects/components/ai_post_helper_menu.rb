@@ -25,7 +25,7 @@ module PageObjects
       end
 
       def select_helper_model(mode)
-        find("#{OPTIONS_SELECTOR} .btn[data-value=\"#{mode}\"]").click
+        find("#{OPTIONS_SELECTOR} .btn[data-name=\"#{mode}\"]").click
       end
 
       def suggestion_value

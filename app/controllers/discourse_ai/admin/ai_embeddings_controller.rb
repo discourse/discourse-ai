@@ -40,6 +40,7 @@ module DiscourseAi
         embedding_def = EmbeddingDefinition.new(ai_embeddings_params)
 
         if embedding_def.save
+          log_ai_embedding_creation(embedding_def)
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def), status: :created
         else
           render_json_error embedding_def
@@ -55,7 +56,10 @@ module DiscourseAi
           )
         end
 
+        initial_attributes = embedding_def.attributes.dup
+
         if embedding_def.update(ai_embeddings_params.except(:dimensions))
+          log_ai_embedding_update(embedding_def, initial_attributes)
           render json: AiEmbeddingDefinitionSerializer.new(embedding_def)
         else
           render_json_error embedding_def
@@ -75,7 +79,16 @@ module DiscourseAi
           return render_json_error(I18n.t("discourse_ai.embeddings.delete_failed"), status: 409)
         end
 
+        embedding_details = {
+          embedding_id: embedding_def.id,
+          display_name: embedding_def.display_name,
+          provider: embedding_def.provider,
+          dimensions: embedding_def.dimensions,
+          subject: embedding_def.display_name,
+        }
+
         if embedding_def.destroy
+          log_ai_embedding_deletion(embedding_details)
           head :no_content
         else
           render_json_error embedding_def
@@ -127,6 +140,60 @@ module DiscourseAi
         end
 
         permitted
+      end
+
+      def ai_embeddings_logger_fields
+        {
+          display_name: {
+          },
+          provider: {
+          },
+          dimensions: {
+          },
+          url: {
+          },
+          tokenizer_class: {
+          },
+          max_sequence_length: {
+          },
+          embed_prompt: {
+            type: :large_text,
+          },
+          search_prompt: {
+            type: :large_text,
+          },
+          matryoshka_dimensions: {
+          },
+          api_key: {
+            type: :sensitive,
+          },
+          # JSON fields should be tracked as simple changes
+          json_fields: [:provider_params],
+        }
+      end
+
+      def log_ai_embedding_creation(embedding_def)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { embedding_id: embedding_def.id, subject: embedding_def.display_name }
+        logger.log_creation("embedding", embedding_def, ai_embeddings_logger_fields, entity_details)
+      end
+
+      def log_ai_embedding_update(embedding_def, initial_attributes)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { embedding_id: embedding_def.id, subject: embedding_def.display_name }
+
+        logger.log_update(
+          "embedding",
+          embedding_def,
+          initial_attributes,
+          ai_embeddings_logger_fields,
+          entity_details,
+        )
+      end
+
+      def log_ai_embedding_deletion(embedding_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        logger.log_deletion("embedding", embedding_details)
       end
     end
   end

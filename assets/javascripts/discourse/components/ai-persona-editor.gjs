@@ -122,16 +122,15 @@ export default class PersonaEditor extends Component {
 
       if (isNew && this.args.model.rag_uploads.length === 0) {
         this.args.personas.addObject(personaToSave);
-        this.router.transitionTo(
+        await this.router.replaceWith(
           "adminPlugins.show.discourse-ai-personas.edit",
           personaToSave
         );
-      } else {
-        this.toasts.success({
-          data: { message: i18n("discourse_ai.ai_persona.saved") },
-          duration: 2000,
-        });
       }
+      this.toasts.success({
+        data: { message: i18n("discourse_ai.ai_persona.saved") },
+        duration: 2000,
+      });
     } catch (e) {
       popupAjaxError(e);
     } finally {
@@ -530,6 +529,7 @@ export default class PersonaEditor extends Component {
             <form.Field
               @name="rag_uploads"
               @title={{i18n "discourse_ai.rag.uploads.title"}}
+              @format="full"
               as |field|
             >
               <field.Custom>

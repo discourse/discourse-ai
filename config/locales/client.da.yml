@@ -38,11 +38,12 @@ da:
     discourse_ai:
       features:
         back: "Tilbage"
-        list:
-          header:
-            name: "Navn"
-            groups: "Grupper"
-          edit: "Rediger"
+        disabled: "(deaktiveret)"
+        groups: "Grupper:"
+        no_groups: "Ingen"
+        edit: "Rediger"
+        search:
+          name: "Søg"
       modals:
         select_option: "Vælg en indstilling..."
       spam:

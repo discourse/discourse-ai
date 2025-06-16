@@ -316,6 +316,10 @@ class AiPersona < ActiveRecord::Base
     end
   end
 
+  def features
+    DiscourseAi::Configuration::Feature.find_features_using(persona_id: id)
+  end
+
   private
 
   def chat_preconditions

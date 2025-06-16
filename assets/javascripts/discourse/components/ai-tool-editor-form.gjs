@@ -91,7 +91,7 @@ export default class AiToolEditorForm extends Component {
         this.args.tools.pushObject(this.args.model);
       }
 
-      this.router.transitionTo(
+      await this.router.replaceWith(
         "adminPlugins.show.discourse-ai-tools.edit",
         this.args.model
       );
@@ -359,6 +359,7 @@ export default class AiToolEditorForm extends Component {
           @name="rag_uploads"
           @title={{i18n "discourse_ai.rag.uploads.title"}}
           @tooltip={{this.ragUploadsDescription}}
+          @format="full"
           as |field|
         >
           <field.Custom>

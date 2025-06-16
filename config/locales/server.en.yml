@@ -25,7 +25,7 @@ en:
         description: "Periodic report based on a large language model"
   site_settings:
     discourse_ai_enabled: "Enable the discourse AI plugin."
-    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode disables sharing and forces an extra click to run code. Lax mode allows sharing of artifacts and runs code directly. Disabled mode disables the artifact system."
+    ai_artifact_security: "The AI artifact system generates IFRAMEs with runnable code. Strict mode forces an extra click to run code. Lax mode runs code immediately. Hybrid mode allows user to supply data-ai-artifact-autorun to show right away. Disabled mode disables the artifact system."
     ai_toxicity_enabled: "Enable the toxicity module."
     ai_toxicity_inference_service_api_endpoint: "URL where the API is running for the toxicity module"
     ai_toxicity_inference_service_api_key: "API key for the toxicity API"
@@ -219,10 +219,16 @@ en:
 
   discourse_ai:
     ai_artifact:
-      link: "Show Artifact in new tab"
+      errors:
+        max_keys_exceeded:
+          one: "You can only have %{count} key in the artifact."
+          other: "You can only have %{count} keys in the artifact."
+      link: "Show in new tab"
+      copy_embed: "Copy embed"
       view_source: "View Source"
       view_changes: "View Changes"
       change_description: "Change Description"
+      copied: "Copied to clipboard"
     unknown_model: "Unknown AI model"
 
     tools:
@@ -278,6 +284,7 @@ en:
       unexpected: "An unexpected error occured"
       bot_user_update_failed: "Failed to update the spam scanning bot user"
       configuration_missing: "The AI spam detection configuration is missing. Add configuration in the 'Admin > Plugins > Discourse AI > Spam' before enabling."
+      logging_subject: "Spam detection"
 
     ai_bot:
       reply_error: "Sorry, it looks like our system encountered an unexpected issue while trying to reply.\n\n[details='Error details']\n%{details}\n[/details]"
@@ -330,20 +337,75 @@ en:
         short_summarizer:
           name: "Summarizer (short form)"
           description: "Default persona used to power AI short summaries for topic lists' items"
+        concept_finder:
+          name: "Concept Finder"
+          description: "AI Bot specialized in identifying concepts and themes in content"
+        concept_matcher:
+          name: "Concept Matcher"
+          description: "AI Bot specialized in matching content against existing concepts"
+        concept_deduplicator:
+          name: "Concept Deduplicator"
+          description: "AI Bot specialized in deduplicating concepts"
+        custom_prompt:
+          name: "Custom prompt"
+          description: "Default persona powering the Helper's custom prompt feature"
+        smart_dates:
+          name: "Smart dates"
+          description: "Default persona powering the Helper's smart dates feature"
+        markdown_table_generator:
+          name: "Markdown table generator"
+          description: "Default persona powering the Helper's generate Markdown table feature"
+        post_illustrator:
+          name: "Post illustrator"
+          description: "Generates StableDiffusion prompts to power the Helper's illustrate post feature"
+        proofreader:
+          name: "Proofreader"
+          description: "Default persona powering the Helper's proofread text feature"
+        titles_generator:
+          name: "Titles generator"
+          description: "Default persona powering the Helper's suggest topic titles feature"
+        tutor:
+          name: "Tutor"
+          description: "Default persona powering the Helper's explain feature"
+        translator:
+          name: "Translator"
+          description: "Default persona powering the Helper's translator feature"
+        image_captioner:
+          name: "Image captions"
+          description: "Default persona powering the Helper's image caption feature"
+        locale_detector:
+          name: "Locale detector"
+          description: "Powers the translation feature by detecting the locale of a given text (posts, titles, etc.)"
+        post_raw_translator:
+          name: "Post translator"
+          description: "Powers the translation feature by translating posts containing Discourse Markdown"
+        topic_title_translator:
+          name: "Topic title translator"
+          description: "Powers the translation feature by translating topic titles"
+        short_text_translator:
+          name: "Short text translator"
+          description: "Powers the translation feature by as a generic text translator, used for short texts like category names or tags"
+
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
       searching: "Searching for: '%{query}'"
       tool_options:
         researcher:
+          researcher_llm:
+            name: "LLM"
+            description: "Language model to use for research (default to current persona's LLM)"
+          max_tokens_per_batch:
+            name: "Maximum tokens per batch"
+            description: "Maximum number of tokens to use for each batch in the research"
+          max_tokens_per_post:
+            name: "Maximum tokens per post"
+            description: "Maximum number of tokens to use for each post in the research"
           max_results:
             name: "Maximum number of results"
             description: "Maximum number of results to include in a filter"
           include_private:
             name: "Include private"
             description: "Include private topics in the filters"
-          max_tokens_per_post:
-            name: "Maximum tokens per post"
-            description: "Maximum number of tokens to use for each post in the filter"
         create_artifact:
           creator_llm:
             name: "LLM"
@@ -536,19 +598,10 @@ en:
       missing_provider_param: "%{param} can't be blank"
       bedrock_invalid_url: "Please complete all the fields to use this model."
 
-    features:
-      summarization:
-        name: "Summaries"
-        description: "Makes a summarization button available that allows visitors to summarize topics"
-      gists:
-        name: "Short Summaries"
-        description: "Adds the ability to view short summaries of topics on the topic list"
-      discoveries:
-        name: "Discobot Discoveries"
-        description: "Enhances search experience by providing AI-generated answers to queries"
-      discord_search:
-        name: "Discord Search"
-        description: "Adds the ability to search Discord channels"
+    ai_staff_action_logger:
+      updated: "updated"
+      set: "set"
+      removed: "removed"
 
     errors:
       quota_exceeded: "You have exceeded the quota for this model. Please try again in %{relative_time}."

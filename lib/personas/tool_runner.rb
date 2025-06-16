@@ -13,6 +13,9 @@ module DiscourseAi
       MARSHAL_STACK_DEPTH = 20
       MAX_HTTP_REQUESTS = 20
 
+      MAX_SLEEP_CALLS = 30
+      MAX_SLEEP_DURATION_MS = 60_000
+
       def initialize(parameters:, llm:, bot_user:, context: nil, tool:, timeout: nil)
         if context && !context.is_a?(DiscourseAi::Personas::BotContext)
           raise ArgumentError, "context must be a BotContext object"
@@ -28,6 +31,7 @@ module DiscourseAi
         @timeout = timeout || DEFAULT_TIMEOUT
         @running_attached_function = false
 
+        @sleep_calls_made = 0
         @http_requests_made = 0
       end
 
@@ -44,6 +48,7 @@ module DiscourseAi
             attach_index(ctx)
             attach_upload(ctx)
             attach_chain(ctx)
+            attach_sleep(ctx)
             attach_discourse(ctx)
             ctx.eval(framework_script)
             ctx
@@ -73,6 +78,9 @@ module DiscourseAi
         const upload = {
           create: _upload_create,
           getUrl: _upload_get_url,
+          getBase64: function(id, maxPixels) {
+            return _upload_get_base64(id, maxPixels);
+          }
         }
 
         const chain = {
@@ -308,6 +316,33 @@ module DiscourseAi
 
       def attach_chain(mini_racer_context)
         mini_racer_context.attach("_chain_set_custom_raw", ->(raw) { self.custom_raw = raw })
+      end
+
+      # this is useful for polling apis
+      def attach_sleep(mini_racer_context)
+        mini_racer_context.attach(
+          "sleep",
+          ->(duration_ms) do
+            @sleep_calls_made += 1
+            if @sleep_calls_made > MAX_SLEEP_CALLS
+              raise TooManyRequestsError.new("Tool made too many sleep calls")
+            end
+
+            duration_ms = duration_ms.to_i
+            if duration_ms > MAX_SLEEP_DURATION_MS
+              raise ArgumentError.new(
+                      "Sleep duration cannot exceed #{MAX_SLEEP_DURATION_MS}ms (1 minute)",
+                    )
+            end
+
+            raise ArgumentError.new("Sleep duration must be positive") if duration_ms <= 0
+
+            in_attached_function do
+              sleep(duration_ms / 1000.0)
+              { slept: duration_ms }
+            end
+          end,
+        )
       end
 
       def attach_discourse(mini_racer_context)
@@ -572,6 +607,42 @@ module DiscourseAi
 
       def attach_upload(mini_racer_context)
         mini_racer_context.attach(
+          "_upload_get_base64",
+          ->(upload_id_or_url, max_pixels) do
+            in_attached_function do
+              return nil if upload_id_or_url.blank?
+
+              upload = nil
+
+              # Handle both upload ID and short URL
+              if upload_id_or_url.to_s.start_with?("upload://")
+                # Handle short URL format
+                sha1 = Upload.sha1_from_short_url(upload_id_or_url)
+                return nil if sha1.blank?
+                upload = Upload.find_by(sha1: sha1)
+              else
+                # Handle numeric ID
+                upload_id = upload_id_or_url.to_i
+                return nil if upload_id <= 0
+                upload = Upload.find_by(id: upload_id)
+              end
+
+              return nil if upload.nil?
+
+              max_pixels = max_pixels&.to_i
+              max_pixels = nil if max_pixels && max_pixels <= 0
+
+              encoded_uploads =
+                DiscourseAi::Completions::UploadEncoder.encode(
+                  upload_ids: [upload.id],
+                  max_pixels: max_pixels || 10_000_000, # Default to 10M pixels if not specified
+                )
+
+              encoded_uploads.first&.dig(:base64)
+            end
+          end,
+        )
+        mini_racer_context.attach(
           "_upload_get_url",
           ->(short_url) do
             in_attached_function do
@@ -629,13 +700,18 @@ module DiscourseAi
 
               in_attached_function do
                 headers = (options && options["headers"]) || {}
+                base64_encode = options && options["base64Encode"]
 
                 result = {}
                 DiscourseAi::Personas::Tools::Tool.send_http_request(
                   url,
                   headers: headers,
                 ) do |response|
-                  result[:body] = response.body
+                  if base64_encode
+                    result[:body] = Base64.strict_encode64(response.body)
+                  else
+                    result[:body] = response.body
+                  end
                   result[:status] = response.code.to_i
                 end
 
@@ -658,6 +734,7 @@ module DiscourseAi
                 in_attached_function do
                   headers = (options && options["headers"]) || {}
                   body = options && options["body"]
+                  base64_encode = options && options["base64Encode"]
 
                   result = {}
                   DiscourseAi::Personas::Tools::Tool.send_http_request(
@@ -666,7 +743,11 @@ module DiscourseAi
                     headers: headers,
                     body: body,
                   ) do |response|
-                    result[:body] = response.body
+                    if base64_encode
+                      result[:body] = Base64.strict_encode64(response.body)
+                    else
+                      result[:body] = response.body
+                    end
                     result[:status] = response.code.to_i
                   end
 

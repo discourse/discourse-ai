@@ -15,15 +15,22 @@ module Jobs
       end
 
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        return if topic.category&.read_restricted?
+        return if topic.category&.read_restricted? || topic.archetype == Archetype.private_message
+      else
+        if topic.archetype == Archetype.private_message &&
+             !TopicAllowedGroup.exists?(topic_id: topic.id)
+          return
+        end
       end
 
-      begin
-        detected_locale = DiscourseAi::Translation::TopicLocaleDetector.detect_locale(topic)
-      rescue FinalDestination::SSRFDetector::LookupFailedError
-        # this job is non-critical
-        # the backfill job will handle failures
-        return
+      if (detected_locale = topic.locale).blank?
+        begin
+          detected_locale = DiscourseAi::Translation::TopicLocaleDetector.detect_locale(topic)
+        rescue FinalDestination::SSRFDetector::LookupFailedError
+          # this job is non-critical
+          # the backfill job will handle failures
+          return
+        end
       end
 
       locales = SiteSetting.experimental_content_localization_supported_locales.split("|")
@@ -31,6 +38,7 @@ module Jobs
 
       locales.each do |locale|
         next if locale == detected_locale
+        next if topic.topic_localizations.exists?(locale:)
 
         begin
           DiscourseAi::Translation::TopicLocalizer.localize(topic, locale)

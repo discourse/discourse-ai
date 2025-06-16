@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Translation::LanguageDetector do
+  let!(:persona) do
+    AiPersona.find(
+      DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::LocaleDetector],
+    )
+  end
+
   before do
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
@@ -13,7 +19,7 @@ describe DiscourseAi::Translation::LanguageDetector do
 
     it "creates the correct prompt" do
       allow(DiscourseAi::Completions::Prompt).to receive(:new).with(
-        DiscourseAi::Translation::LanguageDetector::PROMPT_TEXT,
+        persona.system_prompt,
         messages: [{ type: :user, content: "meow", id: "user" }],
       ).and_call_original
 
@@ -38,7 +44,7 @@ describe DiscourseAi::Translation::LanguageDetector do
         mock_prompt,
         user: Discourse.system_user,
         feature_name: "translation",
-        response_format: locale_detector.response_format,
+        response_format: persona.response_format,
       ).and_return(structured_output)
 
       locale_detector.detect

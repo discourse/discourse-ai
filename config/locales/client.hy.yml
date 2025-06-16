@@ -36,11 +36,12 @@ hy:
     discourse_ai:
       features:
         back: "Ետ"
-        list:
-          header:
-            name: "Անուն"
-            groups: "Խմբեր"
-          edit: "Խմբագրել"
+        disabled: "(անջատված)"
+        groups: "Խմբեր:"
+        no_groups: "Ոչ մի"
+        edit: "Խմբագրել"
+        search:
+          name: "Որոնում"
       modals:
         select_option: "Ընտրել..."
       spam:

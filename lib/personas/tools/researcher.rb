@@ -31,22 +31,40 @@ module DiscourseAi
 
           def filter_description
             <<~TEXT
-              Filter string to target specific content.
-              - Supports user (@username)
-              - date ranges (after:YYYY-MM-DD, before:YYYY-MM-DD for posts; topic_after:YYYY-MM-DD, topic_before:YYYY-MM-DD for topics)
-              - categories (category:category1,category2)
-              - tags (tag:tag1,tag2)
-              - groups (group:group1,group2).
-              - status (status:open, status:closed, status:archived, status:noreplies, status:single_user)
-              - keywords (keywords:keyword1,keyword2) - specific words to search for in posts
-              - max_results (max_results:10) the maximum number of results to return (optional)
-              - order (order:latest, order:oldest, order:latest_topic, order:oldest_topic) - the order of the results (optional)
-              - topic (topic:topic_id1,topic_id2) - add specific topics to the filter, topics will unconditionally be included
+              Filter string to target specific content. Space-separated filters use AND logic, OR creates separate filter groups.
 
-              If multiple tags or categories are specified, they are treated as OR conditions.
+              **Filters:**
+              - username:user1 or usernames:user1,user2 - posts by specific users
+              - group:group1 or groups:group1,group2 - posts by users in specific groups
+              - post_type:first|reply - first posts only or replies only
+              - keywords:word1,word2 - full-text search in post content
+              - topic_keywords:word1,word2 - full-text search in topics (returns all posts from matching topics)
+              - topic:123 or topics:123,456 - specific topics by ID
+              - category:name1 or categories:name1,name2 - posts in categories (by name/slug)
+              - tag:tag1 or tags:tag1,tag2 - posts in topics with tags
+              - after:YYYY-MM-DD, before:YYYY-MM-DD - filter by post creation date
+              - topic_after:YYYY-MM-DD, topic_before:YYYY-MM-DD - filter by topic creation date
+              - status:open|closed|archived|noreplies|single_user - topic status filters
+              - max_results:N - limit results (per OR group)
+              - order:latest|oldest|latest_topic|oldest_topic|likes - sort order
+              #{assign_tip}
 
-              Multiple filters can be combined with spaces. Example: '@sam after:2023-01-01 tag:feature'
+              **OR Logic:** Each OR group processes independently - filters don't cross boundaries.
+
+              Examples:
+              - 'username:sam after:2023-01-01' - sam's posts after date
+              - 'max_results:50 category:bugs OR tag:urgent' - (≤50 bug posts) OR (all urgent posts)
             TEXT
+          end
+
+          def assign_tip
+            if SiteSetting.respond_to?(:assign_enabled) && SiteSetting.assign_enabled
+              (<<~TEXT).strip
+                assigned_to:username or assigned_to:username1,username2 - topics assigned to a specific user
+                assigned_to:* - topics assigned to any user
+                assigned_to:nobody - topics not assigned to any user
+              TEXT
+            end
           end
 
           def name
@@ -55,9 +73,11 @@ module DiscourseAi
 
           def accepted_options
             [
+              option(:researcher_llm, type: :llm),
               option(:max_results, type: :integer),
               option(:include_private, type: :boolean),
               option(:max_tokens_per_post, type: :integer),
+              option(:max_tokens_per_batch, type: :integer),
             ]
           end
         end
@@ -104,6 +124,8 @@ module DiscourseAi
           else
             process_filter(filter, goals, post, &blk)
           end
+        rescue StandardError => e
+          { error: "Error processing research: #{e.message}" }
         end
 
         def details
@@ -129,26 +151,62 @@ module DiscourseAi
         protected
 
         MIN_TOKENS_FOR_RESEARCH = 8000
+        MIN_TOKENS_FOR_POST = 50
+
         def process_filter(filter, goals, post, &blk)
-          if llm.max_prompt_tokens < MIN_TOKENS_FOR_RESEARCH
+          if researcher_llm.max_prompt_tokens < MIN_TOKENS_FOR_RESEARCH
             raise ArgumentError,
                   "LLM max tokens too low for research. Minimum is #{MIN_TOKENS_FOR_RESEARCH}."
           end
+
+          max_tokens_per_batch = options[:max_tokens_per_batch].to_i
+          if max_tokens_per_batch <= MIN_TOKENS_FOR_RESEARCH
+            max_tokens_per_batch = researcher_llm.max_prompt_tokens - 2000
+          end
+
+          max_tokens_per_post = options[:max_tokens_per_post]
+          if max_tokens_per_post.nil?
+            max_tokens_per_post = 2000
+          elsif max_tokens_per_post < MIN_TOKENS_FOR_POST
+            max_tokens_per_post = MIN_TOKENS_FOR_POST
+          end
+
           formatter =
             DiscourseAi::Utils::Research::LlmFormatter.new(
               filter,
-              max_tokens_per_batch: llm.max_prompt_tokens - 2000,
-              tokenizer: llm.tokenizer,
-              max_tokens_per_post: options[:max_tokens_per_post] || 2000,
+              max_tokens_per_batch: max_tokens_per_batch,
+              tokenizer: researcher_llm.tokenizer,
+              max_tokens_per_post: max_tokens_per_post,
             )
 
           results = []
 
           formatter.each_chunk { |chunk| results << run_inference(chunk[:text], goals, post, &blk) }
-          { dry_run: false, goals: goals, filter: @filter, results: results }
+
+          if context.cancel_manager&.cancelled?
+            {
+              dry_run: false,
+              goals: goals,
+              filter: @filter,
+              results: "Cancelled by user",
+              cancelled_by_user: true,
+            }
+          else
+            { dry_run: false, goals: goals, filter: @filter, results: results }
+          end
+        end
+
+        def researcher_llm
+          @researcher_llm ||=
+            (
+              options[:researcher_llm].present? &&
+                LlmModel.find_by(id: options[:researcher_llm].to_i)&.to_llm
+            ) || self.llm
         end
 
         def run_inference(chunk_text, goals, post, &blk)
+          return if context.cancel_manager&.cancelled?
+
           system_prompt = goal_system_prompt(goals)
           user_prompt = goal_user_prompt(goals, chunk_text)
 
@@ -161,7 +219,7 @@ module DiscourseAi
             )
 
           results = []
-          llm.generate(
+          researcher_llm.generate(
             prompt,
             user: post.user,
             feature_name: context.feature_name,

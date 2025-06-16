@@ -32,10 +32,12 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
              :allow_personal_messages,
              :force_default_llm,
              :response_format,
-             :examples
+             :examples,
+             :features
 
   has_one :user, serializer: BasicUserSerializer, embed: :object
   has_many :rag_uploads, serializer: UploadSerializer, embed: :object
+  has_one :default_llm, serializer: BasicLlmModelSerializer, embed: :object
 
   def rag_uploads
     object.uploads
@@ -47,5 +49,15 @@ class LocalizedAiPersonaSerializer < ApplicationSerializer
 
   def description
     object.class_instance.description
+  end
+
+  def default_llm
+    LlmModel.find_by(id: object.default_llm_id)
+  end
+
+  def features
+    object.features.map do |feature|
+      { id: feature.module_id, module_name: feature.module_name, name: feature.name }
+    end
   end
 end

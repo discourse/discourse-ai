@@ -24,6 +24,22 @@ en:
               label: "Sort by"
             tag:
               label: "Tag"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "Create LLM model"
+            update_ai_llm_model: "Update LLM model"
+            delete_ai_llm_model: "Delete LLM model"
+            create_ai_persona: "Create AI persona"
+            update_ai_persona: "Update AI persona"
+            delete_ai_persona: "Delete AI persona"
+            create_ai_tool: "Create AI tool"
+            update_ai_tool: "Update AI tool"
+            delete_ai_tool: "Delete AI tool"
+            create_ai_embedding: "Create AI embedding"
+            update_ai_embedding: "Update AI embedding"
+            delete_ai_embedding: "Delete AI embedding"
+            update_ai_spam_settings: "Update AI spam settings"
 
   js:
     discourse_automation:
@@ -169,18 +185,63 @@ en:
         short_title: "Features"
         description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
         back: "Back"
-        list:
-          header:
-            name: "Name"
-            persona: "Persona"
-            groups: "Groups"
-          edit: "Edit"
-          set_up: "Set up"
-          configured_features: "Configured features"
-          unconfigured_features: "Unconfigured features"
+        disabled: "(disabled)"
+        persona: "Persona:"
+        groups: "Groups:"
+        no_persona: "Not set"
+        no_groups: "None"
+        edit: "Edit"
+        nav:
+          configured: "Configured"
+          unconfigured: "Unconfigured"
+        summarization:
+          name: "Summaries"
+          description: "Makes a summarization button available that allows visitors to summarize topics"
+          topic_summaries: "Topic summaries"
+          gists: "Topic list's short summaries"
+        search:
+          name: "Search"
+          description: "Enhances search experience by providing AI-generated answers to queries"
+          discoveries: "Discoveries"
+        discord:
+          name: "Discord integration"
+          description: "Adds the ability to search Discord channels"
+          search: "Discord search"
+        inference:
+          name: "Inferred concepts"
+          description: "Classifies topics and posts into areas of interest / labels."
+          generate_concepts: "Concepts inference"
+          match_concepts: "Concepts matching"
+          deduplicate_concepts: "Concepts deduplication"
+
+        ai_helper:
+          name: "Helper"
+          description: "Assists users in community interaction, such as creating topics, writing posts, and reading content."
+          proofread: Proofread text
+          title_suggestions: "Suggest titles"
+          explain: "Explain"
+          illustrate_post: "Illustrate post"
+          smart_dates: "Smart dates"
+          translate: "Translate"
+          markdown_tables: "Generate Markdown table"
+          custom_prompt: "Custom prompt"
+          image_caption: "Caption images"
+
+        translation:
+          name: "Translation"
+          description: "Translates content into supported languages"
+          locale_detector: "Locale detector"
+          post_raw_translator: "Post raw translator"
+          topic_title_translator: "Topic title translator"
+          short_text_translator: "Short text translator"
+
 
       modals:
         select_option: "Select an option..."
+
+      layout:
+        table: "Table"
+        card: "Card"
 
       spam:
         short_title: "Spam"
@@ -345,6 +406,18 @@ en:
         ai_bot:
           title: "AI bot options"
           save_first: "More AI bot options will become available once you save the persona."
+
+        filters:
+          text: "Find a persona"
+          reset: "Reset"
+          no_results: "No personas found matching your filters."
+          all_features: "Any feature"
+
+        features_list:
+          one: "Feature:"
+          other: "Features:"
+
+        llms_list: "LLM:"
 
       rag:
         title: "RAG"
@@ -546,6 +619,7 @@ en:
           reasoning_tokens: "Number of tokens used for reasoning"
           disable_temperature: "Disable temperature (some thinking models don't support temperature)"
           disable_top_p: "Disable top P (some thinking models don't support top P)"
+          enable_responses_api: "Enable responses API (required on certain OpenAI models)"
 
       related_topics:
         title: "Related topics"
@@ -565,7 +639,7 @@ en:
           trigger: "Ask AI"
           loading: "AI is generating"
           cancel: "Cancel"
-          regen: "Try Again"
+          regen: "Try again"
           confirm: "Confirm"
           discard: "Discard"
           changes: "Suggested edits"
@@ -689,6 +763,7 @@ en:
         shortcut_title: "Start a PM with an AI bot"
         share: "Copy AI conversation"
         conversation_shared: "Conversation copied"
+        embed_copied: "Embed copied to clipboard"
         debug_ai: "View raw AI request and response"
         sidebar_empty: "Bot conversation history will appear here."
         debug_ai_modal:

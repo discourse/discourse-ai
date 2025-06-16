@@ -8,12 +8,16 @@ describe DiscourseAi::Utils::Research::Filter do
     end
 
     fab!(:user)
+    fab!(:user2) { Fabricate(:user) }
 
     fab!(:feature_tag) { Fabricate(:tag, name: "feature") }
     fab!(:bug_tag) { Fabricate(:tag, name: "bug") }
 
     fab!(:announcement_category) { Fabricate(:category, name: "Announcements") }
     fab!(:feedback_category) { Fabricate(:category, name: "Feedback") }
+
+    fab!(:group1) { Fabricate(:group, name: "group1") }
+    fab!(:group2) { Fabricate(:group, name: "group2") }
 
     fab!(:feature_topic) do
       Fabricate(
@@ -53,6 +57,34 @@ describe DiscourseAi::Utils::Research::Filter do
     fab!(:bug_post) { Fabricate(:post, topic: bug_topic, user: user) }
     fab!(:feature_bug_post) { Fabricate(:post, topic: feature_bug_topic, user: user) }
     fab!(:no_tag_post) { Fabricate(:post, topic: no_tag_topic, user: user) }
+    fab!(:admin1) { Fabricate(:admin, username: "admin1") }
+    fab!(:admin2) { Fabricate(:admin, username: "admin2") }
+
+    describe "group filtering" do
+      before do
+        group1.add(user)
+        group2.add(user2)
+      end
+
+      it "supports filtering by groups" do
+        no_tag_post.update!(user_id: user2.id)
+
+        filter = described_class.new("group:group1")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          feature_post.id,
+          bug_post.id,
+          feature_bug_post.id,
+        )
+
+        filter = described_class.new("groups:group1,group2")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          feature_post.id,
+          bug_post.id,
+          feature_bug_post.id,
+          no_tag_post.id,
+        )
+      end
+    end
 
     describe "security filtering" do
       fab!(:secure_group) { Fabricate(:group) }
@@ -114,6 +146,21 @@ describe DiscourseAi::Utils::Research::Filter do
       end
     end
 
+    describe "can find posts by users even with unicode usernames" do
+      before { SiteSetting.unicode_usernames = true }
+      let!(:unicode_user) { Fabricate(:user, username: "aאb") }
+
+      it "can filter by unicode usernames" do
+        post = Fabricate(:post, user: unicode_user, topic: feature_topic)
+        filter = described_class.new("username:aאb")
+        expect(filter.search.pluck(:id)).to contain_exactly(post.id)
+
+        filter = described_class.new("usernames:aאb,#{user.username}")
+        posts_ids = Post.where(user_id: [unicode_user.id, user.id]).pluck(:id)
+        expect(filter.search.pluck(:id)).to contain_exactly(*posts_ids)
+      end
+    end
+
     describe "category filtering" do
       it "correctly filters posts by categories" do
         filter = described_class.new("category:Announcements")
@@ -122,7 +169,7 @@ describe DiscourseAi::Utils::Research::Filter do
         # it can tack on topics
         filter =
           described_class.new(
-            "category:Announcements topic:#{feature_bug_post.topic.id},#{no_tag_post.topic.id}",
+            "category:Announcements OR topic:#{feature_bug_post.topic.id},#{no_tag_post.topic.id}",
           )
         expect(filter.search.pluck(:id)).to contain_exactly(
           feature_post.id,
@@ -144,6 +191,51 @@ describe DiscourseAi::Utils::Research::Filter do
 
         filter = described_class.new("category:Feedback tag:feature")
         expect(filter.search.pluck(:id)).to contain_exactly(feature_bug_post.id)
+      end
+    end
+
+    if SiteSetting.respond_to?(:assign_enabled)
+      describe "assign filtering" do
+        before do
+          SiteSetting.assign_enabled = true
+          assigner = Assigner.new(feature_topic, admin1)
+          assigner.assign(admin1)
+
+          assigner = Assigner.new(bug_topic, admin1)
+          assigner.assign(admin2)
+        end
+
+        let(:admin_guardian) { Guardian.new(admin1) }
+
+        it "can find topics assigned to a user" do
+          filter = described_class.new("assigned_to:#{admin1.username}", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id)
+        end
+
+        it "can find topics assigned to multiple users" do
+          filter =
+            described_class.new(
+              "assigned_to:#{admin1.username},#{admin2.username}",
+              guardian: admin_guardian,
+            )
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id, bug_post.id)
+        end
+
+        it "can find topics assigned to nobody" do
+          filter = described_class.new("assigned_to:nobody", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_bug_post.id, no_tag_post.id)
+        end
+
+        it "can find all assigned topics" do
+          filter = described_class.new("assigned_to:*", guardian: admin_guardian)
+          expect(filter.search.pluck(:id)).to contain_exactly(feature_post.id, bug_post.id)
+        end
+
+        it "raises an error if assigns are disabled" do
+          SiteSetting.assign_enabled = false
+          filter = described_class.new("assigned_to:sam")
+          expect { filter.search }.to raise_error(Discourse::InvalidAccess)
+        end
       end
     end
 
@@ -173,6 +265,25 @@ describe DiscourseAi::Utils::Research::Filter do
 
       fab!(:post_with_none) do
         Fabricate(:post, raw: "No fruits here", topic: no_tag_topic, user: user)
+      end
+
+      fab!(:reply_on_bananas) do
+        Fabricate(:post, raw: "Just a reply", topic: post_with_bananas.topic, user: user)
+      end
+
+      it "correctly filters posts by topic_keywords" do
+        topic1 = post_with_bananas.topic
+        topic2 = post_with_both.topic
+
+        filter = described_class.new("topic_keywords:banana")
+        expected = topic1.posts.pluck(:id) + topic2.posts.pluck(:id)
+        expect(filter.search.pluck(:id)).to contain_exactly(*expected)
+
+        filter = described_class.new("topic_keywords:banana post_type:first")
+        expect(filter.search.pluck(:id)).to contain_exactly(
+          topic1.posts.order(:post_number).first.id,
+          topic2.posts.order(:post_number).first.id,
+        )
       end
 
       it "correctly filters posts by full text keywords" do

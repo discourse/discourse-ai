@@ -72,6 +72,30 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(response.parsed_body["ai_tool"]["tool_name"]).to eq("test_tool_1")
     end
 
+    it "logs the creation with StaffActionLogger" do
+      expect {
+        post "/admin/plugins/discourse-ai/ai-tools.json",
+             params: { ai_tool: valid_attributes }.to_json,
+             headers: {
+               "CONTENT_TYPE" => "application/json",
+             }
+      }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "create_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "create_ai_tool",
+        ).last
+      expect(history.details).to include("name: Test Tool 1")
+      expect(history.details).to include("tool_name: test_tool_1")
+      expect(history.subject).to eq("Test Tool 1") # Verify subject field is included
+    end
+
     context "when the parameter is a enum" do
       it "creates the tool with the correct parameters" do
         attrs = valid_attributes
@@ -141,6 +165,33 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       expect(ai_tool.reload.name).to eq("Updated Tool")
     end
 
+    it "logs the update with StaffActionLogger" do
+      expect {
+        put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
+            params: {
+              ai_tool: {
+                name: "Updated Tool",
+                description: "Updated description",
+              },
+            }
+      }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_tool",
+        ).last
+      expect(history.details).to include("tool_id: #{ai_tool.id}")
+      expect(history.details).to include("name")
+      expect(history.details).to include("description")
+      expect(history.subject).to eq("Updated Tool")
+    end
+
     context "when updating an enum parameters" do
       it "updates the enum fixed values" do
         put "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json",
@@ -171,6 +222,25 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
       ).by(-1)
 
       expect(response).to have_http_status(:no_content)
+    end
+
+    it "logs the deletion with StaffActionLogger" do
+      tool_id = ai_tool.id
+
+      expect { delete "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}.json" }.to change {
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "delete_ai_tool",
+        ).count
+      }.by(1)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "delete_ai_tool",
+        ).last
+      expect(history.details).to include("tool_id: #{tool_id}")
+      expect(history.subject).to eq("Test Tool") # Verify subject field is included
     end
   end
 

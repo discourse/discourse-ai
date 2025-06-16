@@ -36,11 +36,13 @@ el:
     discourse_ai:
       features:
         back: "Πίσω"
-        list:
-          header:
-            name: "Όνομα"
-            groups: "Ομάδες"
-          edit: "Επεξεργασία"
+        disabled: "(απενεργοποιημένο)"
+        groups: "Ομάδες:"
+        no_persona: "Δεν έχει οριστεί"
+        no_groups: "Κανένα"
+        edit: "Επεξεργασία"
+        search:
+          name: "Αναζήτηση"
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
       spam:

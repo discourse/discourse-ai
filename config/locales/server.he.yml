@@ -299,11 +299,17 @@ he:
           name: "מסכם"
         short_summarizer:
           name: "מסכם (מקוצר)"
+        custom_prompt:
+          name: "בקשה מותאמת אישית"
+        smart_dates:
+          name: "תאריכים חכמים"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"
       tool_options:
         researcher:
+          researcher_llm:
+            name: "LLM"
           max_results:
             name: "מספר תוצאות מרבי"
         create_artifact:
@@ -502,19 +508,6 @@ he:
     llm_models:
       missing_provider_param: "%{param} לא יכול להישאר ריק"
       bedrock_invalid_url: "נא למלא את כל השדות די להשתמש במודל הזה."
-    features:
-      summarization:
-        name: "סיכומים"
-        description: "להנגיש את כפתור הסיכום שמאפשר למבקרים לסכם נושאים"
-      gists:
-        name: "סיכומים קצרים"
-        description: "הוספת היכולת לצפות בתקצירים קצרים של נושאים ברשימת הנושאים"
-      discoveries:
-        name: "תגליות Discobot"
-        description: "שיפור חוויית החיפוש על ידי אספקת תשובות שנוצרו על ידי בינה מלאכותית לשאילתות"
-      discord_search:
-        name: "חיפוש ב־Discord"
-        description: "הוספת היכולת לחפש בערוצי Discord"
     errors:
       quota_exceeded: "חרגת מהמכסה למודל הזה. נא לנסות שוב בעוד %{relative_time}."
       quota_required: "יש לציין את כמות האסימונים המרבית לשימוש למודל הזה"

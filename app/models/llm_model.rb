@@ -52,6 +52,7 @@ class LlmModel < ActiveRecord::Base
         disable_temperature: :checkbox,
         disable_top_p: :checkbox,
         disable_streaming: :checkbox,
+        enable_responses_api: :checkbox,
         reasoning_effort: {
           type: :enum,
           values: %w[default low medium high],

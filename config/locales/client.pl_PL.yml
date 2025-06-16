@@ -152,13 +152,20 @@ pl_PL:
       title: "AI"
       features:
         back: "Poprzednia"
-        list:
-          header:
-            name: "Nazwa"
-            persona: "Osobowość"
-            groups: "Grupy"
-          edit: "Edytuj"
-          set_up: "Skonfiguruj"
+        disabled: "(wyłączone)"
+        persona: "Osobowość:"
+        groups: "Grupy:"
+        no_persona: "Nie ustawiony"
+        no_groups: "Brak"
+        edit: "Edytuj"
+        search:
+          name: "Szukaj"
+        ai_helper:
+          name: "Pomocnik"
+          proofread: Popraw tekst
+          explain: "Wyjaśnij"
+          markdown_tables: "Wygeneruj tabelę Markdown"
+          custom_prompt: "Niestandardowy prompt"
       modals:
         select_option: "Wybierz opcję..."
       spam:

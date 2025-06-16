@@ -17,10 +17,15 @@ module DiscourseAi
                     :context_post_ids,
                     :feature_name,
                     :resource_url,
-                    :cancel_manager
+                    :cancel_manager,
+                    :inferred_concepts,
+                    :format_dates,
+                    :temporal_context,
+                    :user_language
 
       def initialize(
         post: nil,
+        topic: nil,
         participants: nil,
         user: nil,
         skip_tool_details: nil,
@@ -35,13 +40,16 @@ module DiscourseAi
         context_post_ids: nil,
         feature_name: "bot",
         resource_url: nil,
-        cancel_manager: nil
+        cancel_manager: nil,
+        inferred_concepts: [],
+        format_dates: false
       )
         @participants = participants
         @user = user
         @skip_tool_details = skip_tool_details
         @messages = messages
         @custom_instructions = custom_instructions
+        @format_dates = format_dates
 
         @message_id = message_id
         @channel_id = channel_id
@@ -54,7 +62,7 @@ module DiscourseAi
         @resource_url = resource_url
 
         @feature_name = feature_name
-        @resource_url = resource_url
+        @inferred_concepts = inferred_concepts
 
         @cancel_manager = cancel_manager
 
@@ -63,12 +71,29 @@ module DiscourseAi
           @topic_id = post.topic_id
           @private_message = post.topic.private_message?
           @participants ||= post.topic.allowed_users.map(&:username).join(", ") if @private_message
-          @user = post.user
+          @user ||= post.user
+        end
+
+        if topic
+          @topic_id ||= topic.id
+          @private_message ||= topic.private_message?
+          @participants ||= topic.allowed_users.map(&:username).join(", ") if @private_message
+          @user ||= topic.user
         end
       end
 
       # these are strings that can be safely interpolated into templates
-      TEMPLATE_PARAMS = %w[time site_url site_title site_description participants resource_url]
+      TEMPLATE_PARAMS = %w[
+        time
+        site_url
+        site_title
+        site_description
+        participants
+        resource_url
+        inferred_concepts
+        user_language
+        temporal_context
+      ]
 
       def lookup_template_param(key)
         public_send(key.to_sym) if TEMPLATE_PARAMS.include?(key)
@@ -114,6 +139,9 @@ module DiscourseAi
           skip_tool_details: @skip_tool_details,
           feature_name: @feature_name,
           resource_url: @resource_url,
+          inferred_concepts: @inferred_concepts,
+          user_language: @user_language,
+          temporal_context: @temporal_context,
         }
       end
     end

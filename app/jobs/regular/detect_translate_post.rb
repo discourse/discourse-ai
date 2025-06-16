@@ -12,20 +12,27 @@ module Jobs
       post = Post.find_by(id: args[:post_id])
       return if post.blank? || post.raw.blank? || post.deleted_at.present? || post.user_id <= 0
 
+      topic = post.topic
+      return if topic.blank?
+
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        topic = post.topic
-        if topic.blank? || topic.category&.read_restricted? ||
-             topic.archetype == Archetype.private_message
+        return if topic.category&.read_restricted? || topic.archetype == Archetype.private_message
+      else
+        if topic.archetype == Archetype.private_message &&
+             !TopicAllowedGroup.exists?(topic_id: topic.id)
           return
         end
       end
 
-      begin
-        detected_locale = DiscourseAi::Translation::PostLocaleDetector.detect_locale(post)
-      rescue FinalDestination::SSRFDetector::LookupFailedError
-        # this job is non-critical
-        # the backfill job will handle failures
-        return
+      # the user may fill locale in manually
+      if (detected_locale = post.locale).blank?
+        begin
+          detected_locale = DiscourseAi::Translation::PostLocaleDetector.detect_locale(post)
+        rescue FinalDestination::SSRFDetector::LookupFailedError
+          # this job is non-critical
+          # the backfill job will handle failures
+          return
+        end
       end
 
       locales = SiteSetting.experimental_content_localization_supported_locales.split("|")
@@ -33,6 +40,7 @@ module Jobs
 
       locales.each do |locale|
         next if locale == detected_locale
+        next if post.post_localizations.exists?(locale:)
 
         begin
           DiscourseAi::Translation::PostLocalizer.localize(post, locale)

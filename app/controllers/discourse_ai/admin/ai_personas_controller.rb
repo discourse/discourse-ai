@@ -9,15 +9,16 @@ module DiscourseAi
 
       def index
         ai_personas =
-          AiPersona.ordered.map do |persona|
-            # we use a special serializer here cause names and descriptions are
-            # localized for system personas
-            LocalizedAiPersonaSerializer.new(persona, root: false)
-          end
+          AiPersona
+            .ordered
+            .includes(:user, :uploads)
+            .map { |persona| LocalizedAiPersonaSerializer.new(persona, root: false) }
+
         tools =
           DiscourseAi::Personas::Persona.all_available_tools.map do |tool|
             AiToolSerializer.new(tool, root: false)
           end
+
         AiTool
           .where(enabled: true)
           .each do |tool|
@@ -31,10 +32,12 @@ module DiscourseAi
                 ),
             }
           end
+
         llms =
           DiscourseAi::Configuration::LlmEnumerator.values_for_serialization(
             allowed_seeded_llm_ids: SiteSetting.ai_bot_allowed_seeded_models_map,
           )
+
         render json: {
                  ai_personas: ai_personas,
                  meta: {
@@ -58,6 +61,7 @@ module DiscourseAi
         ai_persona = AiPersona.new(ai_persona_params.except(:rag_uploads))
         if ai_persona.save
           RagDocumentFragment.link_target_and_uploads(ai_persona, attached_upload_ids)
+          log_ai_persona_creation(ai_persona)
 
           render json: {
                    ai_persona: LocalizedAiPersonaSerializer.new(ai_persona, root: false),
@@ -74,8 +78,11 @@ module DiscourseAi
       end
 
       def update
+        initial_attributes = @ai_persona.attributes.dup
+
         if @ai_persona.update(ai_persona_params.except(:rag_uploads))
           RagDocumentFragment.update_target_uploads(@ai_persona, attached_upload_ids)
+          log_ai_persona_update(@ai_persona, initial_attributes)
 
           render json: LocalizedAiPersonaSerializer.new(@ai_persona, root: false)
         else
@@ -84,7 +91,14 @@ module DiscourseAi
       end
 
       def destroy
+        persona_details = {
+          persona_id: @ai_persona.id,
+          name: @ai_persona.name,
+          description: @ai_persona.description,
+        }
+
         if @ai_persona.destroy
+          log_ai_persona_deletion(persona_details)
           head :no_content
         else
           render_json_error @ai_persona
@@ -260,6 +274,92 @@ module DiscourseAi
         return [] if !examples.is_a?(Array)
 
         examples.map { |example_arr| example_arr.take(2).map(&:to_s) }
+      end
+
+      def ai_persona_logger_fields
+        {
+          name: {
+          },
+          description: {
+          },
+          enabled: {
+          },
+          priority: {
+          },
+          system_prompt: {
+            type: :large_text,
+          },
+          default_llm_id: {
+          },
+          temperature: {
+          },
+          top_p: {
+          },
+          user_id: {
+          },
+          max_context_posts: {
+          },
+          vision_enabled: {
+          },
+          vision_max_pixels: {
+          },
+          rag_chunk_tokens: {
+          },
+          rag_chunk_overlap_tokens: {
+          },
+          rag_conversation_chunks: {
+          },
+          rag_llm_model_id: {
+          },
+          question_consolidator_llm_id: {
+          },
+          allow_chat_channel_mentions: {
+          },
+          allow_chat_direct_messages: {
+          },
+          allow_topic_mentions: {
+          },
+          allow_personal_messages: {
+          },
+          tool_details: {
+            type: :large_text,
+          },
+          forced_tool_count: {
+          },
+          force_default_llm: {
+          },
+          # JSON fields
+          json_fields: %i[tools response_format examples allowed_group_ids],
+        }
+      end
+
+      def log_ai_persona_creation(ai_persona)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { persona_id: ai_persona.id, subject: ai_persona.name }
+        entity_details[:tools_count] = (ai_persona.tools || []).size
+
+        logger.log_creation("persona", ai_persona, ai_persona_logger_fields, entity_details)
+      end
+
+      def log_ai_persona_update(ai_persona, initial_attributes)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { persona_id: ai_persona.id, subject: ai_persona.name }
+        entity_details[:tools_count] = ai_persona.tools.size if ai_persona.tools.present?
+
+        logger.log_update(
+          "persona",
+          ai_persona,
+          initial_attributes,
+          ai_persona_logger_fields,
+          entity_details,
+        )
+      end
+
+      def log_ai_persona_deletion(persona_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        persona_details[:subject] = persona_details[:name]
+
+        logger.log_deletion("persona", persona_details)
       end
     end
   end

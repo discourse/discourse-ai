@@ -188,8 +188,7 @@ class DiscourseAi::Evals::Eval
   end
 
   def helper(llm, input:, name:, locale: nil)
-    completion_prompt = CompletionPrompt.find_by(name: name)
-    helper = DiscourseAi::AiHelper::Assistant.new(helper_llm: llm.llm_proxy)
+    helper = DiscourseAi::AiHelper::Assistant.new(helper_llm: llm.llm_model)
     user = Discourse.system_user
     if locale
       user = User.new
@@ -202,7 +201,7 @@ class DiscourseAi::Evals::Eval
     end
     result =
       helper.generate_and_send_prompt(
-        completion_prompt,
+        name,
         input,
         current_user = user,
         _force_default_locale = false,

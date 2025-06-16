@@ -36,11 +36,12 @@ bs_BA:
     discourse_ai:
       features:
         back: "Prethodno"
-        list:
-          header:
-            name: "Ime"
-            groups: "Groups"
-          edit: "Edit"
+        disabled: "(neomogućen)"
+        groups: "Groups:"
+        no_groups: "Ništa"
+        edit: "Edit"
+        search:
+          name: "Pretraži"
       modals:
         select_option: "Odaberi opciju..."
       spam:

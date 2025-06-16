@@ -16,6 +16,12 @@ RSpec.describe DiscourseAi::Completions::StructuredOutput do
         status: {
           type: "string",
         },
+        list: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
       },
     )
   end
@@ -63,6 +69,56 @@ RSpec.describe DiscourseAi::Completions::StructuredOutput do
 
       # No partial string left to read.
       expect(structured_output.read_buffered_property(:status)).to eq("")
+    end
+
+    it "supports array types" do
+      chunks = [
+        +"{ \"",
+        +"list",
+        +"\":",
+        +" [\"",
+        +"Hello!",
+        +" I am",
+        +" a ",
+        +"chunk\",",
+        +"\"There\"",
+        +"]}",
+      ]
+
+      structured_output << chunks[0]
+      structured_output << chunks[1]
+      structured_output << chunks[2]
+      expect(structured_output.read_buffered_property(:list)).to eq(nil)
+
+      structured_output << chunks[3]
+      expect(structured_output.read_buffered_property(:list)).to eq([""])
+
+      structured_output << chunks[4]
+      expect(structured_output.read_buffered_property(:list)).to eq(["Hello!"])
+
+      structured_output << chunks[5]
+      structured_output << chunks[6]
+      structured_output << chunks[7]
+
+      expect(structured_output.read_buffered_property(:list)).to eq(["Hello! I am a chunk"])
+
+      structured_output << chunks[8]
+      expect(structured_output.read_buffered_property(:list)).to eq(
+        ["Hello! I am a chunk", "There"],
+      )
+
+      structured_output << chunks[9]
+      expect(structured_output.read_buffered_property(:list)).to eq(
+        ["Hello! I am a chunk", "There"],
+      )
+    end
+
+    it "handles empty newline chunks" do
+      chunks = [+"{\"", +"message", +"\":\"", +"Hello!", +"\n", +"\"", +"}"]
+
+      chunks.each { |c| structured_output << c }
+
+      expect(structured_output.read_buffered_property(:message)).to eq("Hello!\n")
     end
   end
 

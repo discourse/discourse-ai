@@ -12,8 +12,8 @@ describe DiscourseAi::Translation::CategoryLocalizer do
   def post_raw_translator_stub(opts)
     mock = instance_double(DiscourseAi::Translation::PostRawTranslator)
     allow(DiscourseAi::Translation::PostRawTranslator).to receive(:new).with(
-      opts[:value],
-      opts[:locale],
+      text: opts[:text],
+      target_locale: opts[:target_locale],
     ).and_return(mock)
     allow(mock).to receive(:translate).and_return(opts[:translated])
   end
@@ -21,8 +21,8 @@ describe DiscourseAi::Translation::CategoryLocalizer do
   def short_text_translator_stub(opts)
     mock = instance_double(DiscourseAi::Translation::ShortTextTranslator)
     allow(DiscourseAi::Translation::ShortTextTranslator).to receive(:new).with(
-      opts[:value],
-      opts[:locale],
+      text: opts[:text],
+      target_locale: opts[:target_locale],
     ).and_return(mock)
     allow(mock).to receive(:translate).and_return(opts[:translated])
   end
@@ -32,16 +32,20 @@ describe DiscourseAi::Translation::CategoryLocalizer do
   end
 
   describe ".localize" do
-    let(:target_locale) { :fr }
+    let(:target_locale) { "fr" }
 
     it "translates the category name and description" do
       translated_cat_desc = "C'est une catégorie de test"
       translated_cat_name = "Catégorie de Test"
       short_text_translator_stub(
-        { value: category.name, locale: target_locale, translated: translated_cat_name },
+        { text: category.name, target_locale: target_locale, translated: translated_cat_name },
       )
       post_raw_translator_stub(
-        { value: category.description, locale: target_locale, translated: translated_cat_desc },
+        {
+          text: category.description,
+          target_locale: target_locale,
+          translated: translated_cat_desc,
+        },
       )
 
       res = localizer.localize(category, target_locale)
@@ -54,13 +58,13 @@ describe DiscourseAi::Translation::CategoryLocalizer do
       translated_cat_desc = "C'est une catégorie de test"
       translated_cat_name = "Catégorie de Test"
       short_text_translator_stub(
-        { value: category.name, locale: :fr, translated: translated_cat_name },
+        { text: category.name, target_locale:, translated: translated_cat_name },
       )
       post_raw_translator_stub(
-        { value: category.description, locale: :fr, translated: translated_cat_desc },
+        { text: category.description, target_locale:, translated: translated_cat_desc },
       )
 
-      res = localizer.localize(category, "fr")
+      res = localizer.localize(category, target_locale)
 
       expect(res.name).to eq(translated_cat_name)
       expect(res.description).to eq(translated_cat_desc)
@@ -79,10 +83,10 @@ describe DiscourseAi::Translation::CategoryLocalizer do
       translated_cat_desc = "C'est une catégorie de test"
       translated_cat_name = "Esta es una categoría de prueba"
       short_text_translator_stub(
-        { value: category.name, locale: :es, translated: translated_cat_name },
+        { text: category.name, target_locale: "es", translated: translated_cat_name },
       )
       post_raw_translator_stub(
-        { value: category.description, locale: :es, translated: translated_cat_desc },
+        { text: category.description, target_locale: "es", translated: translated_cat_desc },
       )
 
       res = localizer.localize(category)

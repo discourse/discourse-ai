@@ -38,11 +38,19 @@ cs:
     discourse_ai:
       features:
         back: "Zpět"
-        list:
-          header:
-            name: "Název"
-            groups: "Skupiny"
-          edit: "Upravit"
+        disabled: "(vypnuto)"
+        groups: "Skupiny:"
+        no_persona: "Nenastaveno"
+        no_groups: "Žádná"
+        edit: "Upravit"
+        search:
+          name: "Vyhledávání"
+        ai_helper:
+          proofread: Korektura textu
+          explain: "Vysvětlit"
+          smart_dates: "Chytré datumy"
+          markdown_tables: "Generovat Markdown tabulku"
+          custom_prompt: "Vlastní pokyn"
       modals:
         select_option: "Zvolit možnost..."
       spam:

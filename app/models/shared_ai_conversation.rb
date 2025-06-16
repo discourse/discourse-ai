@@ -37,7 +37,9 @@ class SharedAiConversation < ActiveRecord::Base
 
     maybe_topic = conversation.target
     if maybe_topic.is_a?(Topic)
-      AiArtifact.where(post: maybe_topic.posts).update_all(metadata: { public: false })
+      AiArtifact.where(post: maybe_topic.posts).update_all(
+        "metadata = jsonb_set(COALESCE(metadata, '{}'), '{public}', 'false')",
+      )
     end
 
     ::Jobs.enqueue(
@@ -176,7 +178,7 @@ class SharedAiConversation < ActiveRecord::Base
 
   def self.cook_artifacts(post)
     html = post.cooked
-    return html if !%w[lax strict].include?(SiteSetting.ai_artifact_security)
+    return html if !%w[lax hybrid strict].include?(SiteSetting.ai_artifact_security)
 
     doc = Nokogiri::HTML5.fragment(html)
     doc

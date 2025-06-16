@@ -274,6 +274,10 @@ tr_TR:
         web_artifact_creator:
           name: "Web Artifact'i Oluşturucu"
           description: "Etkileşimli web artifact'leri oluşturma konusunda uzmanlaşmış YZ Botu"
+        custom_prompt:
+          name: "Özel istem"
+        smart_dates:
+          name: "Akıllı tarihler"
       topic_not_found: "Özet mevcut değil, konu bulunamadı!"
       summarizing: "Konu özetleniyor"
       searching: "Aranıyor: '%{query}'"

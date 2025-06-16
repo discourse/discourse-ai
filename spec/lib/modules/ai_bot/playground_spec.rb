@@ -176,7 +176,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
 
       reply_post = nil
 
-      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do |_, _, _prompt|
+      DiscourseAi::Completions::Llm.with_prepared_responses(responses) do
         new_post = Fabricate(:post, raw: "Can you use the custom tool?")
         reply_post = playground.reply_to(new_post)
       end
@@ -255,13 +255,17 @@ RSpec.describe DiscourseAi::AiBot::Playground do
       body = "Hey @#{persona.user.username}, can you help me with this image? #{image}"
 
       prompts = nil
+      options = nil
       DiscourseAi::Completions::Llm.with_prepared_responses(
         ["I understood image"],
-      ) do |_, _, inner_prompts|
+      ) do |_, _, inner_prompts, inner_options|
+        options = inner_options
         post = create_post(title: "some new topic I created", raw: body)
 
         prompts = inner_prompts
       end
+
+      expect(options[0][:feature_name]).to eq("bot")
 
       content = prompts[0].messages[1][:content]
 

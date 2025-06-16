@@ -1,3 +1,5 @@
+@use "lib/viewport";
+
 .ai-tool-parameter {
   padding: 1.5em;
   border: 1px solid var(--primary-low-mid);
@@ -27,7 +29,9 @@
 }
 
 .ai-tool-editor {
-  max-width: 80%;
+  @include viewport.from(lg) {
+    max-width: 80%;
+  }
   position: relative;
 
   #control-rag_uploads .rag-uploader {

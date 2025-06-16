@@ -20,6 +20,11 @@ cs:
         illustrate_post: "Ilustrovat příspěvek"
         replace_dates: "Chytré datumy"
     ai_bot:
+      personas:
+        custom_prompt:
+          name: "Vlastní pokyn"
+        smart_dates:
+          name: "Chytré datumy"
       topic_not_found: "Souhrn není k dispozici, téma nebylo nalezeno!"
       summarizing: "Vytvářím souhrn tématu"
       tool_summary:

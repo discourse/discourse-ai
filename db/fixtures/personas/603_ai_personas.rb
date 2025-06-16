@@ -3,10 +3,13 @@
 summarization_personas = [DiscourseAi::Personas::Summarizer, DiscourseAi::Personas::ShortSummarizer]
 
 def from_setting(setting_name)
-  DB.query_single(
-    "SELECT value FROM site_settings WHERE name = :setting_name",
-    setting_name: setting_name,
-  )
+  DB
+    .query_single(
+      "SELECT value FROM site_settings WHERE name = :setting_name",
+      setting_name: setting_name,
+    )
+    &.first
+    &.split("|")
 end
 
 DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
@@ -28,7 +31,11 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
         default_groups = [Group::AUTO_GROUPS[:everyone]]
       end
 
-      persona.allowed_group_ids = from_setting(setting_name).first&.split("|") || default_groups
+      persona.allowed_group_ids = from_setting(setting_name) || default_groups
+    elsif persona_class == DiscourseAi::Personas::CustomPrompt
+      setting_name = "ai_helper_custom_prompts_allowed_groups"
+      default_groups = [Group::AUTO_GROUPS[:staff]]
+      persona.allowed_group_ids = from_setting(setting_name) || default_groups
     else
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end
@@ -73,7 +80,6 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
   persona.tools = tools.map { |name, value| [name, value] }
 
   persona.response_format = instance.response_format
-
   persona.examples = instance.examples
 
   persona.system_prompt = instance.system_prompt

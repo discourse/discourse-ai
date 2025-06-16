@@ -34,7 +34,7 @@ export default class AiEditSuggestionButton extends Component {
     this._activeAIRequest = ajax("/discourse-ai/ai-helper/suggest", {
       method: "POST",
       data: {
-        mode: this.mode.id,
+        mode: this.mode.name,
         text: this.args.outletArgs.initialValue,
         custom_prompt: "",
       },

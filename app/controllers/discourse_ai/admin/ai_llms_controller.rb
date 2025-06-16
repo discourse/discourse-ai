@@ -47,6 +47,7 @@ module DiscourseAi
 
         if llm_model.save
           llm_model.toggle_companion_user
+          log_llm_model_creation(llm_model)
           render json: LlmModelSerializer.new(llm_model), status: :created
         else
           render_json_error llm_model
@@ -55,6 +56,10 @@ module DiscourseAi
 
       def update
         llm_model = LlmModel.find(params[:id])
+
+        # Capture initial state for logging
+        initial_attributes = llm_model.attributes.dup
+        initial_quotas = llm_model.llm_quotas.map(&:attributes)
 
         if params[:ai_llm].key?(:llm_quotas)
           if quota_params
@@ -81,6 +86,7 @@ module DiscourseAi
 
         if llm_model.update(ai_llm_params(updating: llm_model))
           llm_model.toggle_companion_user
+          log_llm_model_update(llm_model, initial_attributes, initial_quotas)
           render json: LlmModelSerializer.new(llm_model)
         else
           render_json_error llm_model
@@ -109,11 +115,20 @@ module DiscourseAi
           )
         end
 
+        # Capture model details for logging before destruction
+        model_details = {
+          model_id: llm_model.id,
+          display_name: llm_model.display_name,
+          name: llm_model.name,
+          provider: llm_model.provider,
+        }
+
         # Clean up companion users
         llm_model.enabled_chat_bot = false
         llm_model.toggle_companion_user
 
         if llm_model.destroy
+          log_llm_model_deletion(model_details)
           head :no_content
         else
           render_json_error llm_model
@@ -189,6 +204,89 @@ module DiscourseAi
         end
 
         permitted
+      end
+
+      def ai_llm_logger_fields
+        {
+          display_name: {
+          },
+          name: {
+          },
+          provider: {
+          },
+          tokenizer: {
+          },
+          url: {
+          },
+          max_prompt_tokens: {
+          },
+          max_output_tokens: {
+          },
+          enabled_chat_bot: {
+          },
+          vision_enabled: {
+          },
+          api_key: {
+            type: :sensitive,
+          },
+          input_cost: {
+          },
+          output_cost: {
+          },
+          # JSON fields should be tracked as simple changes
+          json_fields: [:provider_params],
+        }
+      end
+
+      def log_llm_model_creation(llm_model)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { model_id: llm_model.id, subject: llm_model.display_name }
+
+        # Add quota information as a special case
+        if llm_model.llm_quotas.any?
+          entity_details[:quotas] = llm_model
+            .llm_quotas
+            .map do |quota|
+              "Group #{quota.group_id}: #{quota.max_tokens} tokens, #{quota.max_usages} usages, #{quota.duration_seconds}s"
+            end
+            .join("; ")
+        end
+
+        logger.log_creation("llm_model", llm_model, ai_llm_logger_fields, entity_details)
+      end
+
+      def log_llm_model_update(llm_model, initial_attributes, initial_quotas)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        entity_details = { model_id: llm_model.id, subject: llm_model.display_name }
+
+        # Track quota changes separately as they're a special case
+        current_quotas = llm_model.llm_quotas.reload.map(&:attributes)
+        if initial_quotas != current_quotas
+          initial_quota_summary =
+            initial_quotas
+              .map { |q| "Group #{q["group_id"]}: #{q["max_tokens"]} tokens" }
+              .join("; ")
+          current_quota_summary =
+            current_quotas
+              .map { |q| "Group #{q["group_id"]}: #{q["max_tokens"]} tokens" }
+              .join("; ")
+          entity_details[:quotas_changed] = true
+          entity_details[:quotas] = "#{initial_quota_summary} → #{current_quota_summary}"
+        end
+
+        logger.log_update(
+          "llm_model",
+          llm_model,
+          initial_attributes,
+          ai_llm_logger_fields,
+          entity_details,
+        )
+      end
+
+      def log_llm_model_deletion(model_details)
+        logger = DiscourseAi::Utils::AiStaffActionLogger.new(current_user)
+        model_details[:subject] = model_details[:display_name]
+        logger.log_deletion("llm_model", model_details)
       end
     end
   end

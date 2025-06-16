@@ -156,12 +156,21 @@ zh_CN:
       title: "AI"
       features:
         back: "返回"
-        list:
-          header:
-            name: "名称"
-            groups: "群组"
-          edit: "编辑"
-          set_up: "设置"
+        disabled: "(已禁用)"
+        persona: "角色模型:"
+        groups: "群组:"
+        no_persona: "未设置"
+        no_groups: "无"
+        edit: "编辑"
+        search:
+          name: "搜索"
+        ai_helper:
+          name: "助手"
+          proofread: 审校文本
+          explain: "解释"
+          smart_dates: "智能日期"
+          markdown_tables: "生成 Markdown 表"
+          custom_prompt: "自定义提示"
       modals:
         select_option: "选择一个选项…"
       spam:

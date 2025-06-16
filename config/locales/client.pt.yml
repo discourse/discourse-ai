@@ -36,11 +36,13 @@ pt:
     discourse_ai:
       features:
         back: "Retroceder"
-        list:
-          header:
-            name: "Nome"
-            groups: "Grupos"
-          edit: "Editar"
+        disabled: "(desativado)"
+        groups: "Grupos:"
+        no_persona: "Não definido"
+        no_groups: "Nenhuma"
+        edit: "Editar"
+        search:
+          name: "Pesquisar"
       modals:
         select_option: "Selecione uma opção..."
       spam:

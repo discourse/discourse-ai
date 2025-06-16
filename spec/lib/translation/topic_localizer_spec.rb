@@ -18,17 +18,19 @@ describe DiscourseAi::Translation::TopicLocalizer do
     def topic_title_translator_stub(opts)
       mock = instance_double(DiscourseAi::Translation::TopicTitleTranslator)
       allow(DiscourseAi::Translation::TopicTitleTranslator).to receive(:new).with(
-        opts[:value],
-        opts[:locale],
+        text: opts[:text],
+        target_locale: opts[:target_locale],
+        topic: opts[:topic] || topic,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
 
-    def short_text_translator_stub(opts)
-      mock = instance_double(DiscourseAi::Translation::ShortTextTranslator)
-      allow(DiscourseAi::Translation::ShortTextTranslator).to receive(:new).with(
-        opts[:value],
-        opts[:locale],
+    def post_raw_translator_stub(opts)
+      mock = instance_double(DiscourseAi::Translation::PostRawTranslator)
+      allow(DiscourseAi::Translation::PostRawTranslator).to receive(:new).with(
+        text: opts[:text],
+        target_locale: opts[:target_locale],
+        topic: opts[:topic] || topic,
       ).and_return(mock)
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
@@ -49,25 +51,33 @@ describe DiscourseAi::Translation::TopicLocalizer do
     end
 
     it "translates with topic and locale" do
-      topic_title_translator_stub({ value: topic.title, locale: :ja, translated: translated_title })
-      short_text_translator_stub(
-        { value: topic.excerpt, locale: :ja, translated: translated_excerpt },
+      topic_title_translator_stub(
+        { text: topic.title, target_locale: "ja", translated: translated_title },
+      )
+      post_raw_translator_stub(
+        { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
       described_class.localize(topic, "ja")
     end
 
     it "normalizes dashes to underscores and symbol type for locale" do
-      topic_title_translator_stub({ value: topic.title, locale: :zh_CN, translated: "这是一个猫主题 :)" })
-      short_text_translator_stub({ value: topic.excerpt, locale: :zh_CN, translated: "这是一个猫主题 :)" })
+      topic_title_translator_stub(
+        { text: topic.title, target_locale: "zh_CN", translated: "这是一个猫主题 :)" },
+      )
+      post_raw_translator_stub(
+        { text: topic.excerpt, target_locale: "zh_CN", translated: "这是一个猫主题 :)" },
+      )
 
       described_class.localize(topic, "zh-CN")
     end
 
     it "finds or creates a TopicLocalization and sets its fields" do
-      topic_title_translator_stub({ value: topic.title, locale: :ja, translated: translated_title })
-      short_text_translator_stub(
-        { value: topic.excerpt, locale: :ja, translated: translated_excerpt },
+      topic_title_translator_stub(
+        { text: topic.title, target_locale: "ja", translated: translated_title },
+      )
+      post_raw_translator_stub(
+        { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
       expect {
@@ -85,9 +95,11 @@ describe DiscourseAi::Translation::TopicLocalizer do
     end
 
     it "updates an existing TopicLocalization if present" do
-      topic_title_translator_stub({ value: topic.title, locale: :ja, translated: translated_title })
-      short_text_translator_stub(
-        { value: topic.excerpt, locale: :ja, translated: translated_excerpt },
+      topic_title_translator_stub(
+        { text: topic.title, target_locale: "ja", translated: translated_title },
+      )
+      post_raw_translator_stub(
+        { text: topic.excerpt, target_locale: "ja", translated: translated_excerpt },
       )
 
       localization =

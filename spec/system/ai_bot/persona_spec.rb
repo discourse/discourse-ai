@@ -10,6 +10,31 @@ RSpec.describe "AI personas", type: :system, js: true do
     sign_in(admin)
   end
 
+  it "can select and save persona tool options" do
+    visit "/admin/plugins/discourse-ai/ai-personas"
+    find(".ai-persona-list-editor__new-button").click
+
+    expect(page).to have_current_path("/admin/plugins/discourse-ai/ai-personas/new")
+
+    form = PageObjects::Components::FormKit.new("form")
+    form.field("name").fill_in("Test Persona")
+    form.field("description").fill_in("This is a test persona.")
+    form.field("system_prompt").fill_in("You are a helpful assistant.")
+    form.field("tools").select("Update Artifact")
+    form.field("toolOptions.UpdateArtifact.update_algorithm").select("full")
+    form.submit
+
+    expect(page).to have_current_path(%r{/admin/plugins/discourse-ai/ai-personas/\d+/edit})
+
+    persona = AiPersona.order("id desc").first
+
+    expect(persona.name).to eq("Test Persona")
+    expect(persona.description).to eq("This is a test persona.")
+    expect(persona.tools.count).to eq(1)
+    expect(persona.tools.first[0]).to eq("UpdateArtifact")
+    expect(persona.tools.first[1]["update_algorithm"]).to eq("full")
+  end
+
   it "remembers the last selected persona" do
     visit "/"
     find(".d-header .ai-bot-button").click()

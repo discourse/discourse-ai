@@ -140,12 +140,20 @@ ar:
       title: "الذكاء الاصطناعي"
       features:
         back: "الرجوع"
-        list:
-          header:
-            name: "الاسم"
-            groups: "المجموعات"
-          edit: "تعديل"
-          set_up: "إعداد"
+        disabled: "(متوقفة)"
+        groups: "مجموعتان:"
+        no_persona: "غير معيَّن"
+        no_groups: "لا يوجد"
+        edit: "تعديل"
+        search:
+          name: "البحث"
+        ai_helper:
+          name: "المساعد"
+          proofread: تدقيق النص لغويًا
+          explain: "الشرح"
+          smart_dates: "التواريخ الذكية"
+          markdown_tables: "إنشاء جدول Markdown"
+          custom_prompt: "رسالة مطالبة مخصَّصة"
       modals:
         select_option: "حدِّد خيارًا..."
       spam:

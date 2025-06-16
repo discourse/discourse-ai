@@ -29,7 +29,19 @@ module Jobs
             .where("tl.id IS NULL")
 
         if SiteSetting.ai_translation_backfill_limit_to_public_content
-          topics = topics.where(category_id: Category.where(read_restricted: false).select(:id))
+          # exclude all PMs
+          # and only include posts from public categories
+          topics =
+            topics
+              .where.not(archetype: Archetype.private_message)
+              .where(category_id: Category.where(read_restricted: false).select(:id))
+        else
+          # all regular topics, and group PMs
+          topics =
+            topics.where(
+              "topics.archetype != ? OR topics.id IN (SELECT topic_id FROM topic_allowed_groups)",
+              Archetype.private_message,
+            )
         end
 
         if SiteSetting.ai_translation_backfill_max_age_days > 0

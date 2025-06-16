@@ -140,12 +140,20 @@ ru:
       title: "AI"
       features:
         back: "Назад"
-        list:
-          header:
-            name: "Название"
-            groups: "Группы"
-          edit: "Изменить"
-          set_up: "Настроить"
+        disabled: "(отключен)"
+        groups: "Группы:"
+        no_persona: "Не установлен"
+        no_groups: "Нет"
+        edit: "Изменить"
+        search:
+          name: "Искать"
+        ai_helper:
+          name: "Помощник"
+          proofread: Вычитать текст
+          explain: "Объяснить"
+          smart_dates: "Умные даты"
+          markdown_tables: "Сгенерировать таблицу в формате Markdown"
+          custom_prompt: "Пользовательский запрос"
       modals:
         select_option: "Выберите вариант..."
       spam:

@@ -273,6 +273,10 @@ pt_BR:
         web_artifact_creator:
           name: "Criador de artefato da web"
           description: "Bot especializado na criação de artefatos interativos da web"
+        custom_prompt:
+          name: "Prompt personalizado"
+        smart_dates:
+          name: "Datas inteligentes"
       topic_not_found: "Resumo indisponível, tópico não encontrado!"
       summarizing: "Resumindo tópico"
       searching: "Pesquisando: \"%{query}\""

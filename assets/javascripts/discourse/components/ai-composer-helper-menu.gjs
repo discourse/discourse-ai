@@ -73,7 +73,7 @@ export default class AiComposerHelperMenu extends Component {
     }
 
     prompts.forEach((p) => {
-      this.prompts[p.id] = p;
+      this.prompts[p.name] = p;
     });
 
     this.promptTypes = prompts.reduce((memo, p) => {
@@ -116,7 +116,7 @@ export default class AiComposerHelperMenu extends Component {
     if (option.name === "illustrate_post") {
       return this.modal.show(ThumbnailSuggestion, {
         model: {
-          mode: option.id,
+          mode: option.name,
           selectedText: this.args.data.selectedText,
           thumbnails: this.thumbnailSuggestions,
         },
@@ -128,7 +128,7 @@ export default class AiComposerHelperMenu extends Component {
 
     return this.modal.show(ModalDiffModal, {
       model: {
-        mode: option.id,
+        mode: option.name,
         selectedText: this.args.data.selectedText,
         revert: this.undoAiAction,
         toolbarEvent: this.args.data.toolbarEvent,

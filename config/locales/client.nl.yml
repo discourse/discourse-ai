@@ -140,12 +140,20 @@ nl:
       title: "AI"
       features:
         back: "Terug"
-        list:
-          header:
-            name: "Naam"
-            groups: "Groepen"
-          edit: "Bewerken"
-          set_up: "Instellen"
+        disabled: "(uitgeschakeld)"
+        groups: "Groepen:"
+        no_persona: "Niet ingesteld"
+        no_groups: "Geen"
+        edit: "Bewerken"
+        search:
+          name: "Zoeken"
+        ai_helper:
+          name: "Helper"
+          proofread: Tekst proeflezen
+          explain: "Uitleggen"
+          smart_dates: "Slimme datums"
+          markdown_tables: "Markdowntabel genereren"
+          custom_prompt: "Aangepaste prompt"
       modals:
         select_option: "Selecteer een optie..."
       spam:

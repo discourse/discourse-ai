@@ -52,6 +52,22 @@ module DiscourseAi
             ShortSummarizer => -12,
             Designer => -13,
             ForumResearcher => -14,
+            ConceptFinder => -15,
+            ConceptMatcher => -16,
+            ConceptDeduplicator => -17,
+            CustomPrompt => -18,
+            SmartDates => -19,
+            MarkdownTableGenerator => -20,
+            PostIllustrator => -21,
+            Proofreader => -22,
+            TitlesGenerator => -23,
+            Tutor => -24,
+            Translator => -25,
+            ImageCaptioner => -26,
+            LocaleDetector => -27,
+            PostRawTranslator => -28,
+            TopicTitleTranslator => -29,
+            ShortTextTranslator => -30,
           }
         end
 
@@ -107,7 +123,7 @@ module DiscourseAi
             Tools::Researcher,
           ]
 
-          if SiteSetting.ai_artifact_security.in?(%w[lax strict])
+          if SiteSetting.ai_artifact_security.in?(%w[lax hybrid strict])
             tools << Tools::CreateArtifact
             tools << Tools::UpdateArtifact
             tools << Tools::ReadArtifact
@@ -257,10 +273,15 @@ module DiscourseAi
       protected
 
       def replace_placeholders(content, context)
-        content.gsub(/\{(\w+)\}/) do |match|
-          found = context.lookup_template_param(match[1..-2])
-          found.nil? ? match : found.to_s
-        end
+        replaced =
+          content.gsub(/\{(\w+)\}/) do |match|
+            found = context.lookup_template_param(match[1..-2])
+            found.nil? ? match : found.to_s
+          end
+
+        return replaced if !context.format_dates
+
+        ::DiscourseAi::AiHelper::DateFormatter.process_date_placeholders(replaced, context.user)
       end
 
       def tool_instance(tool_call, bot_user:, llm:, context:, existing_tools:)
