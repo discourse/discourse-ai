@@ -49,6 +49,16 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       expect(described_class.should_scan_post?(post)).to eq(false)
     end
 
+    it "returns false for bots" do
+      post.user.id = -100
+      expect(described_class.should_scan_post?(post)).to eq(false)
+    end
+
+    it "returns false for staff" do
+      post.user.moderator = true
+      expect(described_class.should_scan_post?(post)).to eq(false)
+    end
+
     it "returns false for users with many public posts" do
       Fabricate(:post, user: user, topic: topic)
       Fabricate(:post, user: user, topic: topic)
@@ -207,6 +217,26 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     end
   end
 
+  it "unsilences flagging user if erronuously silenced" do
+    described_class.flagging_user.update!(silenced_till: 1.day.from_now)
+    expect(described_class.flagging_user.silenced?).to eq(false)
+  end
+
+  it "ensures flagging user is tl4" do
+    described_class.flagging_user.update!(trust_level: 0)
+    expect(described_class.flagging_user.trust_level).to eq(4)
+  end
+
+  it "unsuspends user if it was erronuously suspended" do
+    described_class.flagging_user.update!(suspended_till: 1.day.from_now, suspended_at: 1.day.ago)
+    expect(described_class.flagging_user.suspended?).to eq(false)
+  end
+
+  it "makes sure account is active" do
+    described_class.flagging_user.update!(active: false)
+    expect(described_class.flagging_user.active).to eq(true)
+  end
+
   describe "integration test" do
     fab!(:llm_model)
     let(:api_audit_log) { Fabricate(:api_audit_log) }
@@ -243,8 +273,13 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
     it "correctly handles spam scanning" do
       expect(described_class.flagging_user.id).not_to eq(Discourse.system_user.id)
 
-      # flag post for scanning
       post = post_with_uploaded_image
+      # this is surprising, core fabricator is not linking
+      # we need it linked so we scan uploads
+      post.link_post_uploads
+
+      expect(described_class.should_scan_post?(post)).to eq(true)
+      expect(post.upload_ids).to be_present
 
       described_class.new_post(post)
 
