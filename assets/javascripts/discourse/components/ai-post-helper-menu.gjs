@@ -43,7 +43,8 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
-  @tracked channel =
+  @tracked
+  channel =
     `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
 
   @tracked
