@@ -34,6 +34,10 @@ Licensed under MIT License
 
 Licensed under META LLAMA 3 COMMUNITY LICENSE
 
-## Gemma 2
+## Gemma 3
 
 Licensed under the [Gemma Terms of Use](https://ai.google.dev/gemma/terms)
+
+## Qwen 3
+
+Licensed under the Apache 2.0 License
