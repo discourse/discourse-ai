@@ -114,8 +114,7 @@ export default class ModalDiffModal extends Component {
 
   @action
   async suggestChanges() {
-    this.smoothStreamer.resetStreaming();
-    this.diffStreamer.reset();
+    this.#resetState();
 
     try {
       this.loading = true;
@@ -159,11 +158,25 @@ export default class ModalDiffModal extends Component {
     }
   }
 
+  @action
+  cleanupAndClose() {
+    this.#resetState();
+    this.loading = false;
+    this.args.closeModal();
+  }
+
+  #resetState() {
+    this.suggestion = "";
+    this.finalResult = "";
+    this.smoothStreamer.resetStreaming();
+    this.diffStreamer.reset();
+  }
+
   <template>
     <DModal
       class="composer-ai-helper-modal"
       @title={{i18n "discourse_ai.ai_helper.context_menu.changes"}}
-      @closeModal={{@closeModal}}
+      @closeModal={{this.cleanupAndClose}}
     >
       <:body>
         <div
@@ -218,7 +231,7 @@ export default class ModalDiffModal extends Component {
         </DButton>
         <DButton
           class="btn-flat discard"
-          @action={{@closeModal}}
+          @action={{this.cleanupAndClose}}
           @label="discourse_ai.ai_helper.context_menu.discard"
         />
         <DButton
