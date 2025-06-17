@@ -151,7 +151,7 @@ export default class AiPostHelperMenu extends Component {
   @bind
   subscribe() {
     const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
-    this.lastMessageId = this.messageBus.subscribe(
+    this.messageBus.subscribe(
       channel,
       (data, id) => {
         this._lastMessageIds[channel] = id;
