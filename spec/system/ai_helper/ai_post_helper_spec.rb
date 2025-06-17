@@ -107,13 +107,6 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
         DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
           post_ai_helper.select_helper_model(mode)
-
-          MessageBus.publish(
-            "/discourse-ai/ai-helper/stream_suggestion/#{post.id}",
-            { result: explain_response, done: true },
-            user_ids: [user.id],
-          )
-
           wait_for { post_ai_helper.has_suggestion_value? }
           expect(post_ai_helper.suggestion_value).to eq(explain_response)
         end

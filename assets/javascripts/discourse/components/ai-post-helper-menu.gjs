@@ -43,6 +43,8 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
+  @tracked channel =
+    `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
 
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -150,27 +152,26 @@ export default class AiPostHelperMenu extends Component {
 
   @bind
   subscribe() {
-    const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
     this.messageBus.subscribe(
-      channel,
+      this.channel,
       (data, id) => {
-        this._lastMessageIds[channel] = id;
+        this._lastMessageIds[this.channel] =
+          this.args.data.post.discourse_ai_helper_stream_suggestion_last_message_bus_id;
         this._updateResult(data, id);
       },
-      this._lastMessageIds[channel]
+      this._lastMessageIds[this.channel]
     );
   }
 
   @bind
   unsubscribe() {
-    this.messageBus.unsubscribe(
-      "/discourse-ai/ai-helper/stream_suggestion/*",
-      this._updateResult
-    );
+    this.messageBus.unsubscribe(this.channel, this._updateResult);
   }
 
   @bind
   async _updateResult(result) {
+    this._lastMessageIds[this.channel] =
+      this.args.data.post.discourse_ai_helper_stream_suggestion_last_message_bus_id;
     this.streaming = !result.done;
     await this.smoothStreamer.updateResult(result, "result");
   }
