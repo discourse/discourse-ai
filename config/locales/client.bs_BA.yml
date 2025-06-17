@@ -66,6 +66,8 @@ bs_BA:
           open_modal: "Edit"
           modal:
             key_title: "Ključ"
+        filters:
+          reset: "Resetovati"
       rag:
         uploads:
           title: "Uploads"
@@ -101,7 +103,6 @@ bs_BA:
       ai_helper:
         context_menu:
           cancel: "Odustani"
-          regen: "Pokušaj ponovo"
           discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"

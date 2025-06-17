@@ -24,7 +24,6 @@ it:
         description: "Report periodico basato su LLM"
   site_settings:
     discourse_ai_enabled: "Abilita il plugin Discourse AI."
-    ai_artifact_security: "Il sistema di artefatti IA genera IFRAME con codice eseguibile. La modalità Strict disabilita la condivisione e impone un clic extra per eseguire il codice. La modalità Lax consente la condivisione di artefatti ed esegue il codice direttamente. La modalità Disabled disabilita il sistema di artefatti."
     ai_toxicity_enabled: "Abilita il modulo tossicità."
     ai_toxicity_inference_service_api_endpoint: "URL in cui l'API è in esecuzione per il modulo tossicità"
     ai_toxicity_inference_service_api_key: "Chiave API per l'API di tossicità"
@@ -188,7 +187,6 @@ it:
       description: "Messaggi classificati con l'emozione sorpresa tramite intelligenza artificiale, utilizzando il modello 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
     ai_artifact:
-      link: "Mostra artefatto in una nuova scheda"
       view_source: "Visualizza origine"
       view_changes: "Visualizza modifiche"
     unknown_model: "Modello IA sconosciuto"
@@ -430,6 +428,9 @@ it:
     llm_models:
       missing_provider_param: "%{param} non può essere vuoto"
       bedrock_invalid_url: "Compila tutti i campi per utilizzare questo modello."
+    ai_staff_action_logger:
+      updated: "aggiornato"
+      removed: "rimosso"
     errors:
       quota_exceeded: "Hai superato la quota per questo modello. Riprova tra %{relative_time}."
       quota_required: "È necessario specificare il numero massimo di token o utilizzi per questo modello"

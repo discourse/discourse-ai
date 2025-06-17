@@ -21,3 +21,6 @@ hy:
           neutral: "Նեյտրալ \U0001F610"
         sentiment_analysis:
           neutral: "Նեյտրալ"
+    ai_staff_action_logger:
+      updated: "թարմացված"
+      removed: "հեռացվել է"

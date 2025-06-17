@@ -71,6 +71,8 @@ gl:
           open_modal: "Editar"
           modal:
             key_title: "Chave"
+        filters:
+          reset: "Restabelecer"
       rag:
         uploads:
           title: "Cargas"
@@ -112,7 +114,6 @@ gl:
       ai_helper:
         context_menu:
           cancel: "Cancelar"
-          regen: "Tentar de novo"
           confirm: "Confirmar"
           discard: "Desbotar"
         post_options_menu:

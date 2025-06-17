@@ -24,7 +24,6 @@ es:
         description: "Informe periódico basado en un modelo lingüístico de gran tamaño"
   site_settings:
     discourse_ai_enabled: "Activar el complemento de IA de Discourse."
-    ai_artifact_security: "El sistema de artefactos de IA genera IFRAMEs con código ejecutable. El modo estricto desactiva el uso compartido y obliga a hacer un clic adicional para ejecutar el código. El modo Laxo permite compartir los artefactos y ejecuta el código directamente. El modo Desactivado desactiva el sistema de artefactos."
     ai_toxicity_enabled: "Activar el módulo de toxicidad."
     ai_toxicity_inference_service_api_endpoint: "URL donde se ejecuta la API para el módulo de toxicidad"
     ai_toxicity_inference_service_api_key: "Clave API para la API de toxicidad"
@@ -188,7 +187,6 @@ es:
       description: "Publicaciones clasificadas con la emoción Sorpresa mediante IA, utilizando el modelo 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
     ai_artifact:
-      link: "Mostrar Artefacto en nueva pestaña"
       view_source: "Ver fuente"
       view_changes: "Ver cambios"
     unknown_model: "Modelo de IA desconocido"
@@ -430,6 +428,9 @@ es:
     llm_models:
       missing_provider_param: "%{param} no puede estar en blanco"
       bedrock_invalid_url: "Rellena todos los campos para utilizar este modelo."
+    ai_staff_action_logger:
+      updated: "actualizado"
+      removed: "eliminado"
     errors:
       quota_exceeded: "Has superado la cuota para este modelo. Inténtalo de nuevo en %{relative_time}."
       quota_required: "Debes especificar los tokens o usos máximos para este modelo"

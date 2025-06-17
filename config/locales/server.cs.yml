@@ -33,3 +33,6 @@ cs:
         time: "Čas"
       tool_help:
         summary: "Shrnout téma"
+    ai_staff_action_logger:
+      updated: "aktualizováno"
+      removed: "odstraněno"

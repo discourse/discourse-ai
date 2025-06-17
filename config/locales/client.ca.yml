@@ -69,6 +69,8 @@ ca:
           open_modal: "Edita"
           modal:
             key_title: "Clau"
+        filters:
+          reset: "Restableix"
       rag:
         uploads:
           title: "Càrregues"
@@ -105,7 +107,6 @@ ca:
       ai_helper:
         context_menu:
           cancel: "Cancel·la"
-          regen: "Torna-ho a intentar"
           confirm: "Confirma"
           discard: "Descarta"
         post_options_menu:

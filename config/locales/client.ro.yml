@@ -70,6 +70,8 @@ ro:
         delete: "Șterge"
         response_format:
           open_modal: "Modifică"
+        filters:
+          reset: "Resetare"
       rag:
         uploads:
           title: "Urcări"
@@ -112,7 +114,6 @@ ro:
       ai_helper:
         context_menu:
           cancel: "Anulare"
-          regen: "Încearcă din nou"
           discard: "Renunță"
         post_options_menu:
           close: "Închide sondajul"

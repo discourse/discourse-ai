@@ -23,3 +23,6 @@ hu:
           neutral: "Semleges \U0001F610"
         sentiment_analysis:
           neutral: "Semleges"
+    ai_staff_action_logger:
+      updated: "frissítve"
+      removed: "eltávolítva"

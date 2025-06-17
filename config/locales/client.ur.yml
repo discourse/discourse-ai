@@ -72,6 +72,8 @@ ur:
           open_modal: "ترمیم کریں"
           modal:
             key_title: "کی"
+        filters:
+          reset: "رِی سَیٹ"
       rag:
         uploads:
           title: "اَپ لوڈز"
@@ -115,7 +117,6 @@ ur:
       ai_helper:
         context_menu:
           cancel: "منسوخ"
-          regen: "دوبارہ کوشش کریں"
           confirm: "تصدیق کریں"
           discard: "منسوخ"
         post_options_menu:

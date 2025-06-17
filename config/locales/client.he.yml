@@ -181,6 +181,9 @@ he:
           custom_prompt: "בקשה מותאמת אישית"
       modals:
         select_option: "בחירת אפשרות…"
+      layout:
+        table: "טבלה"
+        card: "כרטיס"
       spam:
         short_title: "ספאם"
         title: "הגדרת טיפול בספאם"
@@ -333,6 +336,17 @@ he:
         ai_bot:
           title: "אפשרויות בוט בינה מלאכותית"
           save_first: "אפשרויות בוט בינה מלאכותית נוספות תהיינה זמינות לאחר שמירת הדמות."
+        filters:
+          text: "איתור דמות"
+          reset: "איפוס"
+          no_results: "לא נמצאו דמויות שתואמות למסננים שלך."
+          all_features: "כל תכונה שהיא"
+        features_list:
+          one: "תכונה:"
+          two: "תכונות:"
+          many: "תכונות:"
+          other: "תכונות:"
+        llms_list: "LLM/מש״ג:"
       rag:
         title: "RAG"
         options:

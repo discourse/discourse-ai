@@ -74,6 +74,8 @@ da:
           open_modal: "Rediger"
           modal:
             key_title: "Nøgle"
+        filters:
+          reset: "Nulstil"
       rag:
         uploads:
           title: "Overførsler"
@@ -117,7 +119,6 @@ da:
       ai_helper:
         context_menu:
           cancel: "Annuller"
-          regen: "Prøv igen"
           confirm: "Bekræft"
           discard: "Kassér"
         post_options_menu:

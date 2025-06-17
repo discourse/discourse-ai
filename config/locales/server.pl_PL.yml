@@ -274,6 +274,9 @@ pl_PL:
     llm_models:
       missing_provider_param: "%{param} nie może być pusty"
       bedrock_invalid_url: "Wypełnij wszystkie pola, aby korzystać z tego modelu."
+    ai_staff_action_logger:
+      updated: "zaktualizowane"
+      removed: "usunięto"
     errors:
       quota_exceeded: "Przekroczyłeś limit dla tego modelu. Spróbuj ponownie za %{relative_time}."
       quota_required: "Musisz określić maksymalną liczbę tokenów lub użyć dla tego modelu"

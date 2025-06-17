@@ -22,3 +22,6 @@ ur:
           neutral: "نیوٹرل \U0001F610"
         sentiment_analysis:
           neutral: "نیوٹرل"
+    ai_staff_action_logger:
+      updated: "اپ ڈیٹ"
+      removed: "ہٹا دیا"

@@ -70,6 +70,8 @@ vi:
           open_modal: "Sửa"
           modal:
             key_title: "Phím"
+        filters:
+          reset: "Cài lại"
       rag:
         uploads:
           title: "Tải lên"
@@ -114,7 +116,6 @@ vi:
       ai_helper:
         context_menu:
           cancel: "Huỷ"
-          regen: "Thử lại"
           confirm: "Xác nhận"
           discard: "Hủy bỏ"
         post_options_menu:

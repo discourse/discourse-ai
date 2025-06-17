@@ -296,6 +296,8 @@ fr:
           open_modal: "Modifier"
           modal:
             key_title: "Clé"
+        filters:
+          reset: "Réinitialiser"
       rag:
         options:
           rag_chunk_tokens: "Téléverser des jetons de morceaux"
@@ -466,7 +468,6 @@ fr:
           trigger: "Demander à l'IA"
           loading: "L'IA est en train de générer"
           cancel: "Annuler"
-          regen: "Réessayer"
           confirm: "Confirmer"
           discard: "Abandonner"
           changes: "Modifications suggérées"

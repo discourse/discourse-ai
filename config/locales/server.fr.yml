@@ -24,7 +24,6 @@ fr:
         description: "Rapport périodique basé sur un grand modèle linguistique"
   site_settings:
     discourse_ai_enabled: "Activez l'extension IA de Discourse."
-    ai_artifact_security: "Le système d'artefacts IA génère des IFRAME avec du code exécutable. Le mode strict désactive le partage et impose un clic supplémentaire pour exécuter le code. Le mode laxiste permet de partager les artefacts et d'exécuter le code directement. Le mode désactivé désactive le système d'artefacts."
     ai_toxicity_enabled: "Activez le module de toxicité."
     ai_toxicity_inference_service_api_endpoint: "Adresse URL où s'exécute l'API pour le module de toxicité"
     ai_toxicity_inference_service_api_key: "Clé API pour l'API de toxicité"
@@ -188,7 +187,6 @@ fr:
       description: "Publications classées selon l'émotion de surprise via l'IA, en utilisant le modèle « Samlowe/Roberta-Base-Go_Emotions »."
   discourse_ai:
     ai_artifact:
-      link: "Afficher l'artefact dans un nouvel onglet"
       view_source: "Voir la source"
       view_changes: "Afficher les modifications"
     unknown_model: "Modèle d'IA inconnu"
@@ -430,6 +428,9 @@ fr:
     llm_models:
       missing_provider_param: "%{param} ne peut pas être vide"
       bedrock_invalid_url: "Veuillez remplir tous les champs pour utiliser ce modèle."
+    ai_staff_action_logger:
+      updated: "mis à jour"
+      removed: "supprimé"
     errors:
       quota_exceeded: "Vous avez dépassé le quota pour ce modèle. Veuillez réessayer dans %{relative_time}."
       quota_required: "Vous devez spécifier un nombre maximal de jetons ou d'utilisations pour ce modèle"

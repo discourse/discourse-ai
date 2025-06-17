@@ -10,3 +10,5 @@ sq:
       tool_summary:
         search: "Kërko"
         time: "Koha"
+    ai_staff_action_logger:
+      removed: "u hoq"

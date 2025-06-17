@@ -296,6 +296,8 @@ es:
           open_modal: "Editar"
           modal:
             key_title: "Clave"
+        filters:
+          reset: "Restablecer"
       rag:
         options:
           rag_chunk_tokens: "Cargar tokens de fragmentos"
@@ -466,7 +468,6 @@ es:
           trigger: "Preguntar a la IA"
           loading: "La IA está generando"
           cancel: "Cancelar"
-          regen: "Intentar de nuevo"
           confirm: "Confirmar"
           discard: "Descartar"
           changes: "Ediciones sugeridas"

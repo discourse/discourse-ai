@@ -65,6 +65,8 @@ sq:
         delete: "Fshij"
         response_format:
           open_modal: "Redaktoni"
+        filters:
+          reset: "Rivendosni"
       rag:
         uploads:
           uploading: "Duke ngarkuar..."
@@ -105,7 +107,6 @@ sq:
       ai_helper:
         context_menu:
           cancel: "Anulo"
-          regen: "Provo përsëri"
         post_options_menu:
           close: "Mbyll"
           copy: "Kopjo"

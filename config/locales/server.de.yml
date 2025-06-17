@@ -31,7 +31,6 @@ de:
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
   site_settings:
     discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
-    ai_artifact_security: "Das KI-Artefaktsystem erzeugt IFRAMEs mit ausführbarem Code. Der strenge Modus deaktiviert die Freigabe und erzwingt einen zusätzlichen Klick, um den Code auszuführen. Der lockere Modus erlaubt die Freigabe von Artefakten und führt den Code direkt aus. Im Modus „Deaktiviert“ wird das Artefaktsystem ausgeschaltet."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
     ai_toxicity_inference_service_api_endpoint: "URL, unter der die API für das Toxizitätsmodul läuft"
     ai_toxicity_inference_service_api_key: "API-Schlüssel für die Toxizitäts-API"
@@ -211,7 +210,6 @@ de:
       description: "Beiträge, die per KI unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“ mit der Emotion „Überraschung“ klassifiziert wurden."
   discourse_ai:
     ai_artifact:
-      link: "Artefakt in neuem Tab anzeigen"
       view_source: "Quelle anzeigen"
       view_changes: "Änderungen anzeigen"
       change_description: "Beschreibung ändern"
@@ -558,6 +556,9 @@ de:
     llm_models:
       missing_provider_param: "%{param} darf nicht leer sein"
       bedrock_invalid_url: "Bitte fülle alle Felder aus, um dieses Modell zu verwenden."
+    ai_staff_action_logger:
+      updated: "aktualisiert"
+      removed: "entfernt"
     errors:
       quota_exceeded: "Du hast das Kontingent für dieses Modell überschritten. Bitte versuche es erneut in %{relative_time}."
       quota_required: "Du musst die maximale Anzahl an Token oder Verwendungen für dieses Modell angeben"

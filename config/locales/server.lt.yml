@@ -27,3 +27,6 @@ lt:
           neutral: "Neutrali \U0001F610"
         sentiment_analysis:
           neutral: "Neutrali"
+    ai_staff_action_logger:
+      updated: "atnaujinta"
+      removed: "pašalintas"

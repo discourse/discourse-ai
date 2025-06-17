@@ -24,7 +24,6 @@ fi:
         description: "Säännöllinen raportti laajan kielimallin perusteella"
   site_settings:
     discourse_ai_enabled: "Ota Discoursen tekoälylisäosa käyttöön."
-    ai_artifact_security: "Tekoälyartefaktijärjestelmä luo IFRAME-kehykset suoritettavalla koodilla. Tiukka tila poistaa jakamisen käytöstä ja pakottaa ylimääräisen napsautuksen koodin suorittamiseksi. Löyhä tila sallii artefaktien jakamisen ja suorittaa koodin suoraan. Ei käytössä -tila poistaa artefaktijärjestelmän käytöstä."
     ai_toxicity_enabled: "Ota toksisuusmoduuli käyttöön."
     ai_toxicity_inference_service_api_endpoint: "URL-osoite, jossa toksisuusmoduulin API on käynnissä"
     ai_toxicity_inference_service_api_key: "Toksisuus-APIn API-avain"
@@ -188,7 +187,6 @@ fi:
       description: "Viestit, jotka on luokiteltu yllätyksen tunteella tekoälyllä mallilla \"SamLowe/roberta-base-go_emotions\"."
   discourse_ai:
     ai_artifact:
-      link: "Näytä artefakti uudessa välilehdessä"
       view_source: "Näytä lähde"
       view_changes: "Näytä muutokset"
     unknown_model: "Tuntematon tekoälymalli"
@@ -430,6 +428,9 @@ fi:
     llm_models:
       missing_provider_param: "%{param} ei voi olla tyhjä"
       bedrock_invalid_url: "Täytä kaikki kentät, jotta voit käyttää tätä mallia."
+    ai_staff_action_logger:
+      updated: "päivitetty"
+      removed: "poistettu"
     errors:
       quota_exceeded: "Olet ylittänyt tämän mallin kiintiön. Odota %{relative_time} ja yritä sitten uudelleen."
       quota_required: "Sinun on määritettävä tälle mallille saneiden tai käyttökertojen enimmäismäärä"

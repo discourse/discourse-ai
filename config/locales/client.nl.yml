@@ -296,6 +296,8 @@ nl:
           open_modal: "Bewerken"
           modal:
             key_title: "Sleutel"
+        filters:
+          reset: "Resetten"
       rag:
         options:
           rag_chunk_tokens: "Uploadchunktokens"
@@ -466,7 +468,6 @@ nl:
           trigger: "AI vragen"
           loading: "AI is aan het genereren"
           cancel: "Annuleren"
-          regen: "Opnieuw proberen"
           confirm: "Bevestigen"
           discard: "Weggooien"
           changes: "Voorgestelde bewerkingen"

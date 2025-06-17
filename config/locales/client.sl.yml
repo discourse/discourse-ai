@@ -69,6 +69,8 @@ sl:
         delete: "Izbriši"
         response_format:
           open_modal: "Uredi"
+        filters:
+          reset: "Ponastavi"
       rag:
         uploads:
           title: "Prenosi"
@@ -111,7 +113,6 @@ sl:
       ai_helper:
         context_menu:
           cancel: "Prekliči"
-          regen: "Poskusi ponovno"
           confirm: "Potrdi"
           discard: "Zavrzi"
         post_options_menu:

@@ -21,3 +21,6 @@ da:
           neutral: "Neutral \U0001F610"
         sentiment_analysis:
           neutral: "Neutral"
+    ai_staff_action_logger:
+      updated: "opdateret"
+      removed: "fjernet"

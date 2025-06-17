@@ -79,6 +79,8 @@ cs:
           open_modal: "Upravit"
           modal:
             key_title: "Klíč"
+        filters:
+          reset: "obnovit výchozí"
       rag:
         uploads:
           title: "Nahrané soubory"
@@ -152,7 +154,6 @@ cs:
           trigger: "Zeptejte se AI"
           loading: "Umělá inteligence generuje"
           cancel: "Zrušit"
-          regen: "Zkusit znovu"
           confirm: "Potvrdit"
           discard: "Zrušit"
           changes: "Navrhované úpravy"

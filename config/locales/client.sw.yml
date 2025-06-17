@@ -64,6 +64,8 @@ sw:
         delete: "Futa"
         response_format:
           open_modal: "Hariri"
+        filters:
+          reset: "Anza Upya"
       rag:
         uploads:
           title: "Upakiaji"
@@ -98,7 +100,6 @@ sw:
       ai_helper:
         context_menu:
           cancel: "Ghairi"
-          regen: "Jaribu Tena"
         post_options_menu:
           close: "Funga"
           copy: "Nakili"

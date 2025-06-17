@@ -74,6 +74,8 @@ hu:
           open_modal: "Szerkesztés"
           modal:
             key_title: "Kulcs"
+        filters:
+          reset: "Alaphelyzetbe állítás"
       rag:
         uploads:
           title: "Feltöltések"
@@ -120,7 +122,6 @@ hu:
       ai_helper:
         context_menu:
           cancel: "Mégse"
-          regen: "Újrapróbálkozás"
           confirm: "Megerősítés"
           discard: "Elvetés"
         post_options_menu:

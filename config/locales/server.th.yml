@@ -13,3 +13,5 @@ th:
       tool_summary:
         search: "ค้นหา"
         time: "เวลา"
+    ai_staff_action_logger:
+      updated: "อัปเดตแล้ว"

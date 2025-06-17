@@ -109,6 +109,8 @@ lt:
           open_modal: "Redaguoti"
           modal:
             key_title: "Raktas"
+        filters:
+          reset: "Atstatyti"
       rag:
         uploads:
           title: "Įkėlimai"
@@ -153,7 +155,6 @@ lt:
         context_menu:
           trigger: "Paklauskite AI"
           cancel: "Atšaukti"
-          regen: "Bandyti dar kartą"
           confirm: "Patvirtinti"
           discard: "Išmesti"
         post_options_menu:

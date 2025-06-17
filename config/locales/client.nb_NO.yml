@@ -68,6 +68,8 @@ nb_NO:
         delete: "Slett"
         response_format:
           open_modal: "Endre"
+        filters:
+          reset: "Tilbakestill"
       rag:
         uploads:
           title: "Opplastinger"
@@ -111,7 +113,6 @@ nb_NO:
       ai_helper:
         context_menu:
           cancel: "Avbryt"
-          regen: "Prøv igjen"
           discard: "Forkast"
         post_options_menu:
           close: "Lukk"

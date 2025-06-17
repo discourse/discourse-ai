@@ -71,6 +71,8 @@ zh_TW:
           open_modal: "編輯"
           modal:
             key_title: "金鑰"
+        filters:
+          reset: "重置"
       rag:
         uploads:
           title: "上傳檔案"
@@ -113,7 +115,6 @@ zh_TW:
       ai_helper:
         context_menu:
           cancel: "取消"
-          regen: "請再試一次"
           discard: "捨棄"
         post_options_menu:
           close: "關閉"

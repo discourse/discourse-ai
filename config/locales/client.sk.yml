@@ -76,6 +76,8 @@ sk:
           open_modal: "Upraviť"
           modal:
             key_title: "Kľúč"
+        filters:
+          reset: "Resetovať"
       rag:
         uploads:
           title: "Nahrávanie"
@@ -121,7 +123,6 @@ sk:
       ai_helper:
         context_menu:
           cancel: "Zrušiť"
-          regen: "Skúsiť znova"
           confirm: "Potvrďte"
           discard: "Zahodiť"
         post_options_menu:

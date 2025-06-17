@@ -292,6 +292,8 @@ pl_PL:
           enabled: "Bot AI?"
         ai_bot:
           title: "Opcje bota AI"
+        filters:
+          reset: "Przywróć"
       rag:
         options:
           show_indexing_options: "Pokaż opcje przesyłania"
@@ -444,7 +446,6 @@ pl_PL:
           trigger: "Zapytaj AI"
           loading: "AI generuje"
           cancel: "Anuluj"
-          regen: "Spróbuj ponownie"
           confirm: "Potwierdź"
           discard: "Odrzuć"
           changes: "Sugerowane zmiany"

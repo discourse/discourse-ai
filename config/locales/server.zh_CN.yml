@@ -24,7 +24,6 @@ zh_CN:
         description: "基于大语言模型的定期报告"
   site_settings:
     discourse_ai_enabled: "启用 Discourse AI 插件。"
-    ai_artifact_security: "AI 工件系统会生成带有可运行代码的 IFRAME。严格模式会禁用分享并强制执行额外的点击操作以运行代码。宽松模式允许分享工件并直接运行代码。禁用模式会禁用工件系统。"
     ai_toxicity_enabled: "启用毒性模块。"
     ai_toxicity_inference_service_api_endpoint: "为毒性模块运行 API 的 URL"
     ai_toxicity_inference_service_api_key: "毒性 API 的 API 密钥"
@@ -186,7 +185,6 @@ zh_CN:
       description: "使用“SamLowe/roberta-base-go_emotions”模型，通过 AI 分类为惊讶情绪的帖子。"
   discourse_ai:
     ai_artifact:
-      link: "在新标签页中显示工件"
       view_source: "查看来源"
       view_changes: "查看更改"
     unknown_model: "未知 AI 模型"
@@ -419,6 +417,9 @@ zh_CN:
     llm_models:
       missing_provider_param: "%{param} 不能为空"
       bedrock_invalid_url: "请填写所有字段以使用此模型。"
+    ai_staff_action_logger:
+      updated: "更新"
+      removed: "已移除"
     errors:
       quota_exceeded: "您已超出此模型的配额。请在 %{relative_time}后再试。"
       quota_required: "必须为此模型指定最大词元数或使用次数"

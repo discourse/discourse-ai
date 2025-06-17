@@ -21,3 +21,6 @@ gl:
           neutral: "Neutro \U0001F610"
         sentiment_analysis:
           neutral: "Neutro"
+    ai_staff_action_logger:
+      updated: "actualizado"
+      removed: "retirado"
