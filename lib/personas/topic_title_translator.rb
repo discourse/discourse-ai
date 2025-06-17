@@ -30,17 +30,6 @@ module DiscourseAi
           Provide your translation in the following JSON format:
           {"translation": "Your target_locale translation here"}
 
-          Here are three examples of correct translation
-
-          Original: {"content":"New Update for Minecraft Adds Underwater Temples", "target_locale":"es"}
-          Correct translation: {"translation": "Nueva actualización para Minecraft añade templos submarinos"}
-
-          Original: {"content":"Toyota announces revolutionary battery technology", "target_locale":"fr"}
-          Correct translation: {"translation": "Toyota annonce une technologie de batteries révolutionnaire"}
-
-          Original: {"content": "Heathrow fechado: paralisação de voos deve continuar nos próximos dias, diz gestora do aeroporto de Londres", "target_locale": "en"}
-          Correct translation: {"translation": "Heathrow closed: flight disruption expected to continue in coming days, says London airport management"}
-
           Remember to keep proper nouns like "Minecraft" and "Toyota" in their original form. Translate the title now and provide your answer in the specified JSON format.
         PROMPT
       end
@@ -51,6 +40,36 @@ module DiscourseAi
 
       def temperature
         0.3
+      end
+
+      def examples
+        [
+          [
+            {
+              content: "New Update for Minecraft Adds Underwater Temples",
+              target_locale: "es",
+            }.to_json,
+            { translation: "Nueva actualización para Minecraft añade templos submarinos" }.to_json,
+          ],
+          [
+            {
+              content: "Toyota announces revolutionary battery technology",
+              target_locale: "fr",
+            }.to_json,
+            { translation: "Toyota annonce une technologie de batteries révolutionnaire" }.to_json,
+          ],
+          [
+            {
+              content:
+                "Heathrow fechado: paralisação de voos deve continuar nos próximos dias, diz gestora do aeroporto de Londres",
+              target_locale: "en",
+            }.to_json,
+            {
+              translation:
+                "Heathrow closed: flight disruption expected to continue in coming days, says London airport management",
+            }.to_json,
+          ],
+        ]
       end
     end
   end
