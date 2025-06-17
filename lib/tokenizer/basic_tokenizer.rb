@@ -11,6 +11,7 @@ module DiscourseAi
             DiscourseAi::Tokenizer::Llama3Tokenizer,
             DiscourseAi::Tokenizer::MixtralTokenizer,
             DiscourseAi::Tokenizer::OpenAiTokenizer,
+            DiscourseAi::Tokenizer::QwenTokenizer,
           ]
         end
 

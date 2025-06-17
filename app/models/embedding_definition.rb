@@ -24,6 +24,7 @@ class EmbeddingDefinition < ActiveRecord::Base
         DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer,
         DiscourseAi::Tokenizer::OpenAiTokenizer,
         DiscourseAi::Tokenizer::MixtralTokenizer,
+        DiscourseAi::Tokenizer::QwenTokenizer,
       ].map(&:name)
     end
 
