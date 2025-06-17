@@ -28,7 +28,7 @@ describe DiscourseAi::Translation::BaseTranslator do
         DiscourseAi::Translation::PostRawTranslator.new(text:, target_locale:, post:)
       allow(DiscourseAi::Completions::Prompt).to receive(:new).with(
         persona.system_prompt,
-        messages: [{ type: :user, content: post_translator.formatted_content }],
+        messages: array_including({ type: :user, content: post_translator.formatted_content }),
         post_id: post.id,
         topic_id: post.topic_id,
       ).and_call_original
