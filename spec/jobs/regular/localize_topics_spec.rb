@@ -12,7 +12,7 @@ describe Jobs::LocalizeTopics do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.experimental_content_localization_supported_locales = locales.join("|")
+    SiteSetting.content_localization_supported_locales = locales.join("|")
   end
 
   it "does nothing when translator is disabled" do
@@ -30,7 +30,7 @@ describe Jobs::LocalizeTopics do
   end
 
   it "does nothing when no target languages are configured" do
-    SiteSetting.experimental_content_localization_supported_locales = ""
+    SiteSetting.content_localization_supported_locales = ""
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
     job.execute({})
@@ -139,7 +139,7 @@ describe Jobs::LocalizeTopics do
       Fabricate(:group_private_message_topic, recipient_group: Fabricate(:group), locale: "es")
     end
 
-    before { SiteSetting.experimental_content_localization_supported_locales = "ja" }
+    before { SiteSetting.content_localization_supported_locales = "ja" }
 
     context "when ai_translation_backfill_limit_to_public_content is true" do
       before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }

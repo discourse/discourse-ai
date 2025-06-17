@@ -12,7 +12,7 @@ describe Jobs::LocalizePosts do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.experimental_content_localization_supported_locales = locales.join("|")
+    SiteSetting.content_localization_supported_locales = locales.join("|")
   end
 
   it "does nothing when translator is disabled" do
@@ -30,7 +30,7 @@ describe Jobs::LocalizePosts do
   end
 
   it "does nothing when no target languages are configured" do
-    SiteSetting.experimental_content_localization_supported_locales = ""
+    SiteSetting.content_localization_supported_locales = ""
     DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 
     job.execute({})
@@ -136,7 +136,7 @@ describe Jobs::LocalizePosts do
     fab!(:group_pm_topic) { Fabricate(:group_private_message_topic, recipient_group: group) }
     fab!(:group_pm_post) { Fabricate(:post, topic: group_pm_topic, locale: "es") }
 
-    before { SiteSetting.experimental_content_localization_supported_locales = "ja" }
+    before { SiteSetting.content_localization_supported_locales = "ja" }
 
     context "when ai_translation_backfill_limit_to_public_content is true" do
       before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
@@ -187,7 +187,7 @@ describe Jobs::LocalizePosts do
 
     before do
       SiteSetting.ai_translation_backfill_max_age_days = 5
-      SiteSetting.experimental_content_localization_supported_locales = "ja"
+      SiteSetting.content_localization_supported_locales = "ja"
     end
 
     it "only processes posts within the age limit" do

@@ -8,7 +8,7 @@ module Jobs
     def execute(args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
-      return if SiteSetting.experimental_content_localization_supported_locales.blank?
+      return if SiteSetting.content_localization_supported_locales.blank?
 
       Jobs.enqueue(:localize_categories)
     end
