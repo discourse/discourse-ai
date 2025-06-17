@@ -114,8 +114,7 @@ export default class ModalDiffModal extends Component {
 
   @action
   async suggestChanges() {
-    this.smoothStreamer.resetStreaming();
-    this.diffStreamer.reset();
+    this.#resetState();
 
     try {
       this.loading = true;
@@ -161,12 +160,16 @@ export default class ModalDiffModal extends Component {
 
   @action
   closeAndCleanup() {
+    this.#resetState();
+    this.loading = false;
+    this.args.closeModal();
+  }
+
+  #resetState() {
     this.suggestion = "";
     this.finalResult = "";
     this.smoothStreamer.resetStreaming();
     this.diffStreamer.reset();
-    this.loading = false;
-    this.args.closeModal();
   }
 
   <template>
