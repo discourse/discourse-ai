@@ -13,3 +13,5 @@ lv:
       tool_summary:
         search: "Meklēt"
         time: "Laiks"
+    ai_staff_action_logger:
+      removed: "noņemts"

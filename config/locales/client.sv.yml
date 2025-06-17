@@ -74,6 +74,8 @@ sv:
           open_modal: "Redigera"
           modal:
             key_title: "Key"
+        filters:
+          reset: "Återställ"
       rag:
         uploads:
           title: "Uppladdningar"
@@ -118,7 +120,6 @@ sv:
       ai_helper:
         context_menu:
           cancel: "Avbryt"
-          regen: "Försök igen"
           confirm: "Bekräfta"
           discard: "Förkasta"
         post_options_menu:

@@ -294,6 +294,8 @@ ja:
           open_modal: "編集"
           modal:
             key_title: "キー"
+        filters:
+          reset: "リセット"
       rag:
         options:
           rag_chunk_tokens: "チャンクトークンをアップロード"
@@ -461,7 +463,6 @@ ja:
           trigger: "AI に尋ねる"
           loading: "AI が生成中です"
           cancel: "キャンセル"
-          regen: "やり直す"
           confirm: "確認"
           discard: "破棄"
           changes: "提案された編集"

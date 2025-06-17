@@ -73,6 +73,8 @@ el:
           open_modal: "Επεξεργασία"
           modal:
             key_title: "Κλειδί"
+        filters:
+          reset: "Επαναφορά"
       rag:
         uploads:
           title: "Μεταφορτώσεις"
@@ -116,7 +118,6 @@ el:
       ai_helper:
         context_menu:
           cancel: "Ακύρωση"
-          regen: "Δοκίμασε ξανά"
           discard: "Απόρριψη"
         post_options_menu:
           close: "Κλείσιμο"

@@ -24,7 +24,6 @@ nl:
         description: "Periodiek rapport op basis van een groot taalmodel"
   site_settings:
     discourse_ai_enabled: "Schakel de Discours-AI-plug-in in."
-    ai_artifact_security: "Het AI-artefactsysteem genereert IFRAME's met uitvoerbare code. De strikte modus schakelt delen uit en forceert een extra klik om code uit te voeren. In de lakse modus kun je artefacten delen en code direct uitvoeren. De modus Uitgeschakeld schakelt het artefactsysteem uit."
     ai_toxicity_enabled: "Schakel de toxiciteitsmodule in."
     ai_toxicity_inference_service_api_endpoint: "URL waar de API wordt uitgevoerd voor de toxiciteitsmodule"
     ai_toxicity_inference_service_api_key: "API-sleutel voor de toxiciteits-API"
@@ -188,7 +187,6 @@ nl:
       description: "Berichten geclassificeerd met de emotie verrassing via AI, met behulp van het model 'SamLowe/roberta-base-go_emotions'."
   discourse_ai:
     ai_artifact:
-      link: "Artefact weergeven op nieuw tabblad"
       view_source: "Bron weergeven"
       view_changes: "Wijzigingen weergeven"
     unknown_model: "Onbekend AI-model"
@@ -430,6 +428,9 @@ nl:
     llm_models:
       missing_provider_param: "%{param} mag niet leeg zijn"
       bedrock_invalid_url: "Vul alle velden in om dit model te gebruiken."
+    ai_staff_action_logger:
+      updated: "bijgewerkt"
+      removed: "verwijderd"
     errors:
       quota_exceeded: "Je hebt het quotum voor dit model overschreden. Probeer het opnieuw over %{relative_time}."
       quota_required: "Je moet het maximale aantal tokens of gebruiken opgeven voor dit model"

@@ -26,3 +26,6 @@ ug:
           neutral: "بىتەرەپ \U0001F610"
         sentiment_analysis:
           neutral: "بىتەرەپ"
+    ai_staff_action_logger:
+      updated: "يېڭىلاندى"
+      removed: "چىقىرىۋېتىلدى"

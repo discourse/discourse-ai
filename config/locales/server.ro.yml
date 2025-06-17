@@ -14,3 +14,5 @@ ro:
         search: "Căutare"
         time: "Oră"
         summarize: "Rezumat"
+    ai_staff_action_logger:
+      updated: "actualizat"

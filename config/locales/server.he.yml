@@ -26,7 +26,7 @@ he:
         description: "דוח תקופתי שמבוסס על דגם שפה גדול"
   site_settings:
     discourse_ai_enabled: "הפעלת תוסף הבינה המלאכותית של Discourse."
-    ai_artifact_security: "מערכת התוצרים של הבינה המלאכותית מייצרת חלוניות (IFRAME) עם קוד שניתן להריץ. מצב נוקשה משבית שיתוף ומאלץ לחיצה נוספת כדי להריץ קוד. מצב Lax מאפשר לשתף תוצרים ולהריץ קוד ישירות. מצב מושבת משבית את מערכת התוצרים."
+    ai_artifact_security: "מערכת התוצרים של הבינה המלאכותית מייצרת חלוניות (IFRAME) עם קוד שניתן להריץ. מצב נוקשה מאלץ לחיצה נוספת כדי להריץ קוד. מצב Lax מריץ קוד ישירות. מצב משולב מאפשר למשתמש לספק data-ai-artifact-autorun שיופיע מיידית. מצב מושבת משבית את מערכת התוצרים."
     ai_toxicity_enabled: "הפעלת מודול הרעילות."
     ai_toxicity_inference_service_api_endpoint: "הכתובת בה נמצא ה־API הפעיל עבור מודול הרעילות"
     ai_toxicity_inference_service_api_key: "מפתח API ל־API של הרעילות"
@@ -202,7 +202,6 @@ he:
       description: "פוסטים שסווגו עם הרגש הפתעה באמצעות בינה מלאכותית, בעזרת המודל ‚SamLowe/roberta-base-go_emotions’."
   discourse_ai:
     ai_artifact:
-      link: "הצגת תוצר בלשונית חדשה"
       view_source: "הצגת המקור"
       view_changes: "הצגת שינויים"
       change_description: "עריכת התיאור"
@@ -508,6 +507,9 @@ he:
     llm_models:
       missing_provider_param: "%{param} לא יכול להישאר ריק"
       bedrock_invalid_url: "נא למלא את כל השדות די להשתמש במודל הזה."
+    ai_staff_action_logger:
+      updated: "עודכן"
+      removed: "הוסרה"
     errors:
       quota_exceeded: "חרגת מהמכסה למודל הזה. נא לנסות שוב בעוד %{relative_time}."
       quota_required: "יש לציין את כמות האסימונים המרבית לשימוש למודל הזה"

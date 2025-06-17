@@ -24,7 +24,6 @@ tr_TR:
         description: "Geniş bir dil modeline dayalı periyodik raporla"
   site_settings:
     discourse_ai_enabled: "Discourse YZ eklentisini etkinleştirin."
-    ai_artifact_security: "AI artifact sistemi, çalıştırılabilir kod içeren IFRAME'ler oluşturur. Katı mod paylaşımı devre dışı bırakır ve kodu çalıştırmak için ekstra bir tıklamaya zorlar. Gevşek mod, eserlerin paylaşılmasına izin verir ve kodu doğrudan çalıştırır. Devre dışı modu eser sistemini devre dışı bırakır."
     ai_toxicity_enabled: "Toksiklik modülünü etkinleştirin."
     ai_toxicity_inference_service_api_endpoint: "API'nin toksiklik modülü için çalıştığı URL"
     ai_toxicity_inference_service_api_key: "Toksiklik API'si için API anahtarı"
@@ -188,7 +187,6 @@ tr_TR:
       description: "\"SamLowe/roberta-base-go_emotions\" modeli kullanılarak YZ aracılığıyla şaşırma duygusu ile sınıflandırılan gönderiler."
   discourse_ai:
     ai_artifact:
-      link: "Artifact'i yeni sekmede göster"
       view_source: "Kaynağı görüntüle"
       view_changes: "Değişiklikleri görüntüle"
     unknown_model: "Bilinmeyen YZ modeli"
@@ -431,6 +429,9 @@ tr_TR:
     llm_models:
       missing_provider_param: "%{param} boş olamaz"
       bedrock_invalid_url: "Bu modeli kullanmak için lütfen tüm alanları doldurun."
+    ai_staff_action_logger:
+      updated: "güncellendi"
+      removed: "kaldırıldı"
     errors:
       quota_exceeded: "Bu model için kotayı aştınız. Lütfen %{relative_time} içinde tekrar deneyin."
       quota_required: "Bu model için maksimum token veya kullanımları belirtmelisiniz"

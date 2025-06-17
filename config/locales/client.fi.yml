@@ -296,6 +296,8 @@ fi:
           open_modal: "Muokkaa"
           modal:
             key_title: "Avain"
+        filters:
+          reset: "Palauta"
       rag:
         options:
           rag_chunk_tokens: "Latauslohkotokenit"
@@ -466,7 +468,6 @@ fi:
           trigger: "Kysy tekoälyltä"
           loading: "Tekoäly tuottaa"
           cancel: "Peruuta"
-          regen: "Yritä uudelleen"
           confirm: "Vahvista"
           discard: "Hylkää"
           changes: "Ehdotetut muokkaukset"

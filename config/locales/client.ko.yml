@@ -75,6 +75,8 @@ ko:
           open_modal: "편집"
           modal:
             key_title: "키"
+        filters:
+          reset: "리셋"
       rag:
         uploads:
           title: "업로드된 파일"
@@ -118,7 +120,6 @@ ko:
       ai_helper:
         context_menu:
           cancel: "취소"
-          regen: "다시 시도"
           confirm: "확인"
           discard: "포기"
         post_options_menu:

@@ -296,6 +296,8 @@ pt_BR:
           open_modal: "Editar"
           modal:
             key_title: "Chave"
+        filters:
+          reset: "Redefinir"
       rag:
         options:
           rag_chunk_tokens: "Enviar tokens de pedaço"
@@ -466,7 +468,6 @@ pt_BR:
           trigger: "Perguntar à IA"
           loading: "A IA está gerando conteúdo"
           cancel: "Cancelar"
-          regen: "Tentar novamente"
           confirm: "Confirmar"
           discard: "Descartar"
           changes: "Edições sugeridas"

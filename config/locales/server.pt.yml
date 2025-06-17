@@ -14,3 +14,6 @@ pt:
         search: "Pesquisar"
         time: "Hora"
         summarize: "Resumir"
+    ai_staff_action_logger:
+      updated: "atualizado"
+      removed: "removido"

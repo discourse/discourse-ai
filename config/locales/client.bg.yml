@@ -71,6 +71,8 @@ bg:
           open_modal: "Редактирай"
           modal:
             key_title: "Ключ"
+        filters:
+          reset: "Нулиране"
       rag:
         uploads:
           uploading: "Качва се..."
@@ -111,7 +113,6 @@ bg:
       ai_helper:
         context_menu:
           cancel: "Прекрати"
-          regen: "Опитайте отново"
           discard: "Отхвърляне"
         post_options_menu:
           close: "Затвори"

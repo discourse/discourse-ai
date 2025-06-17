@@ -24,7 +24,6 @@ ja:
         description: "大規模言語モデルに基づく定期レポート"
   site_settings:
     discourse_ai_enabled: "Discourse AI プラグインを有効にします。"
-    ai_artifact_security: "AI アーティファクトシステムは、実行可能なコードを含む IFRAME を生成します。Strict モードでは共有が無効にな有、コードを実行するには追加のクリックが必要となります。Lax モードでは、アーティファクトの共有が可能で、コードが直接実行されます。Disabled モードでは、アーティファクトシステムが無効になります。"
     ai_toxicity_enabled: "毒コメントモジュールを有効にします。"
     ai_toxicity_inference_service_api_endpoint: "毒コメントモジュールの API が実行している URL"
     ai_toxicity_inference_service_api_key: "毒コメント API の API キー"
@@ -186,7 +185,6 @@ ja:
       description: "SamLowe/roberta-base-go_emotions' モデルを使って AI によって「驚き」の感情で分類された投稿。"
   discourse_ai:
     ai_artifact:
-      link: "アーティファクトを新しいタブに表示"
       view_source: "ソースを表示"
       view_changes: "変更を表示"
     unknown_model: "不明な AI モデル"
@@ -419,6 +417,9 @@ ja:
     llm_models:
       missing_provider_param: "%{param} は空白にできません"
       bedrock_invalid_url: "このモデルを使用するには、すべてのフィールドに入力してください。"
+    ai_staff_action_logger:
+      updated: "更新"
+      removed: "削除"
     errors:
       quota_exceeded: "このモデルの使用量制限を超過しました。%{relative_time}後にもう一度お試しください。"
       quota_required: "このモデルのトークンまたは使用量の上限を指定する必要があります"

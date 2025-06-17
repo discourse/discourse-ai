@@ -25,3 +25,6 @@ sv:
           neutral: "Neutralt \U0001F610"
         sentiment_analysis:
           neutral: "Neutralt"
+    ai_staff_action_logger:
+      updated: "uppdaterade"
+      removed: "borttagen"

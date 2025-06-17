@@ -64,6 +64,8 @@ et:
         delete: "Kustuta"
         response_format:
           open_modal: "Muuda"
+        filters:
+          reset: "Lähtesta"
       rag:
         uploads:
           title: "Üleslaadimised"
@@ -104,7 +106,6 @@ et:
       ai_helper:
         context_menu:
           cancel: "Tühista"
-          regen: "Proovi uuesti"
         post_options_menu:
           close: "Sulge"
           copy: "Kopeeri"

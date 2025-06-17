@@ -74,6 +74,8 @@ ug:
           open_modal: "تەھرىر"
           modal:
             key_title: "ئاچقۇچ"
+        filters:
+          reset: "ئەسلىگە قايتۇر"
       rag:
         uploads:
           title: "يۈكلەنمە"
@@ -119,7 +121,6 @@ ug:
       ai_helper:
         context_menu:
           cancel: "ۋاز كەچ"
-          regen: "قايتا سىنا"
           confirm: "جەزملە"
           discard: "تاشلىۋەت"
         post_options_menu:

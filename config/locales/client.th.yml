@@ -100,7 +100,6 @@ th:
       ai_helper:
         context_menu:
           cancel: "ยกเลิก"
-          regen: "ลองอีกครั้ง"
         post_options_menu:
           close: "ปิด"
           copy: "คัดลอก"

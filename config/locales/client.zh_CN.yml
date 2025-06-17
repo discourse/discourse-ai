@@ -315,6 +315,8 @@ zh_CN:
           enabled: "AI 机器人？"
         ai_bot:
           title: "AI 机器人选项"
+        filters:
+          reset: "重置"
       rag:
         options:
           rag_chunk_tokens: "上传分块词元"
@@ -482,7 +484,6 @@ zh_CN:
           trigger: "询问 AI"
           loading: "AI 正在生成"
           cancel: "取消"
-          regen: "重试"
           confirm: "确认"
           discard: "舍弃"
           changes: "建议的编辑"

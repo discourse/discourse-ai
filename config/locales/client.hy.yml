@@ -66,6 +66,8 @@ hy:
           open_modal: "Խմբագրել"
           modal:
             key_title: "Բանալի"
+        filters:
+          reset: "Զրոյացնել"
       rag:
         uploads:
           title: "Վերբեռնումներ"
@@ -107,7 +109,6 @@ hy:
       ai_helper:
         context_menu:
           cancel: "Չեղարկել"
-          regen: "Կրկին Փորձել"
           discard: "Չեղարկել"
         post_options_menu:
           close: "Փակել"

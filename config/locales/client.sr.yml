@@ -63,6 +63,8 @@ sr:
         delete: "Obriši"
         response_format:
           open_modal: "Izmeni"
+        filters:
+          reset: "Reset"
       rag:
         uploads:
           uploading: "Uploading..."
@@ -94,7 +96,6 @@ sr:
       ai_helper:
         context_menu:
           cancel: "Odustani"
-          regen: "Pokušaj ponovno"
           discard: "Odbaci"
         post_options_menu:
           close: "Zatvori"

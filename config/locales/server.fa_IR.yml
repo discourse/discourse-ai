@@ -34,3 +34,6 @@ fa_IR:
         create_image: "%{prompt}"
         edit_image: "%{prompt}"
         image: "%{prompt}"
+    ai_staff_action_logger:
+      updated: "به روز شده"
+      removed: "پاک شد"

@@ -22,3 +22,6 @@ zh_TW:
           neutral: "中性 \U0001F610"
         sentiment_analysis:
           neutral: "中性"
+    ai_staff_action_logger:
+      updated: "更新時間"
+      removed: "已移除"

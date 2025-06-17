@@ -296,6 +296,8 @@ it:
           open_modal: "Modifica"
           modal:
             key_title: "Chiave"
+        filters:
+          reset: "Annulla"
       rag:
         options:
           rag_chunk_tokens: "Carica token di blocco"
@@ -466,7 +468,6 @@ it:
           trigger: "Chiedi all'IA"
           loading: "L'IA sta generando"
           cancel: "Annulla"
-          regen: "Riprova"
           confirm: "Conferma"
           discard: "Elimina"
           changes: "Modifiche suggerite"

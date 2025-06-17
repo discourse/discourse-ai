@@ -98,6 +98,8 @@ fa_IR:
           open_modal: "ویرایش"
           modal:
             key_title: "کلید"
+        filters:
+          reset: "بازنشانی"
       rag:
         uploads:
           title: "بارگذاری‌ها"
@@ -146,7 +148,6 @@ fa_IR:
         selection_hint: "نکته: شما همچنین می‌توانید بخشی از متن را قبل از باز کردن راهنما انتخاب کنید، تا فقط آن قسمت بازنویسی شود."
         context_menu:
           cancel: "انصراف"
-          regen: "تلاش دوباره"
           confirm: "تایید"
           discard: "حذف"
         post_options_menu:

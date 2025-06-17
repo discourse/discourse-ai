@@ -134,6 +134,8 @@ id:
         top_p: "Top P"
         response_format:
           open_modal: "Ubah"
+        filters:
+          reset: "Reset"
       rag:
         uploads:
           uploading: "Mengunggah..."
@@ -174,7 +176,6 @@ id:
           trigger: "Tanya AI"
           loading: "AI sedang menghasilkan"
           cancel: "Batal"
-          regen: "Coba Lagi"
           confirm: "Konfirmasi"
           discard: "Batalkan"
           custom_prompt:

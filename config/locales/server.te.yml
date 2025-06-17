@@ -21,3 +21,6 @@ te:
           neutral: "తటస్థ \U0001F610"
         sentiment_analysis:
           neutral: "తటస్థ"
+    ai_staff_action_logger:
+      updated: "నవీకరించబడింది"
+      removed: "తీసివేయబడింది"

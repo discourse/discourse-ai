@@ -13,3 +13,5 @@ bs_BA:
       tool_summary:
         search: "Pretraži"
         time: "Vrijeme"
+    ai_staff_action_logger:
+      updated: "ažurirano"

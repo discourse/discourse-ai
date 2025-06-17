@@ -74,6 +74,8 @@ hr:
           open_modal: "Uredi"
           modal:
             key_title: "Ključ"
+        filters:
+          reset: "Resetirati"
       rag:
         uploads:
           title: "Prijenosi"
@@ -118,7 +120,6 @@ hr:
       ai_helper:
         context_menu:
           cancel: "Odustani"
-          regen: "Pokušaj ponovno"
           confirm: "Potvrdi"
           discard: "Odbaci"
         post_options_menu:

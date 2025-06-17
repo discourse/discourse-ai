@@ -296,6 +296,8 @@ tr_TR:
           open_modal: "Düzenle"
           modal:
             key_title: "Anahtar"
+        filters:
+          reset: "Sıfırla"
       rag:
         options:
           rag_chunk_tokens: "Parça token'ı yükle"
@@ -467,7 +469,6 @@ tr_TR:
           trigger: "YZ'ye sor"
           loading: "YZ oluşturuyor"
           cancel: "İptal et"
-          regen: "Tekrar Dene"
           confirm: "Onayla"
           discard: "Kapat"
           changes: "Önerilen düzenlemeler"

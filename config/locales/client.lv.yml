@@ -66,6 +66,8 @@ lv:
         delete: "Dzēst"
         response_format:
           open_modal: "Rediģēt"
+        filters:
+          reset: "Atlikt"
       rag:
         uploads:
           title: "Augšupielādes"
@@ -102,7 +104,6 @@ lv:
       ai_helper:
         context_menu:
           cancel: "Atcelt"
-          regen: "Mēģināt vēlreiz"
           discard: "Izmest"
         post_options_menu:
           close: "Aizvērt"

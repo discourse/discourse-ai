@@ -24,7 +24,6 @@ ar:
         description: "تقرير دوري قائم على نموذج لغوي كبير"
   site_settings:
     discourse_ai_enabled: "تفعيل المكوِّن الإضافي Discourse AI."
-    ai_artifact_security: "يقوم نظام المنتجات الثانوية القائم على الذكاء الاصطناعي بإنشاء أطر IFRAME باستخدام التعليمات البرمجية القابلة للتشغيل. يعمل الوضع المقيَّد على إيقاف المشاركة وإجبار المستخدم على النقر مرة أخرى لتشغيل التعليمات البرمجية. يسمح الوضع المتساهل بمشاركة الملفات الثانوية وتشغيل التعليمات البرمجية مباشرةً. يعمل الوضع المتوقف على إيقاف نظام الملفات الثانوية."
     ai_toxicity_enabled: "تفعيل وحدة السلبية."
     ai_toxicity_inference_service_api_endpoint: "عنوان URL حيث تعمل واجهة API لوحدة السلبية"
     ai_toxicity_inference_service_api_key: "مفتاح API لواجهة API الخاصة بنموذج السلبية"
@@ -187,7 +186,6 @@ ar:
       description: "المنشورات المصنَّفة برمز المفاجأة عن طريق الذكاء الاصطناعي، باستخدام نموذج \"Samlowe/roberta-base-go_emotions\""
   discourse_ai:
     ai_artifact:
-      link: "عرض الملف الثانوي في علامة تبويب جديدة"
       view_source: "عرض المصدر"
       view_changes: "عرض التغييرات"
     unknown_model: "نموذج ذكاء اصطناعي غير معروف"
@@ -465,6 +463,9 @@ ar:
     llm_models:
       missing_provider_param: "لا يمكن ترك %{param} فارغة"
       bedrock_invalid_url: "يُرجى ملء جميع الحقول لاستخدام هذا النموذج."
+    ai_staff_action_logger:
+      updated: "تاريخ التحديث"
+      removed: "تمت إزالتها"
     errors:
       quota_exceeded: "لقد تجاوزت الحصة المُخصَّصة لهذا النموذج. يُرجى إعادة المحاولة بعد %{relative_time}."
       quota_required: "يجب عليك تحديد الحد الأقصى للرموز أو الاستخدامات لهذا النموذج"

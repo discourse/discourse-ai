@@ -72,6 +72,8 @@ pt:
           open_modal: "Editar"
           modal:
             key_title: "Chave"
+        filters:
+          reset: "Repor"
       rag:
         uploads:
           title: "Uploads"
@@ -114,7 +116,6 @@ pt:
       ai_helper:
         context_menu:
           cancel: "Cancelar"
-          regen: "Tentar Novamente"
           discard: "Descartar"
         post_options_menu:
           close: "Fechar"

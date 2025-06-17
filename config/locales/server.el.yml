@@ -13,3 +13,6 @@ el:
       tool_summary:
         search: "Αναζήτηση"
         time: "Ώρα"
+    ai_staff_action_logger:
+      updated: "ενημερώθηκε"
+      removed: "αφαιρέθηκε"

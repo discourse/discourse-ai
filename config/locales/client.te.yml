@@ -65,6 +65,8 @@ te:
           open_modal: "సవరించండి"
           modal:
             key_title: "కీ"
+        filters:
+          reset: "రీసెట్ చేయండి"
       rag:
         uploads:
           title: "అప్‌లోడ్‌లు"
@@ -105,7 +107,6 @@ te:
       ai_helper:
         context_menu:
           cancel: "రద్దుచేయి"
-          regen: "మళ్ళీ ప్రయత్నించండి"
           confirm: "నిర్ధారించండి"
           discard: "విస్మరించండి"
         post_options_menu:

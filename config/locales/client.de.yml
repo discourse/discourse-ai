@@ -353,6 +353,12 @@ de:
         ai_bot:
           title: "KI-Bot-Optionen"
           save_first: "Weitere KI-Bot-Optionen werden verfügbar, sobald du die Persona gespeichert hast."
+        filters:
+          reset: "Zurücksetzen"
+        features_list:
+          one: "Funktion:"
+          other: "Funktionen:"
+        llms_list: "LLM:"
       rag:
         title: "RAG"
         options:
@@ -562,7 +568,6 @@ de:
           trigger: "KI fragen"
           loading: "KI generiert"
           cancel: "Abbrechen"
-          regen: "Erneut versuchen"
           confirm: "Bestätigen"
           discard: "Verwerfen"
           changes: "Empfohlene Änderungen"

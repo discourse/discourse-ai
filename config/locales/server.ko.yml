@@ -22,3 +22,6 @@ ko:
           neutral: "중립국 \U0001F610"
         sentiment_analysis:
           neutral: "중립국"
+    ai_staff_action_logger:
+      updated: "업데이트"
+      removed: "제거됨"

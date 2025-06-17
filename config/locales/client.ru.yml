@@ -298,6 +298,8 @@ ru:
           open_modal: "Изменить"
           modal:
             key_title: "Ключ"
+        filters:
+          reset: "Сбросить"
       rag:
         options:
           rag_chunk_tokens: "Токены фрагментов при загрузке"
@@ -472,7 +474,6 @@ ru:
           trigger: "Спросить AI"
           loading: "AI генерирует ответ"
           cancel: "Отменить"
-          regen: "Попробовать снова"
           confirm: "Подтвердить"
           discard: "Отменить"
           changes: "Предлагаемые правки"

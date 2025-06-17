@@ -60,6 +60,8 @@ be:
         delete: "выдаляць"
         response_format:
           open_modal: "рэдагаваць"
+        filters:
+          reset: "скінуць"
       rag:
         uploads:
           title: "Загрузкі"
@@ -93,7 +95,6 @@ be:
       ai_helper:
         context_menu:
           cancel: "адмяніць"
-          regen: "Паспрабаваць яшчэ раз"
         post_options_menu:
           close: "зачыніць"
           copy: "капіяваць"
