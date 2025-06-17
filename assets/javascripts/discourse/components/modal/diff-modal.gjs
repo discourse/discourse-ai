@@ -159,11 +159,21 @@ export default class ModalDiffModal extends Component {
     }
   }
 
+  @action
+  closeAndCleanup() {
+    this.suggestion = "";
+    this.finalResult = "";
+    this.smoothStreamer.resetStreaming();
+    this.diffStreamer.reset();
+    this.loading = false;
+    this.args.closeModal();
+  }
+
   <template>
     <DModal
       class="composer-ai-helper-modal"
       @title={{i18n "discourse_ai.ai_helper.context_menu.changes"}}
-      @closeModal={{@closeModal}}
+      @closeModal={{this.closeAndCleanup}}
     >
       <:body>
         <div
@@ -218,7 +228,7 @@ export default class ModalDiffModal extends Component {
         </DButton>
         <DButton
           class="btn-flat discard"
-          @action={{@closeModal}}
+          @action={{this.closeAndCleanup}}
           @label="discourse_ai.ai_helper.context_menu.discard"
         />
         <DButton
