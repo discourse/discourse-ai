@@ -47,8 +47,18 @@ module DiscourseAi
         user = nil
         if SiteSetting.ai_spam_detection_user_id.present?
           user = User.find_by(id: SiteSetting.ai_spam_detection_user_id)
+          ensure_safe_flagging_user!(user)
         end
         user || Discourse.system_user
+      end
+
+      def self.ensure_safe_flagging_user!(user)
+        # only do repair on bot users, if somehow it is set to a human skip repairs
+        return if !user.bot?
+        user.update!(silenced_till: nil) if user.silenced?
+        user.update!(trust_level: TrustLevel[4]) if user.trust_level != TrustLevel[4]
+        user.update!(suspended_till: nil, suspended_at: nil) if user.suspended?
+        user.update!(active: true) if !user.active?
       end
 
       def self.after_cooked_post(post)
@@ -94,6 +104,9 @@ module DiscourseAi
         return false if !post.present?
         return false if post.user.trust_level > TrustLevel[1]
         return false if post.topic.private_message?
+        return false if post.user.bot?
+        return false if post.user.staff?
+
         if Post
              .where(user_id: post.user_id)
              .joins(:topic)
