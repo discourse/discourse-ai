@@ -76,6 +76,7 @@ export default class AiPostHelperMenu extends Component {
   });
 
   @tracked _activeAiRequest = null;
+  @tracked _lastMessageIds = {};
 
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
@@ -150,7 +151,14 @@ export default class AiPostHelperMenu extends Component {
   @bind
   subscribe() {
     const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
-    this.messageBus.subscribe(channel, this._updateResult);
+    this.lastMessageId = this.messageBus.subscribe(
+      channel,
+      (data, id) => {
+        this._lastMessageIds[channel] = id;
+        this._updateResult(data, id);
+      },
+      this._lastMessageIds[channel]
+    );
   }
 
   @bind
