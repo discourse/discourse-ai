@@ -154,7 +154,7 @@ export default class AiPostHelperMenu extends Component {
   subscribe() {
     this.messageBus.subscribe(
       this.channel,
-      (data, id) => this._updateResult(data, id),
+      (data) => this._updateResult(data),
       this.args.data.post
         .discourse_ai_helper_stream_suggestion_last_message_bus_id
     );
