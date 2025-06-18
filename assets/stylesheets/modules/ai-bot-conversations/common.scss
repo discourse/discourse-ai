@@ -23,18 +23,20 @@ body.has-ai-conversations-sidebar {
     }
   }
 
-  // we always have the "today" section rendered at the top of the sidebar.
-  // Hide the "today" header when the section is empty
+  // When the sidebar is empty, we want to hide the "Today" header
+  // and only show the empty state component
+  &.has-empty-ai-conversations-sidebar
+    .sidebar-section[data-section-name="today"]
+    .sidebar-section-header-wrapper {
+    display: none;
+  }
+
+  // When the sidebar isn't empty, BUT "today" is empty, hide
+  // the entire section
   &:not(.has-empty-ai-conversations-sidebar)
     .sidebar-section[data-section-name="today"]:has(
       .ai-bot-sidebar-empty-state
     ) {
-    display: none;
-  }
-
-  &.has-empty-ai-conversations-sidebar
-    .sidebar-section[data-section-name="today"]
-    .sidebar-section-header-wrapper {
     display: none;
   }
 
