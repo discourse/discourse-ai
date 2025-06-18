@@ -115,15 +115,9 @@ export default class AiPostHelperTrigger extends Component {
 
   @action
   async showAiPostHelperMenu() {
-    const existingRect = this.currentMenu.trigger.rect;
-    const virtualElement = {
-      getBoundingClientRect: () => existingRect,
-      getClientRects: () => [existingRect],
-    };
-
     await this.currentMenu.close();
 
-    await this.menu.show(virtualElement, {
+    await this.menu.show(this.currentMenu.trigger, {
       identifier: "ai-post-helper-menu",
       component: AiPostHelperMenu,
       interactive: true,
@@ -133,11 +127,13 @@ export default class AiPostHelperTrigger extends Component {
       data: this.menuData,
       placement: "top-start",
       fallbackPlacements: ["bottom-start"],
-      inline: true,
+      updateOnScroll: false,
       onClose: () => {
         this.removeHighlightedText();
       },
     });
+
+    await this.currentMenu.destroy();
 
     this.highlightSelectedText();
   }
