@@ -110,6 +110,29 @@ RSpec.describe "AI Post helper", type: :system, js: true do
           expect(post_ai_helper).to have_suggestion_value(explain_response)
         end
       end
+
+      context "with footnotes enabled" do
+        before do
+          SiteSetting.enable_markdown_footnotes = true
+          SiteSetting.display_footnotes_inline = true
+        end
+
+        it "allows adding the explanation as a footnote to the post" do
+          select_post_text(post)
+          post_ai_helper.click_ai_button
+
+          DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
+            post_ai_helper.select_helper_model(mode)
+            expect(post_ai_helper).to have_suggestion_value(explain_response)
+            post_ai_helper.click_add_footnote
+            wait_for { post_ai_helper.has_no_post_ai_helper? }
+            post.reload
+            expect(post.raw).to include(
+              "^[#{explain_response} (#{I18n.t("js.discourse_ai.ai_helper.post_options_menu.footnote_credits")})]",
+            )
+          end
+        end
+      end
     end
   end
 

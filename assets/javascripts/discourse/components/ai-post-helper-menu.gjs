@@ -278,12 +278,10 @@ export default class AiPostHelperMenu extends Component {
 
   @action
   closeMenu() {
-    if (this.site.mobileView) {
-      return this.args.close();
-    }
-
-    const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
-    return menu?.close();
+    // reset state and close
+    this.suggestion = "";
+    this.customPromptValue = "";
+    return this.args.close();
   }
 
   @action
