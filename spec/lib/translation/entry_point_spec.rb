@@ -11,9 +11,8 @@ describe DiscourseAi::Translation::EntryPoint do
 
   describe "upon post process cooked" do
     it "enqueues detect post locale and translate post job" do
-      post = Fabricate(:post)
-      CookedPostProcessor.new(post).post_process
-
+      post =
+        PostCreator.create!(Fabricate(:user), raw: "post", title: "topic", skip_validations: true)
       expect_job_enqueued(job: :detect_translate_post, args: { post_id: post.id })
     end
 
