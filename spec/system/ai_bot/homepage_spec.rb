@@ -226,6 +226,22 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(sidebar).to have_section_link(pm.title)
         end
 
+        it "shows empty state when no PMs exist" do
+          pm.destroy!
+
+          visit "/"
+          header.click_bot_button
+
+          expect(page).to have_css(".sidebar-section .ai-bot-sidebar-empty-state", visible: true)
+        end
+
+        it "doesn't show empty state when a PM exists" do
+          visit "/"
+          header.click_bot_button
+
+          expect(page).to have_no_css(".sidebar-section .ai-bot-sidebar-empty-state")
+        end
+
         it "displays last_7_days label in the sidebar" do
           pm.update!(last_posted_at: Time.zone.now - 5.days)
           visit "/"
