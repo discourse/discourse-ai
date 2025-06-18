@@ -44,8 +44,7 @@ export default class AiPostHelperMenu extends Component {
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
   @tracked
-  channel =
-    `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
+  channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
 
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -79,7 +78,6 @@ export default class AiPostHelperMenu extends Component {
   });
 
   @tracked _activeAiRequest = null;
-  @tracked _lastMessageIds = {};
 
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
@@ -155,12 +153,9 @@ export default class AiPostHelperMenu extends Component {
   subscribe() {
     this.messageBus.subscribe(
       this.channel,
-      (data, id) => {
-        this._lastMessageIds[this.channel] =
-          this.args.data.post.discourse_ai_helper_stream_suggestion_last_message_bus_id;
-        this._updateResult(data, id);
-      },
-      this._lastMessageIds[this.channel]
+      (data, id) => this._updateResult(data, id),
+      this.args.data.post
+        .discourse_ai_helper_stream_suggestion_last_message_bus_id
     );
   }
 
@@ -171,8 +166,6 @@ export default class AiPostHelperMenu extends Component {
 
   @bind
   async _updateResult(result) {
-    this._lastMessageIds[this.channel] =
-      this.args.data.post.discourse_ai_helper_stream_suggestion_last_message_bus_id;
     this.streaming = !result.done;
     await this.smoothStreamer.updateResult(result, "result");
   }

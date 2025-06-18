@@ -107,8 +107,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
         DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
           post_ai_helper.select_helper_model(mode)
-          wait_for { post_ai_helper.has_suggestion_value? }
-          expect(post_ai_helper.suggestion_value).to eq(explain_response)
+          expect(post_ai_helper).to have_suggestion_value(explain_response)
         end
       end
     end

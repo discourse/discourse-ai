@@ -27,8 +27,8 @@ module PageObjects
         find("#{OPTIONS_SELECTOR} .btn[data-name=\"#{mode}\"]").click
       end
 
-      def has_suggestion_value?
-        page.has_css?("#{SUGGESTION_SELECTOR}__text")
+      def has_suggestion_value?(value)
+        page.has_css?("#{SUGGESTION_SELECTOR}__text", text: value)
       end
 
       def suggestion_value
