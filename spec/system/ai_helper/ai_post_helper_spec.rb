@@ -123,11 +123,14 @@ RSpec.describe "AI Post helper", type: :system, js: true do
 
           DiscourseAi::Completions::Llm.with_prepared_responses([explain_response]) do
             post_ai_helper.select_helper_model(mode)
+
             expect(post_ai_helper).to have_suggestion_value(explain_response)
+
             post_ai_helper.click_add_footnote
-            wait_for { post_ai_helper.has_no_post_ai_helper? }
-            post.reload
-            expect(post.raw).to include(
+
+            expect(post_ai_helper).to have_no_post_ai_helper
+
+            expect(post.reload.raw).to include(
               "^[#{explain_response} (#{I18n.t("js.discourse_ai.ai_helper.post_options_menu.footnote_credits")})]",
             )
           end
