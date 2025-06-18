@@ -84,6 +84,13 @@ export default class AiConversationsSidebarManager extends Service {
     );
   }
 
+  addEmptyStateClass() {
+    document.body.classList.toggle(
+      "has-empty-ai-conversations-sidebar",
+      !this.topics.length
+    );
+  }
+
   forceCustomSidebar() {
     document.body.classList.add("has-ai-conversations-sidebar");
     if (!this.sidebarState.isForcingSidebar) {
@@ -100,6 +107,7 @@ export default class AiConversationsSidebarManager extends Service {
 
     // don't render sidebar multiple times
     if (this._didInit) {
+      this.addEmptyStateClass();
       return true;
     }
 
@@ -107,6 +115,7 @@ export default class AiConversationsSidebarManager extends Service {
 
     this.fetchMessages().then(() => {
       this.sidebarState.setPanel(AI_CONVERSATIONS_PANEL);
+      this.addEmptyStateClass();
     });
 
     return true;
@@ -140,6 +149,7 @@ export default class AiConversationsSidebarManager extends Service {
 
   stopForcingCustomSidebar() {
     document.body.classList.remove("has-ai-conversations-sidebar");
+    document.body.classList.remove("has-empty-ai-conversations-sidebar");
 
     const isAdmin = this.sidebarState.currentPanel?.key === ADMIN_PANEL;
     if (this.sidebarState.isForcingSidebar && !isAdmin) {

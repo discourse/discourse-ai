@@ -23,8 +23,18 @@ body.has-ai-conversations-sidebar {
     }
   }
 
-  // we always have the "today" section rendered at the top of the sidebar but hide it when empty
-  .sidebar-section[data-section-name="today"]:has(.ai-bot-sidebar-empty-state) {
+  // we always have the "today" section rendered at the top of the sidebar.
+  // Hide the "today" header when the section is empty
+  &:not(.has-empty-ai-conversations-sidebar)
+    .sidebar-section[data-section-name="today"]:has(
+      .ai-bot-sidebar-empty-state
+    ) {
+    display: none;
+  }
+
+  &.has-empty-ai-conversations-sidebar
+    .sidebar-section[data-section-name="today"]
+    .sidebar-section-header-wrapper {
     display: none;
   }
 
