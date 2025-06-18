@@ -4,7 +4,7 @@ module DiscourseAi
   module Translation
     class EntryPoint
       def inject_into(plugin)
-        plugin.on(:post_process_cooked) do |_, post|
+        plugin.on(:post_created) do |post|
           if SiteSetting.discourse_ai_enabled && SiteSetting.ai_translation_enabled
             Jobs.enqueue(:detect_translate_post, post_id: post.id)
           end

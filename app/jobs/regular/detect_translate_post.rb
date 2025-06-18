@@ -2,6 +2,7 @@
 
 module Jobs
   class DetectTranslatePost < ::Jobs::Base
+    cluster_concurrency 1
     sidekiq_options retry: false
 
     def execute(args)
