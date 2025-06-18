@@ -125,6 +125,13 @@ body.has-ai-conversations-sidebar {
       gap: 0.5em;
       justify-content: flex-start;
 
+      .select-kit-body {
+        .select-kit-collection {
+          max-height: 50vh;
+          overflow-y: auto;
+        }
+      }
+
       &__selection-wrapper {
         display: flex;
         flex-direction: column;
