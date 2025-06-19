@@ -32,7 +32,7 @@ export default class AiLlmsListEditor extends Component {
       key = `${llm.provider}-${llm.name}`;
     } else {
       // case of preset
-      key = llm.id.replace(/\./g, "-");
+      key = llm.id.replace(/[.:\/]/g, "-");
     }
 
     key = `discourse_ai.llms.model_description.${key}`;

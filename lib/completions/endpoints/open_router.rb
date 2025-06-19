@@ -19,6 +19,9 @@ module DiscourseAi
           model_params.delete(:top_p) if llm_model.lookup_custom_param("disable_top_p")
           model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
 
+          max_tokens = enforce_max_output_tokens(model_params[:max_tokens])
+          model_params[:max_tokens] = max_tokens if max_tokens
+
           model_params
         end
 

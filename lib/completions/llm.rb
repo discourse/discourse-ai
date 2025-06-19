@@ -27,7 +27,7 @@ module DiscourseAi
                   id: "anthropic",
                   models: [
                     {
-                      name: "claude-3-7-sonnet",
+                      name: "claude-3-7-sonnet-latest",
                       tokens: 200_000,
                       display_name: "Claude 3.7 Sonnet",
                       input_cost: 3,
@@ -35,7 +35,15 @@ module DiscourseAi
                       output_cost: 15,
                     },
                     {
-                      name: "claude-3-5-haiku",
+                      name: "claude-sonnet-4-0",
+                      tokens: 200_000,
+                      display_name: "Claude 4 Sonnet",
+                      input_cost: 3,
+                      cached_input_cost: 0.30,
+                      output_cost: 15,
+                    },
+                    {
+                      name: "claude-3-5-haiku-latest",
                       tokens: 200_000,
                       display_name: "Claude 3.5 Haiku",
                       input_cost: 0.80,
@@ -43,9 +51,9 @@ module DiscourseAi
                       output_cost: 4,
                     },
                     {
-                      name: "claude-3-opus",
+                      name: "claude-opus-4-0",
                       tokens: 200_000,
-                      display_name: "Claude 3 Opus",
+                      display_name: "Claude 4 Opus",
                       input_cost: 15,
                       cached_input_cost: 1.50,
                       output_cost: 75,
@@ -62,8 +70,19 @@ module DiscourseAi
                       name: "gemini-2.5-pro",
                       tokens: 800_000,
                       endpoint:
-                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25",
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro",
                       display_name: "Gemini 2.5 Pro",
+                      input_cost: 1.25,
+                      oputput_cost: 10.0,
+                    },
+                    {
+                      name: "gemini-2.5-flash",
+                      tokens: 800_000,
+                      endpoint:
+                        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash",
+                      display_name: "Gemini 2.5 Pro",
+                      input_cost: 0.30,
+                      output_cost: 2.50,
                     },
                     {
                       name: "gemini-2.0-flash",
@@ -71,6 +90,8 @@ module DiscourseAi
                       endpoint:
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash",
                       display_name: "Gemini 2.0 Flash",
+                      input_cost: 0.10,
+                      output_cost: 0.40,
                     },
                     {
                       name: "gemini-2.0-flash-lite",
@@ -89,20 +110,20 @@ module DiscourseAi
                   id: "open_ai",
                   models: [
                     {
-                      name: "o3-mini",
+                      name: "o4-mini",
                       tokens: 200_000,
-                      display_name: "o3 Mini",
+                      display_name: "o4 Mini",
                       input_cost: 1.10,
-                      cached_input_cost: 0.55,
+                      cached_input_cost: 0.275,
                       output_cost: 4.40,
                     },
                     {
-                      name: "o1",
+                      name: "o3",
                       tokens: 200_000,
-                      display_name: "o1",
-                      input_cost: 15,
-                      cached_input_cost: 7.50,
-                      output_cost: 60,
+                      display_name: "o3",
+                      input_cost: 2,
+                      cached_input_cost: 0.5,
+                      output_cost: 8,
                     },
                     {
                       name: "gpt-4.1",
@@ -177,14 +198,23 @@ module DiscourseAi
                   id: "open_router",
                   models: [
                     {
-                      name: "meta-llama/llama-3.3-70b-instruct",
-                      tokens: 128_000,
-                      display_name: "Llama 3.3 70B",
+                      name: "x-ai/grok-3-beta",
+                      tokens: 131_072,
+                      display_name: "xAI Grok 3 Beta",
+                      input_cost: 3,
+                      output_cost: 15,
                     },
                     {
-                      name: "google/gemini-flash-1.5-exp",
-                      tokens: 1_000_000,
-                      display_name: "Gemini Flash 1.5 Exp",
+                      name: "deepseek/deepseek-r1-0528:free",
+                      tokens: 163_000,
+                      display_name: "DeepSeek R1 0528 - free",
+                    },
+                    {
+                      name: "meta-llama/llama-3.3-70b-instruct",
+                      tokens: 131_072,
+                      display_name: "Llama 3.3 70B Instruct",
+                      input_cost: 0.05,
+                      output_cost: 0.25,
                     },
                   ],
                   tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,

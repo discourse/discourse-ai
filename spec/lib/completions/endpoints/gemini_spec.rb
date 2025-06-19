@@ -179,6 +179,40 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     expect(parsed.dig(:generationConfig, :thinkingConfig)).to eq({ thinkingBudget: 10_000 })
   end
 
+  it "correctly handles max output tokens" do
+    model.update!(max_output_tokens: 1000)
+
+    response = gemini_mock.response("some response mode").to_json
+
+    req_body = nil
+
+    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    url = "#{model.url}:generateContent?key=123"
+
+    stub_request(:post, url).with(
+      body:
+        proc do |_req_body|
+          req_body = _req_body
+          true
+        end,
+    ).to_return(status: 200, body: response)
+
+    response = llm.generate("Hello", user: user, max_tokens: 10_000)
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    expect(parsed.dig(:generationConfig, :maxOutputTokens)).to eq(1000)
+
+    response = llm.generate("Hello", user: user, max_tokens: 50)
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    expect(parsed.dig(:generationConfig, :maxOutputTokens)).to eq(50)
+
+    response = llm.generate("Hello", user: user)
+    parsed = JSON.parse(req_body, symbolize_names: true)
+
+    expect(parsed.dig(:generationConfig, :maxOutputTokens)).to eq(1000)
+  end
+
   it "clamps thinking tokens within allowed limits" do
     model.update!(provider_params: { enable_thinking: "true", thinking_tokens: "30000" })
 
@@ -551,7 +585,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
         data: {"candidates": [{"content": {"parts": [{"text": "\\","}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
 
         data: {"candidates": [{"content": {"parts": [{"text": "\\""}],"role": "model"}}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}
-        
+
         data: {"candidates": [{"content": {"parts": [{"text": "num"}],"role": "model"},"finishReason": "STOP"}],"usageMetadata": {"promptTokenCount": 399,"candidatesTokenCount": 191,"totalTokenCount": 590},"modelVersion": "gemini-1.5-pro-002"}
 
         data: {"candidates": [{"content": {"parts": [{"text": "\\":"}],"role": "model"},"safetyRatings": [{"category": "HARM_CATEGORY_HATE_SPEECH","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_DANGEROUS_CONTENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_HARASSMENT","probability": "NEGLIGIBLE"},{"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT","probability": "NEGLIGIBLE"}]}],"usageMetadata": {"promptTokenCount": 399,"totalTokenCount": 399},"modelVersion": "gemini-1.5-pro-002"}

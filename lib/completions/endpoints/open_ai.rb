@@ -11,12 +11,16 @@ module DiscourseAi
         def normalize_model_params(model_params)
           model_params = model_params.dup
 
+          max_tokens = model_params.delete(:max_tokens)
+          max_tokens = enforce_max_output_tokens(max_tokens)
+
           # max_tokens is deprecated however we still need to support it
           # on older OpenAI models and older Azure models, so we will only normalize
           # if our model name starts with o (to denote all the reasoning models)
           if llm_model.name.starts_with?("o")
-            max_tokens = model_params.delete(:max_tokens)
             model_params[:max_completion_tokens] = max_tokens if max_tokens
+          else
+            model_params[:max_tokens] = max_tokens if max_tokens
           end
 
           # temperature is already supported

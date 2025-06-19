@@ -120,6 +120,8 @@ module DiscourseAi
               default_options(dialect).merge(model_params.except(:response_format)).merge(
                 messages: prompt.messages,
               )
+
+            payload[:max_tokens] = enforce_max_output_tokens(payload[:max_tokens])
             payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
 
             prefilled_message = +""

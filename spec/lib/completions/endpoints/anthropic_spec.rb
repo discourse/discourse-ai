@@ -665,6 +665,51 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     expect(log.response_tokens).to eq(30)
   end
 
+  describe "max output tokens" do
+    it "it respects max output tokens supplied to model unconditionally, even with thinking" do
+      model.update!(
+        provider_params: {
+          enable_reasoning: true,
+          reasoning_tokens: 1000,
+        },
+        max_output_tokens: 2000,
+      )
+
+      parsed_body = nil
+      stub_request(:post, url).with(
+        body:
+          proc do |req_body|
+            parsed_body = JSON.parse(req_body, symbolize_names: true)
+            true
+          end,
+        headers: {
+          "Content-Type" => "application/json",
+          "X-Api-Key" => "123",
+          "Anthropic-Version" => "2023-06-01",
+        },
+      ).to_return(
+        status: 200,
+        body: {
+          id: "msg_123",
+          type: "message",
+          role: "assistant",
+          content: [{ type: "text", text: "test response" }],
+          model: "claude-3-opus-20240229",
+          usage: {
+            input_tokens: 10,
+            output_tokens: 5,
+          },
+        }.to_json,
+      )
+
+      llm.generate(prompt, user: Discourse.system_user, max_tokens: 2500)
+      expect(parsed_body[:max_tokens]).to eq(2000)
+
+      llm.generate(prompt, user: Discourse.system_user)
+      expect(parsed_body[:max_tokens]).to eq(2000)
+    end
+  end
+
   describe "parameter disabling" do
     it "excludes disabled parameters from the request" do
       model.update!(provider_params: { disable_top_p: true, disable_temperature: true })

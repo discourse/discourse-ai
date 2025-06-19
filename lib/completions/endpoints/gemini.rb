@@ -63,6 +63,7 @@ module DiscourseAi
           tools = dialect.tools if @native_tool_support
 
           payload = default_options.merge(contents: prompt[:messages])
+
           payload[:systemInstruction] = {
             role: "system",
             parts: [{ text: prompt[:system_instruction].to_s }],
@@ -104,6 +105,9 @@ module DiscourseAi
             payload[:generationConfig][:thinkingConfig] = { thinkingBudget: thinking_tokens }
           end
 
+          output_tokens =
+            enforce_max_output_tokens(payload.dig(:generationConfig, :maxOutputTokens))
+          payload[:generationConfig][:maxOutputTokens] = output_tokens if output_tokens
           payload
         end
 

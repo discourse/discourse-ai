@@ -48,6 +48,14 @@ module DiscourseAi
           @llm_model = llm_model
         end
 
+        def enforce_max_output_tokens(value)
+          if @llm_model.max_output_tokens.to_i > 0
+            value = @llm_model.max_output_tokens if (value.to_i > @llm_model.max_output_tokens) ||
+              (value.to_i <= 0)
+          end
+          value
+        end
+
         def use_ssl?
           if model_uri&.scheme.present?
             model_uri.scheme == "https"
