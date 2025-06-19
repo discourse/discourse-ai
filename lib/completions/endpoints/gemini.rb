@@ -63,6 +63,7 @@ module DiscourseAi
           tools = dialect.tools if @native_tool_support
 
           payload = default_options.merge(contents: prompt[:messages])
+
           payload[:systemInstruction] = {
             role: "system",
             parts: [{ text: prompt[:system_instruction].to_s }],

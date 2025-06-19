@@ -173,7 +173,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "max tokens for reasoning models" do
     it "uses max_completion_tokens for reasoning models" do
-      model.update!(name: "o3-mini")
+      model.update!(name: "o3-mini", max_output_tokens: 999)
       llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
       prompt =
         DiscourseAi::Completions::Prompt.new(
@@ -201,7 +201,13 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       llm.generate(prompt, user: user, max_tokens: 1000) { |chunk| result << chunk }
 
       expect(result).to eq("hello")
-      expect(body_parsed["max_completion_tokens"]).to eq(1000)
+      expect(body_parsed["max_completion_tokens"]).to eq(999)
+
+      llm.generate(prompt, user: user, max_tokens: 100) { |chunk| result << chunk }
+      expect(body_parsed["max_completion_tokens"]).to eq(100)
+
+      llm.generate(prompt, user: user) { |chunk| result << chunk }
+      expect(body_parsed["max_completion_tokens"]).to eq(999)
     end
   end
 

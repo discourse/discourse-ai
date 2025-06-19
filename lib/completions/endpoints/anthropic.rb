@@ -31,6 +31,12 @@ module DiscourseAi
               "claude-3-opus-20240229"
             when "claude-3-5-sonnet"
               "claude-3-5-sonnet-latest"
+            when "claude-3-7-sonnet"
+              "claude-3-7-sonnet-latest"
+            when "claude-4-opus"
+              "claude-4-opus-20250514"
+            when "claude-4-sonnet"
+              "claude-4-sonnet-20250514"
             else
               llm_model.name
             end
@@ -92,7 +98,6 @@ module DiscourseAi
             default_options(dialect).merge(model_params.except(:response_format)).merge(
               messages: prompt.messages,
             )
-
           payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
           payload[:stream] = true if @streaming_mode
 
