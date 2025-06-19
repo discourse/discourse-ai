@@ -15,7 +15,7 @@ describe Jobs::LocalizeCategories do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.experimental_content_localization_supported_locales = "pt|zh_CN"
+    SiteSetting.content_localization_supported_locales = "pt|zh_CN"
 
     Jobs.run_immediately!
   end
@@ -37,7 +37,7 @@ describe Jobs::LocalizeCategories do
   end
 
   it "does nothing when no target languages are configured" do
-    SiteSetting.experimental_content_localization_supported_locales = ""
+    SiteSetting.content_localization_supported_locales = ""
 
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
 

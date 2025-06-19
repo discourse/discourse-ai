@@ -12,7 +12,7 @@ describe Jobs::DetectTranslateTopic do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.experimental_content_localization_supported_locales = locales.join("|")
+    SiteSetting.content_localization_supported_locales = locales.join("|")
   end
 
   it "does nothing when translator is disabled" do
@@ -55,7 +55,7 @@ describe Jobs::DetectTranslateTopic do
   end
 
   it "does not translate when no target languages are configured" do
-    SiteSetting.experimental_content_localization_supported_locales = ""
+    SiteSetting.content_localization_supported_locales = ""
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).returns("en")
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 

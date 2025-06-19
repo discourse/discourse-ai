@@ -11,7 +11,7 @@ module Jobs
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
 
-      locales = SiteSetting.experimental_content_localization_supported_locales.split("|")
+      locales = SiteSetting.content_localization_supported_locales.split("|")
       return if locales.blank?
 
       cat_id = args[:from_category_id] || Category.order(:id).first&.id

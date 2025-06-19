@@ -3,7 +3,7 @@
 describe Jobs::PostLocalizationBackfill do
   before do
     SiteSetting.ai_translation_backfill_rate = 100
-    SiteSetting.experimental_content_localization_supported_locales = "en"
+    SiteSetting.content_localization_supported_locales = "en"
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
@@ -29,7 +29,7 @@ describe Jobs::PostLocalizationBackfill do
   it "does not enqueue psot translation if backfill languages are not set" do
     SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.experimental_content_localization_supported_locales = ""
+    SiteSetting.content_localization_supported_locales = ""
 
     described_class.new.execute({})
 
