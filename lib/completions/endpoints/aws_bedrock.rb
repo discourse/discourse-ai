@@ -121,7 +121,6 @@ module DiscourseAi
                 messages: prompt.messages,
               )
 
-            payload[:max_tokens] = enforce_max_output_tokens(payload[:max_tokens])
             payload[:system] = prompt.system_prompt if prompt.system_prompt.present?
 
             prefilled_message = +""

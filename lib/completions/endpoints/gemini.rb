@@ -105,9 +105,6 @@ module DiscourseAi
             payload[:generationConfig][:thinkingConfig] = { thinkingBudget: thinking_tokens }
           end
 
-          output_tokens =
-            enforce_max_output_tokens(payload.dig(:generationConfig, :maxOutputTokens))
-          payload[:generationConfig][:maxOutputTokens] = output_tokens if output_tokens
           payload
         end
 

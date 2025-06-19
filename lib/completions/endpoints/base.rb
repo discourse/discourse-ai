@@ -91,6 +91,8 @@ module DiscourseAi
           @partial_tool_calls = partial_tool_calls
           @output_thinking = output_thinking
 
+          max_tokens = enforce_max_output_tokens(model_params[:max_tokens])
+          model_params[:max_tokens] = max_tokens if max_tokens
           model_params = normalize_model_params(model_params)
           orig_blk = blk
 
