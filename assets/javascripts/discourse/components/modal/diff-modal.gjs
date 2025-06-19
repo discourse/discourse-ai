@@ -89,7 +89,7 @@ export default class ModalDiffModal extends Component {
       CHANNEL,
       this.updateResult,
       this.currentUser
-        ?.discourse_ai_composer_helper_stream_suggestion_last_message_bus_id
+        ?.discourse_ai_helper_stream_composer_suggestion_last_message_bus_id
     );
   }
 
