@@ -79,6 +79,12 @@ module DiscourseAi
           :discourse_ai_helper_stream_suggestion_last_message_bus_id,
           include_condition: -> { SiteSetting.ai_helper_enabled && scope.authenticated? },
         ) { MessageBus.last_id("/discourse-ai/ai-helper/stream_suggestion/#{object.id}") }
+
+        plugin.add_to_serializer(
+          :current_user,
+          :discourse_ai_helper_stream_composer_suggestion_last_message_bus_id,
+          include_condition: -> { SiteSetting.ai_helper_enabled && scope.authenticated? },
+        ) { MessageBus.last_id("/discourse-ai/ai-helper/stream_composer_suggestion") }
       end
     end
   end

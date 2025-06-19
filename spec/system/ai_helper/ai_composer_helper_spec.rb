@@ -9,6 +9,7 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
     SiteSetting.ai_helper_enabled = true
+    Jobs.run_immediately!
     sign_in(user)
   end
 
@@ -80,7 +81,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       end
 
       it "replaces the composed message with AI generated content" do
-        skip("Message bus updates not appearing in tests")
         trigger_composer_helper(input)
         ai_helper_menu.fill_custom_prompt(custom_prompt_input)
 
@@ -109,7 +109,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       let(:spanish_input) { "La lluvia en España se queda principalmente en el avión." }
 
       it "replaces the composed message with AI generated content" do
-        skip("Message bus updates not appearing in tests")
         trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
@@ -121,7 +120,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       end
 
       it "reverts results when Ctrl/Cmd + Z is pressed on the keyboard" do
-        skip("Message bus updates not appearing in tests")
         trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
@@ -134,7 +132,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       end
 
       it "shows the changes in a modal" do
-        skip("Message bus updates not appearing in tests")
         trigger_composer_helper(spanish_input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([input]) do
@@ -168,7 +165,6 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
       let(:proofread_text) { "The rain in Spain, stays mainly in the Plane." }
 
       it "replaces the composed message with AI generated content" do
-        skip("Message bus updates not appearing in tests")
         trigger_composer_helper(input)
 
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_text]) do
