@@ -73,6 +73,12 @@ module DiscourseAi
               scope.user.in_any_groups?(SiteSetting.ai_auto_image_caption_allowed_groups_map)
           end,
         ) { object.auto_image_caption }
+
+        plugin.add_to_serializer(
+          :post,
+          :discourse_ai_helper_stream_suggestion_last_message_bus_id,
+          include_condition: -> { SiteSetting.ai_helper_enabled && scope.authenticated? },
+        ) { MessageBus.last_id("/discourse-ai/ai-helper/stream_suggestion/#{object.id}") }
       end
     end
   end

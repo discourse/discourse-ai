@@ -14,7 +14,6 @@ import concatClass from "discourse/helpers/concat-class";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { bind } from "discourse/lib/decorators";
-import { withPluginApi } from "discourse/lib/plugin-api";
 import { sanitize } from "discourse/lib/text";
 import { clipboardCopy } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
@@ -44,6 +43,9 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
+  @tracked
+  channel =
+    `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
 
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -77,23 +79,6 @@ export default class AiPostHelperMenu extends Component {
   });
 
   @tracked _activeAiRequest = null;
-
-  constructor() {
-    super(...arguments);
-
-    withPluginApi((api) => {
-      api.registerValueTransformer(
-        "post-text-selection-prevent-close",
-        ({ value }) => {
-          if (this.menuState === this.MENU_STATES.result) {
-            return true;
-          }
-
-          return value;
-        }
-      );
-    });
-  }
 
   get footnoteDisabled() {
     return this.streaming || !this.supportsAddFootnote;
@@ -167,16 +152,17 @@ export default class AiPostHelperMenu extends Component {
 
   @bind
   subscribe() {
-    const channel = `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
-    this.messageBus.subscribe(channel, this._updateResult);
+    this.messageBus.subscribe(
+      this.channel,
+      (data) => this._updateResult(data),
+      this.args.data.post
+        .discourse_ai_helper_stream_suggestion_last_message_bus_id
+    );
   }
 
   @bind
   unsubscribe() {
-    this.messageBus.unsubscribe(
-      "/discourse-ai/ai-helper/stream_suggestion/*",
-      this._updateResult
-    );
+    this.messageBus.unsubscribe(this.channel, this._updateResult);
   }
 
   @bind
@@ -239,7 +225,7 @@ export default class AiPostHelperMenu extends Component {
       data: {
         location: "post",
         mode: option.name,
-        text: this.args.data.selectedText,
+        text: this.args.data.quoteState.buffer,
         post_id: this.args.data.quoteState.postId,
         custom_prompt: this.customPromptValue,
         client_id: this.messageBus.clientId,
@@ -292,12 +278,10 @@ export default class AiPostHelperMenu extends Component {
 
   @action
   closeMenu() {
-    if (this.site.mobileView) {
-      return this.args.close();
-    }
-
-    const menu = this.menu.getByIdentifier("post-text-selection-toolbar");
-    return menu?.close();
+    // reset state and close
+    this.suggestion = "";
+    this.customPromptValue = "";
+    return this.args.close();
   }
 
   @action
@@ -317,9 +301,9 @@ export default class AiPostHelperMenu extends Component {
         const credits = i18n(
           "discourse_ai.ai_helper.post_options_menu.footnote_credits"
         );
-        const withFootnote = `${this.args.data.selectedText} ^[${sanitizedSuggestion} (${credits})]`;
+        const withFootnote = `${this.args.data.quoteState.buffer} ^[${sanitizedSuggestion} (${credits})]`;
         const newRaw = result.raw.replace(
-          this.args.data.selectedText,
+          this.args.data.quoteState.buffer,
           withFootnote
         );
 
@@ -338,7 +322,7 @@ export default class AiPostHelperMenu extends Component {
       (and this.site.mobileView (eq this.menuState this.MENU_STATES.options))
     }}
       <div class="ai-post-helper-menu__selected-text">
-        {{@data.selectedText}}
+        {{@data.quoteState.buffer}}
       </div>
     {{/if}}
 
