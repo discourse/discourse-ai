@@ -85,14 +85,18 @@ export default class ModalDiffModal extends Component {
 
   @bind
   subscribe() {
-    this.messageBus.subscribe(CHANNEL, this.updateResult);
+    this.messageBus.subscribe(
+      CHANNEL,
+      (data) => this.updateResult(data),
+      this.currentUser
+        ?.discourse_ai_composer_helper_stream_suggestion_last_message_bus_id
+    );
   }
 
   @bind
   cleanup() {
     // stop all callbacks so it does not end up streaming pointlessly
-    this.smoothStreamer.resetStreaming();
-    this.diffStreamer.reset();
+    this.#resetState();
     this.messageBus.unsubscribe(CHANNEL, this.updateResult);
   }
 
