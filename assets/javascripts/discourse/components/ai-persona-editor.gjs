@@ -129,7 +129,7 @@ export default class PersonaEditor extends Component {
       }
       this.toasts.success({
         data: { message: i18n("discourse_ai.ai_persona.saved") },
-        duration: 2000,
+        duration: "short",
       });
     } catch (e) {
       popupAjaxError(e);

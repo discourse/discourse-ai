@@ -87,7 +87,7 @@ export default class AiComposerHelperMenu extends Component {
     const owner = getOwner(this);
     const options = {
       close: () => this.args.close(),
-      duration: 3000,
+      duration: "short",
       data: {
         theme: "error",
         icon: "triangle-exclamation",
