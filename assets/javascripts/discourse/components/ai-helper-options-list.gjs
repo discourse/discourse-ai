@@ -1,11 +1,10 @@
 import Component from "@glimmer/component";
 import { fn } from "@ember/helper";
 import { service } from "@ember/service";
-import { and } from "truth-helpers";
+import { and , eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import { PLATFORM_KEY_MODIFIER } from "discourse/lib/keyboard-shortcuts";
 import { translateModKey } from "discourse/lib/utilities";
-import eq from "truth-helpers/helpers/eq";
 import AiHelperCustomPrompt from "../components/ai-helper-custom-prompt";
 
 export default class AiHelperOptionsList extends Component {

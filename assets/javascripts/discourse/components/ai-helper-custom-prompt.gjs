@@ -2,10 +2,10 @@ import Component from "@glimmer/component";
 import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
+import { not } from 'truth-helpers';
 import DButton from "discourse/components/d-button";
 import withEventValue from "discourse/helpers/with-event-value";
 import { i18n } from "discourse-i18n";
-import not from "truth-helpers/helpers/not";
 
 export default class AiHelperCustomPrompt extends Component {
   @action

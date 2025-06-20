@@ -4,12 +4,12 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
+import { eq } from 'truth-helpers';
 import DButton from "discourse/components/d-button";
 import categoryBadge from "discourse/helpers/category-badge";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DMenu from "float-kit/components/d-menu";
-import eq from "truth-helpers/helpers/eq";
 
 export default class AiSplitTopicSuggester extends Component {
   @service site;
