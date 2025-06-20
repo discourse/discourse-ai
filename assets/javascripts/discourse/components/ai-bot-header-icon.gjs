@@ -20,7 +20,7 @@ export default class AiBotHeaderIcon extends Component {
 
   get bots() {
     const availableBots = this.currentUser.ai_enabled_chat_bots
-      .filter((bot) => !bot.is_persosna)
+      .filter((bot) => !bot.is_persona)
       .filter(Boolean);
 
     return availableBots ? availableBots.map((bot) => bot.model_name) : [];
