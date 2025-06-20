@@ -44,7 +44,7 @@ module DiscourseAi
         Post.from(Arel.sql("(#{unioned_queries}) as posts"))
       end
 
-      CONCURRENT_CLASSFICATIONS = 100
+      CONCURRENT_CLASSFICATIONS = 40
 
       def bulk_classify!(relation)
         pool =
