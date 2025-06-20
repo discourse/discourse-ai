@@ -44,6 +44,11 @@ export default class AiToolListEditor extends Component {
         @descriptionLabel={{i18n "discourse_ai.tools.subheader_description"}}
       >
         <:actions>
+          <DButton
+            @translatedLabel={{i18n "discourse_ai.tools.import"}}
+            @icon="upload"
+            class="btn btn-small ai-tool-list-editor__import-button"
+          />
           <DMenu
             @triggerClass="btn-primary btn-small ai-tool-list-editor__new-button"
             @label={{i18n "discourse_ai.tools.new"}}
