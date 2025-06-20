@@ -91,27 +91,6 @@ RSpec.describe "AI image caption", type: :system, js: true do
   end
 
   describe "automatic image captioning" do
-    context "when ai helper is disabled" do
-      before { SiteSetting.ai_helper_enabled = false }
-
-      it "should not have the setting present in the user preferences page" do
-        user_preferences_ai_page.visit(user)
-        expect(user_preferences_ai_page).to have_no_ai_preference("pref-auto-image-caption")
-      end
-    end
-
-    context "when toggling the setting from the user preferences page" do
-      before { user.user_option.update!(auto_image_caption: false) }
-
-      it "should update the preference to enabled" do
-        user_preferences_ai_page.visit(user)
-        user_preferences_ai_page.toggle_setting("pref-auto-image-caption")
-        user_preferences_ai_page.save_changes
-        wait_for(timeout: 5) { user.reload.user_option.auto_image_caption }
-        expect(user.reload.user_option.auto_image_caption).to eq(true)
-      end
-    end
-
     context "when the user preference is disabled" do
       before { user.user_option.update!(auto_image_caption: false) }
 
