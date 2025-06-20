@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { LinkTo } from "@ember/routing";
-import dIcon from "discourse/helpers/d-icon";
+import icon from "discourse/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 
 export default class AutoImageCaptionSetting extends Component {
@@ -11,7 +11,7 @@ export default class AutoImageCaptionSetting extends Component {
   <template>
     <li class="user-nav__preferences-ai">
       <LinkTo @route="preferences.ai">
-        {{dIcon "discourse-sparkles"}}
+        {{icon "discourse-sparkles"}}
         <span>{{i18n "discourse_ai.title"}}</span>
       </LinkTo>
     </li>
