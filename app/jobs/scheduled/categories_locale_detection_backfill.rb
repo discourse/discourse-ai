@@ -9,7 +9,8 @@ module Jobs
     def execute(args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
-      return if SiteSetting.ai_translation_backfill_rate == 0
+      limit = SiteSetting.ai_translation_backfill_hourly_rate
+      return if limit == 0
 
       categories = Category.where(locale: nil)
 
@@ -17,7 +18,7 @@ module Jobs
         categories = categories.where(read_restricted: false)
       end
 
-      categories = categories.limit(SiteSetting.ai_translation_backfill_rate)
+      categories = categories.limit(limit)
       return if categories.empty?
 
       categories.each do |category|

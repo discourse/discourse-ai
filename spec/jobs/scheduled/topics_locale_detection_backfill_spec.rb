@@ -10,33 +10,33 @@ describe Jobs::TopicsLocaleDetectionBackfill do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.ai_translation_backfill_rate = 100
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
   end
 
   it "does nothing when translator is disabled" do
     SiteSetting.discourse_ai_enabled = false
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when content translation is disabled" do
     SiteSetting.ai_translation_enabled = false
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when there are no topics to detect" do
     Topic.update_all(locale: "en")
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "detects locale for topics with nil locale" do
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).once
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "detects most recently updated topics first" do
@@ -47,20 +47,20 @@ describe Jobs::TopicsLocaleDetectionBackfill do
     topic_2.update!(updated_at: 2.day.ago)
     topic_3.update!(updated_at: 4.day.ago)
 
-    SiteSetting.ai_translation_backfill_rate = 1
+    SiteSetting.ai_translation_backfill_hourly_rate = 12
 
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic_2).once
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).never
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic_3).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "skips bot topics" do
     topic.update!(user: Discourse.system_user)
     DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "handles detection errors gracefully" do
@@ -70,14 +70,14 @@ describe Jobs::TopicsLocaleDetectionBackfill do
       .raises(StandardError.new("jiboomz"))
       .once
 
-    expect { job.execute({}) }.not_to raise_error
+    expect { job.execute({ limit: 10 }) }.not_to raise_error
   end
 
   it "logs a summary after running" do
     DiscourseAi::Translation::TopicLocaleDetector.stubs(:detect_locale)
     DiscourseAi::Translation::VerboseLogger.expects(:log).with(includes("Detected 1 topic locales"))
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   describe "with public content limitation" do
@@ -98,7 +98,7 @@ describe Jobs::TopicsLocaleDetectionBackfill do
         .with(private_topic)
         .never
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "processes all topics when setting is disabled" do
@@ -107,7 +107,7 @@ describe Jobs::TopicsLocaleDetectionBackfill do
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(public_topic).once
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(private_topic).once
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
   end
 
@@ -125,7 +125,7 @@ describe Jobs::TopicsLocaleDetectionBackfill do
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(new_topic).once
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(old_topic).never
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "processes all topics when setting is disabled" do
@@ -134,7 +134,7 @@ describe Jobs::TopicsLocaleDetectionBackfill do
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(new_topic).once
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(old_topic).once
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
   end
 end

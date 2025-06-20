@@ -10,9 +10,10 @@ module Jobs
       return if !SiteSetting.ai_translation_enabled
 
       return if SiteSetting.content_localization_supported_locales.blank?
-      return if SiteSetting.ai_translation_backfill_rate == 0
+      limit = SiteSetting.ai_translation_backfill_hourly_rate / (60 / 5) # this job runs in 5-minute intervals
+      return if limit == 0
 
-      Jobs.enqueue(:localize_topics, limit: SiteSetting.ai_translation_backfill_rate)
+      Jobs.enqueue(:localize_topics, limit:)
     end
   end
 end

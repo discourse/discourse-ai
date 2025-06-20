@@ -10,7 +10,7 @@ describe Jobs::PostsLocaleDetectionBackfill do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.ai_translation_backfill_rate = 100
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
   end
 
   it "does nothing when translator is disabled" do
@@ -47,7 +47,7 @@ describe Jobs::PostsLocaleDetectionBackfill do
     post_2.update!(updated_at: 2.day.ago)
     post_3.update!(updated_at: 4.day.ago)
 
-    SiteSetting.ai_translation_backfill_rate = 1
+    SiteSetting.ai_translation_backfill_hourly_rate = 12
 
     DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post_2).once
     DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).never

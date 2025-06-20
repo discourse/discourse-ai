@@ -5,51 +5,51 @@ module Jobs
     cluster_concurrency 1
     sidekiq_options retry: false
 
-    BATCH_SIZE = 50
-
     def execute(args)
+      limit = args[:limit]
+      raise Discourse::InvalidParameters.new(:limit) if limit.nil?
+      return if limit <= 0
+
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
-
       locales = SiteSetting.content_localization_supported_locales.split("|")
       return if locales.blank?
 
-      cat_id = args[:from_category_id] || Category.order(:id).first&.id
-      last_id = nil
+      categories = Category.where("locale IS NOT NULL")
 
-      categories =
-        Category.where("id >= ? AND locale IS NOT NULL", cat_id).order(:id).limit(BATCH_SIZE)
-      return if categories.empty?
-
-      categories.each do |category|
-        if SiteSetting.ai_translation_backfill_limit_to_public_content && category.read_restricted?
-          last_id = category.id
-          next
-        end
-
-        locales.each do |locale|
-          localization = category.category_localizations.find_by(locale:)
-
-          if locale == category.locale && localization
-            localization.destroy
-          else
-            next if locale == category.locale
-            begin
-              DiscourseAi::Translation::CategoryLocalizer.localize(category, locale)
-            rescue FinalDestination::SSRFDetector::LookupFailedError
-              # do nothing, there are too many sporadic lookup failures
-            rescue => e
-              DiscourseAi::Translation::VerboseLogger.log(
-                "Failed to translate category #{category.id} to #{locale}: #{e.message}",
-              )
-            end
-          end
-        end
-        last_id = category.id
+      if SiteSetting.ai_translation_backfill_limit_to_public_content
+        categories = categories.where(read_restricted: false)
       end
 
-      if categories.size == BATCH_SIZE
-        Jobs.enqueue_in(10.seconds, :localize_categories, from_category_id: last_id + 1)
+      categories = categories.order(:id).limit(limit)
+      return if categories.empty?
+
+      remaining_limit = limit
+
+      categories.each do |category|
+        break if remaining_limit <= 0
+
+        existing_locales = CategoryLocalization.where(category_id: category.id).pluck(:locale)
+        missing_locales = locales - existing_locales - [category.locale]
+        missing_locales.each do |locale|
+          break if remaining_limit <= 0
+
+          begin
+            DiscourseAi::Translation::CategoryLocalizer.localize(category, locale)
+          rescue FinalDestination::SSRFDetector::LookupFailedError
+            # do nothing, there are too many sporadic lookup failures
+          rescue => e
+            DiscourseAi::Translation::VerboseLogger.log(
+              "Failed to translate category #{category.id} to #{locale}: #{e.message}",
+            )
+          ensure
+            remaining_limit -= 1
+          end
+        end
+
+        if existing_locales.include?(category.locale)
+          CategoryLocalization.find_by(category_id: category.id, locale: category.locale).destroy
+        end
       end
     end
   end

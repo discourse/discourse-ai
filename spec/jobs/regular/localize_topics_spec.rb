@@ -19,28 +19,28 @@ describe Jobs::LocalizeTopics do
     SiteSetting.discourse_ai_enabled = false
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when ai_translation_enabled is disabled" do
     SiteSetting.ai_translation_enabled = false
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when no target languages are configured" do
     SiteSetting.content_localization_supported_locales = ""
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when there are no topics to translate" do
     Topic.destroy_all
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "skips topics that already have localizations" do
@@ -50,7 +50,7 @@ describe Jobs::LocalizeTopics do
     end
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "skips bot topics" do
@@ -58,7 +58,7 @@ describe Jobs::LocalizeTopics do
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "en").never
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "handles translation errors gracefully" do
@@ -70,7 +70,7 @@ describe Jobs::LocalizeTopics do
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").once
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "de").once
 
-    expect { job.execute({}) }.not_to raise_error
+    expect { job.execute({ limit: 10 }) }.not_to raise_error
   end
 
   it "logs a summary after translation" do
@@ -86,14 +86,14 @@ describe Jobs::LocalizeTopics do
       includes("Translated 1 topics to de"),
     )
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   context "for translation scenarios" do
     it "scenario 1: skips topic when locale is not set" do
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "scenario 2: returns topic with locale 'es' if localizations for en/ja/de do not exist" do
@@ -103,7 +103,7 @@ describe Jobs::LocalizeTopics do
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").once
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "de").once
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "scenario 3: returns topic with locale 'en' if ja/de localization does not exist" do
@@ -113,7 +113,7 @@ describe Jobs::LocalizeTopics do
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "de").once
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "en").never
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "scenario 4: skips topic with locale 'en' if 'ja' localization already exists" do
@@ -124,7 +124,7 @@ describe Jobs::LocalizeTopics do
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").never
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "de").once
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
   end
 
@@ -162,7 +162,7 @@ describe Jobs::LocalizeTopics do
           .with(group_pm_topic, any_parameters)
           .never
 
-        job.execute({})
+        job.execute({ limit: 10 })
       end
     end
 
@@ -181,7 +181,7 @@ describe Jobs::LocalizeTopics do
           .with(personal_pm_topic, any_parameters)
           .never
 
-        job.execute({})
+        job.execute({ limit: 10 })
       end
     end
   end
@@ -202,7 +202,7 @@ describe Jobs::LocalizeTopics do
         .with(old_topic, any_parameters)
         .never
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
 
     it "processes all topics when setting is disabled" do
@@ -216,7 +216,7 @@ describe Jobs::LocalizeTopics do
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(old_topic, "ja").once
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(old_topic, "de").once
 
-      job.execute({})
+      job.execute({ limit: 10 })
     end
   end
 end

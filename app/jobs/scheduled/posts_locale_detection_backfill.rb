@@ -9,7 +9,8 @@ module Jobs
     def execute(args)
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
-      return if SiteSetting.ai_translation_backfill_rate == 0
+      limit = SiteSetting.ai_translation_backfill_hourly_rate / (60 / 5) # this job runs in 5-minute intervals
+      return if limit == 0
 
       posts =
         Post
@@ -35,7 +36,7 @@ module Jobs
           )
       end
 
-      posts = posts.order(updated_at: :desc).limit(SiteSetting.ai_translation_backfill_rate)
+      posts = posts.order(updated_at: :desc).limit(limit)
       return if posts.empty?
 
       posts.each do |post|

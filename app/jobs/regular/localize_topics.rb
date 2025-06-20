@@ -5,16 +5,15 @@ module Jobs
     cluster_concurrency 1
     sidekiq_options retry: false
 
-    BATCH_SIZE = 50
-
     def execute(args)
+      limit = args[:limit]
+      raise Discourse::InvalidParameters.new(:limit) if limit.blank? || limit <= 0
+
       return if !SiteSetting.discourse_ai_enabled
       return if !SiteSetting.ai_translation_enabled
 
       locales = SiteSetting.content_localization_supported_locales.split("|")
       return if locales.blank?
-
-      limit = args[:limit] || BATCH_SIZE
 
       locales.each do |locale|
         topics =
