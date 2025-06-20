@@ -41,7 +41,7 @@ module DiscourseAi
 
       def import
         existing_tool = AiTool.find_by(tool_name: ai_tool_params[:tool_name])
-        force_update = params[:force].present? && params[:force] == "true"
+        force_update = params[:force].present? && params[:force].to_s.downcase == "true"
 
         if existing_tool && !force_update
           return(

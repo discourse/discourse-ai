@@ -447,6 +447,8 @@ en:
         short_title: "Tools"
         export: "Export"
         import: "Import"
+        import_error_conflict: "Tool already exists, would you like to update it?"
+        overwrite: "Overwrite"
         no_tools: "You have not created any tools yet"
         name: "Name"
         name_help: "Name will show up in the Discourse UI and is the short identifier you will use to find the tool in various settings, it should be distinct (it is required)"

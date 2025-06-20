@@ -8,13 +8,17 @@ import DBreadcrumbsItem from "discourse/components/d-breadcrumbs-item";
 import DButton from "discourse/components/d-button";
 import DPageSubheader from "discourse/components/d-page-subheader";
 import DropdownMenu from "discourse/components/dropdown-menu";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import DMenu from "float-kit/components/d-menu";
+import AiTool from "../admin/models/ai-tool";
 
 export default class AiToolListEditor extends Component {
   @service adminPluginNavManager;
   @service router;
+  @service dialog;
 
   get lastIndexOfPresets() {
     return this.args.tools.resultSetMeta.presets.length - 1;
@@ -30,6 +34,75 @@ export default class AiToolListEditor extends Component {
         },
       }
     );
+  }
+
+  @action
+  importTool() {
+    // Create a hidden file input and click it
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json";
+    fileInput.style.display = "none";
+    fileInput.onchange = (event) => this.handleFileSelect(event);
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+
+  @action
+  handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        this.uploadTool(json.ai_tool);
+      } catch {
+        this.dialog.alert(i18n("discourse_ai.tools.import_error_not_json"));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  uploadTool(toolData, force = false) {
+    let url = `/admin/plugins/discourse-ai/ai-tools/import.json`;
+    const payload = {
+      ai_tool: toolData,
+    };
+    if (force) {
+      payload.force = true;
+    }
+
+    return ajax(url, {
+      type: "POST",
+      data: JSON.stringify(payload),
+      contentType: "application/json",
+    })
+      .then((result) => {
+        let tool = AiTool.create(result.ai_tool);
+        let existingTool = this.args.tools.findBy("id", tool.id);
+        if (existingTool) {
+          this.args.tools.removeObject(existingTool);
+        }
+        this.args.tools.insertAt(0, tool);
+      })
+      .catch((error) => {
+        if (error.jqXHR?.status === 409) {
+          this.dialog.confirm({
+            message: i18n("discourse_ai.tools.import_error_conflict", {
+              name: toolData.tool_name,
+            }),
+            confirmButtonLabel: "discourse_ai.tools.overwrite",
+            didConfirm: () => this.uploadTool(toolData, true),
+          });
+        } else {
+          popupAjaxError(error);
+        }
+      });
   }
 
   <template>
@@ -48,6 +121,7 @@ export default class AiToolListEditor extends Component {
             @translatedLabel={{i18n "discourse_ai.tools.import"}}
             @icon="upload"
             class="btn btn-small ai-tool-list-editor__import-button"
+            @action={{this.importTool}}
           />
           <DMenu
             @triggerClass="btn-primary btn-small ai-tool-list-editor__new-button"
