@@ -5,7 +5,7 @@ module DiscourseAi
     class AiToolsController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_tool, only: %i[test edit update destroy]
+      before_action :find_ai_tool, only: %i[test edit update destroy export]
 
       def index
         ai_tools = AiTool.all
@@ -30,6 +30,13 @@ module DiscourseAi
         else
           render_json_error ai_tool
         end
+      end
+
+      def export
+        response.headers[
+          "Content-Disposition"
+        ] = "attachment; filename=\"#{@ai_tool.tool_name}.json\""
+        render_serialized(@ai_tool, AiCustomToolSerializer)
       end
 
       def update
