@@ -5,7 +5,7 @@ import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
-import { and , eq } from "truth-helpers";
+import { and, eq } from "truth-helpers";
 import CookText from "discourse/components/cook-text";
 import DButton from "discourse/components/d-button";
 import FastEdit from "discourse/components/fast-edit";

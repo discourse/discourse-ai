@@ -4,7 +4,7 @@ import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
-import { eq } from 'truth-helpers';
+import { eq } from "truth-helpers";
 import DButton from "discourse/components/d-button";
 import categoryBadge from "discourse/helpers/category-badge";
 import { ajax } from "discourse/lib/ajax";
