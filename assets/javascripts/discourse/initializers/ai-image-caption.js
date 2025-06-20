@@ -116,7 +116,7 @@ export default apiInitializer("1.25.0", (api) => {
     } catch (error) {
       toasts.error({
         class: "ai-image-caption-error-toast",
-        duration: 3000,
+        duration: "short",
         data: {
           message: extractError(error),
         },

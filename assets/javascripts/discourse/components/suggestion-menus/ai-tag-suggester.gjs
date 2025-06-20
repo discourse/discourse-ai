@@ -140,7 +140,7 @@ export default class AiTagSuggester extends Component {
     if (tags?.length >= maxTags) {
       return this.toasts.error({
         class: "ai-suggestion-error",
-        duration: 3000,
+        duration: "short",
         data: {
           message: i18n("discourse_ai.ai_helper.suggest_errors.too_many_tags", {
             count: maxTags,

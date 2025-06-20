@@ -84,7 +84,7 @@ export default class AiToolEditorForm extends Component {
 
       this.toasts.success({
         data: { message: i18n("discourse_ai.tools.saved") },
-        duration: 2000,
+        duration: "short",
       });
 
       if (!this.args.tools.any((tool) => tool.id === this.args.model.id)) {

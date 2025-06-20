@@ -35,7 +35,7 @@ function initializeAiHelperTrigger(api) {
 
           return toasts.error({
             class: "ai-proofread-error-toast",
-            duration: 3000,
+            duration: "short",
             data: {
               message: i18n("discourse_ai.ai_helper.no_content_error"),
             },
