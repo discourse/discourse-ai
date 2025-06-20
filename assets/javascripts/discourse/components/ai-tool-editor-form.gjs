@@ -6,6 +6,7 @@ import { service } from "@ember/service";
 import { and, gt } from "truth-helpers";
 import Form from "discourse/components/form";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import getURL from "discourse/lib/get-url";
 import { i18n } from "discourse-i18n";
 import AiToolTestModal from "./modal/ai-tool-test-modal";
 import RagOptionsFk from "./rag-options-fk";
@@ -149,6 +150,12 @@ export default class AiToolEditorForm extends Component {
     return this.siteSettings.rag_images_enabled
       ? i18n("discourse_ai.rag.uploads.description_with_images")
       : i18n("discourse_ai.rag.uploads.description");
+  }
+
+  @action
+  exportTool() {
+    const exportUrl = `/admin/plugins/discourse-ai/ai-tools/${this.args.model.id}/export.json`;
+    window.location.href = getURL(exportUrl);
   }
 
   <template>
@@ -386,7 +393,11 @@ export default class AiToolEditorForm extends Component {
             @action={{this.openTestModal}}
             class="ai-tool-editor__test-button"
           />
-
+          <form.Button
+            @label="discourse_ai.tools.export"
+            @action={{this.exportTool}}
+            class="ai-tool-editor__export"
+          />
           <form.Button
             @label="discourse_ai.tools.delete"
             @icon="trash-can"

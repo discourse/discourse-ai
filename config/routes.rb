@@ -85,8 +85,12 @@ Discourse::Application.routes.draw do
     )
 
     post "/ai-tools/:id/test", to: "discourse_ai/admin/ai_tools#test"
+    get "/ai-tools/:id/export", to: "discourse_ai/admin/ai_tools#export", format: :json
+    post "/ai-tools/import", to: "discourse_ai/admin/ai_tools#import"
 
     post "/ai-personas/:id/create-user", to: "discourse_ai/admin/ai_personas#create_user"
+    get "/ai-personas/:id/export", to: "discourse_ai/admin/ai_personas#export", format: :json
+    post "/ai-personas/import", to: "discourse_ai/admin/ai_personas#import"
 
     put "/ai-personas/:id/files/remove", to: "discourse_ai/admin/ai_personas#remove_file"
     get "/ai-personas/:id/files/status", to: "discourse_ai/admin/ai_personas#indexing_status_check"

@@ -5,7 +5,7 @@ module DiscourseAi
     class AiToolsController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_tool, only: %i[test edit update destroy]
+      before_action :find_ai_tool, only: %i[test edit update destroy export]
 
       def index
         ai_tools = AiTool.all
@@ -29,6 +29,45 @@ module DiscourseAi
           render_serialized(ai_tool, AiCustomToolSerializer, status: :created)
         else
           render_json_error ai_tool
+        end
+      end
+
+      def export
+        response.headers[
+          "Content-Disposition"
+        ] = "attachment; filename=\"#{@ai_tool.tool_name}.json\""
+        render_serialized(@ai_tool, AiCustomToolSerializer)
+      end
+
+      def import
+        existing_tool = AiTool.find_by(tool_name: ai_tool_params[:tool_name])
+        force_update = params[:force].present? && params[:force].to_s.downcase == "true"
+
+        if existing_tool && !force_update
+          return(
+            render_json_error "Tool with tool_name '#{ai_tool_params[:tool_name]}' already exists. Use force=true to overwrite.",
+                              status: :conflict
+          )
+        end
+
+        if existing_tool && force_update
+          initial_attributes = existing_tool.attributes.dup
+          if existing_tool.update(ai_tool_params)
+            log_ai_tool_update(existing_tool, initial_attributes)
+            render_serialized(existing_tool, AiCustomToolSerializer)
+          else
+            render_json_error existing_tool
+          end
+        else
+          ai_tool = AiTool.new(ai_tool_params)
+          ai_tool.created_by_id = current_user.id
+
+          if ai_tool.save
+            log_ai_tool_creation(ai_tool)
+            render_serialized(ai_tool, AiCustomToolSerializer, status: :created)
+          else
+            render_json_error ai_tool
+          end
         end
       end
 
