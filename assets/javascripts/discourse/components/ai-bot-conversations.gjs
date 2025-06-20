@@ -1,6 +1,6 @@
 import { tracked } from "@glimmer/tracking";
 import Component from "@ember/component";
-import { fn, hash } from "@ember/helper";
+import { fn } from "@ember/helper";
 import { on } from "@ember/modifier";
 import { action } from "@ember/object";
 import { getOwner } from "@ember/owner";
@@ -12,6 +12,7 @@ import $ from "jquery";
 import DButton from "discourse/components/d-button";
 import PluginOutlet from "discourse/components/plugin-outlet";
 import bodyClass from "discourse/helpers/body-class";
+import lazyHash from "discourse/helpers/lazy-hash";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import userAutocomplete from "discourse/lib/autocomplete/user";
 import { setupHashtagAutocomplete } from "discourse/lib/hashtag-autocomplete";
@@ -300,7 +301,7 @@ export default class AiBotConversations extends Component {
         </div>
         <PluginOutlet
           @name="ai-bot-conversations-above-input"
-          @outletArgs={{hash
+          @outletArgs={{lazyHash
             updateInput=this.updateInputValue
             submit=this.prepareAndSubmitToBot
           }}

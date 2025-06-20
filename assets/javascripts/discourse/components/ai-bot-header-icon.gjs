@@ -1,9 +1,9 @@
 import Component from "@glimmer/component";
-import { hash } from "@ember/helper";
 import { action } from "@ember/object";
 import { service } from "@ember/service";
 import DButton from "discourse/components/d-button";
 import PluginOutlet from "discourse/components/plugin-outlet";
+import lazyHash from "discourse/helpers/lazy-hash";
 import { defaultHomepage } from "discourse/lib/utilities";
 import { i18n } from "discourse-i18n";
 import { composeAiBotMessage } from "../lib/ai-bot-helper";
@@ -64,7 +64,7 @@ export default class AiBotHeaderIcon extends Component {
       <li>
         <PluginOutlet
           @name="ai-bot-header-icon"
-          @outletArgs={{hash onClick=this.onClick icon=this.icon}}
+          @outletArgs={{lazyHash onClick=this.onClick icon=this.icon}}
         >
           <DButton
             @action={{this.onClick}}
