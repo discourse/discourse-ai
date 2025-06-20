@@ -82,7 +82,7 @@ export default class ShareModal extends Component {
   async share() {
     await clipboardCopyAsync(this.generateShareURL.bind(this));
     this.toasts.success({
-      duration: 3000,
+      duration: "short",
       data: {
         message: i18n("discourse_ai.ai_bot.conversation_shared"),
       },
@@ -109,7 +109,7 @@ export default class ShareModal extends Component {
     await clipboardCopyAsync(() => promise);
 
     this.toasts.success({
-      duration: 3000,
+      duration: "short",
       data: {
         message: i18n("discourse_ai.ai_bot.embed_copied"),
       },

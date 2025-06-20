@@ -209,7 +209,7 @@ export default class AiLlmEditorForm extends Component {
       }
       this.toasts.success({
         data: { message: i18n("discourse_ai.llms.saved") },
-        duration: 2000,
+        duration: "short",
       });
     } catch (e) {
       popupAjaxError(e);

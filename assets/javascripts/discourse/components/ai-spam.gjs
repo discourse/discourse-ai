@@ -73,7 +73,7 @@ export default class AiSpam extends Component {
       if (response.success) {
         this.toasts.success({
           data: { message: i18n("discourse_ai.spam.errors.resolved") },
-          duration: 2000,
+          duration: "short",
         });
       }
     } catch (error) {
@@ -145,7 +145,7 @@ export default class AiSpam extends Component {
       });
       this.toasts.success({
         data: { message: i18n("discourse_ai.spam.settings_saved") },
-        duration: 2000,
+        duration: "short"",
       });
     } catch (error) {
       popupAjaxError(error);
