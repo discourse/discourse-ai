@@ -145,7 +145,7 @@ export default class AiSpam extends Component {
       });
       this.toasts.success({
         data: { message: i18n("discourse_ai.spam.settings_saved") },
-        duration: "short"",
+        duration: "short",
       });
     } catch (error) {
       popupAjaxError(error);
