@@ -2,11 +2,13 @@
 
 describe Jobs::PostLocalizationBackfill do
   before do
-    SiteSetting.ai_translation_backfill_rate = 100
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
     SiteSetting.content_localization_supported_locales = "en"
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
+    SiteSetting.ai_translation_enabled = true
+    SiteSetting.discourse_ai_enabled = true
   end
 
   it "does not enqueue post translation when translator disabled" do
@@ -18,7 +20,6 @@ describe Jobs::PostLocalizationBackfill do
   end
 
   it "does not enqueue post translation when experimental translation disabled" do
-    SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = false
 
     described_class.new.execute({})
@@ -26,9 +27,7 @@ describe Jobs::PostLocalizationBackfill do
     expect_not_enqueued_with(job: :localize_posts)
   end
 
-  it "does not enqueue psot translation if backfill languages are not set" do
-    SiteSetting.discourse_ai_enabled = true
-    SiteSetting.ai_translation_enabled = true
+  it "does not enqueue post translation if backfill languages are not set" do
     SiteSetting.content_localization_supported_locales = ""
 
     described_class.new.execute({})
@@ -39,7 +38,7 @@ describe Jobs::PostLocalizationBackfill do
   it "does not enqueue post translation if backfill limit is set to 0" do
     SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.ai_translation_backfill_rate = 0
+    SiteSetting.ai_translation_backfill_hourly_rate = 0
 
     described_class.new.execute({})
 
@@ -49,10 +48,10 @@ describe Jobs::PostLocalizationBackfill do
   it "enqueues post translation with correct limit" do
     SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.ai_translation_backfill_rate = 10
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
 
     described_class.new.execute({})
 
-    expect_job_enqueued(job: :localize_posts, args: { limit: 10 })
+    expect_job_enqueued(job: :localize_posts, args: { limit: 8 })
   end
 end

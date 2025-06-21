@@ -4,7 +4,11 @@ module DiscourseAi
   module Translation
     class PostLocalizer
       def self.localize(post, target_locale = I18n.locale)
-        return if post.blank? || target_locale.blank? || post.locale == target_locale.to_s
+        if post.blank? || target_locale.blank? || post.locale == target_locale.to_s ||
+             post.raw.blank?
+          return
+        end
+        return if post.raw.length > SiteSetting.ai_translation_max_post_length
         target_locale = target_locale.to_s.sub("-", "_")
 
         translated_raw =

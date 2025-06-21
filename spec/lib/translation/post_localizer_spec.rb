@@ -18,7 +18,7 @@ describe DiscourseAi::Translation::PostLocalizer do
       allow(mock).to receive(:translate).and_return(opts[:translated])
     end
 
-    it "returns nil if post is blank" do
+    it "returns nil if post does not exist" do
       expect(described_class.localize(nil, "ja")).to eq(nil)
     end
 
@@ -31,6 +31,19 @@ describe DiscourseAi::Translation::PostLocalizer do
       post.locale = "en"
 
       expect(described_class.localize(post, "en")).to eq(nil)
+    end
+
+    it "returns nil if post raw is blank" do
+      post.raw = ""
+
+      expect(described_class.localize(post, "ja")).to eq(nil)
+    end
+
+    it "returns nil if post raw is too long" do
+      SiteSetting.ai_translation_max_post_length = 10
+      post.raw = "This is a very long post that exceeds the limit."
+
+      expect(described_class.localize(post, "ja")).to eq(nil)
     end
 
     it "translates with post and locale" do

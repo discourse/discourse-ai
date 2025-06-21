@@ -25,7 +25,7 @@ describe Jobs::LocalizeCategories do
 
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when ai_translation_enabled is disabled" do
@@ -33,7 +33,7 @@ describe Jobs::LocalizeCategories do
 
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when no target languages are configured" do
@@ -41,7 +41,7 @@ describe Jobs::LocalizeCategories do
 
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "does nothing when no categories exist" do
@@ -49,7 +49,14 @@ describe Jobs::LocalizeCategories do
 
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
 
-    job.execute({})
+    job.execute({ limit: 10 })
+  end
+
+  it "does nothing when the limit is zero" do
+    DiscourseAi::Translation::CategoryLocalizer.expects(:localize).never
+
+    expect { job.execute({}) }.to raise_error(Discourse::InvalidParameters, /limit/)
+    job.execute({ limit: 0 })
   end
 
   it "translates categories to the configured locales" do
@@ -65,7 +72,21 @@ describe Jobs::LocalizeCategories do
       .with(is_a(Category), "zh_CN")
       .times(number_of_categories)
 
-    job.execute({})
+    job.execute({ limit: 10 })
+  end
+
+  it "limits the number of localizations" do
+    SiteSetting.content_localization_supported_locales = "pt"
+
+    6.times { Fabricate(:category) }
+    Category.update_all(locale: "en")
+
+    DiscourseAi::Translation::CategoryLocalizer
+      .expects(:localize)
+      .with(is_a(Category), "pt")
+      .times(5)
+
+    job.execute({ limit: 5 })
   end
 
   it "skips categories that already have localizations" do
@@ -77,24 +98,7 @@ describe Jobs::LocalizeCategories do
       .with(is_a(Category), "zh_CN")
       .never
 
-    job.execute({})
-  end
-
-  it "continues from a specified category ID" do
-    category1 = Fabricate(:category, name: "First", description: "First description", locale: "en")
-    category2 =
-      Fabricate(:category, name: "Second", description: "Second description", locale: "en")
-
-    DiscourseAi::Translation::CategoryLocalizer
-      .expects(:localize)
-      .with(category1, any_parameters)
-      .never
-    DiscourseAi::Translation::CategoryLocalizer
-      .expects(:localize)
-      .with(category2, any_parameters)
-      .twice
-
-    job.execute(from_category_id: category2.id)
+    job.execute({ limit: 10 })
   end
 
   it "handles translation errors gracefully" do
@@ -107,31 +111,7 @@ describe Jobs::LocalizeCategories do
       .raises(StandardError.new("API error"))
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).with(category1, "zh_CN").once
 
-    expect { job.execute({}) }.not_to raise_error
-  end
-
-  it "enqueues the next batch when there are more categories" do
-    Category.update_all(locale: "en")
-
-    Jobs.run_later!
-    freeze_time
-    Jobs::LocalizeCategories.const_set(:BATCH_SIZE, 1)
-
-    job.execute({})
-
-    Category.all.each do |category|
-      puts category.id
-      expect_job_enqueued(
-        job: :localize_categories,
-        args: {
-          from_category_id: category.id + 1,
-        },
-        at: 10.seconds.from_now,
-      )
-    end
-
-    Jobs::LocalizeCategories.send(:remove_const, :BATCH_SIZE)
-    Jobs::LocalizeCategories.const_set(:BATCH_SIZE, 50)
+    expect { job.execute({ limit: 10 }) }.not_to raise_error
   end
 
   it "skips read-restricted categories when configured" do
@@ -149,7 +129,7 @@ describe Jobs::LocalizeCategories do
       .with(category2, any_parameters)
       .never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "skips creating localizations in the same language as the category's locale" do
@@ -161,7 +141,7 @@ describe Jobs::LocalizeCategories do
       .with(is_a(Category), "zh_CN")
       .times(Category.count)
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 
   it "deletes existing localizations that match the category's locale" do
@@ -170,9 +150,9 @@ describe Jobs::LocalizeCategories do
 
     localize_all_categories("pt", "zh_CN")
 
-    expect { job.execute({}) }.to change { CategoryLocalization.exists?(locale: "pt") }.from(
-      true,
-    ).to(false)
+    expect { job.execute({ limit: 10 }) }.to change {
+      CategoryLocalization.exists?(locale: "pt")
+    }.from(true).to(false)
   end
 
   it "doesn't process categories with nil locale" do
@@ -185,6 +165,6 @@ describe Jobs::LocalizeCategories do
       .with(nil_locale_category, any_parameters)
       .never
 
-    job.execute({})
+    job.execute({ limit: 10 })
   end
 end

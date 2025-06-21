@@ -480,7 +480,7 @@ discourse_ai:
     type: enum
     enum: "DiscourseAi::Configuration::PersonaEnumerator"
     area: "ai-features/translation"
-  ai_translation_backfill_rate:
+  ai_translation_backfill_hourly_rate:
     default: 0
     min: 0
     max: 1000
@@ -489,6 +489,10 @@ discourse_ai:
     area: "ai-features/translation"
   ai_translation_backfill_limit_to_public_content:
     default: true
+    client: false
+    area: "ai-features/translation"
+  ai_translation_max_post_length:
+    default: 10000
     client: false
     area: "ai-features/translation"
   ai_translation_backfill_max_age_days:
