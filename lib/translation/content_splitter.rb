@@ -3,7 +3,7 @@
 module DiscourseAi
   module Translation
     class ContentSplitter
-      CHUNK_SIZE = 3000
+      CHUNK_SIZE = 10_000
 
       BBCODE_PATTERNS = [
         %r{\[table.*?\].*?\[/table\]}m,
