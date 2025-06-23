@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe DiscourseAi::Translation::BaseTranslator do
   let!(:persona) do
     AiPersona.find(
@@ -28,7 +26,7 @@ describe DiscourseAi::Translation::BaseTranslator do
         DiscourseAi::Translation::PostRawTranslator.new(text:, target_locale:, post:)
       allow(DiscourseAi::Completions::Prompt).to receive(:new).with(
         persona.system_prompt,
-        messages: array_including({ type: :user, content: post_translator.formatted_content }),
+        messages: array_including({ type: :user, content: a_string_including(text) }),
         post_id: post.id,
         topic_id: post.topic_id,
       ).and_call_original

@@ -26,6 +26,7 @@ module DiscourseAi
       def self.split(content:, chunk_size: DEFAULT_CHUNK_SIZE)
         return [] if content.nil?
         return [""] if content.empty?
+        chunk_size ||= DEFAULT_CHUNK_SIZE
         return [content] if content.length <= chunk_size
 
         chunks = []
