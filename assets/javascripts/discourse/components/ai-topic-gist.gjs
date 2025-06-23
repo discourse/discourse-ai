@@ -24,16 +24,16 @@ export default class AiTopicGist extends Component {
   <template>
     {{#if this.shouldShow}}
       {{#if this.hasGist}}
-        <div class="excerpt">
+        <a href={{@topic.lastUnreadUrl}} class="excerpt">
           <div class="excerpt__contents">{{this.gist}}</div>
-        </div>
+        </a>
       {{else}}
         {{#if this.escapedExcerpt}}
-          <div class="excerpt">
+          <a href={{@topic.lastUnreadUrl}} class="excerpt">
             <div class="excerpt__contents">
               {{htmlSafe this.escapedExcerpt}}
             </div>
-          </div>
+          </a>
         {{/if}}
       {{/if}}
     {{/if}}
