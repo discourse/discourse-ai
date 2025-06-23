@@ -14,10 +14,12 @@ import FilterInput from "discourse/components/filter-input";
 import avatar from "discourse/helpers/avatar";
 import concatClass from "discourse/helpers/concat-class";
 import icon from "discourse/helpers/d-icon";
+import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import { i18n } from "discourse-i18n";
 import AdminConfigAreaEmptyList from "admin/components/admin-config-area-empty-list";
 import DMenu from "float-kit/components/d-menu";
+import AiPersona from "../admin/models/ai-persona";
 import AiPersonaEditor from "./ai-persona-editor";
 
 const LAYOUT_BUTTONS = [
@@ -37,6 +39,7 @@ export default class AiPersonaListEditor extends Component {
   @service adminPluginNavManager;
   @service keyValueStore;
   @service capabilities;
+  @service dialog;
 
   @tracked filterValue = "";
   @tracked featureFilter = "all";
@@ -159,6 +162,77 @@ export default class AiPersonaListEditor extends Component {
     this.dMenu.close();
   }
 
+  @action
+  importPersona() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json";
+    fileInput.style.display = "none";
+    fileInput.onchange = (event) => this.handleFileSelect(event);
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    document.body.removeChild(fileInput);
+  }
+
+  @action
+  handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target.result);
+        this.uploadPersona(json);
+      } catch {
+        this.dialog.alert(
+          i18n("discourse_ai.ai_persona.import_error_not_json")
+        );
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  uploadPersona(personaData, force = false) {
+    let url = `/admin/plugins/discourse-ai/ai-personas/import.json`;
+    const payload = personaData;
+    if (force) {
+      payload.force = true;
+    }
+
+    return ajax(url, {
+      type: "POST",
+      data: JSON.stringify(payload),
+      contentType: "application/json",
+    })
+      .then((result) => {
+        let persona = AiPersona.create(result);
+        let existingPersona = this.args.personas.findBy("id", persona.id);
+        if (existingPersona) {
+          this.args.personas.removeObject(existingPersona);
+        }
+        this.args.personas.insertAt(0, persona);
+      })
+      .catch((error) => {
+        if (error.jqXHR?.status === 422) {
+          this.dialog.confirm({
+            message:
+              i18n("discourse_ai.ai_persona.import_error_conflict", {
+                name: personaData.persona.name,
+              }) +
+              "\n" +
+              error.jqXHR.responseJSON?.errors?.join("\n"),
+            confirmButtonLabel: "discourse_ai.ai_persona.overwrite",
+            didConfirm: () => this.uploadPersona(personaData, true),
+          });
+        } else {
+          popupAjaxError(error);
+        }
+      });
+  }
+
   <template>
     <DBreadcrumbsItem
       @path="/admin/plugins/{{this.adminPluginNavManager.currentPlugin.name}}/ai-personas"
@@ -176,6 +250,12 @@ export default class AiPersonaListEditor extends Component {
           @learnMoreUrl="https://meta.discourse.org/t/ai-bot-personas/306099"
         >
           <:actions as |actions|>
+            <actions.Default
+              @label="discourse_ai.ai_persona.import"
+              @action={{this.importPersona}}
+              @icon="upload"
+              class="ai-persona-list-editor__import-button"
+            />
             <actions.Primary
               @label="discourse_ai.ai_persona.new"
               @route="adminPlugins.show.discourse-ai-personas.new"

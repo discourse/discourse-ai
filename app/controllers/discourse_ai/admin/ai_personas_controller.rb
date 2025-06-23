@@ -121,11 +121,6 @@ module DiscourseAi
         existing_persona = AiPersona.find_by(name: name)
         force_update = params[:force].present? && params[:force].to_s.downcase == "true"
 
-        if existing_persona && !force_update
-          error = I18n.t("discourse_ai.errors.persona_already_exists", name: name)
-          return(render_json_error error, status: :conflict)
-        end
-
         begin
           importer = DiscourseAi::PersonaImporter.new(json: params.to_unsafe_h)
 

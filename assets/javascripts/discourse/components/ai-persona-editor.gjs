@@ -11,6 +11,7 @@ import BackButton from "discourse/components/back-button";
 import Form from "discourse/components/form";
 import Avatar from "discourse/helpers/bound-avatar-template";
 import { popupAjaxError } from "discourse/lib/ajax-error";
+import getURL from "discourse/lib/get-url";
 import Group from "discourse/models/group";
 import { i18n } from "discourse-i18n";
 import AdminUser from "admin/models/admin-user";
@@ -290,6 +291,12 @@ export default class PersonaEditor extends Component {
     });
     this.args.personas.clear();
     this.args.personas.setObjects(sorted);
+  }
+
+  @action
+  exportPersona() {
+    const exportUrl = `/admin/plugins/discourse-ai/ai-personas/${this.args.model.id}/export.json`;
+    window.location.href = getURL(exportUrl);
   }
 
   <template>
@@ -713,6 +720,11 @@ export default class PersonaEditor extends Component {
           <form.Submit />
 
           {{#unless (or @model.isNew @model.system)}}
+            <form.Button
+              @label="discourse_ai.ai_persona.export"
+              @action={{this.exportPersona}}
+              class="ai-persona-editor__export"
+            />
             <form.Button
               @action={{this.delete}}
               @label="discourse_ai.ai_persona.delete"
