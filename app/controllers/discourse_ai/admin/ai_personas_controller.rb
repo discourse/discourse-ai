@@ -5,7 +5,7 @@ module DiscourseAi
     class AiPersonasController < ::Admin::AdminController
       requires_plugin ::DiscourseAi::PLUGIN_NAME
 
-      before_action :find_ai_persona, only: %i[edit update destroy create_user]
+      before_action :find_ai_persona, only: %i[edit update destroy create_user export]
 
       def index
         ai_personas =
@@ -102,6 +102,48 @@ module DiscourseAi
           head :no_content
         else
           render_json_error @ai_persona
+        end
+      end
+
+      def export
+        persona = AiPersona.find(params[:id])
+        exporter = DiscourseAi::PersonaExporter.new(persona: persona)
+
+        response.headers[
+          "Content-Disposition"
+        ] = "attachment; filename=\"#{persona.name.parameterize}.json\""
+
+        render json: exporter.export
+      end
+
+      def import
+        name = params.dig(:persona, :name)
+        existing_persona = AiPersona.find_by(name: name)
+        force_update = params[:force].present? && params[:force].to_s.downcase == "true"
+
+        if existing_persona && !force_update
+          error = I18n.t("discourse_ai.errors.persona_already_exists", name: name)
+          return(render_json_error error, status: :conflict)
+        end
+
+        begin
+          importer = DiscourseAi::PersonaImporter.new(json: params.to_unsafe_h)
+
+          if existing_persona && force_update
+            initial_attributes = existing_persona.attributes.dup
+            persona = importer.import!(overwrite: true)
+            log_ai_persona_update(persona, initial_attributes)
+            render json: LocalizedAiPersonaSerializer.new(persona, root: false)
+          else
+            persona = importer.import!
+            log_ai_persona_creation(persona)
+            render json: LocalizedAiPersonaSerializer.new(persona, root: false), status: :created
+          end
+        rescue DiscourseAi::PersonaImporter::ImportError => e
+          render_json_error e.message, status: :unprocessable_entity
+        rescue StandardError => e
+          Rails.logger.error("AI Persona import failed: #{e.message}")
+          render_json_error "Import failed: #{e.message}", status: :unprocessable_entity
         end
       end
 

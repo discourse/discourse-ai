@@ -223,7 +223,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
           expect(persona.temperature).to eq(0.5)
         }.to change(AiPersona, :count).by(1)
       end
-      
+
       it "logs staff action when creating a persona" do
         # Create the persona
         post "/admin/plugins/discourse-ai/ai-personas.json",
@@ -231,11 +231,15 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
              headers: {
                "CONTENT_TYPE" => "application/json",
              }
-             
+
         expect(response).to be_successful
-        
+
         # Now verify the log was created with the right subject
-        history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "create_ai_persona").last
+        history =
+          UserHistory.where(
+            action: UserHistory.actions[:custom_staff],
+            custom_type: "create_ai_persona",
+          ).last
         expect(history).to be_present
         expect(history.subject).to eq("superbot") # Verify subject is set to name
       end
@@ -325,10 +329,10 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
       expect(persona.top_p).to eq(nil)
       expect(persona.temperature).to eq(nil)
     end
-    
+
     it "logs staff action when updating a persona" do
       persona = Fabricate(:ai_persona, name: "original_name", description: "original description")
-      
+
       # Update the persona
       put "/admin/plugins/discourse-ai/ai-personas/#{persona.id}.json",
           params: {
@@ -337,14 +341,18 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
               description: "updated description",
             },
           }
-          
+
       expect(response).to have_http_status(:ok)
       persona.reload
       expect(persona.name).to eq("updated_name")
       expect(persona.description).to eq("updated description")
-      
+
       # Now verify the log was created with the right subject
-      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "update_ai_persona").last
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_persona",
+        ).last
       expect(history).to be_present
       expect(history.subject).to eq("updated_name") # Verify subject is set to the new name
     end
@@ -492,6 +500,257 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
     end
   end
 
+  describe "GET #export" do
+    fab!(:ai_tool) do
+      AiTool.create!(
+        name: "Test Tool",
+        tool_name: "test_tool",
+        description: "A test tool",
+        script: "function invoke(params) { return 'test'; }",
+        parameters: [{ name: "query", type: "string", required: true }],
+        summary: "Test tool summary",
+        created_by_id: admin.id,
+      )
+    end
+
+    fab!(:persona_with_tools) do
+      AiPersona.create!(
+        name: "ToolMaster",
+        description: "A persona with custom tools",
+        system_prompt: "You are a tool master",
+        tools: [
+          ["SearchCommand", { "base_query" => "test" }, true],
+          ["custom-#{ai_tool.id}", { "max_results" => 10 }, false],
+        ],
+        temperature: 0.8,
+        top_p: 0.9,
+        response_format: [{ type: "string", key: "summary" }],
+        examples: [["user example", "assistant example"]],
+        default_llm_id: llm_model.id,
+      )
+    end
+
+    it "exports a persona as JSON" do
+      get "/admin/plugins/discourse-ai/ai-personas/#{persona_with_tools.id}/export.json"
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Disposition"]).to include("attachment")
+      expect(response.headers["Content-Disposition"]).to include("toolmaster.json")
+
+      json = response.parsed_body
+      expect(json["meta"]["version"]).to eq("1.0")
+      expect(json["meta"]["exported_at"]).to be_present
+
+      persona_data = json["persona"]
+      expect(persona_data["name"]).to eq("ToolMaster")
+      expect(persona_data["description"]).to eq("A persona with custom tools")
+      expect(persona_data["system_prompt"]).to eq("You are a tool master")
+      expect(persona_data["temperature"]).to eq(0.8)
+      expect(persona_data["top_p"]).to eq(0.9)
+      expect(persona_data["response_format"]).to eq([{ "type" => "string", "key" => "summary" }])
+      expect(persona_data["examples"]).to eq([["user example", "assistant example"]])
+
+      # Check that custom tool ID is replaced with tool_name
+      expect(persona_data["tools"]).to include(
+        ["SearchCommand", { "base_query" => "test" }, true],
+        ["custom-test_tool", { "max_results" => 10 }, false],
+      )
+
+      # Check custom tools are exported
+      expect(json["custom_tools"]).to be_an(Array)
+      expect(json["custom_tools"].length).to eq(1)
+
+      custom_tool = json["custom_tools"].first
+      expect(custom_tool["identifier"]).to eq("test_tool")
+      expect(custom_tool["name"]).to eq("Test Tool")
+      expect(custom_tool["description"]).to eq("A test tool")
+      expect(custom_tool["script"]).to eq("function invoke(params) { return 'test'; }")
+      expect(custom_tool["parameters"]).to eq(
+        [{ "name" => "query", "type" => "string", "required" => true }],
+      )
+    end
+
+    it "handles personas without custom tools" do
+      persona = Fabricate(:ai_persona, tools: ["SearchCommand"])
+
+      get "/admin/plugins/discourse-ai/ai-personas/#{persona.id}/export.json"
+
+      expect(response).to be_successful
+      json = response.parsed_body
+      expect(json["custom_tools"]).to eq([])
+      expect(json["persona"]["tools"]).to eq(["SearchCommand"])
+    end
+
+    it "returns 404 for non-existent persona" do
+      get "/admin/plugins/discourse-ai/ai-personas/999999/export.json"
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "POST #import" do
+    let(:valid_import_data) do
+      {
+        meta: {
+          version: "1.0",
+          exported_at: Time.zone.now.iso8601,
+        },
+        persona: {
+          name: "ImportedPersona",
+          description: "An imported persona",
+          system_prompt: "You are an imported assistant",
+          temperature: 0.7,
+          top_p: 0.8,
+          response_format: [{ type: "string", key: "answer" }],
+          examples: [["hello", "hi there"]],
+          tools: ["SearchCommand", ["ReadCommand", { max_length: 1000 }, true]],
+        },
+        custom_tools: [],
+      }
+    end
+
+    it "imports a new persona successfully" do
+      expect {
+        post "/admin/plugins/discourse-ai/ai-personas/import.json",
+             params: valid_import_data,
+             as: :json
+        expect(response).to have_http_status(:created)
+      }.to change(AiPersona, :count).by(1)
+
+      persona = AiPersona.find_by(name: "ImportedPersona")
+      expect(persona).to be_present
+      expect(persona.description).to eq("An imported persona")
+      expect(persona.system_prompt).to eq("You are an imported assistant")
+      expect(persona.temperature).to eq(0.7)
+      expect(persona.top_p).to eq(0.8)
+      expect(persona.response_format).to eq([{ "type" => "string", "key" => "answer" }])
+      expect(persona.examples).to eq([["hello", "hi there"]])
+      expect(persona.tools).to eq(
+        ["SearchCommand", ["ReadCommand", { "max_length" => 1000 }, true]],
+      )
+    end
+
+    it "imports a persona with custom tools" do
+      import_data_with_tools = valid_import_data.deep_dup
+      import_data_with_tools[:persona][:tools] = [
+        "SearchCommand",
+        ["custom-my_custom_tool", { param1: "value1" }, false],
+      ]
+      import_data_with_tools[:custom_tools] = [
+        {
+          identifier: "my_custom_tool",
+          name: "My Custom Tool",
+          description: "A custom tool for testing",
+          tool_name: "my_custom_tool",
+          parameters: [{ name: "param1", type: "string", required: true }],
+          summary: "Custom tool summary",
+          script: "function invoke(params) { return params.param1; }",
+        },
+      ]
+
+      expect {
+        post "/admin/plugins/discourse-ai/ai-personas/import.json",
+             params: import_data_with_tools,
+             as: :json
+      }.to change(AiPersona, :count).by(1).and change(AiTool, :count).by(1)
+
+      expect(response).to have_http_status(:created)
+
+      persona = AiPersona.find_by(name: "ImportedPersona")
+      expect(persona).to be_present
+
+      tool = AiTool.find_by(tool_name: "my_custom_tool")
+      expect(tool).to be_present
+      expect(tool.name).to eq("My Custom Tool")
+      expect(tool.description).to eq("A custom tool for testing")
+      expect(tool.script).to eq("function invoke(params) { return params.param1; }")
+
+      # Check that the tool reference uses the ID
+      expect(persona.tools).to include(
+        "SearchCommand",
+        ["custom-#{tool.id}", { "param1" => "value1" }, false],
+      )
+    end
+
+    it "prevents importing duplicate personas by default" do
+      _existing_persona = Fabricate(:ai_persona, name: "ImportedPersona")
+
+      post "/admin/plugins/discourse-ai/ai-personas/import.json",
+           params: valid_import_data,
+           as: :json
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body["errors"].join).to include("ImportedPersona")
+    end
+
+    it "allows overwriting existing personas with force=true" do
+      existing_persona =
+        Fabricate(:ai_persona, name: "ImportedPersona", description: "Old description")
+
+      import_data = valid_import_data.merge(force: true)
+
+      expect {
+        post "/admin/plugins/discourse-ai/ai-personas/import.json", params: import_data, as: :json
+      }.not_to change(AiPersona, :count)
+
+      expect(response).to have_http_status(:ok)
+
+      existing_persona.reload
+      expect(existing_persona.description).to eq("An imported persona")
+      expect(existing_persona.system_prompt).to eq("You are an imported assistant")
+    end
+
+    it "handles invalid import data gracefully" do
+      invalid_data = { invalid: "data" }
+
+      post "/admin/plugins/discourse-ai/ai-personas/import.json", params: invalid_data, as: :json
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["errors"]).to be_present
+    end
+
+    it "handles missing persona data" do
+      invalid_data = { meta: { version: "1.0" } }
+
+      post "/admin/plugins/discourse-ai/ai-personas/import.json", params: invalid_data, as: :json
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "logs staff action when importing a new persona" do
+      post "/admin/plugins/discourse-ai/ai-personas/import.json",
+           params: valid_import_data,
+           as: :json
+
+      expect(response).to have_http_status(:created)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "create_ai_persona",
+        ).last
+      expect(history).to be_present
+      expect(history.subject).to eq("ImportedPersona")
+    end
+
+    it "logs staff action when updating an existing persona" do
+      _existing_persona = Fabricate(:ai_persona, name: "ImportedPersona")
+
+      import_data = valid_import_data.merge(force: true)
+
+      post "/admin/plugins/discourse-ai/ai-personas/import.json", params: import_data, as: :json
+
+      expect(response).to have_http_status(:ok)
+
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "update_ai_persona",
+        ).last
+      expect(history).to be_present
+      expect(history.subject).to eq("ImportedPersona")
+    end
+  end
+
   describe "DELETE #destroy" do
     it "destroys the requested ai_persona" do
       expect {
@@ -500,18 +759,22 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
         expect(response).to have_http_status(:no_content)
       }.to change(AiPersona, :count).by(-1)
     end
-    
+
     it "logs staff action when deleting a persona" do
       # Capture persona details before deletion
-      persona_id = ai_persona.id
+      _persona_id = ai_persona.id
       persona_name = ai_persona.name
-      
+
       # Delete the persona
       delete "/admin/plugins/discourse-ai/ai-personas/#{ai_persona.id}.json"
       expect(response).to have_http_status(:no_content)
-      
+
       # Now verify the log was created with the right subject
-      history = UserHistory.where(action: UserHistory.actions[:custom_staff], custom_type: "delete_ai_persona").last
+      history =
+        UserHistory.where(
+          action: UserHistory.actions[:custom_staff],
+          custom_type: "delete_ai_persona",
+        ).last
       expect(history).to be_present
       expect(history.subject).to eq(persona_name) # Verify subject is set to name
     end
