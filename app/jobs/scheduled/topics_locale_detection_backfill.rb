@@ -15,7 +15,17 @@ module Jobs
       topics = Topic.where(locale: nil, deleted_at: nil).where("topics.user_id > 0")
 
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        topics = topics.where(category_id: Category.where(read_restricted: false).select(:id))
+        topics =
+          topics.where(category_id: Category.where(read_restricted: false).select(:id)).where(
+            "archetype != ?",
+            Archetype.private_message,
+          )
+      else
+        topics =
+          topics.where(
+            "archetype != ? OR EXISTS (SELECT 1 FROM topic_allowed_groups WHERE topic_id = topics.id)",
+            Archetype.private_message,
+          )
       end
 
       if SiteSetting.ai_translation_backfill_max_age_days > 0

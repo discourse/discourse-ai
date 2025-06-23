@@ -82,23 +82,40 @@ describe Jobs::PostsLocaleDetectionBackfill do
 
   describe "with public content limitation" do
     fab!(:private_category) { Fabricate(:private_category, group: Group[:staff]) }
-    fab!(:private_topic) { Fabricate(:topic, category: private_category) }
-    fab!(:private_post) { Fabricate(:post, topic: private_topic, locale: nil) }
+    fab!(:private_cat_topic) { Fabricate(:topic, category: private_category) }
+    fab!(:private_cat_post) { Fabricate(:post, topic: private_cat_topic, locale: nil) }
+
+    fab!(:group)
+    fab!(:group_pm_topic) { Fabricate(:private_message_topic, allowed_groups: [group]) }
+    fab!(:group_pm_post) { Fabricate(:post, topic: group_pm_topic, locale: nil) }
+
+    fab!(:pm_topic) { Fabricate(:private_message_topic) }
+    fab!(:pm_post) { Fabricate(:post, topic: pm_topic, locale: nil) }
 
     before { SiteSetting.ai_translation_backfill_limit_to_public_content = true }
 
     it "only processes posts from public categories" do
       DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).once
-      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(private_post).never
+      DiscourseAi::Translation::PostLocaleDetector
+        .expects(:detect_locale)
+        .with(private_cat_post)
+        .never
+      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(group_pm_post).never
+      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(pm_post).never
 
       job.execute({})
     end
 
-    it "processes all posts when setting is disabled" do
+    it "processes all public content and group PMs and private categories when setting is disabled" do
       SiteSetting.ai_translation_backfill_limit_to_public_content = false
 
       DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).once
-      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(private_post).once
+      DiscourseAi::Translation::PostLocaleDetector
+        .expects(:detect_locale)
+        .with(private_cat_post)
+        .once
+      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(group_pm_post).once
+      DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(pm_post).never
 
       job.execute({})
     end

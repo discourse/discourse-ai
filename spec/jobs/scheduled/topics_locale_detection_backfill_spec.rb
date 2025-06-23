@@ -82,8 +82,14 @@ describe Jobs::TopicsLocaleDetectionBackfill do
 
   describe "with public content limitation" do
     fab!(:private_category) { Fabricate(:private_category, group: Group[:staff]) }
+    fab!(:private_cat_topic) { Fabricate(:topic, category: private_category, locale: nil) }
+
+    fab!(:group)
+    fab!(:group_pm_topic) { Fabricate(:private_message_topic, allowed_groups: [group]) }
+
+    fab!(:pm_topic) { Fabricate(:private_message_topic) }
+
     fab!(:public_topic) { Fabricate(:topic, locale: nil) }
-    fab!(:private_topic) { Fabricate(:topic, category: private_category, locale: nil) }
 
     before do
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).at_least_once
@@ -93,19 +99,33 @@ describe Jobs::TopicsLocaleDetectionBackfill do
 
     it "only processes topics from public categories" do
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(public_topic).once
+
       DiscourseAi::Translation::TopicLocaleDetector
         .expects(:detect_locale)
-        .with(private_topic)
+        .with(private_cat_topic)
         .never
+      DiscourseAi::Translation::TopicLocaleDetector
+        .expects(:detect_locale)
+        .with(group_pm_topic)
+        .never
+      DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(pm_topic).never
 
       job.execute({ limit: 10 })
     end
 
-    it "processes all topics when setting is disabled" do
+    it "processes public category topics, group PMs, and private category topics when setting is disabled" do
       SiteSetting.ai_translation_backfill_limit_to_public_content = false
 
       DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(public_topic).once
-      DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(private_topic).once
+      DiscourseAi::Translation::TopicLocaleDetector
+        .expects(:detect_locale)
+        .with(group_pm_topic)
+        .once
+      DiscourseAi::Translation::TopicLocaleDetector
+        .expects(:detect_locale)
+        .with(private_cat_topic)
+        .once
+      DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(pm_topic).never
 
       job.execute({ limit: 10 })
     end

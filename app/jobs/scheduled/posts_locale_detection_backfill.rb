@@ -20,12 +20,17 @@ module Jobs
           .where.not(raw: [nil, ""])
 
       if SiteSetting.ai_translation_backfill_limit_to_public_content
-        public_categories = Category.where(read_restricted: false).pluck(:id)
         posts =
           posts
             .joins(:topic)
-            .where(topics: { category_id: public_categories })
-            .where(topics: { archetype: "regular" })
+            .where(topics: { category_id: Category.where(read_restricted: false).select(:id) })
+            .where("archetype != ?", Archetype.private_message)
+      else
+        posts =
+          posts.joins(:topic).where(
+            "topics.archetype != ? OR EXISTS (SELECT 1 FROM topic_allowed_groups WHERE topic_id = topics.id)",
+            Archetype.private_message,
+          )
       end
 
       if SiteSetting.ai_translation_backfill_max_age_days > 0
