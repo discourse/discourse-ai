@@ -15,26 +15,34 @@ module DiscourseAi
         if (ai_persona = AiPersona.find_by(id: persona_setting)).blank?
           return nil
         end
-
+        translation_user = ai_persona.user || Discourse.system_user
         persona_klass = ai_persona.class_instance
         persona = persona_klass.new
 
-        llm_model = LlmModel.find_by(id: preferred_llm_model(persona_klass))
-        return nil if llm_model.blank?
+        model = LlmModel.find_by(id: preferred_llm_model(persona_klass))
+        return nil if model.blank?
 
-        bot =
-          DiscourseAi::Personas::Bot.as(
-            ai_persona.user || Discourse.system_user,
-            persona: persona,
-            model: llm_model,
-          )
+        bot = DiscourseAi::Personas::Bot.as(translation_user, persona:, model:)
 
+        ContentSplitter
+          .split(content: @text, chunk_size: model.max_output_tokens)
+          .map { |text| get_translation(text:, bot:, translation_user:) }
+          .join("")
+      end
+
+      private
+
+      def formatted_content(content)
+        { content:, target_locale: @target_locale }.to_json
+      end
+
+      def get_translation(text:, bot:, translation_user:)
         context =
           DiscourseAi::Personas::BotContext.new(
-            user: ai_persona.user || Discourse.system_user,
+            user: translation_user,
             skip_tool_details: true,
             feature_name: "translation",
-            messages: [{ type: :user, content: formatted_content }],
+            messages: [{ type: :user, content: formatted_content(text) }],
             topic: @topic,
             post: @post,
           )
@@ -46,12 +54,6 @@ module DiscourseAi
 
         structured_output&.read_buffered_property(:translation)
       end
-
-      def formatted_content
-        { content: @text, target_locale: @target_locale }.to_json
-      end
-
-      private
 
       def persona_setting
         raise NotImplementedError

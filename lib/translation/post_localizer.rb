@@ -11,11 +11,7 @@ module DiscourseAi
         return if post.raw.length > SiteSetting.ai_translation_max_post_length
         target_locale = target_locale.to_s.sub("-", "_")
 
-        translated_raw =
-          ContentSplitter
-            .split(post.raw)
-            .map { |text| PostRawTranslator.new(text:, target_locale:, post:).translate }
-            .join("")
+        translated_raw = PostRawTranslator.new(text: post.raw, target_locale:, post:).translate
 
         localization =
           PostLocalization.find_or_initialize_by(post_id: post.id, locale: target_locale)
