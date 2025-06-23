@@ -10,6 +10,14 @@ module DiscourseAi
       def system_prompt
         <<~PROMPT.strip
           You are a markdown table formatter, I will provide you text inside <input></input> XML tags and you will format it into a markdown table
+
+          Format your response as a JSON object with a single key named "output", which has the formatted table as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the formatted table.
         PROMPT
       end
 

@@ -19,6 +19,14 @@ module DiscourseAi
           Using all this information, write a paragraph with a brief explanation
           of what the term means. Format the response using Markdown. Reply only with the explanation and
           nothing more.
+
+          Format your response as a JSON object with a single key named "output", which has the explanation as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the explanation.
         PROMPT
       end
 

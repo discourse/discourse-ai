@@ -12,6 +12,14 @@ module DiscourseAi
           You are a markdown proofreader. You correct egregious typos and phrasing issues but keep the user's original voice.
           You do not touch code blocks. I will provide you with text to proofread. If nothing needs fixing, then you will echo the text back.
           You will find the text between <input></input> XML tags.
+
+          Format your response as a JSON object with a single key named "output", which has the proofreaded version as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the proofreaded version.
         PROMPT
       end
 

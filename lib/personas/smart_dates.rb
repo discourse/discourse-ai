@@ -21,6 +21,14 @@ module DiscourseAi
           - Time range: {{datetime:2pm+1:4pm+1}} for tomorrow 2 PM to 4 PM
     
           You will find the text between <input></input> XML tags.
+
+          Format your response as a JSON object with a single key named "output", which has the formatted result as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the formatted result.
         PROMPT
       end
 
