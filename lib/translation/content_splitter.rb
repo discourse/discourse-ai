@@ -3,7 +3,7 @@
 module DiscourseAi
   module Translation
     class ContentSplitter
-      CHUNK_SIZE = 3000
+      DEFAULT_CHUNK_SIZE = 8192
 
       BBCODE_PATTERNS = [
         %r{\[table.*?\].*?\[/table\]}m,
@@ -23,16 +23,17 @@ module DiscourseAi
         /\s+/, # any whitespace
       ].freeze
 
-      def self.split(content)
+      def self.split(content:, chunk_size: DEFAULT_CHUNK_SIZE)
         return [] if content.nil?
         return [""] if content.empty?
-        return [content] if content.length <= CHUNK_SIZE
+        chunk_size ||= DEFAULT_CHUNK_SIZE
+        return [content] if content.length <= chunk_size
 
         chunks = []
         remaining = content.dup
 
         while remaining.present?
-          chunk = extract_mixed_chunk(remaining)
+          chunk = extract_mixed_chunk(remaining, size: chunk_size)
           break if chunk.empty?
           chunks << chunk
           remaining = remaining[chunk.length..-1]
@@ -43,9 +44,8 @@ module DiscourseAi
 
       private
 
-      def self.extract_mixed_chunk(text, size: CHUNK_SIZE)
+      def self.extract_mixed_chunk(text, size:)
         return text if text.length <= size
-        flexible_size = size * 1.5
 
         # try each splitting strategy in order
         split_point =
@@ -54,7 +54,7 @@ module DiscourseAi
             -> { find_nearest_bbcode_end_index(text, size) },
             -> { find_text_boundary(text, size) },
             -> { size },
-          ].lazy.map(&:call).compact.find { |pos| pos <= flexible_size }
+          ].lazy.map(&:call).compact.find { |pos| pos <= size }
 
         text[0...split_point]
       end
@@ -64,13 +64,15 @@ module DiscourseAi
 
         begin
           doc = Nokogiri::HTML5.fragment(text)
-          current_length = 0
+          max_length_within_target = 0
 
           doc.children.each do |node|
             html = node.to_html
-            end_pos = current_length + html.length
-            return end_pos if end_pos > target_pos
-            current_length = end_pos
+            end_pos = max_length_within_target + html.length
+            if (max_length_within_target > 0 && end_pos > target_pos)
+              return max_length_within_target
+            end
+            max_length_within_target = end_pos
           end
           nil
         rescue Nokogiri::SyntaxError
@@ -79,13 +81,15 @@ module DiscourseAi
       end
 
       def self.find_nearest_bbcode_end_index(text, target_pos)
+        max_length_within_target = 0
         BBCODE_PATTERNS.each do |pattern|
           text.scan(pattern) do |_|
             match = $~
-            tag_start = match.begin(0)
             tag_end = match.end(0)
-
-            return tag_end if tag_start <= target_pos && tag_end > target_pos
+            if (max_length_within_target > 0 && tag_end > target_pos)
+              return max_length_within_target
+            end
+            max_length_within_target = tag_end
           end
         end
 

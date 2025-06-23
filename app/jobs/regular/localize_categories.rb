@@ -40,7 +40,7 @@ module Jobs
             # do nothing, there are too many sporadic lookup failures
           rescue => e
             DiscourseAi::Translation::VerboseLogger.log(
-              "Failed to translate category #{category.id} to #{locale}: #{e.message}",
+              "Failed to translate category #{category.id} to #{locale}: #{e.message}\n\n#{e.backtrace[0..3].join("\n")}",
             )
           ensure
             remaining_limit -= 1
