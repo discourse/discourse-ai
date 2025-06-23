@@ -11,6 +11,14 @@ module DiscourseAi
         <<~PROMPT.strip
           Provide me a StableDiffusion prompt to generate an image that illustrates the following post in 40 words or less, be creative.
           You'll find the post between <input></input> XML tags.
+
+          Format your response as a JSON object with a single key named "output", which has the generated prompt as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the generated prompt.
         PROMPT
       end
 

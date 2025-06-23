@@ -16,6 +16,14 @@ module DiscourseAi
           Keep the meaning same, but make them more literary. I want you to only reply the correction,
           the improvements and nothing else, do not write explanations.
           You will find the text between <input></input> XML tags.
+
+          Format your response as a JSON object with a single key named "output", which has the translation as the value.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the translation.
         PROMPT
       end
 
