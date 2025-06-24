@@ -20,7 +20,7 @@ module DiscourseAi
         persona_klass = ai_persona.class_instance
         persona = persona_klass.new
 
-        llm_model = LlmModel.find_by(id: preferred_llm_model(persona_klass))
+        llm_model = DiscourseAi::Translation::BaseTranslator.preferred_llm_model(persona_klass)
         return nil if llm_model.blank?
 
         bot =
@@ -43,12 +43,6 @@ module DiscourseAi
           structured_output = partial if type == :structured_output
         end
         structured_output&.read_buffered_property(:locale) || []
-      end
-
-      private
-
-      def preferred_llm_model(persona_klass)
-        persona_klass.default_llm_id || SiteSetting.ai_translation_model&.split(":")&.last
       end
     end
   end

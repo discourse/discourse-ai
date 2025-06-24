@@ -38,6 +38,10 @@ module DiscourseAi
         {
           name: feature.name,
           persona: serialize_persona(persona_id_obj_hash[feature.persona_id]),
+          llm_model: {
+            id: feature.llm_model&.id,
+            name: feature.llm_model&.name,
+          },
           enabled: feature.enabled?,
         }
       end

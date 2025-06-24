@@ -19,7 +19,7 @@ module DiscourseAi
         persona_klass = ai_persona.class_instance
         persona = persona_klass.new
 
-        model = LlmModel.find_by(id: preferred_llm_model(persona_klass))
+        model = preferred_llm_model(persona_klass)
         return nil if model.blank?
 
         bot = DiscourseAi::Personas::Bot.as(translation_user, persona:, model:)
@@ -59,8 +59,10 @@ module DiscourseAi
         raise NotImplementedError
       end
 
-      def preferred_llm_model(persona_klass)
-        persona_klass.default_llm_id || SiteSetting.ai_translation_model&.split(":")&.last
+      def self.preferred_llm_model(persona_klass)
+        id = persona_klass.default_llm_id || SiteSetting.ai_translation_model&.split(":")&.last
+        return nil if id.blank?
+        LlmModel.find_by(id:)
       end
     end
   end

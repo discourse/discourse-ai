@@ -175,6 +175,28 @@ module DiscourseAi
         @enabled_by_setting = enabled_by_setting
       end
 
+      def llm_model
+        persona = AiPersona.find_by(id: persona_id)
+        return if persona.blank?
+
+        persona_klass = persona.class_instance
+
+        llm_model =
+          case module_name
+          when DiscourseAi::Configuration::Module::SUMMARIZATION
+            DiscourseAi::Summarization.find_summarization_model(persona_klass)
+          when DiscourseAi::Configuration::Module::AI_HELPER
+            DiscourseAi::AiHelper::Assistant.find_ai_helper_model(name, persona_klass)
+          when DiscourseAi::Configuration::Module::TRANSLATION
+            DiscourseAi::Translation::BaseTranslator.preferred_llm_model(persona_klass)
+          end
+
+        if llm_model.blank? && persona.default_llm_id
+          llm_model = LlmModel.find_by(id: persona.default_llm_id)
+        end
+        llm_model
+      end
+
       attr_reader :name, :persona_setting, :module_id, :module_name
 
       def enabled?
