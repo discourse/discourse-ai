@@ -62,6 +62,7 @@ pt:
         back: "Retroceder"
         name: "Nome"
         edit: "Editar"
+        export: "Exportar"
         description: "Descrição"
         user: Utilizador
         save: "Guardar"
@@ -80,6 +81,7 @@ pt:
           uploading: "A enviar…"
       tools:
         back: "Retroceder"
+        export: "Exportar"
         name: "Nome"
         description: "Descrição"
         summary: "Resumo"

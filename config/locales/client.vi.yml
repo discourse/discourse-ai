@@ -61,6 +61,7 @@ vi:
         back: "Quay lại"
         name: "Tên"
         edit: "Sửa"
+        export: "Xuất"
         description: "Mô tả"
         user: Người dùng
         save: "Lưu lại"
@@ -78,6 +79,7 @@ vi:
           uploading: "Đang đăng "
       tools:
         back: "Quay lại"
+        export: "Xuất"
         name: "Tên"
         description: "Mô tả"
         summary: "Tóm tắt"

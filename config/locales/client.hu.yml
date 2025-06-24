@@ -65,6 +65,7 @@ hu:
         back: "Vissza"
         name: "Név"
         edit: "Szerkesztés"
+        export: "Exportálás"
         description: "Leírás"
         user: Felhasználó
         save: "Mentés"
@@ -82,6 +83,7 @@ hu:
           uploading: "Feltöltés…"
       tools:
         back: "Vissza"
+        export: "Exportálás"
         name: "Név"
         description: "Leírás"
         summary: "Összefoglaló"

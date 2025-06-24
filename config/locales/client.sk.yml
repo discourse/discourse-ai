@@ -67,6 +67,7 @@ sk:
         back: "Späť"
         name: "Meno"
         edit: "Upraviť"
+        export: "Export"
         description: "Popis"
         user: Používateľ
         save: "Uložiť"
@@ -84,6 +85,7 @@ sk:
           uploading: "Načítavam..."
       tools:
         back: "Späť"
+        export: "Export"
         name: "Meno"
         description: "Popis"
         summary: "Zhrnutie"

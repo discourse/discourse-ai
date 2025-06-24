@@ -63,6 +63,7 @@ ur:
         back: "واپس"
         name: "نام"
         edit: "ترمیم کریں"
+        export: "برآمد"
         description: "تفصیل"
         user: صارف
         save: "محفوظ کریں"
@@ -80,6 +81,7 @@ ur:
           uploading: "اَپ لوڈ کیا جا رہا ہے..."
       tools:
         back: "واپس"
+        export: "برآمد"
         name: "نام"
         description: "تفصیل"
         summary: "Summary"

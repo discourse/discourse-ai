@@ -57,6 +57,7 @@ hy:
         back: "Ետ"
         name: "Անուն"
         edit: "Խմբագրել"
+        export: "Արտահանել"
         description: "Նկարագրությունը"
         user: Օգտատեր
         save: "Պահպանել"
@@ -74,6 +75,7 @@ hy:
           uploading: "Վերբեռնում..."
       tools:
         back: "Ետ"
+        export: "Արտահանել"
         name: "Անուն"
         description: "Նկարագրությունը"
         summary: "Ամփոփումը"

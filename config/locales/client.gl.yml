@@ -61,6 +61,7 @@ gl:
         back: "Volver"
         name: "Nome"
         edit: "Editar"
+        export: "Exportar"
         description: "Descrición"
         user: Usuario
         save: "Gardar"
@@ -79,6 +80,7 @@ gl:
           uploading: "Cargando..."
       tools:
         back: "Volver"
+        export: "Exportar"
         name: "Nome"
         description: "Descrición"
         summary: "Resumo"

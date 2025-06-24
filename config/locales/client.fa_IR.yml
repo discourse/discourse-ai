@@ -89,6 +89,7 @@ fa_IR:
         back: "بازگشت"
         name: "نام"
         edit: "ویرایش"
+        export: "خروجی گرفتن"
         description: "توضیح"
         user: کاربر
         save: "ذخیره"
@@ -106,6 +107,7 @@ fa_IR:
           uploading: "در حال بار گذاری..."
       tools:
         back: "بازگشت"
+        export: "خروجی گرفتن"
         name: "نام"
         description: "توضیح"
         summary: "خلاصه"

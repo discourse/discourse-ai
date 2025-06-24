@@ -62,6 +62,7 @@ zh_TW:
         back: "上一步"
         name: "名字"
         edit: "編輯"
+        export: "匯出"
         description: "簡述"
         user: 使用者
         save: "保存"
@@ -79,6 +80,7 @@ zh_TW:
           uploading: "上傳中..."
       tools:
         back: "上一步"
+        export: "匯出"
         name: "名字"
         description: "簡述"
         summary: "摘要"

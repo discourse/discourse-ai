@@ -100,6 +100,7 @@ lt:
         back: "Atgal"
         name: "Vardas"
         edit: "Redaguoti"
+        export: "Eksportuoti"
         description: "Aprašymas"
         user: Narys
         save: "Išsaugoti"
@@ -117,6 +118,7 @@ lt:
           uploading: "Įkeliama"
       tools:
         back: "Atgal"
+        export: "Eksportuoti"
         name: "Vardas"
         description: "Aprašymas"
         summary: "Santrauka"

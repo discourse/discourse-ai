@@ -60,6 +60,7 @@ ca:
         back: "Enrere"
         name: "Nom"
         edit: "Edita"
+        export: "Exporta"
         description: "Descripció"
         user: Usuari
         save: "Desa"
@@ -77,6 +78,7 @@ ca:
           uploading: "Carregant..."
       tools:
         back: "Enrere"
+        export: "Exporta"
         name: "Nom"
         description: "Descripció"
         summary: "Resum"

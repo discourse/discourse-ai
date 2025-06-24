@@ -57,6 +57,7 @@ et:
         back: "Tagasi"
         name: "Nimi"
         edit: "Muuda"
+        export: "Ekspordi"
         description: "Kirjeldus"
         user: Kasutaja
         save: "Salvesta"
@@ -72,6 +73,7 @@ et:
           uploading: "Laen üles..."
       tools:
         back: "Tagasi"
+        export: "Ekspordi"
         name: "Nimi"
         description: "Kirjeldus"
         summary: "Kokkuvõte"

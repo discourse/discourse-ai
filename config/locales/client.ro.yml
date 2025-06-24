@@ -63,6 +63,7 @@ ro:
         back: "Înapoi"
         name: "Nume"
         edit: "Modifică"
+        export: "Exportă"
         description: "Descriere"
         user: Utilizatori
         save: "Salvare"
@@ -78,6 +79,7 @@ ro:
           uploading: "Se încarcă..."
       tools:
         back: "Înapoi"
+        export: "Exportă"
         name: "Nume"
         description: "Descriere"
         summary: "Rezumat"

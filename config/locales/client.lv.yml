@@ -59,6 +59,7 @@ lv:
         back: "Atpakaļ"
         name: "Vārds"
         edit: "Rediģēt"
+        export: "Eksportēt"
         description: "Apraksts"
         user: Lietotājs
         save: "Saglabāt"
@@ -74,6 +75,7 @@ lv:
           uploading: "Notiek ielāde..."
       tools:
         back: "Atpakaļ"
+        export: "Eksportēt"
         name: "Vārds"
         description: "Apraksts"
         summary: "Kopsavilkums"

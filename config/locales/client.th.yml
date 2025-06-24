@@ -59,6 +59,7 @@ th:
         back: "กลับ"
         name: "ชื่อ"
         edit: "แก้ไข"
+        export: "ส่งออก"
         description: "รายละเอียด"
         user: ผู้ใช้
         save: "บันทึก"
@@ -72,6 +73,7 @@ th:
           uploading: "กำลังอัปโหลด..."
       tools:
         back: "กลับ"
+        export: "ส่งออก"
         name: "ชื่อ"
         description: "รายละเอียด"
         summary: "สรุป"

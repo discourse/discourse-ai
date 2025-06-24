@@ -61,6 +61,7 @@ sl:
         back: "Nazaj"
         name: "Ime"
         edit: "Uredi"
+        export: "Izvozi"
         description: "Opis"
         user: Uporabnik
         save: "Shrani"
@@ -77,6 +78,7 @@ sl:
           uploading: "Nalagam..."
       tools:
         back: "Nazaj"
+        export: "Izvozi"
         name: "Ime"
         description: "Opis"
         summary: "Povzetek"

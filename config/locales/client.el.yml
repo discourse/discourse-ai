@@ -7,20 +7,55 @@
 el:
   admin_js:
     admin:
+      api:
+        scopes:
+          descriptions:
+            discourse_ai:
+              search: "Επιτρέπει την αναζήτηση AI"
+      site_settings:
+        categories:
+          discourse_ai: "Discourse AI"
       dashboard:
         reports:
           filters:
+            group_by:
+              label: "Ομαδοποίηση κατά"
             sort_by:
               label: "Ταξινόμηση κατά"
+            tag:
+              label: "Ετικέτα"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "Δημιουργία μοντέλου LLM"
+            update_ai_llm_model: "Ενημέρωση μοντέλου LLM"
+            delete_ai_llm_model: "Διαγραφή μοντέλου LLM"
   js:
     discourse_automation:
       scriptables:
         llm_report:
           fields:
+            sender:
+              label: "Αποστολέας"
+              description: "Ο χρήστης που θα στείλει την αναφορά"
+            receivers:
+              label: "Παραλήπτες"
+              description: "Οι χρήστες που θα λάβουν την αναφορά (τα emails θα αποσταλούν απευθείας με email, τα ονόματα χρηστών θα αποσταλούν με ΠΜ)"
             topic_id:
               label: "ID Θέματος"
+              description: "Το ID θέματος στο οποίο θα δημοσιεύεται η αναφορά"
             title:
               label: "Τίτλος"
+              description: "Ο τίτλος της αναφοράς"
+            days:
+              label: "Ημέρες"
+              description: "Το χρονικό διάστημα της αναφοράς"
+            instructions:
+              label: "Οδηγίες"
+            sample_size:
+              label: "Μέγεθος δείγματος"
+            model:
+              label: "Μοντέλο"
             categories:
               label: "Κατηγορίες"
             tags:
@@ -63,6 +98,7 @@ el:
         back: "Πίσω"
         name: "Όνομα"
         edit: "Επεξεργασία"
+        export: "Εξαγωγή"
         description: "Περιγραφή"
         user: Χρήστης
         save: "Αποθήκευση"
@@ -81,6 +117,7 @@ el:
           uploading: "Επιφόρτωση..."
       tools:
         back: "Πίσω"
+        export: "Εξαγωγή"
         name: "Όνομα"
         description: "Περιγραφή"
         summary: "Περίληψη"
