@@ -34,7 +34,8 @@
     @include ellipsis;
   }
 
-  &__persona-button {
+  &__persona-button,
+  &__llm-button {
     padding-left: 0;
   }
 
