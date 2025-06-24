@@ -286,11 +286,15 @@ module DiscourseAi
         DiscourseAi::Personas::Bot.as(user, persona: persona_klass.new, model: llm_model)
       end
 
+      def find_ai_helper_model(helper_mode, persona_klass)
+        self.class.find_ai_helper_model(helper_mode, persona_klass)
+      end
+
       # Priorities are:
       #   1. Persona's default LLM
       #   2. Hidden `ai_helper_model` setting, or `ai_helper_image_caption_model` for image_caption.
       #   3. Newest LLM config
-      def find_ai_helper_model(helper_mode, persona_klass)
+      def self.find_ai_helper_model(helper_mode, persona_klass)
         model_id = persona_klass.default_llm_id
 
         if !model_id

@@ -24,6 +24,7 @@
   padding: 0.5rem;
   display: block;
 
+  &__llm,
   &__persona,
   &__groups {
     font-size: var(--font-down-1-rem);
@@ -37,12 +38,18 @@
     padding-left: 0;
   }
 
+  &__groups {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.25em;
+  }
+
   &__item-groups {
     list-style: none;
     display: flex;
     flex-flow: row wrap;
     gap: 0.25em;
-    margin: 0.5em 0;
+    margin: 0;
 
     li {
       font-size: var(--font-down-1);

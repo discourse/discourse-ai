@@ -188,6 +188,8 @@ en:
         disabled: "(disabled)"
         persona: "Persona:"
         groups: "Groups:"
+        llm: "LLM:"
+        no_llm: "No LLM selected"
         no_persona: "Not set"
         no_groups: "None"
         edit: "Edit"

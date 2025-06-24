@@ -59,6 +59,19 @@ const AiFeaturesList = <template>
                     {{i18n "discourse_ai.features.no_persona"}}
                   {{/if}}
                 </div>
+                <div class="ai-feature-card__llm">
+                  <span>{{i18n "discourse_ai.features.llm"}}</span>
+                  {{#if feature.llm_model.name}}
+                    <DButton
+                      class="btn-flat btn-small ai-feature-card__llm-button"
+                      @translatedLabel={{feature.llm_model.name}}
+                      @route="adminPlugins.show.discourse-ai-llms.edit"
+                      @routeModels={{feature.llm_model.id}}
+                    />
+                  {{else}}
+                    {{i18n "discourse_ai.features.no_llm"}}
+                  {{/if}}
+                </div>
                 {{#if feature.persona}}
                   <div class="ai-feature-card__groups">
                     <span>{{i18n "discourse_ai.features.groups"}}</span>
