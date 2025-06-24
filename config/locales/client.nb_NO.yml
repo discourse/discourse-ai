@@ -61,6 +61,7 @@ nb_NO:
         back: "Forrige"
         name: "Navn"
         edit: "Endre"
+        export: "Eksporter"
         description: "Beskrivelse"
         user: Bruker
         save: "Lagre"
@@ -76,6 +77,7 @@ nb_NO:
           uploading: "Laster opp…"
       tools:
         back: "Forrige"
+        export: "Eksporter"
         name: "Navn"
         description: "Beskrivelse"
         summary: "Sammendrag"

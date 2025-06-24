@@ -56,6 +56,7 @@ te:
         back: "వెనుకకు"
         name: "పేరు"
         edit: "సవరించండి"
+        export: "ఎగుమతి"
         description: "వివరణ"
         user: సభ్యుడు
         save: "భద్రపరుచు"
@@ -73,6 +74,7 @@ te:
           uploading: "ఎగుమతవుతోంది..."
       tools:
         back: "వెనుకకు"
+        export: "ఎగుమతి"
         name: "పేరు"
         description: "వివరణ"
         summary: "సారాంశం"

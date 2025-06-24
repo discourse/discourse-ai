@@ -64,6 +64,7 @@ hr:
         back: "Natrag"
         name: "Ime"
         edit: "Uredi"
+        export: "Izvoz"
         description: "Opis"
         user: Korisnik
         save: "Spremi"
@@ -82,6 +83,7 @@ hr:
           uploading: "Učitavanje..."
       tools:
         back: "Natrag"
+        export: "Izvoz"
         name: "Ime"
         description: "Opis"
         summary: "Sažetak"

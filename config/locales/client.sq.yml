@@ -58,6 +58,7 @@ sq:
         back: "Kthehu mbrapa"
         name: "Emri"
         edit: "Redakto"
+        export: "Eksporto"
         description: "Përshkrimi"
         user: User
         save: "Ruaj"
@@ -72,6 +73,7 @@ sq:
           uploading: "Duke ngarkuar..."
       tools:
         back: "Kthehu mbrapa"
+        export: "Eksporto"
         name: "Emri"
         description: "Përshkrimi"
         summary: "Përmbledhja"

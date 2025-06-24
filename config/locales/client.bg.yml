@@ -62,6 +62,7 @@ bg:
         back: "Назад"
         name: "Име"
         edit: "Редактирай"
+        export: "Експорт "
         description: "Описание"
         user: Потребител
         save: "Запази "
@@ -78,6 +79,7 @@ bg:
           uploading: "Качва се..."
       tools:
         back: "Назад"
+        export: "Експорт "
         name: "Име"
         description: "Описание"
         summary: "Сумарно"

@@ -65,6 +65,7 @@ ko:
         back: "뒤로"
         name: "그룹명"
         edit: "편집"
+        export: "내보내기"
         description: "내용"
         user: 사용자
         save: "저장"
@@ -83,6 +84,7 @@ ko:
           uploading: "업로드 중..."
       tools:
         back: "뒤로"
+        export: "내보내기"
         name: "그룹명"
         description: "내용"
         summary: "요약"

@@ -121,6 +121,7 @@ id:
         back: "Kembali"
         name: "Nama"
         edit: "Ubah"
+        export: "Ekspor"
         description: "Deskripsi"
         mentionable_help: Jika diaktifkan, pengguna di grup yang diizinkan dapat menyebut pengguna ini di posting, AI akan merespons sebagai persona ini.
         user: Pengguna
@@ -141,6 +142,7 @@ id:
           uploading: "Mengunggah..."
       tools:
         back: "Kembali"
+        export: "Ekspor"
         name: "Nama"
         description: "Deskripsi"
         summary: "Ringkasan"

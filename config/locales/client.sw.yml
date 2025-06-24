@@ -57,6 +57,7 @@ sw:
         back: "Iliyopita"
         name: "Jina"
         edit: "Hariri"
+        export: "Hamisha"
         description: "Elezo"
         user: Mtumiaji
         save: "Hifadhi"
@@ -72,6 +73,7 @@ sw:
           uploading: "Inaongezwa"
       tools:
         back: "Iliyopita"
+        export: "Hamisha"
         name: "Jina"
         description: "Elezo"
         summary: "Muhtasari"

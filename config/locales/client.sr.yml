@@ -55,6 +55,7 @@ sr:
         back: "Nazad"
         name: "Ime foruma"
         edit: "Izmeni"
+        export: "Izvoz"
         description: "Opis"
         user: Korisnik
         save: "Sačuvaj"
@@ -70,6 +71,7 @@ sr:
           uploading: "Uploading..."
       tools:
         back: "Nazad"
+        export: "Izvoz"
         name: "Ime foruma"
         description: "Opis"
         summary: "Rezime"

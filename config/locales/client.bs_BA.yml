@@ -56,6 +56,7 @@ bs_BA:
         back: "Prethodno"
         name: "Ime"
         edit: "Edit"
+        export: "Izvoz"
         description: "Opis"
         user: User
         save: "Save"
@@ -74,6 +75,7 @@ bs_BA:
           uploading: "Učitavanje..."
       tools:
         back: "Prethodno"
+        export: "Izvoz"
         name: "Ime"
         description: "Opis"
         summary: "Sažetak"

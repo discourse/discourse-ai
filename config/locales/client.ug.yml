@@ -65,6 +65,7 @@ ug:
         back: "كەينى"
         name: "ئىسمى"
         edit: "تەھرىر"
+        export: "چىقار"
         description: "چۈشەندۈرۈش"
         user: ئىشلەتكۈچى
         save: "ساقلا"
@@ -82,6 +83,7 @@ ug:
           uploading: "يۈكلەۋاتىدۇ..."
       tools:
         back: "كەينى"
+        export: "چىقار"
         name: "ئىسمى"
         description: "چۈشەندۈرۈش"
         summary: "خۇلاسە"

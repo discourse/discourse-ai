@@ -54,6 +54,7 @@ be:
         back: "Назад"
         name: "імя"
         edit: "рэдагаваць"
+        export: "экспарт"
         description: "Апісанне"
         user: карыстальнік
         save: "Захаваць"
@@ -68,6 +69,7 @@ be:
           uploading: "Запампоўванне ..."
       tools:
         back: "Назад"
+        export: "экспарт"
         name: "імя"
         description: "Апісанне"
         summary: "вынік"
