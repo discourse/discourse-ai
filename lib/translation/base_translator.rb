@@ -19,7 +19,7 @@ module DiscourseAi
         persona_klass = ai_persona.class_instance
         persona = persona_klass.new
 
-        model = preferred_llm_model(persona_klass)
+        model = self.class.preferred_llm_model(persona_klass)
         return nil if model.blank?
 
         bot = DiscourseAi::Personas::Bot.as(translation_user, persona:, model:)
