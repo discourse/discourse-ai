@@ -46,6 +46,107 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
     end
   end
 
+  describe "GET #export" do
+    it "returns the ai_tool as JSON attachment" do
+      get "/admin/plugins/discourse-ai/ai-tools/#{ai_tool.id}/export.json"
+
+      expect(response).to be_successful
+      expect(response.headers["Content-Disposition"]).to eq(
+        "attachment; filename=\"#{ai_tool.tool_name}.json\"",
+      )
+      expect(response.parsed_body["ai_tool"]["name"]).to eq(ai_tool.name)
+      expect(response.parsed_body["ai_tool"]["tool_name"]).to eq(ai_tool.tool_name)
+      expect(response.parsed_body["ai_tool"]["description"]).to eq(ai_tool.description)
+      expect(response.parsed_body["ai_tool"]["parameters"]).to eq(ai_tool.parameters)
+    end
+
+    it "returns 404 for non-existent ai_tool" do
+      get "/admin/plugins/discourse-ai/ai-tools/99999/export.json"
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "POST #import" do
+    let(:import_attributes) do
+      {
+        name: "Imported Tool",
+        tool_name: "imported_tool",
+        description: "An imported test tool",
+        parameters: [{ name: "query", type: "string", description: "perform a search" }],
+        script: "function invoke(params) { return params; }",
+        summary: "Imported tool summary",
+      }
+    end
+
+    it "imports a new AI tool successfully" do
+      expect {
+        post "/admin/plugins/discourse-ai/ai-tools/import.json",
+             params: { ai_tool: import_attributes }.to_json,
+             headers: {
+               "CONTENT_TYPE" => "application/json",
+             }
+      }.to change(AiTool, :count).by(1)
+
+      expect(response).to have_http_status(:created)
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("Imported Tool")
+      expect(response.parsed_body["ai_tool"]["tool_name"]).to eq("imported_tool")
+    end
+
+    it "returns conflict error when tool with same tool_name exists without force" do
+      _existing_tool =
+        AiTool.create!(
+          name: "Existing Tool",
+          tool_name: "imported_tool",
+          description: "Existing tool",
+          script: "function invoke(params) { return 'existing'; }",
+          summary: "Existing summary",
+          created_by_id: admin.id,
+        )
+
+      expect {
+        post "/admin/plugins/discourse-ai/ai-tools/import.json",
+             params: { ai_tool: import_attributes }.to_json,
+             headers: {
+               "CONTENT_TYPE" => "application/json",
+             }
+      }.not_to change(AiTool, :count)
+
+      expect(response).to have_http_status(:conflict)
+      expect(response.parsed_body["errors"]).to include(
+        "Tool with tool_name 'imported_tool' already exists. Use force=true to overwrite.",
+      )
+    end
+
+    it "force updates existing tool when force=true" do
+      existing_tool =
+        AiTool.create!(
+          name: "Existing Tool",
+          tool_name: "imported_tool",
+          description: "Existing tool",
+          script: "function invoke(params) { return 'existing'; }",
+          summary: "Existing summary",
+          created_by_id: admin.id,
+        )
+
+      expect {
+        post "/admin/plugins/discourse-ai/ai-tools/import.json?force=true",
+             params: { ai_tool: import_attributes }.to_json,
+             headers: {
+               "CONTENT_TYPE" => "application/json",
+             }
+      }.not_to change(AiTool, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["ai_tool"]["name"]).to eq("Imported Tool")
+      expect(response.parsed_body["ai_tool"]["description"]).to eq("An imported test tool")
+
+      existing_tool.reload
+      expect(existing_tool.name).to eq("Imported Tool")
+      expect(existing_tool.description).to eq("An imported test tool")
+    end
+  end
+
   describe "POST #create" do
     let(:valid_attributes) do
       {
