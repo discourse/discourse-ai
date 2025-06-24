@@ -200,6 +200,7 @@ module DiscourseAi
                 {
                   "id" => persona_user[:user_id],
                   "username" => persona_user[:username],
+                  "has_default_llm" => persona_user[:default_llm_id].present?,
                   "force_default_llm" => persona_user[:force_default_llm],
                   "is_persona" => true,
                 }
