@@ -11,6 +11,13 @@ module DiscourseAi
 
       def update
         initial_settings = AiModerationSetting.spam
+
+        initial_data = {
+          custom_instructions: initial_settings&.data&.dig("custom_instructions"),
+          llm_model_id: initial_settings&.llm_model_id,
+          ai_persona_id: initial_settings&.ai_persona_id,
+        }
+
         initial_custom_instructions = initial_settings&.data&.dig("custom_instructions")
         initial_llm_model_id = initial_settings&.llm_model_id
 
@@ -29,6 +36,22 @@ module DiscourseAi
             )
           end
         end
+
+        if allowed_params.key?(:ai_persona_id)
+          updated_params[:ai_persona_id] = allowed_params[:ai_persona_id]
+          persona = AiPersona.find_by(id: allowed_params[:ai_persona_id])
+          if persona.nil? ||
+               persona.response_format.to_a.none? { |rf|
+                 rf["key"] == "spam" && rf["type"] == "boolean"
+               }
+            return(
+              render_json_error(
+                I18n.t("discourse_ai.llm.configuration.invalid_persona_response_format"),
+                status: 422,
+              )
+            )
+          end
+        end
         updated_params[:data] = {
           custom_instructions: allowed_params[:custom_instructions],
         } if allowed_params.key?(:custom_instructions)
@@ -41,7 +64,7 @@ module DiscourseAi
             AiModerationSetting.create!(updated_params.merge(setting_type: :spam))
           end
 
-          log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, allowed_params)
+          log_ai_spam_update(initial_data, allowed_params)
         end
 
         is_enabled = ActiveModel::Type::Boolean.new.cast(allowed_params[:is_enabled])
@@ -119,9 +142,10 @@ module DiscourseAi
 
       private
 
-      def log_ai_spam_update(initial_llm_model_id, initial_custom_instructions, params)
+      def log_ai_spam_update(initial_data, params)
         changes_to_log = {}
 
+        initial_llm_model_id = initial_data[:llm_model_id]
         if params.key?(:llm_model_id) && initial_llm_model_id.to_s != params[:llm_model_id].to_s
           old_model_name =
             LlmModel.find_by(id: initial_llm_model_id)&.display_name || initial_llm_model_id
@@ -131,9 +155,20 @@ module DiscourseAi
           changes_to_log[:llm_model_id] = "#{old_model_name} → #{new_model_name}"
         end
 
+        initial_custom_instructions = initial_data[:custom_instructions]
         if params.key?(:custom_instructions) &&
              initial_custom_instructions != params[:custom_instructions]
           changes_to_log[:custom_instructions] = params[:custom_instructions]
+        end
+
+        initial_ai_persona_id = initial_data[:ai_persona_id]
+        if params.key?(:ai_persona_id) && initial_ai_persona_id.to_s != params[:ai_persona_id].to_s
+          old_persona_name =
+            AiPersona.find_by(id: initial_ai_persona_id)&.name || initial_ai_persona_id
+          new_persona_name =
+            AiPersona.find_by(id: params[:ai_persona_id])&.name || params[:ai_persona_id]
+
+          changes_to_log[:ai_persona_id] = "#{old_persona_name} → #{new_persona_name}"
         end
 
         if changes_to_log.present?
@@ -144,7 +179,7 @@ module DiscourseAi
       end
 
       def allowed_params
-        params.permit(:is_enabled, :llm_model_id, :custom_instructions)
+        params.permit(:is_enabled, :llm_model_id, :custom_instructions, :ai_persona_id)
       end
 
       def spam_config

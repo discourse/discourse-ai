@@ -35,6 +35,7 @@ export default class AiSpam extends Component {
   };
   @tracked isEnabled = false;
   @tracked selectedLLM = null;
+  @tracked selectedPersonaId = null;
   @tracked customInstructions = "";
   @tracked errors = [];
 
@@ -98,6 +99,7 @@ export default class AiSpam extends Component {
     }
     this.customInstructions = model.custom_instructions;
     this.stats = model.stats;
+    this.selectedPersonaId = model.ai_persona_id;
   }
 
   get availableLLMs() {
@@ -134,6 +136,11 @@ export default class AiSpam extends Component {
   }
 
   @action
+  async updatePersona(value) {
+    this.selectedPersonaId = value;
+  }
+
+  @action
   async save() {
     try {
       await ajax("/admin/plugins/discourse-ai/ai-spam.json", {
@@ -141,6 +148,7 @@ export default class AiSpam extends Component {
         data: {
           llm_model_id: this.llmId,
           custom_instructions: this.customInstructions,
+          ai_persona_id: this.selectedPersonaId,
         },
       });
       this.toasts.success({
@@ -254,6 +262,18 @@ export default class AiSpam extends Component {
               </LinkTo>
             </span>
           {{/if}}
+        </div>
+
+        <div class="ai-spam__persona">
+          <label class="ai-spam__persona-label">{{i18n
+              "discourse_ai.spam.select_persona"
+            }}</label>
+          <ComboBox
+            @value={{this.selectedPersonaId}}
+            @content={{@model.available_personas}}
+            @onChange={{this.updatePersona}}
+            class="ai-spam__persona-selector"
+          />
         </div>
 
         <div class="ai-spam__instructions">

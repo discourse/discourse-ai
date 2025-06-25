@@ -3,8 +3,6 @@
 module DiscourseAi
   module Personas
     class Bot
-      attr_reader :model
-
       BOT_NOT_FOUND = Class.new(StandardError)
 
       # the future is agentic, allow for more turns
@@ -24,7 +22,7 @@ module DiscourseAi
           model || self.class.guess_model(bot_user) || LlmModel.find(@persona.class.default_llm_id)
       end
 
-      attr_reader :bot_user
+      attr_reader :bot_user, :model
       attr_accessor :persona
 
       def llm
@@ -69,9 +67,10 @@ module DiscourseAi
         llm_kwargs[:user] = user
         llm_kwargs[:temperature] = persona.temperature if persona.temperature
         llm_kwargs[:top_p] = persona.top_p if persona.top_p
-        llm_kwargs[:response_format] = build_json_schema(
-          persona.response_format,
-        ) if persona.response_format.present?
+
+        if !context.bypass_response_format && persona.response_format.present?
+          llm_kwargs[:response_format] = build_json_schema(persona.response_format)
+        end
 
         needs_newlines = false
         tools_ran = 0
