@@ -879,4 +879,301 @@ RSpec.describe AiTool do
       expect(result).to be_nil
     end
   end
+
+  context "when creating staged users" do
+    it "can create a staged user" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createStagedUser({
+            email: params.email,
+            username: params.username,
+            name: params.name
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { email: "testuser@example.com", username: "testuser123", name: "Test User" },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+      expect(result["username"]).to eq("testuser123")
+      expect(result["email"]).to eq("testuser@example.com")
+
+      user = User.find_by(id: result["user_id"])
+      expect(user).not_to be_nil
+      expect(user.staged).to eq(true)
+      expect(user.username).to eq("testuser123")
+      expect(user.email).to eq("testuser@example.com")
+      expect(user.name).to eq("Test User")
+    end
+
+    it "returns an error if user already exists" do
+      existing_user = Fabricate(:user, email: "existing@example.com", username: "existinguser")
+
+      script = <<~JS
+        function invoke(params) {
+          try {
+          return discourse.createStagedUser({
+            email: params.email,
+            username: params.username
+          });
+          } catch (e) {
+            return { error: e.message };
+          }
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { email: existing_user.email, username: "newusername" },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["error"]).to eq("User already exists")
+    end
+  end
+
+  context "when creating topics" do
+    fab!(:category)
+    fab!(:user) { Fabricate(:admin) }
+
+    it "can create a topic" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createTopic({
+            category_id: params.category_id,
+            title: params.title,
+            raw: params.raw,
+            username: params.username,
+            tags: params.tags
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          {
+            category_id: category.id,
+            title: "Test Topic Title",
+            raw: "This is the content of the test topic",
+            username: user.username,
+            tags: %w[test example],
+          },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+      expect(result["topic_id"]).to be_present
+      expect(result["post_id"]).to be_present
+
+      topic = Topic.find_by(id: result["topic_id"])
+      expect(topic).not_to be_nil
+      expect(topic.title).to eq("Test Topic Title")
+      expect(topic.category_id).to eq(category.id)
+      expect(topic.user_id).to eq(user.id)
+      expect(topic.archetype).to eq("regular")
+      expect(topic.tags.pluck(:name)).to contain_exactly("test", "example")
+
+      post = Post.find_by(id: result["post_id"])
+      expect(post).not_to be_nil
+      expect(post.raw).to eq("This is the content of the test topic")
+    end
+
+    it "can create a topic without username (uses system user)" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createTopic({
+            category_id: params.category_id,
+            title: params.title,
+            raw: params.raw
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { category_id: category.id, title: "System User Topic", raw: "Created by system" },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+
+      topic = Topic.find_by(id: result["topic_id"])
+      expect(topic.user_id).to eq(Discourse.system_user.id)
+    end
+
+    it "returns an error for invalid category" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createTopic({
+            category_id: 99999,
+            title: "Test",
+            raw: "Test"
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({}, llm: nil, bot_user: nil)
+
+      expect { runner.invoke }.to raise_error(MiniRacer::RuntimeError, /Category not found/)
+    end
+  end
+
+  context "when creating posts" do
+    fab!(:topic) { Fabricate(:post).topic }
+    fab!(:user)
+
+    it "can create a post in a topic" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createPost({
+            topic_id: params.topic_id,
+            raw: params.raw,
+            username: params.username
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { topic_id: topic.id, raw: "This is a reply to the topic", username: user.username },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+      expect(result["post_id"]).to be_present
+      expect(result["post_number"]).to be > 1
+
+      post = Post.find_by(id: result["post_id"])
+      expect(post).not_to be_nil
+      expect(post.raw).to eq("This is a reply to the topic")
+      expect(post.topic_id).to eq(topic.id)
+      expect(post.user_id).to eq(user.id)
+    end
+
+    it "can create a reply to a specific post" do
+      _original_post = Fabricate(:post, topic: topic, post_number: 2)
+
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createPost({
+            topic_id: params.topic_id,
+            raw: params.raw,
+            reply_to_post_number: params.reply_to_post_number
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner =
+        tool.runner(
+          { topic_id: topic.id, raw: "This is a reply to post #2", reply_to_post_number: 2 },
+          llm: nil,
+          bot_user: nil,
+        )
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+
+      post = Post.find_by(id: result["post_id"])
+      expect(post.reply_to_post_number).to eq(2)
+    end
+
+    it "returns an error for invalid topic" do
+      script = <<~JS
+        function invoke(params) {
+          return discourse.createPost({
+            topic_id: 99999,
+            raw: "Test"
+          });
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({}, llm: nil, bot_user: nil)
+
+      expect { runner.invoke }.to raise_error(MiniRacer::RuntimeError, /Topic not found/)
+    end
+  end
+
+  context "when seeding a category with topics" do
+    fab!(:category)
+
+    it "can seed a category with a topic and post" do
+      script = <<~JS
+        function invoke(params) {
+          // Create a staged user
+          const user = discourse.createStagedUser({
+            email: 'testuser@example.com',
+            username: 'testuser',
+            name: 'Test User'
+          });
+
+          // Create a topic
+          const topic = discourse.createTopic({
+            category_name: params.category_name,
+            title: 'Test Topic 123 123 123',
+            raw: 'This is the initial post content.',
+            username: user.username
+          });
+
+          // Add an extra post to the topic
+          const post = discourse.createPost({
+            topic_id: topic.topic_id,
+            raw: 'This is a reply to the topic.',
+            username: user.username
+          });
+
+          return {
+            success: true,
+            user: user,
+            topic: topic,
+            post: post
+          };
+        }
+      JS
+
+      tool = create_tool(script: script)
+      runner = tool.runner({ category_name: category.name }, llm: nil, bot_user: nil)
+
+      result = runner.invoke
+
+      expect(result["success"]).to eq(true)
+
+      user = User.find_by(username: "testuser")
+      expect(user).not_to be_nil
+      expect(user.staged).to eq(true)
+
+      topic = Topic.find_by(id: result["topic"]["topic_id"])
+      expect(topic).not_to be_nil
+      expect(topic.category_id).to eq(category.id)
+
+      expect(topic.posts.count).to eq(2)
+    end
+  end
 end

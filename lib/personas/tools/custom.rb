@@ -66,8 +66,16 @@ module DiscourseAi
           super(*args, **kwargs)
         end
 
-        def invoke
-          result = runner.invoke
+        def invoke(&blk)
+          callback =
+            proc do |raw|
+              if blk
+                self.custom_raw = raw
+                @chain_next_response = false
+                blk.call(raw, true)
+              end
+            end
+          result = runner.invoke(progress_callback: callback)
           if runner.custom_raw
             self.custom_raw = runner.custom_raw
             @chain_next_response = false
