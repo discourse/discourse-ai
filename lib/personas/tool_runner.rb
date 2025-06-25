@@ -68,7 +68,7 @@ module DiscourseAi
 
         const llm = {
           truncate: _llm_truncate,
-          generate: _llm_generate,
+          generate: function(prompt, options) { return _llm_generate(prompt, options); },
         };
 
         const index = {
@@ -85,6 +85,7 @@ module DiscourseAi
 
         const chain = {
           setCustomRaw: _chain_set_custom_raw,
+          streamCustomRaw: _chain_stream_custom_raw,
         };
 
         const discourse = {
@@ -127,6 +128,27 @@ module DiscourseAi
           },
           createChatMessage: function(params) {
             const result = _discourse_create_chat_message(params);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+            return result;
+          },
+          createStagedUser: function(params) {
+            const result = _discourse_create_staged_user(params);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+            return result;
+          },
+          createTopic: function(params) {
+            const result = _discourse_create_topic(params);
+            if (result.error) {
+              throw new Error(result.error);
+            }
+            return result;
+          },
+          createPost: function(params) {
+            const result = _discourse_create_post(params);
             if (result.error) {
               throw new Error(result.error);
             }
@@ -182,11 +204,14 @@ module DiscourseAi
         t&.join
       end
 
-      def invoke
+      def invoke(progress_callback: nil)
+        @progress_callback = progress_callback
         mini_racer_context.eval(tool.script)
         eval_with_timeout("invoke(#{JSON.generate(parameters)})")
       rescue MiniRacer::ScriptTerminatedError
         { error: "Script terminated due to timeout" }
+      ensure
+        @progress_callback = nil
       end
 
       def has_custom_context?
@@ -258,12 +283,22 @@ module DiscourseAi
 
         mini_racer_context.attach(
           "_llm_generate",
-          ->(prompt) do
+          ->(prompt, options) do
             in_attached_function do
+              options ||= {}
+              response_format = options["response_format"]
+              if response_format && !response_format.is_a?(Hash)
+                raise Discourse::InvalidParameters.new("response_format must be a hash")
+              end
               @llm.generate(
                 convert_js_prompt_to_ruby(prompt),
                 user: llm_user,
                 feature_name: "custom_tool_#{tool.name}",
+                response_format: response_format,
+                temperature: options["temperature"],
+                top_p: options["top_p"],
+                max_tokens: options["max_tokens"],
+                stop_sequences: options["stop_sequences"],
               )
             end
           end,
@@ -316,6 +351,13 @@ module DiscourseAi
 
       def attach_chain(mini_racer_context)
         mini_racer_context.attach("_chain_set_custom_raw", ->(raw) { self.custom_raw = raw })
+        mini_racer_context.attach(
+          "_chain_stream_custom_raw",
+          ->(raw) do
+            self.custom_raw = raw
+            @progress_callback.call(raw) if @progress_callback
+          end,
+        )
       end
 
       # this is useful for polling apis
@@ -494,6 +536,166 @@ module DiscourseAi
                 }
               rescue => e
                 { error: "Failed to create chat message: #{e.message}" }
+              end
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_create_staged_user",
+          ->(params) do
+            in_attached_function do
+              params = params.symbolize_keys
+              email = params[:email]
+              username = params[:username]
+              name = params[:name]
+
+              # Validate parameters
+              return { error: "Missing required parameter: email" } if email.blank?
+              return { error: "Missing required parameter: username" } if username.blank?
+
+              # Check if user already exists
+              existing_user = User.find_by_email(email) || User.find_by_username(username)
+              return { error: "User already exists", user_id: existing_user.id } if existing_user
+
+              begin
+                user =
+                  User.create!(
+                    email: email,
+                    username: username,
+                    name: name || username,
+                    staged: true,
+                    approved: true,
+                    trust_level: TrustLevel[0],
+                  )
+
+                { success: true, user_id: user.id, username: user.username, email: user.email }
+              rescue => e
+                { error: "Failed to create staged user: #{e.message}" }
+              end
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_create_topic",
+          ->(params) do
+            in_attached_function do
+              params = params.symbolize_keys
+              category_name = params[:category_name]
+              category_id = params[:category_id]
+              title = params[:title]
+              raw = params[:raw]
+              username = params[:username]
+              tags = params[:tags]
+
+              if category_id.blank? && category_name.blank?
+                return { error: "Missing required parameter: category_id or category_name" }
+              end
+              return { error: "Missing required parameter: title" } if title.blank?
+              return { error: "Missing required parameter: raw" } if raw.blank?
+
+              user =
+                if username.present?
+                  User.find_by(username: username)
+                else
+                  Discourse.system_user
+                end
+              return { error: "User not found: #{username}" } if user.nil?
+
+              category =
+                if category_id.present?
+                  Category.find_by(id: category_id)
+                else
+                  Category.find_by(name: category_name) || Category.find_by(slug: category_name)
+                end
+
+              return { error: "Category not found" } if category.nil?
+
+              begin
+                post_creator =
+                  PostCreator.new(
+                    user,
+                    title: title,
+                    raw: raw,
+                    category: category.id,
+                    tags: tags,
+                    skip_validations: true,
+                    guardian: Guardian.new(Discourse.system_user),
+                  )
+
+                post = post_creator.create
+
+                if post_creator.errors.present?
+                  return { error: post_creator.errors.full_messages.join(", ") }
+                end
+
+                {
+                  success: true,
+                  topic_id: post.topic_id,
+                  post_id: post.id,
+                  topic_slug: post.topic.slug,
+                  topic_url: post.topic.url,
+                }
+              rescue => e
+                { error: "Failed to create topic: #{e.message}" }
+              end
+            end
+          end,
+        )
+
+        mini_racer_context.attach(
+          "_discourse_create_post",
+          ->(params) do
+            in_attached_function do
+              params = params.symbolize_keys
+              topic_id = params[:topic_id]
+              raw = params[:raw]
+              username = params[:username]
+              reply_to_post_number = params[:reply_to_post_number]
+
+              # Validate parameters
+              return { error: "Missing required parameter: topic_id" } if topic_id.blank?
+              return { error: "Missing required parameter: raw" } if raw.blank?
+
+              # Find the user
+              user =
+                if username.present?
+                  User.find_by(username: username)
+                else
+                  Discourse.system_user
+                end
+              return { error: "User not found: #{username}" } if user.nil?
+
+              # Verify topic exists
+              topic = Topic.find_by(id: topic_id)
+              return { error: "Topic not found" } if topic.nil?
+
+              begin
+                post_creator =
+                  PostCreator.new(
+                    user,
+                    raw: raw,
+                    topic_id: topic_id,
+                    reply_to_post_number: reply_to_post_number,
+                    skip_validations: true,
+                    guardian: Guardian.new(Discourse.system_user),
+                  )
+
+                post = post_creator.create
+
+                if post_creator.errors.present?
+                  return { error: post_creator.errors.full_messages.join(", ") }
+                end
+
+                {
+                  success: true,
+                  post_id: post.id,
+                  post_number: post.post_number,
+                  cooked: post.cooked,
+                }
+              rescue => e
+                { error: "Failed to create post: #{e.message}" }
               end
             end
           end,
