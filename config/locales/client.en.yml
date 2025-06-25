@@ -237,7 +237,6 @@ en:
           topic_title_translator: "Topic title translator"
           short_text_translator: "Short text translator"
 
-
       modals:
         select_option: "Select an option..."
 
@@ -844,6 +843,7 @@ en:
           today: "Today"
           last_7_days: "Last 7 days"
           last_30_days: "Last 30 days"
+          upload_files: "Upload files"
       sentiments:
         dashboard:
           title: "Sentiment"
