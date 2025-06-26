@@ -1,6 +1,6 @@
 import Component from "@glimmer/component";
 import { concat } from "@ember/helper";
-import { gt } from "truth-helpers";
+import { action } from "@ember/object";
 import DButton from "discourse/components/d-button";
 import { i18n } from "discourse-i18n";
 
@@ -11,6 +11,30 @@ export default class AiFeaturesList extends Component {
       const nameB = i18n(`discourse_ai.features.${b.module_name}.name`);
       return nameA.localeCompare(nameB);
     });
+  }
+
+  @action
+  hasGroups(feature) {
+    return this.groupList(feature).length > 0;
+  }
+
+  @action
+  groupList(feature) {
+    const groups = [];
+    const groupIds = new Set();
+    if (feature.personas) {
+      feature.personas.forEach((persona) => {
+        if (persona.allowed_groups) {
+          persona.allowed_groups.forEach((group) => {
+            if (!groupIds.has(group.id)) {
+              groupIds.add(group.id);
+              groups.push(group);
+            }
+          });
+        }
+      });
+    }
+    return groups;
   }
 
   <template>
@@ -92,12 +116,12 @@ export default class AiFeaturesList extends Component {
                       {{i18n "discourse_ai.features.no_llm"}}
                     {{/if}}
                   </div>
-                  {{#if feature.persona}}
+                  {{#if feature.personas}}
                     <div class="ai-feature-card__groups">
                       <span>{{i18n "discourse_ai.features.groups"}}</span>
-                      {{#if (gt feature.persona.allowed_groups.length 0)}}
+                      {{#if (this.hasGroups feature)}}
                         <ul class="ai-feature-card__item-groups">
-                          {{#each feature.persona.allowed_groups as |group|}}
+                          {{#each (this.groupList feature) as |group|}}
                             <li>{{group.name}}</li>
                           {{/each}}
                         </ul>
