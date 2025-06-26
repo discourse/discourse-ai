@@ -79,7 +79,7 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
 
     it "truncates a sentence successfully at a multibyte unicode character" do
       sentence = "foo bar 👨🏿‍👩🏿‍👧🏿‍👧🏿 baz qux quux corge grault garply waldo fred plugh xyzzy thud"
-      expect(described_class.truncate(sentence, 7)).to eq("foo bar 👨🏿")
+      expect(described_class.truncate(sentence, 7)).to eq("foo bar 👨🏿‍")
     end
 
     it "truncates unicode characters properly when they use more than one token per char" do
@@ -104,17 +104,7 @@ describe DiscourseAi::Tokenizer::OpenAiTokenizer do
     end
 
     it "handles unicode characters properly when they use more than one token per char" do
-      expect(described_class.below_limit?("我喜欢吃比萨萨", 10)).to eq(false)
-    end
-  end
-end
-
-describe DiscourseAi::Tokenizer::OpenAiGpt4oTokenizer do
-  describe "#size" do
-    describe "returns a token count" do
-      it "for a sentence with punctuation and capitalization and numbers" do
-        expect(described_class.size("Hello, World! 123")).to eq(6)
-      end
+      expect(described_class.below_limit?("我喜欢吃比萨萨", 6)).to eq(false)
     end
   end
 end

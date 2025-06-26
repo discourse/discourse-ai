@@ -5,7 +5,7 @@ module DiscourseAi
     class OpenAiTokenizer < BasicTokenizer
       class << self
         def tokenizer
-          @@tokenizer ||= Tiktoken.get_encoding("cl100k_base")
+          @@tokenizer ||= Tiktoken.get_encoding("o200k_base")
         end
 
         def tokenize(text)
