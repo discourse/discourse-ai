@@ -99,7 +99,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
     end
 
     it "limits the system message to 60% of available tokens" do
-      prompt = DiscourseAi::Completions::Prompt.new("I'm a system message consisting of 10 tokens")
+      prompt =
+        DiscourseAi::Completions::Prompt.new("I'm a system message consisting of 10 tokens okay")
       prompt.push(type: :user, content: five_token_msg)
 
       dialect = TestDialect.new(prompt, llm_model)
@@ -109,7 +110,7 @@ RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
 
       expect(trimmed).to eq(
         [
-          { type: :system, content: "I'm a system message consisting of 10" },
+          { type: :system, content: "I'm a system message consisting of 10 tokens" },
           { type: :user, content: five_token_msg },
         ],
       )
