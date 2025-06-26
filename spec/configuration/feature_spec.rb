@@ -22,7 +22,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
           )
 
         SiteSetting.ai_summarization_persona = 999_999
-        expect(ai_feature.llm_model).to be_nil
+        expect(ai_feature.llm_models).to eq([])
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
       it "returns the configured llm model" do
         SiteSetting.ai_summarization_persona = ai_persona.id
         allow_configuring_setting { SiteSetting.ai_summarization_model = "custom:#{llm_model.id}" }
-        expect(ai_feature.llm_model).to eq(llm_model)
+        expect(ai_feature.llm_models).to eq([llm_model])
       end
     end
 
@@ -57,7 +57,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
         SiteSetting.ai_helper_proofreader_persona = ai_persona.id
         SiteSetting.ai_helper_model = ""
 
-        expect(ai_feature.llm_model).to eq(llm_model)
+        expect(ai_feature.llm_models).to eq([llm_model])
       end
     end
 
@@ -80,7 +80,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
           SiteSetting.ai_translation_model = "custom:#{translation_model.id}"
         end
 
-        expect(ai_feature.llm_model).to eq(translation_model)
+        expect(ai_feature.llm_models).to eq([translation_model])
       end
     end
   end
@@ -116,7 +116,85 @@ RSpec.describe DiscourseAi::Configuration::Feature do
     end
   end
 
-  describe "#persona_id" do
+  describe ".bot_features" do
+    fab!(:bot_llm) { Fabricate(:llm_model, enabled_chat_bot: true) }
+    fab!(:non_bot_llm) { Fabricate(:llm_model, enabled_chat_bot: false) }
+    fab!(:chat_persona) do
+      Fabricate(
+        :ai_persona,
+        default_llm_id: bot_llm.id,
+        allow_chat_channel_mentions: true,
+        allow_chat_direct_messages: false,
+      )
+    end
+    fab!(:dm_persona) do
+      Fabricate(
+        :ai_persona,
+        default_llm_id: bot_llm.id,
+        allow_chat_channel_mentions: false,
+        allow_chat_direct_messages: true,
+      )
+    end
+    fab!(:topic_persona) do
+      Fabricate(
+        :ai_persona,
+        default_llm_id: bot_llm.id,
+        allow_topic_mentions: true,
+        allow_personal_messages: false,
+      )
+    end
+    fab!(:pm_persona) do
+      Fabricate(:ai_persona, allow_topic_mentions: false, allow_personal_messages: true)
+    end
+    fab!(:inactive_persona) do
+      Fabricate(
+        :ai_persona,
+        enabled: false,
+        allow_chat_channel_mentions: false,
+        allow_chat_direct_messages: false,
+        allow_topic_mentions: false,
+        allow_personal_messages: true,
+      )
+    end
+
+    let(:bot_feature) { described_class.bot_features.first }
+
+    it "returns bot features with correct configuration" do
+      expect(bot_feature.name).to eq("bot")
+      expect(bot_feature.persona_setting).to be_nil
+      expect(bot_feature.module_id).to eq(DiscourseAi::Configuration::Module::BOT_ID)
+      expect(bot_feature.module_name).to eq(DiscourseAi::Configuration::Module::BOT)
+    end
+
+    it "returns only LLMs with enabled_chat_bot" do
+      expect(bot_feature.llm_models).to contain_exactly(bot_llm)
+      expect(bot_feature.llm_models).not_to include(non_bot_llm)
+    end
+
+    it "returns only personas with at least one bot permission enabled" do
+      expected_ids = [chat_persona.id, dm_persona.id, topic_persona.id, pm_persona.id]
+      AiPersona.where("id not in (:ids)", ids: expected_ids).update_all(enabled: false)
+      expect(bot_feature.persona_ids).to match_array(expected_ids)
+      expect(bot_feature.persona_ids).not_to include(inactive_persona.id)
+    end
+
+    it "includes personas with multiple permissions enabled" do
+      multi_permission_persona =
+        Fabricate(
+          :ai_persona,
+          enabled: true,
+          default_llm_id: bot_llm.id,
+          allow_chat_channel_mentions: true,
+          allow_chat_direct_messages: true,
+          allow_topic_mentions: true,
+          allow_personal_messages: true,
+        )
+
+      expect(bot_feature.persona_ids).to include(multi_permission_persona.id)
+    end
+  end
+
+  describe "#persona_ids" do
     it "returns the persona id from site settings" do
       ai_feature =
         described_class.new(
@@ -127,7 +205,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
         )
 
       SiteSetting.ai_summarization_persona = ai_persona.id
-      expect(ai_feature.persona_id).to eq(ai_persona.id)
+      expect(ai_feature.persona_ids).to eq([ai_persona.id])
     end
   end
 

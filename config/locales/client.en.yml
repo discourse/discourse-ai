@@ -186,13 +186,21 @@ en:
         description: "These are the AI features available to visitors on your site. These can be configured to use specific personas and LLMs, and can be access controlled by groups."
         back: "Back"
         disabled: "(disabled)"
-        persona: "Persona:"
+        persona:
+          one: "Persona:"
+          other: "Personas:"
         groups: "Groups:"
-        llm: "LLM:"
+        llm:
+          one: "LLM:"
+          other: "LLMs:"
         no_llm: "No LLM selected"
         no_persona: "Not set"
         no_groups: "None"
         edit: "Edit"
+        bot:
+          bot: "Chatbot"
+          name: "Bot"
+          description: "A chat bot that can answer questions and assist users in private messagges, forum and in chat"
         nav:
           configured: "Configured"
           unconfigured: "Unconfigured"

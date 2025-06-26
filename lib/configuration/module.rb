@@ -9,8 +9,9 @@ module DiscourseAi
       INFERENCE = "inference"
       AI_HELPER = "ai_helper"
       TRANSLATION = "translation"
+      BOT = "bot"
 
-      NAMES = [SUMMARIZATION, SEARCH, DISCORD, INFERENCE, AI_HELPER, TRANSLATION]
+      NAMES = [SUMMARIZATION, SEARCH, DISCORD, INFERENCE, AI_HELPER, TRANSLATION, BOT].freeze
 
       SUMMARIZATION_ID = 1
       SEARCH_ID = 2
@@ -18,6 +19,7 @@ module DiscourseAi
       INFERENCE_ID = 4
       AI_HELPER_ID = 5
       TRANSLATION_ID = 6
+      BOT_ID = 7
 
       class << self
         def all
@@ -33,6 +35,7 @@ module DiscourseAi
               SEARCH,
               "ai_bot_enabled",
               features: DiscourseAi::Configuration::Feature.search_features,
+              extra_check: -> { SiteSetting.ai_bot_discover_persona.present? },
             ),
             new(
               DISCORD_ID,
@@ -58,6 +61,12 @@ module DiscourseAi
               "ai_translation_enabled",
               features: DiscourseAi::Configuration::Feature.translation_features,
             ),
+            new(
+              BOT_ID,
+              BOT,
+              "ai_bot_enabled",
+              features: DiscourseAi::Configuration::Feature.bot_features,
+            ),
           ]
         end
 
@@ -66,17 +75,24 @@ module DiscourseAi
         end
       end
 
-      def initialize(id, name, enabled_by_setting, features: [])
+      def initialize(id, name, enabled_by_setting, features: [], extra_check: nil)
         @id = id
         @name = name
         @enabled_by_setting = enabled_by_setting
         @features = features
+        @extra_check = extra_check
       end
 
       attr_reader :id, :name, :enabled_by_setting, :features
 
       def enabled?
-        SiteSetting.get(enabled_by_setting)
+        enabled_setting = SiteSetting.get(enabled_by_setting)
+
+        if @extra_check
+          enabled_setting && @extra_check.call
+        else
+          enabled_setting
+        end
       end
     end
   end

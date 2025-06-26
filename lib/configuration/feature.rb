@@ -118,6 +118,32 @@ module DiscourseAi
           ]
         end
 
+        def bot_features
+          feature_cache[:bot] ||= [
+            new(
+              "bot",
+              nil,
+              DiscourseAi::Configuration::Module::BOT_ID,
+              DiscourseAi::Configuration::Module::BOT,
+              persona_ids_lookup: -> { lookup_bot_persona_ids },
+              llm_models_lookup: -> { lookup_bot_llms },
+            ),
+          ]
+        end
+
+        def lookup_bot_persona_ids
+          AiPersona
+            .where(enabled: true)
+            .where(
+              "allow_chat_channel_mentions OR allow_chat_direct_messages OR allow_topic_mentions OR allow_personal_messages",
+            )
+            .pluck(:id)
+        end
+
+        def lookup_bot_llms
+          LlmModel.where(enabled_chat_bot: true).to_a
+        end
+
         def translation_features
           feature_cache[:translation] ||= [
             new(
@@ -155,46 +181,62 @@ module DiscourseAi
             inference_features,
             ai_helper_features,
             translation_features,
+            bot_features,
           ].flatten
         end
 
-        def all_persona_setting_names
-          all.map(&:persona_setting)
-        end
-
         def find_features_using(persona_id:)
-          all.select { |feature| feature.persona_id == persona_id }
+          all.select { |feature| feature.persona_ids.include?(persona_id) }
         end
       end
 
-      def initialize(name, persona_setting, module_id, module_name, enabled_by_setting: "")
+      def initialize(
+        name,
+        persona_setting,
+        module_id,
+        module_name,
+        enabled_by_setting: "",
+        persona_ids_lookup: nil,
+        llm_models_lookup: nil
+      )
         @name = name
         @persona_setting = persona_setting
         @module_id = module_id
         @module_name = module_name
         @enabled_by_setting = enabled_by_setting
+        @persona_ids_lookup = persona_ids_lookup
+        @llm_models_lookup = llm_models_lookup
       end
 
-      def llm_model
-        persona = AiPersona.find_by(id: persona_id)
-        return if persona.blank?
+      def llm_models
+        return @llm_models_lookup.call if @llm_models_lookup
+        return if !persona_ids
 
-        persona_klass = persona.class_instance
+        llm_models = []
+        personas = AiPersona.where(id: persona_ids)
+        personas.each do |persona|
+          next if persona.blank?
 
-        llm_model =
-          case module_name
-          when DiscourseAi::Configuration::Module::SUMMARIZATION
-            DiscourseAi::Summarization.find_summarization_model(persona_klass)
-          when DiscourseAi::Configuration::Module::AI_HELPER
-            DiscourseAi::AiHelper::Assistant.find_ai_helper_model(name, persona_klass)
-          when DiscourseAi::Configuration::Module::TRANSLATION
-            DiscourseAi::Translation::BaseTranslator.preferred_llm_model(persona_klass)
+          persona_klass = persona.class_instance
+
+          llm_model =
+            case module_name
+            when DiscourseAi::Configuration::Module::SUMMARIZATION
+              DiscourseAi::Summarization.find_summarization_model(persona_klass)
+            when DiscourseAi::Configuration::Module::AI_HELPER
+              DiscourseAi::AiHelper::Assistant.find_ai_helper_model(name, persona_klass)
+            when DiscourseAi::Configuration::Module::TRANSLATION
+              DiscourseAi::Translation::BaseTranslator.preferred_llm_model(persona_klass)
+            end
+
+          if llm_model.blank? && persona.default_llm_id
+            llm_model = LlmModel.find_by(id: persona.default_llm_id)
           end
 
-        if llm_model.blank? && persona.default_llm_id
-          llm_model = LlmModel.find_by(id: persona.default_llm_id)
+          llm_models << llm_model if llm_model
         end
-        llm_model
+
+        llm_models.compact.uniq
       end
 
       attr_reader :name, :persona_setting, :module_id, :module_name
@@ -203,8 +245,17 @@ module DiscourseAi
         @enabled_by_setting.blank? || SiteSetting.get(@enabled_by_setting)
       end
 
-      def persona_id
-        SiteSetting.get(persona_setting).to_i
+      def persona_ids
+        if @persona_ids_lookup
+          @persona_ids_lookup.call
+        else
+          id = SiteSetting.get(persona_setting).to_i
+          if id != 0
+            [id]
+          else
+            []
+          end
+        end
       end
     end
   end
