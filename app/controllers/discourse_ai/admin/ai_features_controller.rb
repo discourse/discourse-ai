@@ -39,7 +39,9 @@ module DiscourseAi
           name: feature.name,
           personas: feature.persona_ids.map { |id| serialize_persona(persona_id_obj_hash[id]) },
           llm_models:
-            feature.llm_models.map { |llm_model| { id: llm_model.id, name: llm_model.name } },
+            feature.llm_models.map do |llm_model|
+              { id: llm_model.id, name: llm_model.display_name }
+            end,
           enabled: feature.enabled?,
         }
       end

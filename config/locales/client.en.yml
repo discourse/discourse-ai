@@ -197,6 +197,10 @@ en:
         no_persona: "Not set"
         no_groups: "None"
         edit: "Edit"
+        expand_list:
+          one: "(%{count} more)"
+          other: "(%{count} more)"
+        collapse_list: "(show less)"
         bot:
           bot: "Chatbot"
           name: "Bot"

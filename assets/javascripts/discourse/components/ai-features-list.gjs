@@ -1,8 +1,63 @@
 import Component from "@glimmer/component";
+import { tracked } from "@glimmer/tracking";
 import { concat } from "@ember/helper";
 import { action } from "@ember/object";
 import DButton from "discourse/components/d-button";
 import { i18n } from "discourse-i18n";
+
+class ExpandableList extends Component {
+  @tracked isExpanded = false;
+
+  get maxItemsToShow() {
+    return this.args.maxItemsToShow ?? 5;
+  }
+
+  get hasMore() {
+    return this.args.items?.length > this.maxItemsToShow;
+  }
+
+  get visibleItems() {
+    if (!this.args.items) {
+      return [];
+    }
+    return this.isExpanded
+      ? this.args.items
+      : this.args.items.slice(0, this.maxItemsToShow);
+  }
+
+  get remainingCount() {
+    return this.args.items?.length - this.maxItemsToShow;
+  }
+
+  get expandToggleLabel() {
+    if (this.isExpanded) {
+      return i18n("discourse_ai.features.collapse_list");
+    } else {
+      return i18n("discourse_ai.features.expand_list", {
+        count: this.remainingCount,
+      });
+    }
+  }
+
+  @action
+  toggleExpanded() {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  <template>
+    {{#each this.visibleItems as |item index|}}
+      {{yield item index}}
+    {{/each}}
+
+    {{#if this.hasMore}}
+      <DButton
+        class="btn-flat btn-small ai-expanded-list__toggle-button"
+        @translatedLabel={{this.expandToggleLabel}}
+        @action={{this.toggleExpanded}}
+      />
+    {{/if}}
+  </template>
+}
 
 export default class AiFeaturesList extends Component {
   get sortedModules() {
@@ -86,32 +141,42 @@ export default class AiFeaturesList extends Component {
                         count=feature.personas.length
                       }}</span>
                     {{#if feature.personas}}
-                      {{#each feature.personas as |persona|}}
+                      <ExpandableList
+                        @items={{feature.personas}}
+                        @maxItemsToShow={{5}}
+                        as |persona|
+                      >
                         <DButton
                           class="btn-flat btn-small ai-feature-card__persona-button"
                           @translatedLabel={{persona.name}}
                           @route="adminPlugins.show.discourse-ai-personas.edit"
                           @routeModels={{persona.id}}
                         />
-                      {{/each}}
+                      </ExpandableList>
                     {{else}}
                       {{i18n "discourse_ai.features.no_persona"}}
                     {{/if}}
                   </div>
                   <div class="ai-feature-card__llm">
-                    <span>{{i18n
-                        "discourse_ai.features.llm"
-                        count=feature.llm_models.length
-                      }}</span>
                     {{#if feature.llm_models}}
-                      {{#each feature.llm_models as |llm_model|}}
+                      <span>{{i18n
+                          "discourse_ai.features.llm"
+                          count=feature.llm_models.length
+                        }}</span>
+                    {{/if}}
+                    {{#if feature.llm_models}}
+                      <ExpandableList
+                        @items={{feature.llm_models}}
+                        @maxItemsToShow={{5}}
+                        as |llm|
+                      >
                         <DButton
                           class="btn-flat btn-small ai-feature-card__llm-button"
-                          @translatedLabel={{llm_model.name}}
+                          @translatedLabel={{llm.name}}
                           @route="adminPlugins.show.discourse-ai-llms.edit"
-                          @routeModels={{llm_model.id}}
+                          @routeModels={{llm.id}}
                         />
-                      {{/each}}
+                      </ExpandableList>
                     {{else}}
                       {{i18n "discourse_ai.features.no_llm"}}
                     {{/if}}
