@@ -350,19 +350,22 @@ discourse_ai:
   ai_bot_enabled:
     default: false
     client: true
-    area: "ai-features/search"
+    area: "ai-features/bot"
   ai_bot_enable_chat_warning:
     default: false
     client: true
+    area: "ai-features/bot"
   ai_bot_debugging_allowed_groups:
     type: group_list
     list_type: compact
     default: ""
     allow_any: false
+    area: "ai-features/bot"
   ai_bot_allowed_groups:
     type: group_list
     list_type: compact
     default: "3|14" # 3: @staff, 14: @trust_level_4
+    area: "ai-features/bot"
   ai_bot_public_sharing_allowed_groups:
     client: false
     type: group_list
@@ -370,17 +373,21 @@ discourse_ai:
     default: "1|2" # 1: admins, 2: moderators
     allow_any: false
     refresh: true
+    area: "ai-features/bot"
   ai_bot_add_to_header:
     default: true
     client: true
+    area: "ai-features/bot"
   ai_bot_github_access_token:
     default: ""
     secret: true
+    area: "ai-features/bot"
   ai_bot_allowed_seeded_models:
     default: ""
     hidden: true
     type: list
     list_type: compact
+    area: "ai-features/bot"
   ai_bot_discover_persona:
     default: ""
     type: enum

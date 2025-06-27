@@ -37,11 +37,11 @@ module DiscourseAi
       def serialize_feature(feature)
         {
           name: feature.name,
-          persona: serialize_persona(persona_id_obj_hash[feature.persona_id]),
-          llm_model: {
-            id: feature.llm_model&.id,
-            name: feature.llm_model&.name,
-          },
+          personas: feature.persona_ids.map { |id| serialize_persona(persona_id_obj_hash[id]) },
+          llm_models:
+            feature.llm_models.map do |llm_model|
+              { id: llm_model.id, name: llm_model.display_name }
+            end,
           enabled: feature.enabled?,
         }
       end
@@ -57,9 +57,7 @@ module DiscourseAi
       def persona_id_obj_hash
         @persona_id_obj_hash ||=
           begin
-            setting_names = DiscourseAi::Configuration::Feature.all_persona_setting_names
-            ids = setting_names.map { |sn| SiteSetting.public_send(sn) }
-
+            ids = DiscourseAi::Configuration::Feature.all.map(&:persona_ids).flatten.uniq
             AiPersona.where(id: ids).index_by(&:id)
           end
       end

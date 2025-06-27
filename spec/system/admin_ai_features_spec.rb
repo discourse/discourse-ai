@@ -27,7 +27,8 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
 
     ai_features_page.toggle_unconfigured
 
-    expect(ai_features_page).to have_listed_modules(5)
+    # this changes as we add more AI features
+    expect(ai_features_page).to have_listed_modules(6)
   end
 
   it "lists the persona used for the corresponding AI feature" do
