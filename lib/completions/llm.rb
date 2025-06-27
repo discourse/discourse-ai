@@ -80,7 +80,7 @@ module DiscourseAi
                       tokens: 800_000,
                       endpoint:
                         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash",
-                      display_name: "Gemini 2.5 Pro",
+                      display_name: "Gemini 2.5 Flash",
                       input_cost: 0.30,
                       output_cost: 2.50,
                     },
@@ -379,6 +379,12 @@ module DiscourseAi
 
         model_params[:temperature] = temperature if temperature
         model_params[:top_p] = top_p if top_p
+
+        # internals expect symbolized keys, so we normalize here
+        response_format =
+          JSON.parse(response_format.to_json, symbolize_names: true) if response_format &&
+          response_format.is_a?(Hash)
+
         model_params[:response_format] = response_format if response_format
         model_params.merge!(extra_model_params) if extra_model_params
 
