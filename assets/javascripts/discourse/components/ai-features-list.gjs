@@ -44,14 +44,19 @@ class ExpandableList extends Component {
     this.isExpanded = !this.isExpanded;
   }
 
+  @action
+  isLastItem(index) {
+    return index === this.visibleItems.length - 1;
+  }
+
   <template>
     {{#each this.visibleItems as |item index|}}
-      {{yield item index}}
+      {{yield item index this.isLastItem}}
     {{/each}}
 
     {{#if this.hasMore}}
       <DButton
-        class="btn-flat btn-small ai-expanded-list__toggle-button"
+        class="btn-flat ai-expanded-list__toggle-button"
         @translatedLabel={{this.expandToggleLabel}}
         @action={{this.toggleExpanded}}
       />
@@ -61,11 +66,11 @@ class ExpandableList extends Component {
 
 export default class AiFeaturesList extends Component {
   get sortedModules() {
-    return this.args.modules.sort((a, b) => {
-      const nameA = i18n(`discourse_ai.features.${a.module_name}.name`);
-      const nameB = i18n(`discourse_ai.features.${b.module_name}.name`);
-      return nameA.localeCompare(nameB);
-    });
+    if (!this.args.modules || !this.args.modules.length) {
+      return [];
+    }
+
+    return this.args.modules.sortBy("module_name");
   }
 
   @action
@@ -136,54 +141,64 @@ export default class AiFeaturesList extends Component {
                     {{/unless}}
                   </div>
                   <div class="ai-feature-card__persona">
-                    <span>{{i18n
+                    <span class="ai-feature-card__label">
+                      {{i18n
                         "discourse_ai.features.persona"
                         count=feature.personas.length
-                      }}</span>
+                      }}
+                    </span>
                     {{#if feature.personas}}
                       <ExpandableList
                         @items={{feature.personas}}
                         @maxItemsToShow={{5}}
-                        as |persona|
+                        as |persona index isLastItem|
                       >
                         <DButton
-                          class="btn-flat btn-small ai-feature-card__persona-button"
-                          @translatedLabel={{persona.name}}
+                          class="btn-flat ai-feature-card__persona-button btn-text"
+                          @translatedLabel={{concat persona.name (unless (isLastItem index) ", ")}}
                           @route="adminPlugins.show.discourse-ai-personas.edit"
                           @routeModels={{persona.id}}
                         />
                       </ExpandableList>
                     {{else}}
-                      {{i18n "discourse_ai.features.no_persona"}}
+                      <span class="ai-feature-card__label">
+                        {{i18n "discourse_ai.features.no_persona"}}
+                      </span>
                     {{/if}}
                   </div>
                   <div class="ai-feature-card__llm">
                     {{#if feature.llm_models}}
-                      <span>{{i18n
+                      <span class="ai-feature-card__label">
+                        {{i18n
                           "discourse_ai.features.llm"
                           count=feature.llm_models.length
-                        }}</span>
+                        }}
+                      </span>
                     {{/if}}
                     {{#if feature.llm_models}}
                       <ExpandableList
                         @items={{feature.llm_models}}
                         @maxItemsToShow={{5}}
-                        as |llm|
+                        as |llm index isLastItem|
                       >
                         <DButton
-                          class="btn-flat btn-small ai-feature-card__llm-button"
-                          @translatedLabel={{llm.name}}
+                          class="btn-flat ai-feature-card__llm-button"
+                          @translatedLabel={{concat llm.name (unless (isLastItem index) ", ")}}
                           @route="adminPlugins.show.discourse-ai-llms.edit"
                           @routeModels={{llm.id}}
                         />
                       </ExpandableList>
                     {{else}}
-                      {{i18n "discourse_ai.features.no_llm"}}
+                      <span class="ai-feature-card__label">
+                        {{i18n "discourse_ai.features.no_llm"}}
+                      </span>
                     {{/if}}
                   </div>
                   {{#if feature.personas}}
                     <div class="ai-feature-card__groups">
-                      <span>{{i18n "discourse_ai.features.groups"}}</span>
+                      <span class="ai-feature-card__label">
+                        {{i18n "discourse_ai.features.groups"}}
+                      </span>
                       {{#if (this.hasGroups feature)}}
                         <ul class="ai-feature-card__item-groups">
                           {{#each (this.groupList feature) as |group|}}
@@ -191,7 +206,9 @@ export default class AiFeaturesList extends Component {
                           {{/each}}
                         </ul>
                       {{else}}
-                        {{i18n "discourse_ai.features.no_groups"}}
+                        <span class="ai-feature-card__label">
+                          {{i18n "discourse_ai.features.no_groups"}}
+                        </span>
                       {{/if}}
                     </div>
                   {{/if}}
