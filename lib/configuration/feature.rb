@@ -131,6 +131,19 @@ module DiscourseAi
           ]
         end
 
+        def spam_features
+          feature_cache[:spam] ||= [
+            new(
+              "inspect_posts",
+              nil,
+              DiscourseAi::Configuration::Module::SPAM_ID,
+              DiscourseAi::Configuration::Module::SPAM,
+              persona_ids_lookup: -> { [AiModerationSetting.spam&.ai_persona_id].compact },
+              llm_models_lookup: -> { [AiModerationSetting.spam&.llm_model].compact },
+            ),
+          ]
+        end
+
         def lookup_bot_persona_ids
           AiPersona
             .where(enabled: true)
@@ -182,6 +195,7 @@ module DiscourseAi
             ai_helper_features,
             translation_features,
             bot_features,
+            spam_features,
           ].flatten
         end
 
