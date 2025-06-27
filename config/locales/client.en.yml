@@ -230,7 +230,7 @@ en:
 
         ai_helper:
           name: "Helper"
-          description: "Assists users in community interaction, such as creating topics, writing posts, and reading content."
+          description: "Assists users in community interaction, such as creating topics, writing posts, and reading content"
           proofread: Proofread text
           title_suggestions: "Suggest titles"
           explain: "Explain"
@@ -248,6 +248,11 @@ en:
           post_raw_translator: "Post raw translator"
           topic_title_translator: "Topic title translator"
           short_text_translator: "Short text translator"
+        
+        spam:
+          name: "Spam"
+          description: "Identifies potential spam using the selected LLM and flags it for site moderators to inspect in the review queue"
+          inspect_posts: "Inspect posts"
 
       modals:
         select_option: "Select an option..."
