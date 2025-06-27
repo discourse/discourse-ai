@@ -612,7 +612,25 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
       ).to_return(status: 200, body: response)
 
       structured_response = nil
+
       llm.generate("Hello", response_format: schema, user: user) do |partial|
+        structured_response = partial
+      end
+
+      expect(structured_response.read_buffered_property(:key)).to eq("Hello!\n there")
+      expect(structured_response.read_buffered_property(:num)).to eq(42)
+
+      parsed = JSON.parse(req_body, symbolize_names: true)
+
+      # Verify that schema is passed following Gemini API specs.
+      expect(parsed.dig(:generationConfig, :responseSchema)).to eq(
+        schema.dig(:json_schema, :schema).except(:additionalProperties),
+      )
+      expect(parsed.dig(:generationConfig, :responseMimeType)).to eq("application/json")
+
+      structured_response = nil
+      # once more but this time lets have the schema as string keys
+      llm.generate("Hello", response_format: schema.as_json, user: user) do |partial|
         structured_response = partial
       end
 
