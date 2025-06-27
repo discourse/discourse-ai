@@ -44,13 +44,13 @@ module DiscourseAi
           - Site description: {site_description}
           - Site top 10 categories: {top_categories}
 
-          Format your response as a JSON object with a one key named "spam", which indicates if a post is spam or legitimate.
+          Format your response as a JSON object with a one key named "spam", which is a boolean that indicates if a post is spam or legitimate.
           Your output should be in the following format:
             <output>
-              {"spam": "xx"}
+              {"spam": xx}
             </output>
 
-          Where "xx" is true if the post is spam, or false if it's legitimate.
+          Where xx is true if the post is spam, or false if it's legitimate.
         PROMPT
       end
 

@@ -74,6 +74,11 @@ export default class AiFeaturesList extends Component {
   }
 
   @action
+  isSpamModule(aModule) {
+    return aModule.module_name === "spam";
+  }
+
+  @action
   hasGroups(feature) {
     return this.groupList(feature).length > 0;
   }
@@ -106,12 +111,20 @@ export default class AiFeaturesList extends Component {
               <h3>{{i18n
                   (concat "discourse_ai.features." module.module_name ".name")
                 }}</h3>
-              <DButton
-                class="edit"
-                @label="discourse_ai.features.edit"
-                @route="adminPlugins.show.discourse-ai-features.edit"
-                @routeModels={{module.id}}
-              />
+              {{#if (this.isSpamModule module)}}
+                <DButton
+                  class="edit"
+                  @label="discourse_ai.features.edit"
+                  @route="adminPlugins.show.discourse-ai-spam"
+                />
+              {{else}}
+                <DButton
+                  class="edit"
+                  @label="discourse_ai.features.edit"
+                  @route="adminPlugins.show.discourse-ai-features.edit"
+                  @routeModels={{module.id}}
+                />
+              {{/if}}
             </div>
             <div>{{i18n
                 (concat
@@ -194,24 +207,25 @@ export default class AiFeaturesList extends Component {
                       </span>
                     {{/if}}
                   </div>
-                  {{#if feature.personas}}
-                    <div class="ai-feature-card__groups">
-                      <span class="ai-feature-card__label">
-                        {{i18n "discourse_ai.features.groups"}}
-                      </span>
-                      {{#if (this.hasGroups feature)}}
-                        <ul class="ai-feature-card__item-groups">
-                          {{#each (this.groupList feature) as |group|}}
-                            <li>{{group.name}}</li>
-                          {{/each}}
-                        </ul>
-                      {{else}}
+                  {{#unless (this.isSpamModule module)}}
+                    {{#if feature.personas}}
+                      <div class="ai-feature-card__groups">
                         <span class="ai-feature-card__label">
-                          {{i18n "discourse_ai.features.no_groups"}}
+                          {{i18n "discourse_ai.features.groups"}}
                         </span>
+                        {{#if (this.hasGroups feature)}}
+                          <ul class="ai-feature-card__item-groups">
+                            {{#each (this.groupList feature) as |group|}}
+                              <li>{{group.name}}</li>
+                            {{/each}}
+                          </ul>
+                        {{else}}
+                          <span class="ai-feature-card__label">
+                            {{i18n "discourse_ai.features.no_groups"}}
+                          </span>
                       {{/if}}
                     </div>
-                  {{/if}}
+                  {{/unless}}
                 </div>
               </div>
             {{/each}}
