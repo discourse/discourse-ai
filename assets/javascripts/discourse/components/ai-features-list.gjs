@@ -168,7 +168,10 @@ export default class AiFeaturesList extends Component {
                       >
                         <DButton
                           class="btn-flat ai-feature-card__persona-button btn-text"
-                          @translatedLabel={{concat persona.name (unless (isLastItem index) ", ")}}
+                          @translatedLabel={{concat
+                            persona.name
+                            (unless (isLastItem index) ", ")
+                          }}
                           @route="adminPlugins.show.discourse-ai-personas.edit"
                           @routeModels={{persona.id}}
                         />
@@ -196,7 +199,10 @@ export default class AiFeaturesList extends Component {
                       >
                         <DButton
                           class="btn-flat ai-feature-card__llm-button"
-                          @translatedLabel={{concat llm.name (unless (isLastItem index) ", ")}}
+                          @translatedLabel={{concat
+                            llm.name
+                            (unless (isLastItem index) ", ")
+                          }}
                           @route="adminPlugins.show.discourse-ai-llms.edit"
                           @routeModels={{llm.id}}
                         />
@@ -223,8 +229,9 @@ export default class AiFeaturesList extends Component {
                           <span class="ai-feature-card__label">
                             {{i18n "discourse_ai.features.no_groups"}}
                           </span>
-                      {{/if}}
-                    </div>
+                        {{/if}}
+                      </div>
+                    {{/if}}
                   {{/unless}}
                 </div>
               </div>
