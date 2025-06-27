@@ -11,11 +11,13 @@ module PageObjects
       end
 
       def toggle_configured
-        page.find("#{FEATURES_PAGE} .ai-feature-groups .configured").click
+        page.find("#{FEATURES_PAGE} .ai-features__controls select").click
+        page.find("option[value='configured']").click
       end
 
       def toggle_unconfigured
-        page.find("#{FEATURES_PAGE} .ai-feature-groups .unconfigured").click
+        page.find("#{FEATURES_PAGE} .ai-features__controls select").click
+        page.find("option[value='unconfigured']").click
       end
 
       def has_listed_modules?(count)
