@@ -134,23 +134,32 @@ module DiscourseAi
 
       def self.test_post(post, custom_instructions: nil, llm_id: nil)
         settings = AiModerationSetting.spam
-        llm_model = llm_id ? LlmModel.find(llm_id) : settings.llm_model
-        llm = llm_model.to_llm
         custom_instructions = custom_instructions || settings.custom_instructions.presence
-        context = build_context(post, post.topic || Topic.with_deleted.find_by(id: post.topic_id))
-        prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
 
-        result =
-          llm.generate(
-            prompt,
-            temperature: 0.1,
-            max_tokens: 5,
-            user: Discourse.system_user,
+        target_msg =
+          build_target_content_msg(
+            post,
+            post.topic || Topic.with_deleted.find_by(id: post.topic_id),
+          )
+        custom_insts = custom_instructions || settings.custom_instructions.presence
+        if custom_insts.present?
+          custom_insts =
+            "\n\nAdditional site-specific instructions provided by Staff:\n#{custom_insts}"
+        end
+
+        ctx =
+          build_bot_context(
             feature_name: "spam_detection_test",
-            feature_context: {
-              post_id: post.id,
-            },
-          )&.strip
+            messages: [target_msg],
+            custom_instructions: custom_insts,
+          )
+        bot = build_scanner_bot(settings: settings, llm_id: llm_id)
+
+        structured_output = nil
+        llm_args = { feature_context: { post_id: post.id } }
+        bot.reply(ctx, llm_args: llm_args) do |partial, _, type|
+          structured_output = partial if type == :structured_output
+        end
 
         history = nil
         AiSpamLog
@@ -169,43 +178,44 @@ module DiscourseAi
           log << "\n"
         end
 
-        log << "LLM: #{llm_model.name}\n\n"
-        log << "System Prompt: #{build_system_prompt(custom_instructions)}\n\n"
-        log << "Context: #{context}\n\n"
+        used_llm = bot.model
+        log << "LLM: #{used_llm.name}\n\n"
 
-        is_spam = check_if_spam(result)
+        spam_persona = bot.persona
+        used_prompt = spam_persona.craft_prompt(ctx, llm: used_llm).system_message_text
+        log << "System Prompt: #{used_prompt}\n\n"
 
-        prompt.push(type: :model, content: result)
-        prompt.push(type: :user, content: "Explain your reasoning")
+        text_content =
+          if target_msg[:content].is_a?(Array)
+            target_msg[:content].first
+          else
+            target_msg[:content]
+          end
 
-        reasoning =
-          llm.generate(
-            prompt,
-            temperature: 0.1,
-            max_tokens: 100,
-            user: Discourse.system_user,
-            feature_name: "spam_detection_test",
-            feature_context: {
-              post_id: post.id,
-            },
-          )&.strip
+        log << "Context: #{text_content}\n\n"
 
-        log << "#{reasoning}"
+        is_spam = is_spam?(structured_output)
+
+        reasoning_insts = {
+          type: :user,
+          content: "Don't return a JSON this time. Explain your reasoning in plain text.",
+        }
+        ctx.messages = [
+          target_msg,
+          { type: :model, content: { spam: is_spam }.to_json },
+          reasoning_insts,
+        ]
+        ctx.bypass_response_format = true
+
+        reasoning = +""
+
+        bot.reply(ctx, llm_args: llm_args.merge(max_tokens: 100)) do |partial, _, type|
+          reasoning << partial if type.blank?
+        end
+
+        log << "#{reasoning.strip}"
 
         { is_spam: is_spam, log: log }
-      end
-
-      def self.completion_prompt(post, context:, custom_instructions:)
-        system_prompt = build_system_prompt(custom_instructions)
-        prompt = DiscourseAi::Completions::Prompt.new(system_prompt)
-        args = { type: :user, content: context }
-        upload_ids = post.upload_ids
-        if upload_ids.present?
-          args[:content] = [args[:content]]
-          upload_ids.take(3).each { |upload_id| args[:content] << { upload_id: upload_id } }
-        end
-        prompt.push(**args)
-        prompt
       end
 
       def self.perform_scan(post)
@@ -217,29 +227,39 @@ module DiscourseAi
       def self.perform_scan!(post)
         return if !enabled?
         settings = AiModerationSetting.spam
-        return if !settings || !settings.llm_model
+        return if !settings || !settings.llm_model || !settings.ai_persona
 
-        context = build_context(post)
-        llm = settings.llm_model.to_llm
+        target_msg = build_target_content_msg(post)
         custom_instructions = settings.custom_instructions.presence
-        prompt = completion_prompt(post, context: context, custom_instructions: custom_instructions)
+        if custom_instructions.present?
+          custom_instructions =
+            "\n\nAdditional site-specific instructions provided by Staff:\n#{custom_instructions}"
+        end
+
+        ctx =
+          build_bot_context(
+            messages: [target_msg],
+            custom_instructions: custom_instructions,
+            user: self.flagging_user,
+          )
+        bot = build_scanner_bot(settings: settings, user: self.flagging_user)
+        structured_output = nil
 
         begin
-          result =
-            llm.generate(
-              prompt,
-              temperature: 0.1,
-              max_tokens: 5,
-              user: Discourse.system_user,
-              feature_name: "spam_detection",
-              feature_context: {
-                post_id: post.id,
-              },
-            )&.strip
+          llm_args = { feature_context: { post_id: post.id } }
+          bot.reply(ctx, llm_args: llm_args) do |partial, _, type|
+            structured_output = partial if type == :structured_output
+          end
 
-          is_spam = check_if_spam(result)
+          is_spam = is_spam?(structured_output)
 
           log = AiApiAuditLog.order(id: :desc).where(feature_name: "spam_detection").first
+          text_content =
+            if target_msg[:content].is_a?(Array)
+              target_msg[:content].first
+            else
+              target_msg[:content]
+            end
           AiSpamLog.transaction do
             log =
               AiSpamLog.create!(
@@ -247,7 +267,7 @@ module DiscourseAi
                 llm_model: settings.llm_model,
                 ai_api_audit_log: log,
                 is_spam: is_spam,
-                payload: context,
+                payload: text_content,
               )
             handle_spam(post, log) if is_spam
           end
@@ -273,11 +293,42 @@ module DiscourseAi
 
       private
 
-      def self.check_if_spam(result)
-        (result.present? && result.strip.downcase.start_with?("spam"))
+      def self.build_bot_context(
+        feature_name: "spam_detection",
+        messages:,
+        custom_instructions: nil,
+        bypass_response_format: false,
+        user: Discourse.system_user
+      )
+        DiscourseAi::Personas::BotContext
+          .new(
+            user: user,
+            skip_tool_details: true,
+            feature_name: feature_name,
+            messages: messages,
+            bypass_response_format: bypass_response_format,
+          )
+          .tap { |ctx| ctx.custom_instructions = custom_instructions if custom_instructions }
       end
 
-      def self.build_context(post, topic = nil)
+      def self.build_scanner_bot(
+        settings:,
+        use_structured_output: true,
+        llm_id: nil,
+        user: Discourse.system_user
+      )
+        persona = settings.ai_persona.class_instance&.new
+
+        llm_model = llm_id ? LlmModel.find(llm_id) : settings.llm_model
+
+        DiscourseAi::Personas::Bot.as(user, persona: persona, model: llm_model)
+      end
+
+      def self.is_spam?(structured_output)
+        structured_output.present? && structured_output.read_buffered_property(:spam)
+      end
+
+      def self.build_target_content_msg(post, topic = nil)
         topic ||= post.topic
         context = []
 
@@ -318,7 +369,16 @@ module DiscourseAi
 
         context << "\nPost Content (first #{MAX_RAW_SCAN_LENGTH} chars):\n"
         context << post.raw[0..MAX_RAW_SCAN_LENGTH]
-        context.join("\n")
+
+        user_msg = { type: :user, content: context.join("\n") }
+
+        upload_ids = post.upload_ids
+        if upload_ids.present?
+          user_msg[:content] = [user_msg[:content]]
+          upload_ids.take(3).each { |upload_id| user_msg[:content] << { upload_id: upload_id } }
+        end
+
+        user_msg
       end
 
       def self.location_info(user)
@@ -346,53 +406,6 @@ module DiscourseAi
       rescue => e
         Discourse.warn_exception(e, message: "Failed to lookup location info")
         nil
-      end
-
-      def self.build_system_prompt(custom_instructions)
-        base_prompt = +<<~PROMPT
-          You are a spam detection system. Analyze the following post content and context.
-          Respond with "SPAM" if the post is spam, or "NOT_SPAM" if it's legitimate.
-
-          - ALWAYS lead your reply with the word SPAM or NOT_SPAM - you are consumed via an API
-
-          Consider the post type carefully:
-          - For REPLY posts: Check if the response is relevant and topical to the thread
-          - For NEW TOPIC posts: Check if it's a legitimate topic or spam promotion
-
-          A post is spam if it matches any of these criteria:
-          - Contains unsolicited commercial content or promotions
-          - Has suspicious or unrelated external links
-          - Shows patterns of automated/bot posting
-          - Contains irrelevant content or advertisements
-          - For replies: Completely unrelated to the discussion thread
-          - Uses excessive keywords or repetitive text patterns
-          - Shows suspicious formatting or character usage
-
-          Be especially strict with:
-          - Replies that ignore the previous conversation
-          - Posts containing multiple unrelated external links
-          - Generic responses that could be posted anywhere
-
-          Be fair to:
-          - New users making legitimate first contributions
-          - Non-native speakers making genuine efforts to participate
-          - Topic-relevant product mentions in appropriate contexts
-        PROMPT
-
-        base_prompt << "\n\n"
-        base_prompt << <<~SITE_SPECIFIC
-          Site Specific Information:
-          - Site name: #{SiteSetting.title}
-          - Site URL: #{Discourse.base_url}
-          - Site description: #{SiteSetting.site_description}
-          - Site top 10 categories: #{Category.where(read_restricted: false).order(posts_year: :desc).limit(10).pluck(:name).join(", ")}
-        SITE_SPECIFIC
-
-        if custom_instructions.present?
-          base_prompt << "\n\nAdditional site-specific instructions provided by Staff:\n#{custom_instructions}"
-        end
-
-        base_prompt
       end
 
       def self.handle_spam(post, log)

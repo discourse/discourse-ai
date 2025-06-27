@@ -260,6 +260,7 @@ en:
         short_title: "Spam"
         title: "Configure spam handling"
         select_llm: "Select LLM"
+        select_persona: "Select persona"
         custom_instructions: "Custom instructions"
         custom_instructions_help: "Custom instructions specific to your site to help guide the AI in identifying spam, e.g. 'Be more aggressive about scanning posts not in English'."
         last_seven_days: "Last 7 days"

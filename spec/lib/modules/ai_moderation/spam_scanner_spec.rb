@@ -248,7 +248,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       prompts = nil
       result =
         DiscourseAi::Completions::Llm.with_prepared_responses(
-          ["spam", "the reason is just because"],
+          [true, "the reason is just because"],
         ) do |_, _, _prompts|
           prompts = _prompts
           described_class.test_post(post, custom_instructions: "123")
@@ -261,7 +261,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
       result =
         DiscourseAi::Completions::Llm.with_prepared_responses(
-          ["not_spam", "the reason is just because"],
+          [false, "the reason is just because"],
         ) do |_, _, _prompts|
           prompts = _prompts
           described_class.test_post(post, custom_instructions: "123")
@@ -284,7 +284,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
       described_class.new_post(post)
 
       prompt = nil
-      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
+      DiscourseAi::Completions::Llm.with_prepared_responses([true]) do |_, _, _prompts|
         # force a rebake so we actually scan
         post.rebake!
         prompt = _prompts.first
@@ -336,7 +336,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
       described_class.new_post(post)
 
-      DiscourseAi::Completions::Llm.with_prepared_responses(["spam"]) do |_, _, _prompts|
+      DiscourseAi::Completions::Llm.with_prepared_responses([true]) do |_, _, _prompts|
         # force a rebake so we actually scan
         post.rebake!
       end
@@ -364,7 +364,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
 
     prompts = nil
     DiscourseAi::Completions::Llm.with_prepared_responses(
-      ["spam", "just because"],
+      [true, "just because"],
     ) do |_, _, _prompts|
       prompts = _prompts
       described_class.test_post(post)

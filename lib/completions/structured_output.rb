@@ -37,7 +37,7 @@ module DiscourseAi
         end
 
         # Maybe we haven't read that part of the JSON yet.
-        return nil if @tracked[prop_name].blank?
+        return nil if @tracked[prop_name].nil?
 
         # This means this property is a string and we want to return unread chunks.
         if @property_cursors[prop_name].present?

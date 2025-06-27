@@ -391,6 +391,9 @@ en:
         short_text_translator:
           name: "Short text translator"
           description: "Powers the translation feature by as a generic text translator, used for short texts like category names or tags"
+        spam_detector:
+          name: "Spam detector"
+          description: "Default persona powering our Spam detection feature"
 
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
@@ -577,6 +580,7 @@ en:
         set_llm_first: "Set %{setting} first"
         model_unreachable: "We couldn't get a response from this model. Check your settings first."
         invalid_seeded_model: "You can't use this model with this feature"
+        invalid_persona_response_format: "The selected persona must have a response format with a boolean field names \"spam\""
         must_select_model: "You must select a LLM first"
       endpoints:
         not_configured: "%{display_name} (not configured)"

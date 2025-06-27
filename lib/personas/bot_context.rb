@@ -21,7 +21,8 @@ module DiscourseAi
                     :inferred_concepts,
                     :format_dates,
                     :temporal_context,
-                    :user_language
+                    :user_language,
+                    :bypass_response_format
 
       def initialize(
         post: nil,
@@ -42,7 +43,8 @@ module DiscourseAi
         resource_url: nil,
         cancel_manager: nil,
         inferred_concepts: [],
-        format_dates: false
+        format_dates: false,
+        bypass_response_format: false
       )
         @participants = participants
         @user = user
@@ -65,6 +67,8 @@ module DiscourseAi
         @inferred_concepts = inferred_concepts
 
         @cancel_manager = cancel_manager
+
+        @bypass_response_format = bypass_response_format
 
         if post
           @post_id = post.id
@@ -93,6 +97,7 @@ module DiscourseAi
         inferred_concepts
         user_language
         temporal_context
+        top_categories
       ]
 
       def lookup_template_param(key)
@@ -119,6 +124,16 @@ module DiscourseAi
         @private_message
       end
 
+      def top_categories
+        @top_categories ||=
+          Category
+            .where(read_restricted: false)
+            .order(posts_year: :desc)
+            .limit(10)
+            .pluck(:name)
+            .join(", ")
+      end
+
       def to_json
         {
           messages: @messages,
@@ -142,6 +157,8 @@ module DiscourseAi
           inferred_concepts: @inferred_concepts,
           user_language: @user_language,
           temporal_context: @temporal_context,
+          top_categories: @top_categories,
+          bypass_response_format: @bypass_response_format,
         }
       end
     end
