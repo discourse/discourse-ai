@@ -253,6 +253,11 @@ module DiscourseAi
             ],
             custom_instructions: custom_locale_instructions(user, force_default_locale),
           )
+          context.messages.each do |msg|
+            if msg[:content].is_a?(Array)
+              msg[:content] = msg[:content].map(&:to_s).join("\n")
+            end
+          end
 
         structured_output = nil
 
