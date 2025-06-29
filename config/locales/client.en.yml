@@ -208,6 +208,11 @@ en:
         nav:
           configured: "Configured"
           unconfigured: "Unconfigured"
+        filters:
+          all: "All"
+          text: "Search features, personas, LLMs, or groups..."
+          no_results: "No features found matching your filters."
+          reset: "Reset"
         summarization:
           name: "Summaries"
           description: "Makes a summarization button available that allows visitors to summarize topics"
