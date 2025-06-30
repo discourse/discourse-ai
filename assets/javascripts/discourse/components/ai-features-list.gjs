@@ -70,7 +70,7 @@ export default class AiFeaturesList extends Component {
       return [];
     }
 
-    return this.args.modules.sortBy("module_name");
+    return this.args.modules.toSorted((a, b) => a.module_name.localeCompare(b.module_name));
   }
 
   @action
