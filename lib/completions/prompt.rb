@@ -8,6 +8,14 @@ module DiscourseAi
       attr_reader :messages, :tools, :system_message_text
       attr_accessor :topic_id, :post_id, :max_pixels, :tool_choice
 
+      def self.text_only(message)
+        if message[:content].is_a?(Array)
+          message[:content].map { |element| element if element.is_a?(String) }.compact.join
+        else
+          message[:content]
+        end
+      end
+
       def initialize(
         system_message_text = nil,
         messages: [],
@@ -144,14 +152,6 @@ module DiscourseAi
         end
 
         []
-      end
-
-      def text_only(message)
-        if message[:content].is_a?(Array)
-          message[:content].map { |element| element if element.is_a?(String) }.compact.join
-        else
-          message[:content]
-        end
       end
 
       def encode_upload(upload_id)

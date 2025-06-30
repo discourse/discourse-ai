@@ -156,7 +156,7 @@ module DiscourseAi
             end
           end
 
-          { role: "user", content: prompt.text_only(msg), images: images }
+          { role: "user", content: DiscourseAi::Completions::Prompt.text_only(msg), images: images }
         end
 
         def model_msg(msg)

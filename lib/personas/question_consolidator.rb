@@ -33,7 +33,7 @@ module DiscourseAi
           row = +""
           row << ((message[:type] == :user) ? "user" : "model")
 
-          content = message[:content]
+          content = DiscourseAi::Completions::Prompt.text_only(message)
           current_tokens = @llm.tokenizer.tokenize(content).length
 
           allowed_tokens = @max_tokens - tokens
