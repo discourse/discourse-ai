@@ -110,7 +110,7 @@ module DiscourseAi
         end
 
         def user_msg(msg)
-          content = prompt.text_only(msg)
+          content = DiscourseAi::Completions::Prompt.text_only(msg)
           user_message = { role: "USER", message: content }
           user_message[:message] = "#{msg[:id]}: #{content}" if msg[:id]
           user_message

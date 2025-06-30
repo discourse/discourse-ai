@@ -365,7 +365,7 @@ module DiscourseAi
 
         # first response
         if latest_interactions.length == 1
-          consolidated_question = latest_interactions[0][:content]
+          consolidated_question = DiscourseAi::Completions::Prompt.text_only(latest_interactions[0])
         else
           consolidated_question =
             DiscourseAi::Personas::QuestionConsolidator.consolidate_question(

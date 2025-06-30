@@ -306,21 +306,24 @@ RSpec.describe DiscourseAi::Personas::Persona do
 
       fab!(:llm_model) { Fabricate(:fake_model) }
 
-      it "will run the question consolidator" do
+      fab!(:custom_ai_persona) do
+        Fabricate(
+          :ai_persona,
+          name: "custom",
+          rag_conversation_chunks: 3,
+          allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
+          question_consolidator_llm_id: llm_model.id,
+        )
+      end
+
+      before do
         context_embedding = vector_def.dimensions.times.map { rand(-1.0...1.0) }
         EmbeddingsGenerationStubs.hugging_face_service(consolidated_question, context_embedding)
 
-        custom_ai_persona =
-          Fabricate(
-            :ai_persona,
-            name: "custom",
-            rag_conversation_chunks: 3,
-            allowed_group_ids: [Group::AUTO_GROUPS[:trust_level_0]],
-            question_consolidator_llm_id: llm_model.id,
-          )
-
         UploadReference.ensure_exist!(target: custom_ai_persona, upload_ids: [upload.id])
+      end
 
+      it "will run the question consolidator" do
         custom_persona =
           DiscourseAi::Personas::Persona.find_by(id: custom_ai_persona.id, user: user).new
 
@@ -342,6 +345,36 @@ RSpec.describe DiscourseAi::Personas::Persona do
         expect(message).to include("Tell me the time")
         expect(message).to include("the time is 1")
         expect(message).to include("in france?")
+      end
+
+      context "when there are messages with uploads" do
+        let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
+        let(:image_upload) do
+          UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
+        end
+
+        it "the question consolidator works" do
+          custom_persona =
+            DiscourseAi::Personas::Persona.find_by(id: custom_ai_persona.id, user: user).new
+
+          context.messages = [
+            { content: "Tell me the time", type: :user },
+            { content: "the time is 1", type: :model },
+            { content: ["in france?", { upload_id: image_upload.id }], type: :user },
+          ]
+
+          DiscourseAi::Completions::Endpoints::Fake.with_fake_content(consolidated_question) do
+            custom_persona.craft_prompt(context).messages.first[:content]
+          end
+
+          message =
+            DiscourseAi::Completions::Endpoints::Fake.last_call[:dialect].prompt.messages.last[
+              :content
+            ]
+          expect(message).to include("Tell me the time")
+          expect(message).to include("the time is 1")
+          expect(message).to include("in france?")
+        end
       end
     end
 
