@@ -211,7 +211,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           expect(ai_pm_homepage).to have_homepage
           expect(sidebar).to have_no_tags_section
           expect(sidebar).to have_no_section("categories")
-          expect(sidebar).to have_no_section("messages")
           expect(sidebar).to have_no_section("chat-dms")
           expect(sidebar).to have_no_section("chat-channels")
           expect(sidebar).to have_no_section("user-threads")
@@ -405,7 +404,6 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           topic_page.visit_topic(pm)
 
           expect(sidebar).to have_section("categories")
-          expect(sidebar).to have_section("messages")
           expect(sidebar).to have_section("chat-dms")
           expect(sidebar).to have_no_css("button.ai-new-question-button")
         end
