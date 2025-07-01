@@ -204,7 +204,7 @@ en:
         bot:
           bot: "Chatbot"
           name: "Bot"
-          description: "A chat bot that can answer questions and assist users in private messagges, forum and in chat"
+          description: "A chat bot that can answer questions and assist users in personal messages, forum and in chat"
         nav:
           configured: "Configured"
           unconfigured: "Unconfigured"
