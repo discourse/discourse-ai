@@ -190,7 +190,7 @@ module DiscourseAi
                       display_name: "Pixtral Large",
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizers::MixtralTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::MistralTokenizer,
                   endpoint: "https://api.mistral.ai/v1/chat/completions",
                   provider: "mistral",
                 },
