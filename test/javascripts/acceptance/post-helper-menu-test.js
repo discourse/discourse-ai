@@ -48,6 +48,7 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
       return helper.response({
         result: "This is a suggestio",
         done: false,
+        progress_channel: "/some/progress/channel",
       });
     });
 
@@ -61,13 +62,10 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
     await selectText(textNode, 9);
     await click(".ai-post-helper__trigger");
     await click(".ai-helper-options__button[data-name='explain']");
-    await publishToMessageBus(
-      `/discourse-ai/ai-helper/stream_suggestion/118591`,
-      {
-        done: true,
-        result: suggestion,
-      }
-    );
+    await publishToMessageBus(`/some/progress/channel`, {
+      done: true,
+      result: suggestion,
+    });
     assert.dom(".ai-post-helper__suggestion__text").hasText(suggestion);
   });
 
@@ -91,13 +89,10 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
     await selectSpecificText(textNode, 72, 77);
     await click(".ai-post-helper__trigger");
     await click(".ai-helper-options__button[data-name='explain']");
-    await publishToMessageBus(
-      `/discourse-ai/ai-helper/stream_suggestion/118591`,
-      {
-        done: true,
-        result: suggestion,
-      }
-    );
+    await publishToMessageBus(`/some/progress/channel`, {
+      done: true,
+      result: suggestion,
+    });
 
     assert.dom(".ai-post-helper__suggestion__insert-footnote").isDisabled();
   });
@@ -108,13 +103,10 @@ acceptance("AI Helper - Post Helper Menu", function (needs) {
     await selectText(query("#post_1 .cooked p"));
     await click(".ai-post-helper__trigger");
     await click(".ai-helper-options__button[data-name='translate']");
-    await publishToMessageBus(
-      `/discourse-ai/ai-helper/stream_suggestion/118591`,
-      {
-        done: true,
-        result: translated,
-      }
-    );
+    await publishToMessageBus(`/some/progress/channel`, {
+      done: true,
+      result: translated,
+    });
     assert.dom(".ai-post-helper__suggestion__text").hasText(translated);
   });
 });
