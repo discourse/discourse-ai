@@ -1,0 +1,31 @@
+# frozen_string_literal: true
+
+module DiscourseAi
+  module Personas
+    class ContentCreator < Persona
+      def self.default_enabled
+        false
+      end
+
+      def system_prompt
+        <<~PROMPT.strip
+          You are a content creator for a forum. The forum title and description is as follows:
+          * Ttitle: {site_title}
+          * Description: {site_description}
+
+          Format your response as a JSON object with a single key named "output", which has the created content.
+          Your output should be in the following format:
+            <output>
+              {"output": "xx"}
+            </output>
+
+          Where "xx" is replaced by the content.
+        PROMPT
+      end
+
+      def response_format
+        [{ "key" => "output", "type" => "string" }]
+      end
+    end
+  end
+end

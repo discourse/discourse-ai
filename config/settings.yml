@@ -222,21 +222,30 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::EmbeddingsModuleValidator"
+    area: "ai-features/embeddings"
   ai_embeddings_selected_model:
     type: enum
     default: ""
     allow_any: false
     enum: "DiscourseAi::Configuration::EmbeddingDefsEnumerator"
     validator: "DiscourseAi::Configuration::EmbeddingDefsValidator"
+    area: "ai-features/embeddings"
   ai_embeddings_per_post_enabled:
     default: false
     hidden: true
-  ai_embeddings_generate_for_pms: false
+  ai_embeddings_generate_for_pms: 
+    default: false
+    area: "ai-features/embeddings"
   ai_embeddings_semantic_related_topics_enabled:
     default: false
     client: true
-  ai_embeddings_semantic_related_topics: 5
-  ai_embeddings_semantic_related_include_closed_topics: true
+    area: "ai-features/embeddings"
+  ai_embeddings_semantic_related_topics: 
+    default: 5
+    area: "ai-features/embeddings"
+  ai_embeddings_semantic_related_include_closed_topics: 
+    default: true
+    area: "ai-features/embeddings"
   ai_embeddings_backfill_batch_size:
     default: 250
     hidden: true
@@ -244,12 +253,14 @@ discourse_ai:
     default: false
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
+    area: "ai-features/embeddings"
   ai_embeddings_semantic_search_hyde_model:
     default: ""
     type: enum
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
+    area: "ai-features/embeddings"
   ai_embeddings_semantic_search_hyde_model_allowed_seeded_models:
     default: ""
     hidden: true
@@ -259,6 +270,12 @@ discourse_ai:
     default: false
     client: true
     hidden: true
+    area: "ai-features/embeddings"
+  ai_embeddings_semantic_search_hyde_persona:
+    default: "-32"
+    type: enum
+    enum: "DiscourseAi::Configuration::PersonaEnumerator"
+    area: "ai-features/embeddings"
 
   ai_embeddings_discourse_service_api_endpoint:
     default: ""

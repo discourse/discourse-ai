@@ -144,6 +144,17 @@ module DiscourseAi
           ]
         end
 
+        def embeddings_features
+          feature_cache[:embeddings] ||= [
+            new(
+              "hyde",
+              "ai_embeddings_semantic_search_hyde_persona",
+              DiscourseAi::Configuration::Module::EMBEDDINGS_ID,
+              DiscourseAi::Configuration::Module::EMBEDDINGS,
+            ),
+          ]
+        end
+
         def lookup_bot_persona_ids
           AiPersona
             .where(enabled: true)
@@ -196,6 +207,7 @@ module DiscourseAi
             translation_features,
             bot_features,
             spam_features,
+            embeddings_features,
           ].flatten
         end
 
@@ -241,6 +253,8 @@ module DiscourseAi
               DiscourseAi::AiHelper::Assistant.find_ai_helper_model(name, persona_klass)
             when DiscourseAi::Configuration::Module::TRANSLATION
               DiscourseAi::Translation::BaseTranslator.preferred_llm_model(persona_klass)
+            when DiscourseAi::Configuration::Module::EMBEDDINGS
+              DiscourseAi::Embeddings::SemanticSearch.new(nil).find_ai_hyde_model(persona_klass)
             end
 
           if llm_model.blank? && persona.default_llm_id

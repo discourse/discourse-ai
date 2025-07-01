@@ -125,7 +125,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Search do
         DiscourseAi::Embeddings::Schema.for(Topic).store(post1.topic, hyde_embedding, "digest")
 
         results =
-          DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([query]) do
             search.invoke(&progress_blk)
           end
 
@@ -144,7 +144,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Search do
 
         # results will be expanded by semantic search, but it will find nothing
         results =
-          DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([query]) do
             search.invoke(&progress_blk)
           end
 

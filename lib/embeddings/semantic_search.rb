@@ -78,7 +78,9 @@ module DiscourseAi
           return Post.none
         end
 
-        search_embedding = hyde ? hyde_embedding(search_term) : embedding(search_term)
+        search_embedding = nil
+        search_embedding = hyde_embedding(search_term) if hyde
+        search_embedding = embedding(search_term) if search_embedding.blank?
 
         over_selection_limit = limit * OVER_SELECTION_FACTOR
 
@@ -176,26 +178,51 @@ module DiscourseAi
       end
 
       def hypothetical_post_from(search_term)
-        prompt = DiscourseAi::Completions::Prompt.new(<<~TEXT.strip)
-          You are a content creator for a forum. The forum description is as follows:
-          #{SiteSetting.title}
-          #{SiteSetting.site_description}
+        context =
+          DiscourseAi::Personas::BotContext.new(
+            user: @guardian.user,
+            skip_tool_details: true,
+            feature_name: "semantic_search_hyde",
+            messages: [{ type: :user, content: <<~TEXT.strip }],
+              Using this description, write a forum post about the subject inside the <input></input> XML tags:
 
-          Put the forum post between <ai></ai> tags.
-        TEXT
+              <input>#{search_term}</input>
+            TEXT
+          )
 
-        prompt.push(type: :user, content: <<~TEXT.strip)
-          Using this description, write a forum post about the subject inside the <input></input> XML tags:
+        bot = build_bot(@guardian.user)
+        return nil if bot.nil?
 
-          <input>#{search_term}</input>
-        TEXT
+        structured_output = nil
+        raw_response = +""
+        hyde_schema_key = bot.persona.response_format&.first.to_h
 
-        llm_response =
-          DiscourseAi::Completions::Llm.proxy(
-            SiteSetting.ai_embeddings_semantic_search_hyde_model,
-          ).generate(prompt, user: @guardian.user, feature_name: "semantic_search_hyde")
+        buffer_blk =
+          Proc.new do |partial, _, type|
+            if type == :structured_output
+              structured_output = partial
+            elsif type.blank?
+              # Assume response is a regular completion.
+              raw_response << partial
+            end
+          end
 
-        Nokogiri::HTML5.fragment(llm_response).at("ai")&.text.presence || llm_response
+        bot.reply(context, &buffer_blk)
+
+        structured_output&.read_buffered_property(hyde_schema_key["key"]&.to_sym) || raw_response
+      end
+
+      # Priorities are:
+      #   1. Persona's default LLM
+      #   2. `ai_embeddings_semantic_search_hyde_model` setting.
+      def find_ai_hyde_model(persona_klass)
+        model_id =
+          persona_klass.default_llm_id ||
+            SiteSetting.ai_embeddings_semantic_search_hyde_model&.split(":")&.last
+
+        return if model_id.blank?
+
+        LlmModel.find_by(id: model_id)
       end
 
       private
@@ -208,6 +235,18 @@ module DiscourseAi
 
       def build_embedding_key(digest, hyde_model, embedding_model)
         "#{build_hyde_key(digest, hyde_model)}-#{embedding_model}"
+      end
+
+      def build_bot(user)
+        persona_id = SiteSetting.ai_embeddings_semantic_search_hyde_persona
+
+        persona_klass = AiPersona.find_by(id: persona_id)&.class_instance
+        return if persona_klass.nil?
+
+        llm_model = find_ai_hyde_model(persona_klass)
+        return if llm_model.nil?
+
+        DiscourseAi::Personas::Bot.as(user, persona: persona_klass.new, model: llm_model)
       end
     end
   end
