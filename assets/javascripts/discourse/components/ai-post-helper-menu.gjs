@@ -155,7 +155,7 @@ export default class AiPostHelperMenu extends Component {
   }
 
   subscribe() {
-    this.messageBus.subscribe(this._progressChannel, this._updateResult);
+    this.messageBus.subscribe(this._progressChannel, this._updateResult, 0);
   }
 
   @bind
