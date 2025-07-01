@@ -9,6 +9,7 @@ module Jobs
       return unless user = User.find_by(id: args[:user_id])
       return unless args[:text]
       return unless args[:client_id]
+      return unless args[:progress_channel]
 
       helper_mode = args[:prompt]
 
@@ -16,7 +17,7 @@ module Jobs
         helper_mode,
         args[:text],
         user,
-        "/discourse-ai/ai-helper/stream_composer_suggestion",
+        args[:progress_channel],
         force_default_locale: args[:force_default_locale],
         client_id: args[:client_id],
         custom_prompt: args[:custom_prompt],

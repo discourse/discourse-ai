@@ -1,7 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import { modifier } from "ember-modifier";
@@ -43,9 +42,6 @@ export default class AiPostHelperMenu extends Component {
   @tracked lastSelectedOption = null;
   @tracked isSavingFootnote = false;
   @tracked supportsAddFootnote = this.args.data.supportsFastEdit;
-  @tracked
-  channel =
-    `/discourse-ai/ai-helper/stream_suggestion/${this.args.data.quoteState.postId}`;
 
   @tracked
   smoothStreamer = new SmoothStreamer(
@@ -150,19 +146,25 @@ export default class AiPostHelperMenu extends Component {
     return sanitize(text);
   }
 
-  @bind
+  set progressChannel(value) {
+    if (this._progressChannel) {
+      this.unsubscribe();
+    }
+    this._progressChannel = value;
+    this.subscribe();
+  }
+
   subscribe() {
-    this.messageBus.subscribe(
-      this.channel,
-      (data) => this._updateResult(data),
-      this.args.data.post
-        .discourse_ai_helper_stream_suggestion_last_message_bus_id
-    );
+    this.messageBus.subscribe(this._progressChannel, this._updateResult);
   }
 
   @bind
   unsubscribe() {
-    this.messageBus.unsubscribe(this.channel, this._updateResult);
+    if (!this._progressChannel) {
+      return;
+    }
+    this.messageBus.unsubscribe(this._progressChannel, this._updateResult);
+    this._progressChannel = null;
   }
 
   @bind
@@ -182,32 +184,37 @@ export default class AiPostHelperMenu extends Component {
     this.lastSelectedOption = option;
     const streamableOptions = ["explain", "translate", "custom_prompt"];
 
-    if (streamableOptions.includes(option.name)) {
-      return this._handleStreamedResult(option);
-    } else {
-      this._activeAiRequest = ajax("/discourse-ai/ai-helper/suggest", {
-        method: "POST",
-        data: {
-          mode: option.name,
-          text: this.args.data.quoteState.buffer,
-          custom_prompt: this.customPromptValue,
-        },
-      });
+    try {
+      if (streamableOptions.includes(option.name)) {
+        const streamedResult = await this._handleStreamedResult(option);
+        this.progressChannel = streamedResult.progress_channel;
+        return;
+      } else {
+        this._activeAiRequest = ajax("/discourse-ai/ai-helper/suggest", {
+          method: "POST",
+          data: {
+            mode: option.name,
+            text: this.args.data.quoteState.buffer,
+            custom_prompt: this.customPromptValue,
+          },
+        });
+      }
+
+      this._activeAiRequest
+        .then(({ suggestions }) => {
+          this.suggestion = suggestions[0].trim();
+
+          if (option.name === "proofread") {
+            return this._handleProofreadOption();
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+          this.menuState = this.MENU_STATES.result;
+        });
+    } catch (error) {
+      popupAjaxError(error);
     }
-
-    this._activeAiRequest
-      .then(({ suggestions }) => {
-        this.suggestion = suggestions[0].trim();
-
-        if (option.name === "proofread") {
-          return this._handleProofreadOption();
-        }
-      })
-      .catch(popupAjaxError)
-      .finally(() => {
-        this.loading = false;
-        this.menuState = this.MENU_STATES.result;
-      });
 
     return this._activeAiRequest;
   }
@@ -340,7 +347,6 @@ export default class AiPostHelperMenu extends Component {
         {{else if (eq this.menuState this.MENU_STATES.result)}}
           <div
             class="ai-post-helper__suggestion"
-            {{didInsert this.subscribe}}
             {{willDestroy this.unsubscribe}}
           >
             {{#if this.suggestion}}

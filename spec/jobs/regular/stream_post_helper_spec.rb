@@ -60,10 +60,18 @@ RSpec.describe Jobs::StreamPostHelper do
         explanation =
           "In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling."
 
+        channel = "/my/channel"
         DiscourseAi::Completions::Llm.with_prepared_responses([explanation]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion/#{post.id}") do
-              job.execute(post_id: post.id, user_id: user.id, text: "pie", prompt: mode)
+            MessageBus.track_publish(channel) do
+              job.execute(
+                post_id: post.id,
+                user_id: user.id,
+                text: "pie",
+                prompt: mode,
+                progress_channel: channel,
+                client_id: "test_client_id",
+              )
             end
 
           partial_result_update = messages.first.data
@@ -76,10 +84,19 @@ RSpec.describe Jobs::StreamPostHelper do
         explanation =
           "In this context, \"pie\" refers to a baked dessert typically consisting of a pastry crust and filling."
 
+        channel = "/my/channel"
+
         DiscourseAi::Completions::Llm.with_prepared_responses([explanation]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion/#{post.id}") do
-              job.execute(post_id: post.id, user_id: user.id, text: "pie", prompt: mode)
+            MessageBus.track_publish(channel) do
+              job.execute(
+                post_id: post.id,
+                user_id: user.id,
+                text: "pie",
+                prompt: mode,
+                client_id: "test_client_id",
+                progress_channel: channel,
+              )
             end
 
           final_update = messages.last.data
@@ -96,10 +113,18 @@ RSpec.describe Jobs::StreamPostHelper do
         sentence = "I like to eat pie."
         translation = "Me gusta comer pastel."
 
+        channel = "/my/channel"
         DiscourseAi::Completions::Llm.with_prepared_responses([translation]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion/#{post.id}") do
-              job.execute(post_id: post.id, user_id: user.id, text: sentence, prompt: mode)
+            MessageBus.track_publish(channel) do
+              job.execute(
+                post_id: post.id,
+                user_id: user.id,
+                text: sentence,
+                prompt: mode,
+                progress_channel: channel,
+                client_id: "test_client_id",
+              )
             end
 
           partial_result_update = messages.first.data
@@ -111,11 +136,19 @@ RSpec.describe Jobs::StreamPostHelper do
       it "publishes a final update to signal we're done" do
         sentence = "I like to eat pie."
         translation = "Me gusta comer pastel."
+        channel = "/my/channel"
 
         DiscourseAi::Completions::Llm.with_prepared_responses([translation]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion/#{post.id}") do
-              job.execute(post_id: post.id, user_id: user.id, text: sentence, prompt: mode)
+            MessageBus.track_publish(channel) do
+              job.execute(
+                post_id: post.id,
+                user_id: user.id,
+                text: sentence,
+                prompt: mode,
+                progress_channel: channel,
+                client_id: "test_client_id",
+              )
             end
 
           final_update = messages.last.data
