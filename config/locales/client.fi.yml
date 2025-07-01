@@ -145,6 +145,13 @@ fi:
         no_persona: "Ei asetettu"
         no_groups: "Ei valittu"
         edit: "Muokkaa"
+        expand_list:
+          one: "(%{count} muuta)"
+          other: "(%{count} muuta)"
+        collapse_list: "(näytä vähemmän)"
+        filters:
+          all: "Kaikki"
+          reset: "Palauta"
         search:
           name: "Hae"
         ai_helper:
@@ -154,6 +161,9 @@ fi:
           smart_dates: "Älykkäät päivämäärät"
           markdown_tables: "Luo markdown-taulukko"
           custom_prompt: "Mukautettu kehote"
+        spam:
+          name: "Roskaposti"
+          description: "Tunnistaa mahdollisen roskapostin valitun suuren kielimallin avulla ja liputtaa sen sivuston valvojien tarkastettavaksi tarkastusjonoon"
       modals:
         select_option: "Valitse vaihtoehto..."
       spam:

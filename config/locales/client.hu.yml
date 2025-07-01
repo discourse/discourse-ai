@@ -43,8 +43,17 @@ hu:
         no_persona: "Nincs beállítva"
         no_groups: "Egyik sem"
         edit: "Szerkesztés"
+        expand_list:
+          one: "(%{count} további)"
+          other: "(%{count} további)"
+        collapse_list: "(kevesebb megjelenítése)"
+        filters:
+          all: "Összes"
+          reset: "Alaphelyzetbe állítás"
         search:
           name: "Keresés"
+        spam:
+          name: "Kéretlen tartalom"
       modals:
         select_option: "Válasszon egy lehetőséget…"
       spam:

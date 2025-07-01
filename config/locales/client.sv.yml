@@ -43,8 +43,17 @@ sv:
         no_persona: "Inte inställd"
         no_groups: "Ingen"
         edit: "Redigera"
+        expand_list:
+          one: "(ytterligare %{count})"
+          other: "(ytterligare %{count})"
+        collapse_list: "(visa mindre)"
+        filters:
+          all: "Alla"
+          reset: "Återställ"
         search:
           name: "Sök"
+        spam:
+          name: "Skräppost"
       modals:
         select_option: "Välj ett alternativ..."
       spam:

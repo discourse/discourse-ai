@@ -41,8 +41,17 @@ pt:
         no_persona: "Não definido"
         no_groups: "Nenhuma"
         edit: "Editar"
+        expand_list:
+          one: "(%{count} mais)"
+          other: "(%{count} mais)"
+        collapse_list: "(mostrar menos)"
+        filters:
+          all: "Tudo"
+          reset: "Repor"
         search:
           name: "Pesquisar"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Selecione uma opção..."
       spam:

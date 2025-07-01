@@ -41,8 +41,19 @@ sl:
         no_persona: "Ni nastavljeno"
         no_groups: "Brez"
         edit: "Uredi"
+        expand_list:
+          one: "(%{count} več)"
+          two: "(%{count} več)"
+          few: "(%{count} več)"
+          other: "(%{count} več)"
+        collapse_list: "(manj)"
+        filters:
+          all: "Vse"
+          reset: "Ponastavi"
         search:
           name: "Išči"
+        spam:
+          name: "Neželeno"
       modals:
         select_option: "Izberi možnost..."
       spam:

@@ -43,6 +43,15 @@ cs:
         no_persona: "Nenastaveno"
         no_groups: "Žádná"
         edit: "Upravit"
+        expand_list:
+          one: "(%{count} další)"
+          few: "(%{count} další)"
+          many: "(%{count} další)"
+          other: "(%{count} další)"
+        collapse_list: "(zobrazit méně)"
+        filters:
+          all: "Vše"
+          reset: "obnovit výchozí"
         search:
           name: "Vyhledávání"
         ai_helper:
@@ -51,6 +60,8 @@ cs:
           smart_dates: "Chytré datumy"
           markdown_tables: "Generovat Markdown tabulku"
           custom_prompt: "Vlastní pokyn"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Zvolit možnost..."
       spam:
@@ -85,6 +96,7 @@ cs:
       rag:
         uploads:
           title: "Nahrané soubory"
+          button: "Přidat soubory"
           uploading: "Nahrává se..."
       tools:
         back: "Zpět"
@@ -288,6 +300,7 @@ cs:
           today: "Dnes"
           last_7_days: "Posledních 7 dní"
           last_30_days: "Posledních 30 dní"
+          upload_files: "Nahrát soubory"
       sentiments:
         dashboard:
           title: "Sentiment"

@@ -40,8 +40,17 @@ lv:
         groups: "Grupas:"
         no_groups: "Nav"
         edit: "Rediģēt"
+        expand_list:
+          zero: "(vēl %{count})"
+          one: "(vēl %{count})"
+          other: "(vēl %{count})"
+        filters:
+          all: "Viss"
+          reset: "Atlikt"
         search:
           name: "Meklēt"
+        spam:
+          name: "Spams"
       modals:
         select_option: "Izvēlieties opciju..."
       spam:

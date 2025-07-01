@@ -145,6 +145,13 @@ tr_TR:
         no_persona: "Ayarlanmamış"
         no_groups: "Yok"
         edit: "Düzenle"
+        expand_list:
+          one: "(%{count} tane Daha)"
+          other: "(%{count} tane Daha)"
+        collapse_list: "(daha az göster)"
+        filters:
+          all: "Hepsi"
+          reset: "Sıfırla"
         search:
           name: "Ara"
         ai_helper:
@@ -154,6 +161,9 @@ tr_TR:
           smart_dates: "Akıllı tarihler"
           markdown_tables: "Markdown tablosu oluştur"
           custom_prompt: "Özel istem"
+        spam:
+          name: "İstenmeyen içerik"
+          description: "Seçili LLM'i kullanarak potansiyel istenmeyen içerikleri belirler ve inceleme kuyruğunda site moderatörlerinin incelemesi için işaretler"
       modals:
         select_option: "Seçenek belirleyin..."
       spam:

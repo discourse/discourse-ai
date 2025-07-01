@@ -40,8 +40,13 @@ sw:
         groups: "Makundi:"
         no_groups: "Hakuna"
         edit: "Hariri"
+        filters:
+          all: "Vyote"
+          reset: "Anza Upya"
         search:
           name: "Tafuta"
+        spam:
+          name: "Barua Taka"
       modals:
         select_option: "Chagua chaguo moja..."
       spam:

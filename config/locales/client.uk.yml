@@ -125,12 +125,23 @@ uk:
         no_persona: "Не встановлено"
         no_groups: "Немає"
         edit: "Редагувати"
+        expand_list:
+          one: "(ще %{count})"
+          few: "(ще %{count})"
+          many: "(ще %{count})"
+          other: "(ще %{count})"
+        collapse_list: "(показати менше)"
+        filters:
+          all: "Все"
+          reset: "Скинути"
         search:
           name: "Пошук"
         ai_helper:
           proofread: Перевірити текст
           explain: "Пояснити"
           markdown_tables: "Створити таблицю у форматі Markdown"
+        spam:
+          name: "Спам"
       modals:
         select_option: "Вибрати опцію..."
       spam:

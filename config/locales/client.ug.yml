@@ -45,8 +45,17 @@ ug:
         no_persona: "تەڭشەلمىدى"
         no_groups: "يوق"
         edit: "تەھرىر"
+        expand_list:
+          one: "(%{count} تېخىمۇ كۆپ)"
+          other: "(%{count} تېخىمۇ كۆپ)"
+        collapse_list: "(ئازراق كۆرسەت)"
+        filters:
+          all: "ھەممىسى"
+          reset: "ئەسلىگە قايتۇر"
         search:
           name: "ئىزدە"
+        spam:
+          name: "ئەخلەت خەت"
       modals:
         select_option: "تاللانما تاللىنىدۇ..."
       spam:

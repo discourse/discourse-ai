@@ -157,11 +157,20 @@ zh_CN:
       features:
         back: "返回"
         disabled: "(已禁用)"
-        persona: "角色模型:"
+        persona:
+          other: "角色:"
         groups: "群组:"
+        llm:
+          other: "LLM:"
         no_persona: "未设置"
         no_groups: "无"
         edit: "编辑"
+        expand_list:
+          other: "(%{count})"
+        collapse_list: "(收起)"
+        filters:
+          all: "所有"
+          reset: "重置"
         search:
           name: "搜索"
         ai_helper:
@@ -171,6 +180,9 @@ zh_CN:
           smart_dates: "智能日期"
           markdown_tables: "生成 Markdown 表"
           custom_prompt: "自定义提示"
+        spam:
+          name: "垃圾内容"
+          description: "使用所选 LLM 识别潜在垃圾内容，并进行标记，使其进入审核队列，以便网站版主可以进行检查"
       modals:
         select_option: "选择一个选项…"
       spam:

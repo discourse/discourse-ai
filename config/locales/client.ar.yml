@@ -145,6 +145,17 @@ ar:
         no_persona: "غير معيَّن"
         no_groups: "لا يوجد"
         edit: "تعديل"
+        expand_list:
+          zero: "(%{count} أكثر)"
+          one: "(%{count} أكثر)"
+          two: "(%{count} أكثر)"
+          few: "(%{count} أكثر)"
+          many: "(%{count} أكثر)"
+          other: "(%{count} أكثر)"
+        collapse_list: "(عرض أقل)"
+        filters:
+          all: "الكل"
+          reset: "إعادة التعيين"
         search:
           name: "البحث"
         ai_helper:
@@ -154,6 +165,9 @@ ar:
           smart_dates: "التواريخ الذكية"
           markdown_tables: "إنشاء جدول Markdown"
           custom_prompt: "رسالة مطالبة مخصَّصة"
+        spam:
+          name: "عشوائي"
+          description: "يحدِّد السلوك العشوائي المُحتمَل باستخدام نموذج اللغة الكبير المُحدَّد، ويضع علامة عليه ليقوم مشرفو الموقع بفحصه في قائمة المراجعة"
       modals:
         select_option: "حدِّد خيارًا..."
       spam:

@@ -145,6 +145,15 @@ ru:
         no_persona: "Не установлен"
         no_groups: "Нет"
         edit: "Изменить"
+        expand_list:
+          one: "(ещё %{count})"
+          few: "(ещё %{count})"
+          many: "(ещё %{count})"
+          other: "(ещё %{count})"
+        collapse_list: "(свернуть)"
+        filters:
+          all: "Все настройки"
+          reset: "Сбросить"
         search:
           name: "Искать"
         ai_helper:
@@ -154,6 +163,9 @@ ru:
           smart_dates: "Умные даты"
           markdown_tables: "Сгенерировать таблицу в формате Markdown"
           custom_prompt: "Пользовательский запрос"
+        spam:
+          name: "Спам"
+          description: "С помощью выбранной LLM определяет потенциальный спам и отправляет его модераторам сайта в очередь проверки"
       modals:
         select_option: "Выберите вариант..."
       spam:

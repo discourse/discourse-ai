@@ -45,8 +45,19 @@ sk:
         no_persona: "Nie je nastavené"
         no_groups: "Žiadny"
         edit: "Upraviť"
+        expand_list:
+          one: "(%{count} ďalší)"
+          few: "(%{count} ďalšie)"
+          many: "(%{count} ďalších)"
+          other: "(%{count} ďalší)"
+        collapse_list: "(zobraziť menej)"
+        filters:
+          all: "Všetky"
+          reset: "Resetovať"
         search:
           name: "Hľadať"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Vyberte možnosť..."
       spam:

@@ -43,8 +43,18 @@ hr:
         no_persona: "Nije postavljeno"
         no_groups: "Ništa"
         edit: "Uredi"
+        expand_list:
+          one: "(%{count} još)"
+          few: "(%{count} još)"
+          other: "(%{count} još)"
+        collapse_list: "(prikaži manje)"
+        filters:
+          all: "Sve"
+          reset: "Resetirati"
         search:
           name: "Pretraživanje"
+        spam:
+          name: "Nepoželjno"
       modals:
         select_option: "Odaberi opciju..."
       spam:

@@ -170,12 +170,23 @@ de:
         description: "Dies sind die KI-Funktionen, die den Besuchern deiner Website zur Verfügung stehen. Sie können so konfiguriert werden, dass sie bestimmte Personas und LLM verwenden, und der Zugriff kann mithilfe von Gruppen gesteuert werden."
         back: "Zurück"
         disabled: "(deaktiviert)"
-        persona: "Persona:"
+        persona:
+          one: "Persona:"
+          other: "Personas:"
         groups: "Gruppen:"
-        llm: "LLM:"
+        llm:
+          one: "LLM:"
+          other: "LLM:"
         no_persona: "Nicht festgelegt"
         no_groups: "Keiner"
         edit: "Bearbeiten"
+        expand_list:
+          one: "(%{count} weitere)"
+          other: "(%{count} weitere)"
+        collapse_list: "(weniger anzeigen)"
+        filters:
+          all: "Gesamt"
+          reset: "Zurücksetzen"
         summarization:
           name: "Zusammenfassungen"
           description: "Stellt eine Schaltfläche für Zusammenfassungen zur Verfügung, mit der Besucher Themen zusammenfassen können"
@@ -193,6 +204,9 @@ de:
           smart_dates: "Intelligente Termine"
           markdown_tables: "Markdown-Tabelle generieren"
           custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
+        spam:
+          name: "Spam"
+          description: "Identifiziert potenziellen Spam mithilfe des ausgewählten LLMs und meldet ihn den Moderatoren der Website in der Warteschlange zur Überprüfung."
       modals:
         select_option: "Wähle eine Option aus..."
       spam:

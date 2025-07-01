@@ -42,8 +42,16 @@ ur:
         groups: "گروپس:"
         no_groups: "کوئی نہیں"
         edit: "ترمیم کریں"
+        expand_list:
+          one: "(%{count} مزید)"
+          other: "(%{count} مزید)"
+        filters:
+          all: "تمام"
+          reset: "رِی سَیٹ"
         search:
           name: "تلاش کریں"
+        spam:
+          name: "سپَیم"
       modals:
         select_option: "ایک آپشن منتخب کریں..."
       spam:

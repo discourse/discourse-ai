@@ -41,8 +41,17 @@ sq:
         no_persona: "Nuk është vendosur"
         no_groups: "Asnjë"
         edit: "Redaktoni"
+        expand_list:
+          one: "(%{count} tjetër)"
+          other: "(%{count} të tjera)"
+        collapse_list: "(shfaq më pak)"
+        filters:
+          all: "Të Gjithë"
+          reset: "Rivendosni"
         search:
           name: "Kërko"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Zgjidhni një opsion..."
       spam:

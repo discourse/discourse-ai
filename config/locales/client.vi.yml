@@ -40,8 +40,15 @@ vi:
         groups: "Nhóm:"
         no_groups: "Không có gì"
         edit: "Sửa"
+        expand_list:
+          other: "(%{count} khác)"
+        filters:
+          all: "All"
+          reset: "Cài lại"
         search:
           name: "Tìm kiếm"
+        spam:
+          name: "Rác"
       modals:
         select_option: "Chọn một tùy Chọn..."
       spam:

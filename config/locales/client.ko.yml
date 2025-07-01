@@ -44,8 +44,15 @@ ko:
         groups: "그룹:"
         no_groups: "없음"
         edit: "편집"
+        expand_list:
+          other: "(%{count}개 더보기)"
+        filters:
+          all: "전체"
+          reset: "리셋"
         search:
           name: "검색"
+        spam:
+          name: "스팸"
       modals:
         select_option: "옵션 선택..."
       spam:

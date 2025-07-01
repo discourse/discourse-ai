@@ -40,8 +40,17 @@ hy:
         groups: "Խմբեր:"
         no_groups: "Ոչ մի"
         edit: "Խմբագրել"
+        expand_list:
+          one: "(%{count} ավելի)"
+          other: "(%{count} ավելի)"
+        collapse_list: "(ցույց տալ ավելի քիչ)"
+        filters:
+          all: "Բոլորը"
+          reset: "Զրոյացնել"
         search:
           name: "Որոնում"
+        spam:
+          name: "Սպամ"
       modals:
         select_option: "Ընտրել..."
       spam:

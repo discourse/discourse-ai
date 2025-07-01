@@ -36,8 +36,18 @@ sr:
         groups: "Grupe:"
         no_groups: "Ništa"
         edit: "Izmeni"
+        expand_list:
+          one: "(još %{count} članova)"
+          few: "(još %{count} člana)"
+          other: "(još %{count} članova)"
+        collapse_list: "(pokaži manje)"
+        filters:
+          all: "sve"
+          reset: "Reset"
         search:
           name: "Pretraži"
+        spam:
+          name: "Nepoželjno"
       modals:
         select_option: "Izaberi jednu od opcija..."
       spam:

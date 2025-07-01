@@ -145,6 +145,13 @@ nl:
         no_persona: "Niet ingesteld"
         no_groups: "Geen"
         edit: "Bewerken"
+        expand_list:
+          one: "(Nog %{count})"
+          other: "(Nog %{count})"
+        collapse_list: "(minder weergeven)"
+        filters:
+          all: "Alles"
+          reset: "Resetten"
         search:
           name: "Zoeken"
         ai_helper:
@@ -154,6 +161,9 @@ nl:
           smart_dates: "Slimme datums"
           markdown_tables: "Markdowntabel genereren"
           custom_prompt: "Aangepaste prompt"
+        spam:
+          name: "Spam"
+          description: "Identificeert potentiële spam met behulp van de geselecteerde LLM en markeert deze voor sitemoderators om te inspecteren in de beoordelingswachtrij"
       modals:
         select_option: "Selecteer een optie..."
       spam:

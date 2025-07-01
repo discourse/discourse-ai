@@ -41,8 +41,16 @@ te:
         no_persona: "సెట్ చేయబడలేదు"
         no_groups: "ఏదీ లేదు"
         edit: "సవరించండి"
+        expand_list:
+          one: "(మరో %{count})"
+          other: "(మరో %{count})"
+        filters:
+          all: "అన్ని"
+          reset: "రీసెట్ చేయండి"
         search:
           name: "శోధించండి"
+        spam:
+          name: "స్పామ్"
       spam:
         short_title: "స్పామ్"
         enable: "ప్రారంభించండి"

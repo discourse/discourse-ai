@@ -40,8 +40,14 @@ th:
         groups: "กลุ่ม:"
         no_groups: "ไม่มี"
         edit: "แก้ไข"
+        expand_list:
+          other: "(อีก %{count})"
+        filters:
+          all: "ทั้งหมด"
         search:
           name: "ค้นหา"
+        spam:
+          name: "ขยะ"
       modals:
         select_option: "เลือกตัวเลือก..."
       spam:

@@ -40,8 +40,16 @@ et:
         groups: "Rühmad:"
         no_groups: "Pole"
         edit: "Muuda"
+        expand_list:
+          one: "(veel %{count})"
+          other: "(veel %{count})"
+        filters:
+          all: "Kõik"
+          reset: "Lähtesta"
         search:
           name: "Otsi"
+        spam:
+          name: "Spämm"
       modals:
         select_option: "Vali võimalus..."
       spam:

@@ -43,8 +43,16 @@ zh_TW:
         no_persona: "未設定"
         no_groups: "無"
         edit: "編輯"
+        expand_list:
+          other: "(%{count} 更多)"
+        collapse_list: "(顯示更少)"
+        filters:
+          all: "全部"
+          reset: "重置"
         search:
           name: "搜尋"
+        spam:
+          name: "垃圾內容"
       spam:
         short_title: "垃圾內容"
         last_seven_days: "過去 7 天"

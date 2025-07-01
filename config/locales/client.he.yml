@@ -29,6 +29,21 @@ he:
               label: "מיון על פי"
             tag:
               label: "תגית"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "יצירת מודל LLM"
+            update_ai_llm_model: "עדכון מודל LLM"
+            delete_ai_llm_model: "מחיקת מודל LLM"
+            create_ai_persona: "יצירת דמות בינה מלאכותית"
+            update_ai_persona: "עדכון דמות בינה מלאכותית"
+            delete_ai_persona: "מחיקת דמות בינה מלאכותית"
+            create_ai_tool: "יצירת כלי בינה מלאכותית"
+            update_ai_tool: "עדכון כלי בינה מלאכותית"
+            delete_ai_tool: "מחיקת כלי בינה מלאכותית"
+            create_ai_embedding: "יצירת הטמעת בינה מלאכותית"
+            update_ai_embedding: "עדכון הטמעת בינה מלאכותית"
+            delete_ai_embedding: "מחיקת הטמעת בינה מלאכותית"
   js:
     discourse_automation:
       scriptables:
@@ -159,12 +174,31 @@ he:
         description: "אלו יכולות בינה מלאכותית שזמינות למבקרים באתר שלך. אפשר להגדיר אותן להשתמש בדמויות וב־LLMים (מש״גים) מסוימים ואפשר לשלוט בגישה אליהן על ידי קבוצות."
         back: "חזרה"
         disabled: "(כבוי)"
-        persona: "דמות:"
+        persona:
+          one: "דמות:"
+          two: "דמויות:"
+          many: "דמויות:"
+          other: "דמויות:"
         groups: "קבוצות:"
-        llm: "LLM/מש״ג:"
+        llm:
+          one: "LLM/מש״ג:"
+          two: "LLMים:"
+          many: "LLMים:"
+          other: "LLMים:"
         no_persona: "לא מוגדר"
         no_groups: "ללא"
         edit: "עריכה"
+        expand_list:
+          one: "(עוד %{count})"
+          two: "(עוד %{count})"
+          many: "(עוד %{count})"
+          other: "(עוד %{count})"
+        collapse_list: "(להציג פחות)"
+        bot:
+          name: "בוט"
+        filters:
+          all: "הכול"
+          reset: "איפוס"
         summarization:
           name: "סיכומים"
           description: "להנגיש את כפתור הסיכום שמאפשר למבקרים לסכם נושאים"
@@ -180,6 +214,8 @@ he:
           smart_dates: "תאריכים חכמים"
           markdown_tables: "יצירת טבלה ב־Markdown"
           custom_prompt: "בקשה מותאמת אישית"
+        spam:
+          name: "ספאם"
       modals:
         select_option: "בחירת אפשרות…"
       layout:
@@ -715,6 +751,7 @@ he:
           today: "היום"
           last_7_days: "7 הימים האחרונים"
           last_30_days: "30 הימים האחרונים"
+          upload_files: "העלאת קבצים"
       sentiments:
         dashboard:
           title: "רגש"

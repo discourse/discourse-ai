@@ -39,8 +39,13 @@ be:
         disabled: "(адключана)"
         groups: "групы:"
         edit: "Рэдагаваць"
+        filters:
+          all: "Усё"
+          reset: "скінуць"
         search:
           name: "Пошук"
+        spam:
+          name: "Спам"
       spam:
         short_title: "Спам"
         enable: "Уключыць"

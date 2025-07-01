@@ -67,8 +67,17 @@ fa_IR:
         no_persona: "تنظیم نشده"
         no_groups: "هیچ کدام"
         edit: "ویرایش"
+        expand_list:
+          one: "(%{count} مورد دیگر)"
+          other: "(%{count} مورد دیگر)"
+        collapse_list: "(نمایش کمتر)"
+        filters:
+          all: "همه"
+          reset: "بازنشانی"
         search:
           name: "جستجو"
+        spam:
+          name: "هرز‌نامه"
       modals:
         select_option: "یک گزینه را انتخاب کنید..."
       spam:
