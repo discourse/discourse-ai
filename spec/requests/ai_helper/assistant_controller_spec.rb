@@ -11,10 +11,50 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
       SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_0]
     end
 
-    it "is able to stream suggestions back on appropriate channel" do
+    it "is able to stream suggestions to helper" do
       sign_in(user)
+
+      my_post = Fabricate(:post)
+
+      channel = nil
       messages =
-        MessageBus.track_publish("/discourse-ai/ai-helper/stream_composer_suggestion") do
+        MessageBus.track_publish do
+          results = [["hello ", "world"]]
+          DiscourseAi::Completions::Llm.with_prepared_responses(results) do
+            post "/discourse-ai/ai-helper/stream_suggestion.json",
+                 params: {
+                   text: "hello wrld",
+                   location: "helper",
+                   client_id: "1234",
+                   post_id: my_post.id,
+                   custom_prompt: "Translate to Spanish",
+                   mode: DiscourseAi::AiHelper::Assistant::CUSTOM_PROMPT,
+                 }
+
+            expect(response.status).to eq(200)
+            channel = response.parsed_body["progress_channel"]
+          end
+        end
+
+      # we only have the channel after we make the request
+      # so we can not filter till now
+      messages = messages.select { |m| m.channel == channel }
+      expect(messages).not_to be_empty
+
+      last_message = messages.last
+      expect(messages.all? { |m| m.client_ids == ["1234"] }).to eq(true)
+      expect(messages.all? { |m| m == last_message || !m.data[:done] }).to eq(true)
+
+      expect(last_message.channel).to eq(channel)
+      expect(last_message.data[:result]).to eq("hello world")
+      expect(last_message.data[:done]).to eq(true)
+    end
+
+    it "is able to stream suggestions to composer" do
+      sign_in(user)
+      channel = nil
+      messages =
+        MessageBus.track_publish do
           results = [["hello ", "world"]]
           DiscourseAi::Completions::Llm.with_prepared_responses(results) do
             post "/discourse-ai/ai-helper/stream_suggestion.json",
@@ -26,13 +66,19 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
                  }
 
             expect(response.status).to eq(200)
+            channel = response.parsed_body["progress_channel"]
           end
         end
+
+      # we only have the channel after we make the request
+      # so we can not filter till now
+      messages = messages.select { |m| m.channel == channel }
 
       last_message = messages.last
       expect(messages.all? { |m| m.client_ids == ["1234"] }).to eq(true)
       expect(messages.all? { |m| m == last_message || !m.data[:done] }).to eq(true)
 
+      expect(last_message.channel).to eq(channel)
       expect(last_message.data[:result]).to eq("hello world")
       expect(last_message.data[:done]).to eq(true)
     end

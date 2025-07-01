@@ -1,7 +1,6 @@
 import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
-import didInsert from "@ember/render-modifiers/modifiers/did-insert";
 import willDestroy from "@ember/render-modifiers/modifiers/will-destroy";
 import { service } from "@ember/service";
 import { htmlSafe } from "@ember/template";
@@ -18,8 +17,6 @@ import { i18n } from "discourse-i18n";
 import DiffStreamer from "../../lib/diff-streamer";
 import SmoothStreamer from "../../lib/smooth-streamer";
 import AiIndicatorWave from "../ai-indicator-wave";
-
-const CHANNEL = "/discourse-ai/ai-helper/stream_composer_suggestion";
 
 export default class ModalDiffModal extends Component {
   @service currentUser;
@@ -83,21 +80,26 @@ export default class ModalDiffModal extends Component {
     return this.loading || this.isStreaming;
   }
 
-  @bind
+  set progressChannel(value) {
+    if (this._progressChannel) {
+      this.messageBus.unsubscribe(this._progressChannel, this.updateResult);
+    }
+    this._progressChannel = value;
+    this.subscribe();
+  }
+
   subscribe() {
-    this.messageBus.subscribe(
-      CHANNEL,
-      this.updateResult,
-      this.currentUser
-        ?.discourse_ai_helper_stream_composer_suggestion_last_message_bus_id
-    );
+    // we have 1 channel per operation so we can safely subscribe at head
+    this.messageBus.subscribe(this._progressChannel, this.updateResult, 0);
   }
 
   @bind
   cleanup() {
     // stop all callbacks so it does not end up streaming pointlessly
     this.#resetState();
-    this.messageBus.unsubscribe(CHANNEL, this.updateResult);
+    if (this._progressChannel) {
+      this.messageBus.unsubscribe(this._progressChannel, this.updateResult);
+    }
   }
 
   @action
@@ -122,7 +124,7 @@ export default class ModalDiffModal extends Component {
 
     try {
       this.loading = true;
-      return await ajax("/discourse-ai/ai-helper/stream_suggestion", {
+      const result = await ajax("/discourse-ai/ai-helper/stream_suggestion", {
         method: "POST",
         data: {
           location: "composer",
@@ -133,6 +135,8 @@ export default class ModalDiffModal extends Component {
           client_id: this.messageBus.clientId,
         },
       });
+
+      this.progressChannel = result.progress_channel;
     } catch (e) {
       popupAjaxError(e);
     }
@@ -183,11 +187,7 @@ export default class ModalDiffModal extends Component {
       @closeModal={{this.cleanupAndClose}}
     >
       <:body>
-        <div
-          {{didInsert this.subscribe}}
-          {{willDestroy this.cleanup}}
-          class="text-preview"
-        >
+        <div {{willDestroy this.cleanup}} class="text-preview">
           <div
             class={{concatClass
               "composer-ai-helper-modal__suggestion"

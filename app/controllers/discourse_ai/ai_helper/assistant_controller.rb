@@ -124,6 +124,9 @@ module DiscourseAi
         # otherwise we may end up streaming the data to the wrong client
         raise Discourse::InvalidParameters.new(:client_id) if params[:client_id].blank?
 
+        channel_id = next_channel_id
+        progress_channel = "discourse_ai_helper/stream_suggestions/#{channel_id}"
+
         if location == "composer"
           Jobs.enqueue(
             :stream_composer_helper,
@@ -133,6 +136,7 @@ module DiscourseAi
             custom_prompt: params[:custom_prompt],
             force_default_locale: params[:force_default_locale] || false,
             client_id: params[:client_id],
+            progress_channel:,
           )
         else
           post_id = get_post_param!
@@ -148,10 +152,11 @@ module DiscourseAi
             prompt: params[:mode],
             custom_prompt: params[:custom_prompt],
             client_id: params[:client_id],
+            progress_channel:,
           )
         end
 
-        render json: { success: true }, status: 200
+        render json: { success: true, progress_channel: }, status: 200
       rescue DiscourseAi::Completions::Endpoints::Base::CompletionFailed
         render_json_error I18n.t("discourse_ai.ai_helper.errors.completion_request_failed"),
                           status: 502
@@ -191,6 +196,18 @@ module DiscourseAi
       end
 
       private
+
+      CHANNEL_ID_KEY = "discourse_ai_helper_next_channel_id"
+
+      def next_channel_id
+        Discourse
+          .redis
+          .pipelined do |pipeline|
+            pipeline.incr(CHANNEL_ID_KEY)
+            pipeline.expire(CHANNEL_ID_KEY, 1.day)
+          end
+          .first
+      end
 
       def get_text_param!
         params[:text].tap { |t| raise Discourse::InvalidParameters.new(:text) if t.blank? }

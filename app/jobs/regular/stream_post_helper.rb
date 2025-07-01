@@ -8,6 +8,8 @@ module Jobs
       return unless post = Post.includes(:topic).find_by(id: args[:post_id])
       return unless user = User.find_by(id: args[:user_id])
       return unless args[:text]
+      return unless args[:progress_channel]
+      return unless args[:client_id]
 
       topic = post.topic
       reply_to = post.reply_to_post
@@ -31,8 +33,9 @@ module Jobs
         helper_mode,
         input,
         user,
-        "/discourse-ai/ai-helper/stream_suggestion/#{post.id}",
+        args[:progress_channel],
         custom_prompt: args[:custom_prompt],
+        client_id: args[:client_id],
       )
     end
   end

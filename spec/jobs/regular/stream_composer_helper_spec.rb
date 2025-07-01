@@ -18,23 +18,33 @@ RSpec.describe Jobs::StreamComposerHelper do
       let(:mode) { DiscourseAi::AiHelper::Assistant::PROOFREAD }
 
       it "does nothing if there is no user" do
+        channel = "/some/channel"
         messages =
-          MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion") do
-            job.execute(user_id: nil, text: input, prompt: mode, force_default_locale: false)
+          MessageBus.track_publish(channel) do
+            job.execute(
+              user_id: nil,
+              text: input,
+              prompt: mode,
+              force_default_locale: false,
+              client_id: "123",
+              progress_channel: channel,
+            )
           end
 
         expect(messages).to be_empty
       end
 
       it "does nothing if there is no text" do
+        channel = "/some/channel"
         messages =
-          MessageBus.track_publish("/discourse-ai/ai-helper/stream_suggestion") do
+          MessageBus.track_publish(channel) do
             job.execute(
               user_id: user.id,
               text: nil,
               prompt: mode,
               force_default_locale: false,
               client_id: "123",
+              progress_channel: channel,
             )
           end
 
@@ -47,16 +57,18 @@ RSpec.describe Jobs::StreamComposerHelper do
 
       it "publishes updates with a partial result" do
         proofread_result = "I like to eat pie for breakfast because it is delicious."
+        channel = "/channel/123"
 
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_result]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_composer_suggestion") do
+            MessageBus.track_publish(channel) do
               job.execute(
                 user_id: user.id,
                 text: input,
                 prompt: mode,
                 force_default_locale: true,
                 client_id: "123",
+                progress_channel: channel,
               )
             end
 
@@ -68,16 +80,18 @@ RSpec.describe Jobs::StreamComposerHelper do
 
       it "publishes a final update to signal we're done" do
         proofread_result = "I like to eat pie for breakfast because it is delicious."
+        channel = "/channel/123"
 
         DiscourseAi::Completions::Llm.with_prepared_responses([proofread_result]) do
           messages =
-            MessageBus.track_publish("/discourse-ai/ai-helper/stream_composer_suggestion") do
+            MessageBus.track_publish(channel) do
               job.execute(
                 user_id: user.id,
                 text: input,
                 prompt: mode,
                 force_default_locale: true,
                 client_id: "123",
+                progress_channel: channel,
               )
             end
 
