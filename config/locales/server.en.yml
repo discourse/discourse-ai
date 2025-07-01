@@ -628,7 +628,7 @@ en:
       persona_already_exists: Persona with the name %{name} already exists.
       custom_tool_exists:
         one: "Custom tool with the name %{names} already exists."
-        other: "Custom tools with the names %{names} already exists."
+        other: "Custom tools with the names %{names} already exist."
   dashboard:
     problem:
       ai_llm_status: "The LLM model: %{model_name} is encountering issues. Please check the <a href='%{url}'>model's configuration page</a>."
