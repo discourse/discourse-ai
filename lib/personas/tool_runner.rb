@@ -278,7 +278,9 @@ module DiscourseAi
       def attach_truncate(mini_racer_context)
         mini_racer_context.attach(
           "_llm_truncate",
-          ->(text, length) { @llm.tokenizer.truncate(text, length) },
+          ->(text, length) do
+            @llm.tokenizer.truncate(text, length, strict: SiteSetting.ai_strict_token_counting)
+          end,
         )
 
         mini_racer_context.attach(

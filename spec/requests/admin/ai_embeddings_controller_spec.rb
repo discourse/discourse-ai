@@ -14,7 +14,7 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
       provider: "hugging_face",
       url: "https://test.com/api/v1/embeddings",
       api_key: "test",
-      tokenizer_class: "DiscourseAi::Tokenizer::BgeM3Tokenizer",
+      tokenizer_class: "DiscourseAi::Tokenizers::BgeM3Tokenizer",
       embed_prompt: "I come first:",
       search_prompt: "prefix for search",
       matryoshka_dimensions: true,

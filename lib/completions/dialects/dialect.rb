@@ -147,6 +147,7 @@ module DiscourseAi
               system_message[:content] = tokenizer.truncate(
                 system_message[:content],
                 max_system_tokens,
+                strict: SiteSetting.ai_strict_token_counting,
               )
             end
 

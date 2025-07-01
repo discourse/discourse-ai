@@ -92,7 +92,11 @@ module DiscourseAi
         items.each_with_index do |item, idx|
           as_text = "(#{item[:id]} #{item[:poster]} said: #{item[:text]} "
 
-          if tokenizer.below_limit?(as_text, tokens_left)
+          if tokenizer.below_limit?(
+               as_text,
+               tokens_left,
+               strict: SiteSetting.ai_strict_token_counting,
+             )
             content_in_window << item
             tokens_left -= tokenizer.size(as_text)
           else
@@ -151,8 +155,16 @@ module DiscourseAi
         tokenizer = llm_model.tokenizer_class
 
         item[:text] = [
-          tokenizer.truncate(split_1, truncation_length),
-          tokenizer.truncate(split_2.reverse, truncation_length).reverse,
+          tokenizer.truncate(
+            split_1,
+            truncation_length,
+            strict: SiteSetting.ai_strict_token_counting,
+          ),
+          tokenizer.truncate(
+            split_2.reverse,
+            truncation_length,
+            strict: SiteSetting.ai_strict_token_counting,
+          ).reverse,
         ].join(" ")
 
         item

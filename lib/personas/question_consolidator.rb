@@ -42,7 +42,12 @@ module DiscourseAi
           truncated_content = content
 
           if current_tokens > allowed_tokens
-            truncated_content = @llm.tokenizer.truncate(content, allowed_tokens)
+            truncated_content =
+              @llm.tokenizer.truncate(
+                content,
+                allowed_tokens,
+                strict: SiteSetting.ai_strict_token_counting,
+              )
             current_tokens = allowed_tokens
           end
 

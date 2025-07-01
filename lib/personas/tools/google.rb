@@ -70,7 +70,10 @@ module DiscourseAi
           data = result[field]
           return "" if data.blank?
 
-          llm.tokenizer.truncate(data, max_tokens).squish
+          llm
+            .tokenizer
+            .truncate(data, max_tokens, strict: SiteSetting.ai_strict_token_counting)
+            .squish
         end
 
         def parse_search_json(json_data, escaped_query, llm)

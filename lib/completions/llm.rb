@@ -59,7 +59,7 @@ module DiscourseAi
                       output_cost: 75,
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::AnthropicTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::AnthropicTokenizer,
                   endpoint: "https://api.anthropic.com/v1/messages",
                   provider: "anthropic",
                 },
@@ -103,7 +103,7 @@ module DiscourseAi
                       output_cost: 0.30,
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::GeminiTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::GeminiTokenizer,
                   provider: "google",
                 },
                 {
@@ -150,7 +150,7 @@ module DiscourseAi
                       output_cost: 0.40,
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::OpenAiTokenizer,
                   endpoint: "https://api.openai.com/v1/chat/completions",
                   provider: "open_ai",
                 },
@@ -172,7 +172,7 @@ module DiscourseAi
                       output_cost: 0.20,
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::Llama3Tokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::Llama3Tokenizer,
                   endpoint: "https://api.sambanova.ai/v1/chat/completions",
                   provider: "samba_nova",
                 },
@@ -190,7 +190,7 @@ module DiscourseAi
                       display_name: "Pixtral Large",
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::MixtralTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::MixtralTokenizer,
                   endpoint: "https://api.mistral.ai/v1/chat/completions",
                   provider: "mistral",
                 },
@@ -217,7 +217,7 @@ module DiscourseAi
                       output_cost: 0.25,
                     },
                   ],
-                  tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer,
+                  tokenizer: DiscourseAi::Tokenizers::OpenAiTokenizer,
                   endpoint: "https://openrouter.ai/api/v1/chat/completions",
                   provider: "open_router",
                 },
@@ -248,7 +248,7 @@ module DiscourseAi
         end
 
         def tokenizer_names
-          DiscourseAi::Tokenizer::BasicTokenizer.available_llm_tokenizers.map(&:name)
+          DiscourseAi::Tokenizers::BasicTokenizer.available_llm_tokenizers.map(&:name)
         end
 
         def valid_provider_models

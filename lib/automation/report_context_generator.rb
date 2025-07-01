@@ -26,7 +26,7 @@ module DiscourseAi
         @tags = tags
         @allow_secure_categories = allow_secure_categories
         @max_posts = max_posts
-        @tokenizer = tokenizer || DiscourseAi::Tokenizer::OpenAiTokenizer
+        @tokenizer = tokenizer || DiscourseAi::Tokenizers::OpenAiTokenizer
         @tokens_per_post = tokens_per_post
         @prioritized_group_ids = prioritized_group_ids
 
@@ -99,7 +99,12 @@ module DiscourseAi
         buffer << post.created_at.strftime("%Y-%m-%d %H:%M")
         buffer << "user: #{post.user&.username}"
         buffer << "likes: #{post.like_count}"
-        excerpt = @tokenizer.truncate(post.raw, @tokens_per_post)
+        excerpt =
+          @tokenizer.truncate(
+            post.raw,
+            @tokens_per_post,
+            strict: SiteSetting.ai_strict_token_counting,
+          )
         excerpt = "excerpt: #{excerpt}..." if excerpt.length < post.raw.length
         buffer << "#{excerpt}"
         { likes: post.like_count, info: buffer.join("\n") }
