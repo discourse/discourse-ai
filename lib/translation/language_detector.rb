@@ -5,8 +5,10 @@ module DiscourseAi
     class LanguageDetector
       DETECTION_CHAR_LIMIT = 1000
 
-      def initialize(text)
+      def initialize(text, topic: nil, post: nil)
         @text = text
+        @topic = topic
+        @post = post
       end
 
       def detect
@@ -36,6 +38,8 @@ module DiscourseAi
             skip_tool_details: true,
             feature_name: "translation",
             messages: [{ type: :user, content: @text }],
+            topic: topic,
+            post: post,
           )
 
         structured_output = nil

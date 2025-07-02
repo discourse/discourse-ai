@@ -52,6 +52,23 @@ module DiscourseAi
       def temperature
         0
       end
+
+      def examples
+        spanish = <<~MARKDOWN
+          [quote]
+          Non smettere mai di credere nella bellezza dei tuoi sogni. Anche quando tutto sembra perduto, c'è sempre una luce che aspetta di essere trovata.
+
+          Ogni passo, anche il più piccolo, ti avvicina a ciò che desideri. La forza che cerchi è già dentro di te.
+          [/quote]
+
+          ¿Cuál es el mensaje principal de esta cita?
+        MARKDOWN
+
+        [
+          ["Can you tell me what '私の世界で一番好きな食べ物はちらし丼です' means?", { locale: "en" }.to_json],
+          [spanish, { locale: "es" }.to_json],
+        ]
+      end
     end
   end
 end
