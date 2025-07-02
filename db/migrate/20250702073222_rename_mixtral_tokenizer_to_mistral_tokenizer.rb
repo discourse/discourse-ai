@@ -17,7 +17,7 @@ class RenameMixtralTokenizerToMistralTokenizer < ActiveRecord::Migration[7.2]
       SET
         tokenizer_class = 'DiscourseAi::Tokenizer::Mistral'
       WHERE
-        tokenizer_class = 'DiscourseAi::Tokenizer::Mistral'
+        tokenizer_class = 'DiscourseAi::Tokenizer::Mixtral'
     SQL
   end
 
