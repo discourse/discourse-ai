@@ -3,6 +3,18 @@
 module DiscourseAi
   module Translation
     class PostDetectionText
+      NECESSARY_REMOVAL_SELECTORS = [
+        ".lightbox-wrapper", # image captions
+        "blockquote, aside.quote", # quotes
+      ]
+      OPTIONAL_SELECTORS = [
+        "a.hashtag-cooked", # categories or tags are usually in site's language
+        "a.mention", # mentions are based on the mentioned's user's name
+        "aside.onebox", # onebox external content
+        "img.emoji",
+        "code, pre",
+      ]
+
       def self.get_text(post)
         return if post.blank?
         cooked = post.cooked
@@ -11,24 +23,12 @@ module DiscourseAi
         doc = Nokogiri::HTML5.fragment(cooked)
         original = doc.text.strip
 
-        # quotes and blockquotes
-        doc.css("blockquote, aside.quote").remove
-        # image captions
-        doc.css(".lightbox-wrapper").remove
-
+        # these selectors should be removed,
+        # as they are the usual culprits for incorrect detection
+        doc.css(*NECESSARY_REMOVAL_SELECTORS).remove
         necessary = doc.text.strip
 
-        # oneboxes (external content)
-        doc.css("aside.onebox").remove
-        # code blocks
-        doc.css("code, pre").remove
-        # hashtags
-        doc.css("a.hashtag-cooked").remove
-        # emoji
-        doc.css("img.emoji").remove
-        # mentions
-        doc.css("a.mention").remove
-
+        doc.css(*OPTIONAL_SELECTORS).remove
         preferred = doc.text.strip
 
         return preferred if preferred.present?
