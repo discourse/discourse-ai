@@ -50,7 +50,7 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
     form.field("provider").select(EmbeddingDefinition::OPEN_AI)
     form.field("url").fill_in("https://api.openai.com/v1/embeddings")
     form.field("api_key").fill_in(api_key)
-    form.field("tokenizer_class").select("DiscourseAi::Tokenizers::OpenAiTokenizer")
+    form.field("tokenizer_class").select("DiscourseAi::Tokenizer::OpenAiTokenizer")
 
     embed_prefix = "On creation:"
     search_prefix = "On search:"

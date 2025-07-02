@@ -161,7 +161,7 @@ module DiscourseAi
             target.raw
           end
 
-        DiscourseAi::Tokenizers::BertTokenizer.truncate(
+        DiscourseAi::Tokenizer::BertTokenizer.truncate(
           content,
           512,
           strict: SiteSetting.ai_strict_token_counting,

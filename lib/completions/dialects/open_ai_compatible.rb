@@ -12,7 +12,7 @@ module DiscourseAi
         end
 
         def tokenizer
-          llm_model&.tokenizer_class || DiscourseAi::Tokenizers::Llama3Tokenizer
+          llm_model&.tokenizer_class || DiscourseAi::Tokenizer::Llama3Tokenizer
         end
 
         def tools

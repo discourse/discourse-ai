@@ -4,7 +4,7 @@ describe DiscourseAi::Utils::Research::LlmFormatter do
   fab!(:user) { Fabricate(:user, username: "test_user") }
   fab!(:topic) { Fabricate(:topic, title: "This is a Test Topic", user: user) }
   fab!(:post) { Fabricate(:post, topic: topic, user: user) }
-  let(:tokenizer) { DiscourseAi::Tokenizers::OpenAiTokenizer }
+  let(:tokenizer) { DiscourseAi::Tokenizer::OpenAiTokenizer }
   let(:filter) { DiscourseAi::Utils::Research::Filter.new("@#{user.username}") }
 
   describe "#truncate_if_needed" do

@@ -94,7 +94,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         provider: "open_ai",
         url: "https://test.test/v1/chat/completions",
         api_key: "test",
-        tokenizer: "DiscourseAi::Tokenizers::OpenAiTokenizer",
+        tokenizer: "DiscourseAi::Tokenizer::OpenAiTokenizer",
         max_prompt_tokens: 16_000,
       }
     end
@@ -447,7 +447,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
         provider: "hugging_face",
         url: "https://test.test/v1/chat/completions",
         api_key: "test",
-        tokenizer: "DiscourseAi::Tokenizers::Llama3Tokenizer",
+        tokenizer: "DiscourseAi::Tokenizer::Llama3Tokenizer",
         max_prompt_tokens: 2_000,
       }
     end

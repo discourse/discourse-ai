@@ -26,7 +26,7 @@ module DiscourseAi
         @tags = tags
         @allow_secure_categories = allow_secure_categories
         @max_posts = max_posts
-        @tokenizer = tokenizer || DiscourseAi::Tokenizers::OpenAiTokenizer
+        @tokenizer = tokenizer || DiscourseAi::Tokenizer::OpenAiTokenizer
         @tokens_per_post = tokens_per_post
         @prioritized_group_ids = prioritized_group_ids
 

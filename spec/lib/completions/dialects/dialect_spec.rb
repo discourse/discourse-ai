@@ -20,7 +20,7 @@ class TestDialect < DiscourseAi::Completions::Dialects::Dialect
   end
 
   def tokenizer
-    DiscourseAi::Tokenizers::OpenAiTokenizer
+    DiscourseAi::Tokenizer::OpenAiTokenizer
   end
 end
 

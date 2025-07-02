@@ -54,7 +54,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     form.field("api_key").fill_in("1234")
     form.field("max_prompt_tokens").fill_in(8000)
     form.field("provider").select("vllm")
-    form.field("tokenizer").select("DiscourseAi::Tokenizers::Llama3Tokenizer")
+    form.field("tokenizer").select("DiscourseAi::Tokenizer::Llama3Tokenizer")
     form.field("max_output_tokens").fill_in(2000)
     form.field("vision_enabled").toggle
     form.field("enabled_chat_bot").toggle
@@ -78,7 +78,7 @@ RSpec.describe "Managing LLM configurations", type: :system, js: true do
     expect(llm.display_name).to eq("Self-hosted LLM")
     expect(llm.name).to eq("llava-hf/llava-v1.6-mistral-7b-hf")
     expect(llm.url).to eq("srv://self-hostest.test")
-    expect(llm.tokenizer).to eq("DiscourseAi::Tokenizers::Llama3Tokenizer")
+    expect(llm.tokenizer).to eq("DiscourseAi::Tokenizer::Llama3Tokenizer")
     expect(llm.max_prompt_tokens.to_i).to eq(8000)
     expect(llm.provider).to eq("vllm")
     expect(llm.max_output_tokens.to_i).to eq(2001)

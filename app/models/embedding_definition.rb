@@ -17,14 +17,14 @@ class EmbeddingDefinition < ActiveRecord::Base
 
     def tokenizer_names
       [
-        DiscourseAi::Tokenizers::AllMpnetBaseV2Tokenizer,
-        DiscourseAi::Tokenizers::BgeLargeEnTokenizer,
-        DiscourseAi::Tokenizers::BgeM3Tokenizer,
-        DiscourseAi::Tokenizers::GeminiTokenizer,
-        DiscourseAi::Tokenizers::MultilingualE5LargeTokenizer,
-        DiscourseAi::Tokenizers::OpenAiTokenizer,
-        DiscourseAi::Tokenizers::MistralTokenizer,
-        DiscourseAi::Tokenizers::QwenTokenizer,
+        DiscourseAi::Tokenizer::AllMpnetBaseV2Tokenizer,
+        DiscourseAi::Tokenizer::BgeLargeEnTokenizer,
+        DiscourseAi::Tokenizer::BgeM3Tokenizer,
+        DiscourseAi::Tokenizer::GeminiTokenizer,
+        DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer,
+        DiscourseAi::Tokenizer::OpenAiTokenizer,
+        DiscourseAi::Tokenizer::MistralTokenizer,
+        DiscourseAi::Tokenizer::QwenTokenizer,
       ].map(&:name)
     end
 
@@ -42,7 +42,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 1024,
               max_sequence_length: 512,
               pg_function: "<#>",
-              tokenizer_class: "DiscourseAi::Tokenizers::BgeLargeEnTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::BgeLargeEnTokenizer",
               provider: HUGGING_FACE,
               search_prompt: "Represent this sentence for searching relevant passages:",
             },
@@ -52,7 +52,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 1024,
               max_sequence_length: 8192,
               pg_function: "<#>",
-              tokenizer_class: "DiscourseAi::Tokenizers::BgeM3Tokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::BgeM3Tokenizer",
               provider: HUGGING_FACE,
             },
             {
@@ -63,7 +63,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               pg_function: "<=>",
               url:
                 "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent",
-              tokenizer_class: "DiscourseAi::Tokenizers::GeminiTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::GeminiTokenizer",
               provider: GOOGLE,
             },
             {
@@ -72,7 +72,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 1024,
               max_sequence_length: 512,
               pg_function: "<=>",
-              tokenizer_class: "DiscourseAi::Tokenizers::MultilingualE5LargeTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer",
               provider: HUGGING_FACE,
             },
             # "text-embedding-3-large" real dimentions are 3072, but we only support up to 2000 in the
@@ -83,7 +83,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 2000,
               max_sequence_length: 8191,
               pg_function: "<=>",
-              tokenizer_class: "DiscourseAi::Tokenizers::OpenAiTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
               url: "https://api.openai.com/v1/embeddings",
               provider: OPEN_AI,
               matryoshka_dimensions: true,
@@ -97,7 +97,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 1536,
               max_sequence_length: 8191,
               pg_function: "<=>",
-              tokenizer_class: "DiscourseAi::Tokenizers::OpenAiTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
               url: "https://api.openai.com/v1/embeddings",
               provider: OPEN_AI,
               matryoshka_dimensions: true,
@@ -111,7 +111,7 @@ class EmbeddingDefinition < ActiveRecord::Base
               dimensions: 1536,
               max_sequence_length: 8191,
               pg_function: "<=>",
-              tokenizer_class: "DiscourseAi::Tokenizers::OpenAiTokenizer",
+              tokenizer_class: "DiscourseAi::Tokenizer::OpenAiTokenizer",
               url: "https://api.openai.com/v1/embeddings",
               provider: OPEN_AI,
               provider_params: {

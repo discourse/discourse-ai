@@ -11,7 +11,7 @@ module DiscourseAi
         end
 
         def tokenizer
-          DiscourseAi::Tokenizers::OpenAiTokenizer
+          DiscourseAi::Tokenizer::OpenAiTokenizer
         end
 
         def translate

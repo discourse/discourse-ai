@@ -16,7 +16,7 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
       # 700 is the number of tokens reserved for the prompt.
       model_tokens =
         700 +
-          DiscourseAi::Tokenizers::OpenAiTokenizer.size(
+          DiscourseAi::Tokenizer::OpenAiTokenizer.size(
             "(1 #{post_1.user.username_lower} said: This is a text ",
           ) + 3
 
