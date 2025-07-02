@@ -32,7 +32,9 @@ module DiscourseAi
 
           If the language is not in this list, use the appropriate IETF language tag code.
 
-          5. Format your response as a JSON object with a single key "locale" and the value as the language code.
+          5. Avoid using `und` and prefer `en` over `en-US` or `en-GB` unless the text specifically indicates a regional variant.
+
+          6. Format your response as a JSON object with a single key "locale" and the value as the language code.
 
           Your output should be in the following format:
           <output>
