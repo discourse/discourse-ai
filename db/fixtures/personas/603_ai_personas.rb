@@ -36,6 +36,8 @@ DiscourseAi::Personas::Persona.system_personas.each do |persona_class, id|
       setting_name = "ai_helper_custom_prompts_allowed_groups"
       default_groups = [Group::AUTO_GROUPS[:staff]]
       persona.allowed_group_ids = from_setting(setting_name) || default_groups
+    elsif persona_class == DiscourseAi::Personas::ContentCreator
+      persona.allowed_group_ids = [Group::AUTO_GROUPS[:everyone]]
     else
       persona.allowed_group_ids = [Group::AUTO_GROUPS[:trust_level_0]]
     end

@@ -69,6 +69,7 @@ module DiscourseAi
             TopicTitleTranslator => -29,
             ShortTextTranslator => -30,
             SpamDetector => -31,
+            ContentCreator => -32,
           }
         end
 

@@ -222,6 +222,10 @@ en:
           name: "Search"
           description: "Enhances search experience by providing AI-generated answers to queries"
           discoveries: "Discoveries"
+        embeddings:
+          name: "Embeddings"
+          description: "Powers features like Related Topics and AI Search by generating semantic representations of text"
+          hyde: "HyDE"
         discord:
           name: "Discord integration"
           description: "Adds the ability to search Discord channels"

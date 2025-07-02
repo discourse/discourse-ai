@@ -27,7 +27,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
     end
 
     def trigger_search(query)
-      DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{hypothetical_post}</ai>"]) do
+      DiscourseAi::Completions::Llm.with_prepared_responses([hypothetical_post]) do
         subject.search_for_topics(query)
       end
     end
@@ -123,9 +123,9 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
         context "while searching as anon" do
           it "returns an empty list" do
             posts =
-              DiscourseAi::Completions::Llm.with_prepared_responses(
-                ["<ai>#{hypothetical_post}</ai>"],
-              ) { described_class.new(Guardian.new(nil)).search_for_topics(query) }
+              DiscourseAi::Completions::Llm.with_prepared_responses([hypothetical_post]) do
+                described_class.new(Guardian.new(nil)).search_for_topics(query)
+              end
 
             expect(posts).to be_empty
           end

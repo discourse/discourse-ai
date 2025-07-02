@@ -171,7 +171,7 @@ module DiscourseAi
               text = +""
               result.each { |item| text << item if item.is_a?(String) }
             end
-            raw_context << [text, bot_user.username]
+            raw_context << [text, bot_user&.username]
           end
 
           total_completions += 1

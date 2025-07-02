@@ -394,6 +394,9 @@ en:
         spam_detector:
           name: "Spam detector"
           description: "Default persona powering our Spam detection feature"
+        content_creator:
+          name: "Content creator"
+          description: "Default persona powering HyDE search"
 
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"

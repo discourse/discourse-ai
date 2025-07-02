@@ -154,7 +154,7 @@ RSpec.describe DiscourseAi::Utils::Search do
 
         # Using a completely different search query, should still find via semantic search
         results =
-          DiscourseAi::Completions::Llm.with_prepared_responses(["<ai>#{query}</ai>"]) do
+          DiscourseAi::Completions::Llm.with_prepared_responses([query]) do
             described_class.perform_search(
               search_query: "totally different query",
               current_user: admin,
