@@ -145,6 +145,13 @@ it:
         no_persona: "Non impostato"
         no_groups: "Nessuna"
         edit: "Modifica"
+        expand_list:
+          one: "(%{count} altri)"
+          other: "(%{count} altri)"
+        collapse_list: "(mostra meno)"
+        filters:
+          all: "Tutte"
+          reset: "Annulla"
         search:
           name: "Cerca"
         ai_helper:
@@ -154,6 +161,9 @@ it:
           smart_dates: "Date smart"
           markdown_tables: "Genera tabella di markdown"
           custom_prompt: "Comando personalizzato"
+        spam:
+          name: "Spam"
+          description: "Identifica lo spam potenziale utilizzando l'LLM selezionato e lo segnala ai moderatori del sito affinché lo ispezionino nella coda di revisione"
       modals:
         select_option: "Scegli un'opzione..."
       spam:

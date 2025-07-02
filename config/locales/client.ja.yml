@@ -141,10 +141,20 @@ ja:
       features:
         back: "戻る"
         disabled: "(無効)"
+        persona:
+          other: "ペルソナ:"
         groups: "グループ:"
+        llm:
+          other: "LLM:"
         no_persona: "未設定"
         no_groups: "なし"
         edit: "編集"
+        expand_list:
+          other: "(他 %{count})"
+        collapse_list: "(表示を減らす)"
+        filters:
+          all: "すべて"
+          reset: "リセット"
         search:
           name: "検索"
         ai_helper:
@@ -154,6 +164,9 @@ ja:
           smart_dates: "スマート日付"
           markdown_tables: "Markdown テーブルを生成"
           custom_prompt: "カスタムプロンプト"
+        spam:
+          name: "迷惑"
+          description: "選択された LLM を使って潜在的な迷惑行為を識別し、サイトモデレーターがレビューキューで検査できるように通報します"
       modals:
         select_option: "オプションを選択..."
       spam:

@@ -40,8 +40,17 @@ bs_BA:
         groups: "Groups:"
         no_groups: "Ništa"
         edit: "Edit"
+        expand_list:
+          one: "(još %{count})"
+          few: "(još %{count})"
+          other: "(još %{count})"
+        filters:
+          all: "All"
+          reset: "Resetovati"
         search:
           name: "Pretraži"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Odaberi opciju..."
       spam:

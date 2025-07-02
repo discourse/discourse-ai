@@ -40,8 +40,16 @@ ca:
         groups: "Grups:"
         no_groups: "Cap"
         edit: "Edita"
+        expand_list:
+          one: "(%{count} més)"
+          other: "(%{count} més)"
+        filters:
+          all: "Tot"
+          reset: "Restableix"
         search:
           name: "Cerca"
+        spam:
+          name: "Brossa"
       modals:
         select_option: "Trieu una opció..."
       spam:

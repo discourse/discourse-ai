@@ -42,8 +42,17 @@ da:
         groups: "Grupper:"
         no_groups: "Ingen"
         edit: "Rediger"
+        expand_list:
+          one: "(%{count} mere)"
+          other: "(%{count} mere)"
+        collapse_list: "(vis mindre)"
+        filters:
+          all: "Alle"
+          reset: "Nulstil"
         search:
           name: "Søg"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Vælg en indstilling..."
       spam:

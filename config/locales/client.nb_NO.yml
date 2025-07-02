@@ -41,8 +41,17 @@ nb_NO:
         no_persona: "Ikke angitt"
         no_groups: "Ingen"
         edit: "Endre"
+        expand_list:
+          one: "(%{count} mer)"
+          other: "(%{count} mer)"
+        collapse_list: "(vis mindre)"
+        filters:
+          all: "Alle"
+          reset: "Tilbakestill"
         search:
           name: "Søk"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Velg et alternativ..."
       spam:

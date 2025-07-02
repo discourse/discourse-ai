@@ -42,8 +42,16 @@ gl:
         groups: "Grupos:"
         no_groups: "Ningunha"
         edit: "Editar"
+        expand_list:
+          one: "(%{count} máis)"
+          other: "(%{count} máis)"
+        filters:
+          all: "Todas"
+          reset: "Restabelecer"
         search:
           name: "Buscar"
+        spam:
+          name: "Lixo"
       modals:
         select_option: "Seleccione unha opción..."
       spam:

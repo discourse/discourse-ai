@@ -145,6 +145,13 @@ es:
         no_persona: "No establecido"
         no_groups: "Ninguno"
         edit: "Editar"
+        expand_list:
+          one: "(%{count} más)"
+          other: "(%{count} más)"
+        collapse_list: "(mostrar menos)"
+        filters:
+          all: "Todos"
+          reset: "Restablecer"
         search:
           name: "Buscar"
         ai_helper:
@@ -154,6 +161,9 @@ es:
           smart_dates: "Fechas inteligentes"
           markdown_tables: "Generar tabla Markdown"
           custom_prompt: "Instruccón personalizada"
+        spam:
+          name: "Spam"
+          description: "Identifica el correo no deseado potencial utilizando el LLM seleccionado y lo marca para que los moderadores del sitio lo inspeccionen en la cola de revisión"
       modals:
         select_option: "Selecciona una opción..."
       spam:

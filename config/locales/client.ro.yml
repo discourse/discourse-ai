@@ -42,8 +42,18 @@ ro:
         groups: "Grupuri:"
         no_groups: "Nimic"
         edit: "Modifică"
+        expand_list:
+          one: "(încă %{count})"
+          few: "(încă %{count})"
+          other: "(încă %{count})"
+        collapse_list: "(arată mai puține)"
+        filters:
+          all: "Toate"
+          reset: "Resetare"
         search:
           name: "Căutare"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Alege o opțiune..."
       spam:

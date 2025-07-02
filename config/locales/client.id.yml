@@ -101,8 +101,16 @@ id:
         groups: "Grup:"
         no_groups: "Tidak ada"
         edit: "Ubah"
+        expand_list:
+          other: "(%{count} lainnya)"
+        collapse_list: "(tampilkan lebih sedikit)"
+        filters:
+          all: "Semua"
+          reset: "Reset"
         search:
           name: "Cari"
+        spam:
+          name: "Spam"
       modals:
         select_option: "Memilih sebuah pilihan..."
       spam:

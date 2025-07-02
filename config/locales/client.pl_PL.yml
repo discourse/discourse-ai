@@ -153,11 +153,24 @@ pl_PL:
       features:
         back: "Poprzednia"
         disabled: "(wyłączone)"
-        persona: "Osobowość:"
+        persona:
+          one: "Osobowość:"
+          few: "Persony:"
+          many: "Persony:"
+          other: "Persony:"
         groups: "Grupy:"
         no_persona: "Nie ustawiony"
         no_groups: "Brak"
         edit: "Edytuj"
+        expand_list:
+          one: "(%{count} więcej)"
+          few: "(%{count} więcej)"
+          many: "(%{count} więcej)"
+          other: "(%{count} więcej)"
+        collapse_list: "(pokaż mniej)"
+        filters:
+          all: "Wszystkie"
+          reset: "Przywróć"
         search:
           name: "Szukaj"
         ai_helper:
@@ -166,6 +179,9 @@ pl_PL:
           explain: "Wyjaśnij"
           markdown_tables: "Wygeneruj tabelę Markdown"
           custom_prompt: "Niestandardowy prompt"
+        spam:
+          name: "Spam"
+          description: "Identyfikuje potencjalny spam przy użyciu wybranego LLM i oznacza go dla moderatorów witryny w celu sprawdzenia w kolejce przeglądania."
       modals:
         select_option: "Wybierz opcję..."
       spam:

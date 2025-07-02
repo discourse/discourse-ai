@@ -76,8 +76,17 @@ el:
         no_persona: "Δεν έχει οριστεί"
         no_groups: "Κανένα"
         edit: "Επεξεργασία"
+        expand_list:
+          one: "(%{count} περισσότερο)"
+          other: "(%{count} περισσότερα)"
+        collapse_list: "(δείξε λιγότερα)"
+        filters:
+          all: "Όλα"
+          reset: "Επαναφορά"
         search:
           name: "Αναζήτηση"
+        spam:
+          name: "Ανεπιθύμητα"
       modals:
         select_option: "Διαλέξτε μία επιλογή..."
       spam:

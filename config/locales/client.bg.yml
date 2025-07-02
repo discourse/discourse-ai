@@ -41,8 +41,17 @@ bg:
         no_persona: "Не е зададено"
         no_groups: "Без"
         edit: "Редактирай"
+        expand_list:
+          one: "(още %{count})"
+          other: "(още %{count})"
+        collapse_list: "(покажи по-малко)"
+        filters:
+          all: "Всички"
+          reset: "Нулиране"
         search:
           name: "Търсене"
+        spam:
+          name: "Спам"
       modals:
         select_option: "Изберете опция..."
       spam:
