@@ -8,7 +8,7 @@ module DiscourseAi
         cooked = post.cooked
         return if cooked.blank?
 
-        doc = Nokogiri::HTML.fragment(cooked)
+        doc = Nokogiri::HTML5.fragment(cooked)
         original = doc.text.strip
 
         # quotes and blockquotes
