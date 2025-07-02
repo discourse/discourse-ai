@@ -40,7 +40,12 @@ module DiscourseAi
 
         content = "title: #{post.topic.title}\n#{post.raw}"
 
-        content = llm.tokenizer.truncate(content, max_post_tokens) if max_post_tokens.present?
+        content =
+          llm.tokenizer.truncate(
+            content,
+            max_post_tokens,
+            strict: SiteSetting.ai_strict_token_counting,
+          ) if max_post_tokens.present?
 
         if post.upload_ids.present?
           content = [content]

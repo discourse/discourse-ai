@@ -255,7 +255,7 @@ module DiscourseAi
             target = max_length if target > max_length
           end
 
-          llm.tokenizer.truncate(text, target)
+          llm.tokenizer.truncate(text, target, strict: SiteSetting.ai_strict_token_counting)
         end
 
         def accepted_options

@@ -99,7 +99,12 @@ module DiscourseAi
 
             result.gsub!(/^#{Regexp.escape(Rails.root.to_s)}/, "")
 
-            result = llm.tokenizer.truncate(result, MAX_CONTEXT_TOKENS)
+            result =
+              llm.tokenizer.truncate(
+                result,
+                MAX_CONTEXT_TOKENS,
+                strict: SiteSetting.ai_strict_token_counting,
+              )
 
             { setting_name: setting_name, context: result }
           end

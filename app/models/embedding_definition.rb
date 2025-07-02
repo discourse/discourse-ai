@@ -23,7 +23,7 @@ class EmbeddingDefinition < ActiveRecord::Base
         DiscourseAi::Tokenizer::GeminiTokenizer,
         DiscourseAi::Tokenizer::MultilingualE5LargeTokenizer,
         DiscourseAi::Tokenizer::OpenAiTokenizer,
-        DiscourseAi::Tokenizer::MixtralTokenizer,
+        DiscourseAi::Tokenizer::MistralTokenizer,
         DiscourseAi::Tokenizer::QwenTokenizer,
       ].map(&:name)
     end

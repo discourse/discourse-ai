@@ -118,7 +118,7 @@ Fabricator(:mistral_model, from: :llm_model) do
   name "mistral-large-latest"
   provider "mistral"
   api_key "ABC"
-  tokenizer "DiscourseAi::Tokenizer::MixtralTokenizer"
+  tokenizer "DiscourseAi::Tokenizer::MistralTokenizer"
   url "https://api.mistral.ai/v1/chat/completions"
   provider_params { { disable_native_tools: false } }
 end

@@ -161,7 +161,11 @@ module DiscourseAi
             target.raw
           end
 
-        Tokenizer::BertTokenizer.truncate(content, 512)
+        DiscourseAi::Tokenizer::BertTokenizer.truncate(
+          content,
+          512,
+          strict: SiteSetting.ai_strict_token_counting,
+        )
       end
 
       def request_with(client, content)

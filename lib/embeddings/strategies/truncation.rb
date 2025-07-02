@@ -22,7 +22,11 @@ module DiscourseAi
             when Post
               post_truncation(target, vdef.tokenizer, max_length)
             when RagDocumentFragment
-              vdef.tokenizer.truncate(target.fragment, max_length)
+              vdef.tokenizer.truncate(
+                target.fragment,
+                max_length,
+                strict: SiteSetting.ai_strict_token_counting,
+              )
             else
               raise ArgumentError, "Invalid target type"
             end
@@ -36,7 +40,7 @@ module DiscourseAi
           qtext = asymetric ? "#{vdef.search_prompt} #{text}" : text
           max_length = vdef.max_sequence_length - 2
 
-          vdef.tokenizer.truncate(qtext, max_length)
+          vdef.tokenizer.truncate(qtext, max_length, strict: SiteSetting.ai_strict_token_counting)
         end
 
         private
@@ -74,7 +78,7 @@ module DiscourseAi
             text << "\n\n"
           end
 
-          tokenizer.truncate(text, max_length)
+          tokenizer.truncate(text, max_length, strict: SiteSetting.ai_strict_token_counting)
         end
 
         def post_truncation(post, tokenizer, max_length)
@@ -86,7 +90,7 @@ module DiscourseAi
             text << Nokogiri::HTML5.fragment(post.cooked).text
           end
 
-          tokenizer.truncate(text, max_length)
+          tokenizer.truncate(text, max_length, strict: SiteSetting.ai_strict_token_counting)
         end
       end
     end
