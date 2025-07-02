@@ -3,7 +3,7 @@
 describe DiscourseAi::Translation::TopicLocaleDetector do
   describe ".detect_locale" do
     fab!(:topic) { Fabricate(:topic, title: "this is a cat topic", locale: nil) }
-    fab!(:post) { Fabricate(:post, raw: "and kittens", topic:) }
+    fab!(:post) { Fabricate(:post, topic:) }
 
     def language_detector_stub(opts)
       mock = instance_double(DiscourseAi::Translation::LanguageDetector)
@@ -18,7 +18,7 @@ describe DiscourseAi::Translation::TopicLocaleDetector do
     end
 
     it "updates the topic locale with the detected locale" do
-      language_detector_stub({ text: "This is a cat topic and kittens", locale: "zh_CN" })
+      language_detector_stub({ text: "This is a cat topic", locale: "zh_CN" })
       expect { described_class.detect_locale(topic) }.to change { topic.reload.locale }.from(
         nil,
       ).to("zh_CN")
@@ -29,7 +29,7 @@ describe DiscourseAi::Translation::TopicLocaleDetector do
       SiteSetting.min_topic_title_length = 15
       SiteSetting.max_topic_title_length = 16
 
-      language_detector_stub({ text: "A and kittens", locale: "zh_CN" })
+      language_detector_stub({ text: "A", locale: "zh_CN" })
 
       described_class.detect_locale(topic)
       expect(topic.reload.locale).to eq("zh_CN")

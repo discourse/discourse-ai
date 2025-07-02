@@ -6,10 +6,7 @@ module DiscourseAi
       def self.detect_locale(topic)
         return if topic.blank?
 
-        text = topic.title.dup
-        text << " #{topic.first_post.raw}" if topic.first_post.raw
-
-        detected_locale = LanguageDetector.new(text).detect
+        detected_locale = LanguageDetector.new(topic.title.dup).detect
         locale = LocaleNormalizer.normalize_to_i18n(detected_locale)
         topic.update_column(:locale, locale)
         locale
