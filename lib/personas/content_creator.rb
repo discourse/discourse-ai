@@ -13,6 +13,8 @@ module DiscourseAi
           * Ttitle: {site_title}
           * Description: {site_description}
 
+          You will receive a couple of keywords and must create a post about the keywords, keeping the previous information in mind.
+
           Format your response as a JSON object with a single key named "output", which has the created content.
           Your output should be in the following format:
             <output>

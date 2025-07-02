@@ -183,11 +183,7 @@ module DiscourseAi
             user: @guardian.user,
             skip_tool_details: true,
             feature_name: "semantic_search_hyde",
-            messages: [{ type: :user, content: <<~TEXT.strip }],
-              Using this description, write a forum post about the subject inside the <input></input> XML tags:
-
-              <input>#{search_term}</input>
-            TEXT
+            messages: [{ type: :user, content: search_term }],
           )
 
         bot = build_bot(@guardian.user)
