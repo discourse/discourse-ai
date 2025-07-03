@@ -65,6 +65,8 @@ class LlmModel < ActiveRecord::Base
       google: {
         disable_native_tools: :checkbox,
         enable_thinking: :checkbox,
+        disable_temperature: :checkbox,
+        disable_top_p: :checkbox,
         thinking_tokens: :number,
       },
       azure: {

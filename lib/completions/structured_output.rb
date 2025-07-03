@@ -26,6 +26,10 @@ module DiscourseAi
         @partial_json_tracker << raw
       end
 
+      def broken?
+        @partial_json_tracker.broken?
+      end
+
       def read_buffered_property(prop_name)
         # Safeguard: If the model is misbehaving and generating something that's not a JSON,
         # treat response as a normal string.

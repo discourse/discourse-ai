@@ -33,7 +33,8 @@ module DiscourseAi
 
           model_params[:topP] = model_params.delete(:top_p) if model_params[:top_p]
 
-          # temperature already supported
+          model_params.delete(:temperature) if llm_model.lookup_custom_param("disable_temperature")
+          model_params.delete(:topP) if llm_model.lookup_custom_param("disable_top_p")
 
           model_params
         end

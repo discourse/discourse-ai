@@ -82,7 +82,7 @@ module DiscourseAi
         context.user_language = "#{locale_hash["name"]}"
 
         if user
-          timezone = user.user_option.timezone || "UTC"
+          timezone = user&.user_option&.timezone || "UTC"
           current_time = Time.now.in_time_zone(timezone)
 
           temporal_context = {
@@ -126,21 +126,34 @@ module DiscourseAi
           )
         context = attach_user_context(context, user, force_default_locale: force_default_locale)
 
-        helper_response = +""
+        bad_json = false
+        json_summary_schema_key = bot.persona.response_format&.first.to_h
+
+        schema_key = json_summary_schema_key["key"]&.to_sym
+        schema_type = json_summary_schema_key["type"]
+
+        if schema_type == "array"
+          helper_response = []
+        else
+          helper_response = +""
+        end
 
         buffer_blk =
           Proc.new do |partial, _, type|
-            json_summary_schema_key = bot.persona.response_format&.first.to_h
-            helper_response = [] if json_summary_schema_key["type"] == "array"
-            if type == :structured_output
-              helper_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
+            if type == :structured_output && schema_type
+              bad_json ||= partial.broken?
+              helper_chunk = partial.read_buffered_property(schema_key)
               if !helper_chunk.nil? && !helper_chunk.empty?
-                if json_summary_schema_key["type"] != "array"
-                  helper_response = helper_chunk
-                else
+                if !bad_json
                   helper_response << helper_chunk
+                else
+                  if schema_type == "string" || schema_type == "array"
+                    helper_response << helper_chunk
+                  else
+                    helper_response = helper_chunk
+                  end
+                  block.call(helper_chunk) if block
                 end
-                block.call(helper_chunk) if block
               end
             elsif type.blank?
               # Assume response is a regular completion.
@@ -151,6 +164,17 @@ module DiscourseAi
 
         bot.reply(context, &buffer_blk)
 
+        # handle edge cases where structured output is all over the place
+        if bad_json
+          helper_response = helper_response.join if helper_response.is_a?(Array)
+          helper_response =
+            DiscourseAi::Utils::BestEffortJsonParser.extract_key(
+              helper_response,
+              schema_type,
+              schema_key,
+            )
+          block.call(helper_response) if block
+        end
         helper_response
       end
 
@@ -255,7 +279,7 @@ module DiscourseAi
           Proc.new do |partial, _, type|
             if type == :structured_output
               structured_output = partial
-              json_summary_schema_key = bot.persona.response_format&.first.to_h
+              _json_summary_schema_key = bot.persona.response_format&.first.to_h
             end
           end
 
@@ -287,6 +311,11 @@ module DiscourseAi
       end
 
       def find_ai_helper_model(helper_mode, persona_klass)
+        if helper_mode == IMAGE_CAPTION && @image_caption_llm.is_a?(LlmModel)
+          return @image_caption_llm
+        end
+
+        return @helper_llm if helper_mode != IMAGE_CAPTION && @helper_llm.is_a?(LlmModel)
         self.class.find_ai_helper_model(helper_mode, persona_klass)
       end
 
@@ -299,9 +328,9 @@ module DiscourseAi
 
         if !model_id
           if helper_mode == IMAGE_CAPTION
-            model_id = @helper_llm || SiteSetting.ai_helper_image_caption_model&.split(":")&.last
+            model_id = SiteSetting.ai_helper_image_caption_model&.split(":")&.last
           else
-            model_id = @image_caption_llm || SiteSetting.ai_helper_model&.split(":")&.last
+            model_id = SiteSetting.ai_helper_model&.split(":")&.last
           end
         end
 
