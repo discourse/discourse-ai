@@ -141,10 +141,10 @@ module DiscourseAi
         buffer_blk =
           Proc.new do |partial, _, type|
             if type == :structured_output && schema_type
-              bad_json ||= partial.broken?
               helper_chunk = partial.read_buffered_property(schema_key)
+              bad_json ||= partial.broken?
               if !helper_chunk.nil? && !helper_chunk.empty?
-                if !bad_json
+                if bad_json
                   helper_response << helper_chunk
                 else
                   if schema_type == "string" || schema_type == "array"
@@ -173,6 +173,7 @@ module DiscourseAi
               schema_type,
               schema_key,
             )
+          p helper_response
           block.call(helper_response) if block
         end
         helper_response
