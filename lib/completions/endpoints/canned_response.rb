@@ -50,16 +50,16 @@ module DiscourseAi
 
             # We buffer and return tool invocations in one go.
             as_array = response.is_a?(Array) ? response : [response]
-            as_array.each do |response|
-              if is_tool?(response)
-                yield(response, cancel_fn)
-              elsif is_thinking?(response)
-                yield(response, cancel_fn)
+            as_array.each do |_response|
+              if is_tool?(_response)
+                yield(_response, cancel_fn)
+              elsif is_thinking?(_response)
+                yield(_response, cancel_fn)
               elsif model_params[:response_format].present?
-                structured_output = as_structured_output(response)
+                structured_output = as_structured_output(_response)
                 yield(structured_output, cancel_fn)
               else
-                response.each_char do |char|
+                _response.each_char do |char|
                   break if cancelled
                   yield(char, cancel_fn)
                 end
