@@ -159,7 +159,7 @@ RSpec.describe DiscourseAi::Utils::BestEffortJsonParser do
       end
     end
 
-    context "edge cases" do
+    context "when very broken JSON is entered" do
       it "returns empty string when no valid JSON can be extracted for string type" do
         input = "This is just plain text with no JSON"
         result = described_class.extract_key(input, "string", :output)
