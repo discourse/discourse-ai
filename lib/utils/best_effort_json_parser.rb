@@ -1,149 +1,131 @@
 # frozen_string_literal: true
 
+require "json"
+
 module DiscourseAi
   module Utils
     class BestEffortJsonParser
-      def self.extract_key(helper_response, schema_type, schema_key)
-        schema_type = schema_type.to_sym
-        schema_key = schema_key.to_sym
+      class << self
+        def extract_key(helper_response, schema_type, schema_key)
+          return helper_response unless helper_response.is_a?(String)
 
-        return helper_response unless helper_response.is_a?(String)
+          schema_type = schema_type.to_sym
+          schema_key = schema_key&.to_sym
+          cleaned = remove_markdown_fences(helper_response.strip)
 
-        # First attempt: try to parse after removing markdown fences
-        cleaned = helper_response.strip
+          parsed =
+            try_parse(cleaned) || try_parse(fix_common_issues(cleaned)) ||
+              manual_extract(cleaned, schema_key, schema_type)
 
-        # Remove markdown code fences
-        if cleaned.match?(/^```(?:json)?\s*\n/i)
-          cleaned = cleaned.gsub(/^```(?:json)?\s*\n/i, "").gsub(/\n```\s*$/, "")
+          value = parsed.is_a?(Hash) ? parsed[schema_key.to_s] : parsed
+          parsed = cast_value(value, schema_type)
         end
 
-        # Try standard JSON parse
-        begin
-          parsed = JSON.parse(cleaned)
-          return extract_value(parsed, schema_key, schema_type)
+        private
+
+        def remove_markdown_fences(text)
+          return text unless text.match?(/^```(?:json)?\s*\n/i)
+
+          text.gsub(/^```(?:json)?\s*\n/i, "").gsub(/\n```\s*$/, "")
+        end
+
+        def fix_common_issues(text)
+          text.gsub(/(\w+):/, '"\1":').gsub(/'/, "\"")
+        end
+
+        def try_parse(text)
+          JSON.parse(text)
         rescue JSON::ParserError
-          # Continue to next attempt
+          nil
         end
 
-        # Second attempt: fix common JSON issues
-        fixed_json =
-          cleaned.gsub(/(\w+):/, '"\1":') # Fix unquoted keys
-            .gsub(/'/, '\"') # Replace single quotes with double quotes
+        def manual_extract(text, key, schema_type)
+          return default_for(schema_type) unless key
 
-        begin
-          parsed = JSON.parse(fixed_json)
-          return extract_value(parsed, schema_key, schema_type)
-        rescue JSON::ParserError
-          # Continue to manual extraction
+          case schema_type
+          when :object
+            extract_object(text, key.to_s)
+          when :array, :string
+            extract_scalar(text, key.to_s, schema_type)
+          else
+            default_for(schema_type)
+          end
         end
 
-        # Third attempt: manual extraction based on key
-        if schema_key
-          key_str = schema_key.to_s
+        def extract_scalar(text, key, schema_type)
+          patterns =
+            if schema_type == :array
+              [
+                /"#{key}"\s*:\s*\[([^\]]+)\]/,
+                /'#{key}'\s*:\s*\[([^\]]+)\]/,
+                /#{key}\s*:\s*\[([^\]]+)\]/,
+              ]
+            else
+              [
+                /"#{key}"\s*:\s*"([^"]+)"/,
+                /'#{key}'\s*:\s*'([^']+)'/,
+                /#{key}\s*:\s*"([^"]+)"/,
+                /#{key}\s*:\s*'([^']+)'/,
+              ]
+            end
 
-          # Look for the key in various formats
-          patterns = [
-            /"#{key_str}"\s*:\s*"([^"]+)"/, # "key": "value"
-            /'#{key_str}'\s*:\s*'([^']+)'/, # 'key': 'value'
-            /#{key_str}\s*:\s*"([^"]+)"/, # key: "value"
-            /#{key_str}\s*:\s*'([^']+)'/, # key: 'value'
-            /"#{key_str}"\s*:\s*\[([^\]]+)\]/, # "key": [array]
-            /'#{key_str}'\s*:\s*\[([^\]]+)\]/, # 'key': [array]
-            /#{key_str}\s*:\s*\[([^\]]+)\]/, # key: [array]
-          ]
-
-          # For objects, handle separately to deal with nesting
-          object_patterns = [
-            /"#{key_str}"\s*:\s*\{/, # "key": {
-            /'#{key_str}'\s*:\s*\{/, # 'key': {
-            /#{key_str}\s*:\s*\{/, # key: {
-          ]
-
-          # Try string/array patterns first
           patterns.each do |pattern|
-            if match = helper_response.match(pattern)
-              value = match[1]
+            match = text.match(pattern)
+            next unless match
 
-              case schema_type
-              when :string
-                return value
-              when :array
-                begin
-                  return JSON.parse("[#{value}]")
-                rescue StandardError
-                  # Try to split by comma and clean up
-                  items = value.split(",").map { |item| item.strip.gsub(/^['"]|['"]$/, "") }
-                  return items
-                end
-              end
-            end
+            value = match[1]
+            return schema_type == :array ? parse_array(value) : value
           end
 
-          # Try object patterns
-          if schema_type == :object
-            object_patterns.each do |pattern|
-              if match = helper_response.match(pattern)
-                # Find the starting brace position after the key
-                start_pos = match.end(0) - 1 # Position of the opening brace
-                if start_pos >= 0 && helper_response[start_pos] == "{"
-                  # Extract the full object by counting braces
-                  brace_count = 0
-                  end_pos = start_pos
+          default_for(schema_type)
+        end
 
-                  helper_response[start_pos..-1].each_char.with_index do |char, idx|
-                    if char == "{"
-                      brace_count += 1
-                    elsif char == "}"
-                      brace_count -= 1
-                      if brace_count == 0
-                        end_pos = start_pos + idx
-                        break
-                      end
-                    end
-                  end
+        def parse_array(value)
+          JSON.parse("[#{value}]")
+        rescue JSON::ParserError
+          value.split(",").map { |item| item.strip.gsub(/^['"]|['"]$/, "") }
+        end
 
-                  if brace_count == 0
-                    object_str = helper_response[start_pos..end_pos]
-                    begin
-                      return JSON.parse(object_str)
-                    rescue StandardError
-                      # Try to fix and parse
-                      fixed = object_str.gsub(/(\w+):/, '"\1":').gsub(/'/, '"')
-                      begin
-                        return JSON.parse(fixed)
-                      rescue StandardError
-                        return {}
-                      end
-                    end
-                  end
-                end
-              end
+        def extract_object(text, key)
+          pattern = /("#{key}"|'#{key}'|#{key})\s*:\s*\{/
+          match = text.match(pattern) or return {}
+
+          start = match.end(0) - 1
+          return {} unless text[start] == "{"
+
+          end_pos = find_matching_brace(text, start)
+          return {} unless end_pos
+
+          obj_str = text[start..end_pos]
+          try_parse(obj_str) || try_parse(fix_common_issues(obj_str)) || {}
+        end
+
+        def find_matching_brace(text, start_pos)
+          brace_count = 0
+
+          text[start_pos..-1].each_char.with_index do |char, idx|
+            brace_count += 1 if char == "{"
+            if char == "}"
+              brace_count -= 1
+              return start_pos + idx if brace_count.zero?
             end
+          end
+          nil
+        end
+
+        def cast_value(value, schema_type)
+          case schema_type
+          when :array
+            value.is_a?(Array) ? value : []
+          when :object
+            value.is_a?(Hash) ? value : {}
+          else
+            value.to_s
           end
         end
 
-        case schema_type
-        when :array
-          []
-        when :object
-          {}
-        else
-          ""
-        end
-      end
-
-      def self.extract_value(parsed, schema_key, schema_type)
-        return parsed unless parsed.is_a?(Hash) && schema_key
-
-        value = parsed[schema_key.to_s]
-
-        case schema_type
-        when :array
-          value.is_a?(Array) ? value : []
-        when :object
-          value.is_a?(Hash) ? value : {}
-        else
-          value.to_s
+        def default_for(schema_type)
+          schema_type == :array ? [] : schema_type == :object ? {} : ""
         end
       end
     end

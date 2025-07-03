@@ -144,16 +144,14 @@ module DiscourseAi
               helper_chunk = partial.read_buffered_property(schema_key)
               bad_json ||= partial.broken?
               if !helper_chunk.nil? && !helper_chunk.empty?
-                if bad_json
+                if bad_json || schema_type == "string" || schema_type == "array"
                   helper_response << helper_chunk
                 else
-                  if schema_type == "string" || schema_type == "array"
-                    helper_response << helper_chunk
-                  else
-                    helper_response = helper_chunk
-                  end
-                  block.call(helper_chunk) if block
+                  # TODO this feels a bit odd
+                  # why is this allowed to throw away potential data?
+                  helper_response = helper_chunk
                 end
+                block.call(helper_chunk) if block && !bad_json
               end
             elsif type.blank?
               # Assume response is a regular completion.
@@ -173,7 +171,6 @@ module DiscourseAi
               schema_type,
               schema_key,
             )
-          p helper_response
           block.call(helper_response) if block
         end
         helper_response
@@ -280,7 +277,7 @@ module DiscourseAi
           Proc.new do |partial, _, type|
             if type == :structured_output
               structured_output = partial
-              _json_summary_schema_key = bot.persona.response_format&.first.to_h
+              bot.persona.response_format&.first.to_h
             end
           end
 
