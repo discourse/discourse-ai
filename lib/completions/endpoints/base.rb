@@ -187,10 +187,10 @@ module DiscourseAi
                 blk =
                   lambda do |partial|
                     if partial.is_a?(String)
-                      partial = xml_stripper << partial if xml_stripper
+                      partial = xml_stripper << partial if xml_stripper && !partial.empty?
 
                       if structured_output.present?
-                        structured_output << partial
+                        structured_output << partial if !partial.empty?
                         partial = structured_output
                       end
                     end
@@ -252,6 +252,15 @@ module DiscourseAi
               end
               xml_tool_processor.finish.each { |partial| blk.call(partial) } if xml_tool_processor
               decode_chunk_finish.each { |partial| blk.call(partial) }
+
+              if structured_output
+                structured_output.finish
+                if structured_output.broken?
+                  # signal last partial output which will get parsed
+                  # by best effort json parser
+                  blk.call("")
+                end
+              end
               return response_data
             ensure
               if log
@@ -448,6 +457,7 @@ module DiscourseAi
 
           if structured_output.present?
             response_data.each { |data| structured_output << data if data.is_a?(String) }
+            structured_output.finish
 
             return structured_output
           end

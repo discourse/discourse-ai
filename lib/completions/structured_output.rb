@@ -17,13 +17,28 @@ module DiscourseAi
         @raw_cursor = 0
 
         @partial_json_tracker = JsonStreamingTracker.new(self)
+
+        @type_map = {}
+        json_schema_properties.each { |name, prop| @type_map[name.to_sym] = prop[:type].to_sym }
+
+        @done = false
+      end
+
+      def to_s
+        # we may want to also normalize the JSON here for the broken case
+        @raw_response
       end
 
       attr_reader :last_chunk_buffer
 
       def <<(raw)
+        raise "Cannot append to a completed StructuredOutput" if @done
         @raw_response << raw
         @partial_json_tracker << raw
+      end
+
+      def finish
+        @done = true
       end
 
       def broken?
@@ -31,13 +46,19 @@ module DiscourseAi
       end
 
       def read_buffered_property(prop_name)
-        # Safeguard: If the model is misbehaving and generating something that's not a JSON,
-        # treat response as a normal string.
-        # This is a best-effort to recover from an unexpected scenario.
         if @partial_json_tracker.broken?
-          unread_chunk = @raw_response[@raw_cursor..]
-          @raw_cursor = @raw_response.length
-          return unread_chunk
+          if @done
+            return nil if @type_map[prop_name.to_sym].nil?
+            return(
+              DiscourseAi::Utils::BestEffortJsonParser.extract_key(
+                @raw_response,
+                @type_map[prop_name.to_sym],
+                prop_name,
+              )
+            )
+          else
+            return nil
+          end
         end
 
         # Maybe we haven't read that part of the JSON yet.

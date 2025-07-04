@@ -59,7 +59,7 @@ class OpenAiMock < EndpointMock
     stub.to_return(status: 200, body: chunks)
   end
 
-  def stub_streamed_response(prompt, deltas, tool_call: false)
+  def stub_streamed_response(prompt, deltas, tool_call: false, skip_body_check: false)
     chunks =
       deltas.each_with_index.map do |_, index|
         if index == (deltas.length - 1)
@@ -71,10 +71,13 @@ class OpenAiMock < EndpointMock
 
     chunks = (chunks.join("\n\n") << "data: [DONE]").split("")
 
-    WebMock
-      .stub_request(:post, "https://api.openai.com/v1/chat/completions")
-      .with(body: request_body(prompt, stream: true, tool_call: tool_call))
-      .to_return(status: 200, body: chunks)
+    mock = WebMock.stub_request(:post, "https://api.openai.com/v1/chat/completions")
+
+    if !skip_body_check
+      mock = mock.with(body: request_body(prompt, stream: true, tool_call: tool_call))
+    end
+
+    mock.to_return(status: 200, body: chunks)
 
     yield if block_given?
   end
@@ -398,6 +401,41 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
       result = llm.generate(prompt, user: user)
 
       expect(result).to eq("OK")
+    end
+  end
+
+  describe "structured outputs" do
+    it "falls back to best-effort parsing on broken JSON responses" do
+      prompt = compliance.generic_prompt
+      deltas = ["```json\n{ message: 'hel", "lo' }"]
+
+      model_params = {
+        response_format: {
+          json_schema: {
+            schema: {
+              properties: {
+                message: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      }
+
+      read_properties = []
+      open_ai_mock.with_chunk_array_support do
+        # skip body check cause of response format
+        open_ai_mock.stub_streamed_response(prompt, deltas, skip_body_check: true)
+
+        dialect = compliance.dialect(prompt: prompt)
+
+        endpoint.perform_completion!(dialect, user, model_params) do |partial|
+          read_properties << partial.read_buffered_property(:message)
+        end
+      end
+
+      expect(read_properties.join).to eq("hello")
     end
   end
 

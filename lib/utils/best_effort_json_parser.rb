@@ -18,7 +18,8 @@ module DiscourseAi
               manual_extract(cleaned, schema_key, schema_type)
 
           value = parsed.is_a?(Hash) ? parsed[schema_key.to_s] : parsed
-          parsed = cast_value(value, schema_type)
+
+          cast_value(value, schema_type)
         end
 
         private
@@ -119,6 +120,9 @@ module DiscourseAi
             value.is_a?(Array) ? value : []
           when :object
             value.is_a?(Hash) ? value : {}
+          when :boolean
+            return value if [true, false, nil].include?(value)
+            value.to_s.downcase == "true"
           else
             value.to_s
           end

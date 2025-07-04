@@ -53,6 +53,7 @@ module DiscourseAi
         #
         # Returns a UTF-8 encoded String.
         def <<(data)
+          data = data.dup if data.frozen?
           # Avoid state machine for complete UTF-8.
           if @buffer.empty?
             data.force_encoding(Encoding::UTF_8)

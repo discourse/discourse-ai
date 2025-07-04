@@ -142,13 +142,10 @@ module DiscourseAi
           Proc.new do |partial, _, type|
             if type == :structured_output && schema_type
               helper_chunk = partial.read_buffered_property(schema_key)
-              bad_json ||= partial.broken?
               if !helper_chunk.nil? && !helper_chunk.empty?
-                if bad_json || schema_type == "string" || schema_type == "array"
+                if schema_type == "string" || schema_type == "array"
                   helper_response << helper_chunk
                 else
-                  # TODO this feels a bit odd
-                  # why is this allowed to throw away potential data?
                   helper_response = helper_chunk
                 end
                 block.call(helper_chunk) if block && !bad_json
@@ -162,17 +159,6 @@ module DiscourseAi
 
         bot.reply(context, &buffer_blk)
 
-        # handle edge cases where structured output is all over the place
-        if bad_json
-          helper_response = helper_response.join if helper_response.is_a?(Array)
-          helper_response =
-            DiscourseAi::Utils::BestEffortJsonParser.extract_key(
-              helper_response,
-              schema_type,
-              schema_key,
-            )
-          block.call(helper_response) if block
-        end
         helper_response
       end
 
