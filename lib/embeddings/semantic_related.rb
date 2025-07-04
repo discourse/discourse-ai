@@ -3,6 +3,8 @@
 module DiscourseAi
   module Embeddings
     class SemanticRelated
+      CACHE_PREFIX = "semantic-suggested-topic-"
+
       def self.clear_cache_for(topic)
         Discourse.cache.delete("semantic-suggested-topic-#{topic.id}")
         Discourse.redis.del("build-semantic-suggested-topic-#{topic.id}")
@@ -79,14 +81,21 @@ module DiscourseAi
         )
       end
 
+      def self.clear_cache!
+        Discourse
+          .cache
+          .keys("#{CACHE_PREFIX}*")
+          .each { |key| Discourse.cache.delete(key.split(":").last) }
+      end
+
       private
 
       def semantic_suggested_key(topic_id)
-        "semantic-suggested-topic-#{topic_id}"
+        "#{CACHE_PREFIX}#{topic_id}"
       end
 
       def build_semantic_suggested_key(topic_id)
-        "build-semantic-suggested-topic-#{topic_id}"
+        "build-#{CACHE_PREFIX}#{topic_id}"
       end
     end
   end
