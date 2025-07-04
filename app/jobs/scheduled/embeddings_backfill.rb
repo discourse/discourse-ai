@@ -19,7 +19,6 @@ module Jobs
       end
 
       production_vector = DiscourseAi::Embeddings::Vector.instance
-      production_vector_def = production_vector.vdef
 
       if SiteSetting.ai_embeddings_backfill_model.present? &&
            SiteSetting.ai_embeddings_backfill_model != SiteSetting.ai_embeddings_selected_model
@@ -27,16 +26,16 @@ module Jobs
           DiscourseAi::Embeddings::Vector.new(
             EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_backfill_model),
           )
-        backfill_vector_def = backfill_vector.vdef
       end
 
       topic_work_list = []
-      topic_work_list << [production_vector, production_vector_def]
-      topic_work_list << [backfill_vector, backfill_vector_def] if backfill_vector
+      topic_work_list << production_vector
+      topic_work_list << backfill_vector if backfill_vector
 
-      topic_work_list.each do |vector, vector_def|
+      topic_work_list.each do |vector|
         rebaked = 0
         table_name = DiscourseAi::Embeddings::Schema::TOPICS_TABLE
+        vector_def = vector.vdef
 
         topics =
           Topic
