@@ -20,8 +20,11 @@ module DiscourseAi
       MissingEmbeddingError = Class.new(StandardError)
 
       class << self
-        def for(target_klass)
-          vector_def = EmbeddingDefinition.find_by(id: SiteSetting.ai_embeddings_selected_model)
+        def for(target_klass, vector_def: nil)
+          vector_def =
+            EmbeddingDefinition.find_by(
+              id: SiteSetting.ai_embeddings_selected_model,
+            ) if vector_def.nil?
           raise "Invalid embeddings selected model" if vector_def.nil?
 
           case target_klass&.name
