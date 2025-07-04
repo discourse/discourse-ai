@@ -200,12 +200,7 @@ class DiscourseAi::Evals::Eval
       user.admin = true
     end
     result =
-      helper.generate_and_send_prompt(
-        name,
-        input,
-        current_user = user,
-        _force_default_locale = false,
-      )
+      helper.generate_and_send_prompt(name, input, current_user = user, force_default_locale: false)
 
     result[:suggestions].first
   end

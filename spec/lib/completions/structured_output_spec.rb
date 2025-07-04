@@ -127,13 +127,31 @@ RSpec.describe DiscourseAi::Completions::StructuredOutput do
       chunks = [+"I'm not", +"a", +"JSON :)"]
 
       structured_output << chunks[0]
-      expect(structured_output.read_buffered_property(nil)).to eq("I'm not")
+      expect(structured_output.read_buffered_property(:bob)).to eq(nil)
 
       structured_output << chunks[1]
-      expect(structured_output.read_buffered_property(nil)).to eq("a")
+      expect(structured_output.read_buffered_property(:bob)).to eq(nil)
 
       structured_output << chunks[2]
-      expect(structured_output.read_buffered_property(nil)).to eq("JSON :)")
+
+      structured_output.finish
+      expect(structured_output.read_buffered_property(:bob)).to eq(nil)
+    end
+
+    it "can handle broken JSON" do
+      broken_json = <<~JSON
+        ```json
+        {
+          "message": "This is a broken JSON",
+          bool: true
+        }
+      JSON
+
+      structured_output << broken_json
+      structured_output.finish
+
+      expect(structured_output.read_buffered_property(:message)).to eq("This is a broken JSON")
+      expect(structured_output.read_buffered_property(:bool)).to eq(true)
     end
   end
 end

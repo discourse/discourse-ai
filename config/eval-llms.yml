@@ -1,4 +1,27 @@
 llms:
+  o3:
+    display_name: O3
+    name: o3
+    tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer
+    api_key_env: OPENAI_API_KEY
+    provider: open_ai
+    url: https://api.openai.com/v1/chat/completions
+    max_prompt_tokens: 131072
+    vision_enabled: true
+    provider_params:
+      disable_top_p: true
+      disable_temperature: true
+
+  gpt-41:
+    display_name: GPT-4.1
+    name: gpt-4.1
+    tokenizer: DiscourseAi::Tokenizer::OpenAiTokenizer
+    api_key_env: OPENAI_API_KEY
+    provider: open_ai
+    url: https://api.openai.com/v1/chat/completions
+    max_prompt_tokens: 131072
+    vision_enabled: true
+
   gpt-4o:
     display_name: GPT-4o
     name: gpt-4o
@@ -74,12 +97,25 @@ llms:
     max_prompt_tokens: 1000000
     vision_enabled: true
 
-  gemini-2.0-pro-exp:
-    display_name: Gemini 2.0 pro
-    name: gemini-2-0-pro-exp
+  gemini-2.5-flash:
+    display_name: Gemini 2.5 Flash
+    name: gemini-2-5-flash
     tokenizer: DiscourseAi::Tokenizer::GeminiTokenizer
     api_key_env: GEMINI_API_KEY
     provider: google
-    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-pro-exp
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash
+    max_prompt_tokens: 1000000
+    vision_enabled: true
+    provider_params:
+      disable_top_p: true
+      disable_temperature: true
+
+  gemini-2.0-pro:
+    display_name: Gemini 2.0 pro
+    name: gemini-2-0-pro
+    tokenizer: DiscourseAi::Tokenizer::GeminiTokenizer
+    api_key_env: GEMINI_API_KEY
+    provider: google
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-pro
     max_prompt_tokens: 1000000
     vision_enabled: true

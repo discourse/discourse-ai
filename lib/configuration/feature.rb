@@ -104,6 +104,12 @@ module DiscourseAi
               DiscourseAi::Configuration::Module::AI_HELPER,
             ),
             new(
+              "translator",
+              "ai_helper_translator_persona",
+              DiscourseAi::Configuration::Module::AI_HELPER_ID,
+              DiscourseAi::Configuration::Module::AI_HELPER,
+            ),
+            new(
               "custom_prompt",
               "ai_helper_custom_prompt_persona",
               DiscourseAi::Configuration::Module::AI_HELPER_ID,

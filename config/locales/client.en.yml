@@ -249,6 +249,7 @@ en:
           markdown_tables: "Generate Markdown table"
           custom_prompt: "Custom prompt"
           image_caption: "Caption images"
+          translator: "Translator"
 
         translation:
           name: "Translation"
@@ -257,7 +258,7 @@ en:
           post_raw_translator: "Post raw translator"
           topic_title_translator: "Topic title translator"
           short_text_translator: "Short text translator"
-        
+
         spam:
           name: "Spam"
           description: "Identifies potential spam using the selected LLM and flags it for site moderators to inspect in the review queue"
