@@ -69,7 +69,7 @@ RSpec.describe Jobs::EmbeddingsBackfill do
     expect(index_date).to be_within_one_second_of(Time.zone.now)
   end
 
-  it "backfills topics based on bumped_at date" do
+  it "backfills embeddings for the ai_embeddings_backfill_model" do
     SiteSetting.ai_embeddings_backfill_model = vector_def2.id
     SiteSetting.ai_embeddings_backfill_batch_size = 100
 
