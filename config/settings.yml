@@ -230,20 +230,26 @@ discourse_ai:
     enum: "DiscourseAi::Configuration::EmbeddingDefsEnumerator"
     validator: "DiscourseAi::Configuration::EmbeddingDefsValidator"
     area: "ai-features/embeddings"
+  ai_embeddings_backfill_model:
+    type: enum
+    default: ""
+    allow_any: false
+    enum: "DiscourseAi::Configuration::EmbeddingDefsEnumerator"
+    hidden: true
   ai_embeddings_per_post_enabled:
     default: false
     hidden: true
-  ai_embeddings_generate_for_pms: 
+  ai_embeddings_generate_for_pms:
     default: false
     area: "ai-features/embeddings"
   ai_embeddings_semantic_related_topics_enabled:
     default: false
     client: true
     area: "ai-features/embeddings"
-  ai_embeddings_semantic_related_topics: 
+  ai_embeddings_semantic_related_topics:
     default: 5
     area: "ai-features/embeddings"
-  ai_embeddings_semantic_related_include_closed_topics: 
+  ai_embeddings_semantic_related_include_closed_topics:
     default: true
     area: "ai-features/embeddings"
   ai_embeddings_backfill_batch_size:

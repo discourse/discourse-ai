@@ -25,7 +25,7 @@ module DiscourseAi
             idletime: 30,
           )
 
-        schema = DiscourseAi::Embeddings::Schema.for(relation.first.class)
+        schema = DiscourseAi::Embeddings::Schema.for(relation.first.class, vector_def: @vdef)
 
         embedding_gen = vdef.inference_client
         promised_embeddings =
@@ -58,7 +58,7 @@ module DiscourseAi
         text = vdef.prepare_target_text(target)
         return if text.blank?
 
-        schema = DiscourseAi::Embeddings::Schema.for(target.class)
+        schema = DiscourseAi::Embeddings::Schema.for(target.class, vector_def: @vdef)
 
         new_digest = OpenSSL::Digest::SHA1.hexdigest(text)
         return if schema.find_by_target(target)&.digest == new_digest
