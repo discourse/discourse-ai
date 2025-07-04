@@ -568,7 +568,7 @@ en:
           ai_summarization: "Summarize"
           ai_embeddings_semantic_search: "AI search"
           ai_spam: "Spam"
-          automation: "Automation (%{name})"
+          automation: "Automation (%{persona})"
         in_use_warning:
           one: "This model is currently used by %{settings}. If misconfigured, the feature won't work as expected."
           other: "This model is currently used by the following: %{settings}. If misconfigured, features won't work as expected. "
