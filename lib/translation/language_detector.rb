@@ -38,8 +38,8 @@ module DiscourseAi
             skip_tool_details: true,
             feature_name: "translation",
             messages: [{ type: :user, content: @text }],
-            topic: topic,
-            post: post,
+            topic: @topic,
+            post: @post,
           )
 
         structured_output = nil
