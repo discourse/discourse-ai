@@ -142,14 +142,21 @@ module DiscourseAi
           Proc.new do |partial, _, type|
             if type == :structured_output && schema_type
               helper_chunk = partial.read_buffered_property(schema_key)
-              if !helper_chunk.nil? && !helper_chunk.empty?
-                if schema_type == "string" || schema_type == "array"
-                  helper_response << helper_chunk
-                else
-                  helper_response = helper_chunk
+              next if helper_chunk.nil? || helper_chunk.empty?
+
+              if schema_type == "array"
+                if helper_chunk.is_a?(Array)
+                  helper_chunk.each do |item|
+                    helper_response << item if helper_response.exclude?(item)
+                  end
                 end
-                block.call(helper_chunk) if block && !bad_json
+              elsif schema_type == "string"
+                helper_response << helper_chunk
+              else
+                helper_response = helper_chunk
               end
+
+              block.call(helper_chunk) if block && !bad_json
             elsif type.blank?
               # Assume response is a regular completion.
               helper_response << partial
