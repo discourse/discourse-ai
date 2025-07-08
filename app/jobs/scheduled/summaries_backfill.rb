@@ -36,7 +36,12 @@ module ::Jobs
       existing_summary = strategy.existing_summary
 
       if existing_summary.blank? || existing_summary.outdated
-        strategy.summarize(user)
+        begin
+          strategy.summarize(user)
+        rescue => e
+          Rails.logger.error("Error summarizing topic #{topic.id}: #{e.class.name} - #{e.message}")
+          raise e
+        end
       else
         # Hiding or deleting a post, and creating a small action alters the Topic#highest_post_number.
         # We use this as a quick way to select potential backfill candidates without relying on original_content_sha.
