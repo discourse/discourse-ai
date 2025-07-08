@@ -51,7 +51,7 @@ module Jobs
           # do nothing, there are too many sporadic lookup failures
         rescue => e
           DiscourseAi::Translation::VerboseLogger.log(
-            "Failed to detect post #{post.id}'s locale: #{e.message}",
+            "Failed to detect post #{post.id}'s locale: #{e.message}\n\n#{e.backtrace[0..3].join("\n")}",
           )
         end
       end

@@ -27,7 +27,7 @@ module Jobs
         rescue FinalDestination::SSRFDetector::LookupFailedError
         rescue => e
           DiscourseAi::Translation::VerboseLogger.log(
-            "Failed to detect category #{category.id}'s locale: #{e.message}",
+            "Failed to detect category #{category.id}'s locale: #{e.message}\n\n#{e.backtrace[0..3].join("\n")}",
           )
         end
       end
