@@ -154,6 +154,8 @@ it:
           reset: "Annulla"
         search:
           name: "Cerca"
+        embeddings:
+          name: "Integrazioni"
         ai_helper:
           name: "Assistente"
           proofread: Testo corretto

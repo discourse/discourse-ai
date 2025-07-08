@@ -154,6 +154,8 @@ tr_TR:
           reset: "Sıfırla"
         search:
           name: "Ara"
+        embeddings:
+          name: "Gömmeler"
         ai_helper:
           name: "Yardımcı"
           proofread: Yazım hataları düzeltilmiş metin

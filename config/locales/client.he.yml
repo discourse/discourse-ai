@@ -185,6 +185,7 @@ he:
           two: "LLMים:"
           many: "LLMים:"
           other: "LLMים:"
+        no_llm: "לא נבחר מש״ג/LLM"
         no_persona: "לא מוגדר"
         no_groups: "ללא"
         edit: "עריכה"
@@ -196,24 +197,44 @@ he:
         collapse_list: "(להציג פחות)"
         bot:
           name: "בוט"
+          description: "צ׳אט בוט שיכול לענות על שאלות ולסייע למשתמשים בהודעות אישיות, בפורום ובצ׳אט"
         filters:
           all: "הכול"
+          text: "חיפוש יכולות, דמויות, LLMים/מש״גים או קבוצות…"
           reset: "איפוס"
         summarization:
           name: "סיכומים"
           description: "להנגיש את כפתור הסיכום שמאפשר למבקרים לסכם נושאים"
+          topic_summaries: "תקצירי נושאים."
         search:
           name: "חיפוש"
           description: "שיפור חוויית החיפוש על ידי אספקת תשובות שנוצרו על ידי בינה מלאכותית לשאילתות"
+          discoveries: "תגליות"
+        embeddings:
+          name: "הטמעות"
         discord:
+          name: "שילוב מול Discord"
           description: "הוספת היכולת לחפש בערוצי Discord"
+          search: "חיפוש ב־Discord"
+        inference:
+          generate_concepts: "הסקת תפיסות"
         ai_helper:
           name: "מסייע"
           proofread: הגהת הטקסט
+          title_suggestions: "הצעת כותרות"
           explain: "הסבר"
+          illustrate_post: "איור פוסט"
           smart_dates: "תאריכים חכמים"
+          translate: "תרגום"
           markdown_tables: "יצירת טבלה ב־Markdown"
           custom_prompt: "בקשה מותאמת אישית"
+          image_caption: "הוספת כותרות לתמונות"
+        translation:
+          description: "תרגום תוכן לשפות נתמכות"
+          locale_detector: "מזהה שפה ומקום"
+          post_raw_translator: "מתרגם פוסטים גולמי"
+          topic_title_translator: "מתרגם כותרות נושאים"
+          short_text_translator: "מתרגם טקסטים קצרים"
         spam:
           name: "ספאם"
       modals:
@@ -491,7 +512,7 @@ he:
           ai_summarization: "סיכום"
           ai_embeddings_semantic_search: "חיפוש בינה מלאכותית"
           ai_spam: "ספאם"
-          automation: "אוטומציה (%{name})"
+          automation: "אוטומציה (%{persona})"
         in_use_warning:
           one: "המודל הזה משמש את %{settings}. אם לא מוגדר כראוי, היכולת לא תעבוד כמצופה."
           two: "המודל הזה משמש את: %{settings}. אם ההגדרות שגויות היכולת לא תעבודנה כמצופה."

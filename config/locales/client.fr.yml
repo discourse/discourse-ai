@@ -154,6 +154,8 @@ fr:
           reset: "Réinitialiser"
         search:
           name: "Recherche"
+        embeddings:
+          name: "Intégrations"
         ai_helper:
           name: "Assistant"
           proofread: Relisez le texte

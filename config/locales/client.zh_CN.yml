@@ -173,6 +173,8 @@ zh_CN:
           reset: "重置"
         search:
           name: "搜索"
+        embeddings:
+          name: "嵌入向量"
         ai_helper:
           name: "助手"
           proofread: 审校文本

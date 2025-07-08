@@ -154,6 +154,8 @@ es:
           reset: "Restablecer"
         search:
           name: "Buscar"
+        embeddings:
+          name: "Incrustaciones"
         ai_helper:
           name: "Ayudante"
           proofread: Corregir el texto

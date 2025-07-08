@@ -158,6 +158,8 @@ ar:
           reset: "إعادة التعيين"
         search:
           name: "البحث"
+        embeddings:
+          name: "التضمينات"
         ai_helper:
           name: "المساعد"
           proofread: تدقيق النص لغويًا

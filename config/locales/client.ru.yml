@@ -156,6 +156,8 @@ ru:
           reset: "Сбросить"
         search:
           name: "Искать"
+        embeddings:
+          name: "Встраивания"
         ai_helper:
           name: "Помощник"
           proofread: Вычитать текст

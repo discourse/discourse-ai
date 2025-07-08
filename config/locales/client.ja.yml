@@ -157,6 +157,8 @@ ja:
           reset: "リセット"
         search:
           name: "検索"
+        embeddings:
+          name: "埋め込み"
         ai_helper:
           name: "ヘルパー"
           proofread: テキストを構成

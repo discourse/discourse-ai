@@ -154,6 +154,8 @@ pt_BR:
           reset: "Redefinir"
         search:
           name: "Pesquisar"
+        embeddings:
+          name: "Incorporações"
         ai_helper:
           name: "Ajudante"
           proofread: Revisar texto
