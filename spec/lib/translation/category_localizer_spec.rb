@@ -28,7 +28,7 @@ describe DiscourseAi::Translation::CategoryLocalizer do
   end
 
   fab!(:category) do
-    Fabricate(:category, name: "Test Category", description: "This is a test category")
+    Fabricate(:category, name: "Test Category", description: "This is a test category. " * 50)
   end
 
   describe ".localize" do
@@ -42,7 +42,7 @@ describe DiscourseAi::Translation::CategoryLocalizer do
       )
       post_raw_translator_stub(
         {
-          text: category.description,
+          text: category.description_excerpt,
           target_locale: target_locale,
           translated: translated_cat_desc,
         },
@@ -61,7 +61,7 @@ describe DiscourseAi::Translation::CategoryLocalizer do
         { text: category.name, target_locale:, translated: translated_cat_name },
       )
       post_raw_translator_stub(
-        { text: category.description, target_locale:, translated: translated_cat_desc },
+        { text: category.description_excerpt, target_locale:, translated: translated_cat_desc },
       )
 
       res = localizer.localize(category, target_locale)
@@ -86,7 +86,11 @@ describe DiscourseAi::Translation::CategoryLocalizer do
         { text: category.name, target_locale: "es", translated: translated_cat_name },
       )
       post_raw_translator_stub(
-        { text: category.description, target_locale: "es", translated: translated_cat_desc },
+        {
+          text: category.description_excerpt,
+          target_locale: "es",
+          translated: translated_cat_desc,
+        },
       )
 
       res = localizer.localize(category)

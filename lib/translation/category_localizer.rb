@@ -10,8 +10,8 @@ module DiscourseAi
 
         translated_name = ShortTextTranslator.new(text: category.name, target_locale:).translate
         translated_description =
-          if category.description.present?
-            PostRawTranslator.new(text: category.description, target_locale:).translate
+          if category.description_excerpt.present?
+            PostRawTranslator.new(text: category.description_excerpt, target_locale:).translate
           else
             ""
           end
