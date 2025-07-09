@@ -163,6 +163,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  background: var(--primary-very-low);
+  padding: 1rem;
+  margin-block: 1rem;
+  border-radius: var(--d-border-radius);
 
   &__header {
     flex: 3;
@@ -170,16 +174,11 @@
 
   &__setting {
     flex: 2;
-
     display: flex;
     gap: var(--space-2);
     align-items: center;
     justify-content: center;
   }
-  background: var(--primary-very-low);
-  padding: 1rem;
-  margin-block: 1rem;
-  border-radius: var(--d-border-radius);
 
   h3 {
     color: var(--primary);

@@ -9,8 +9,8 @@ import DPageSubheader from "discourse/components/d-page-subheader";
 import DSelect from "discourse/components/d-select";
 import FilterInput from "discourse/components/filter-input";
 import { i18n } from "discourse-i18n";
-import AiFeaturesList from "./ai-features-list";
 import AiDefaultLlmSelector from "./ai-default-llm-selector";
+import AiFeaturesList from "./ai-features-list";
 
 const ALL = "all";
 const CONFIGURED = "configured";
