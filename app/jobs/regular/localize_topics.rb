@@ -9,22 +9,24 @@ module Jobs
       limit = args[:limit]
       raise Discourse::InvalidParameters.new(:limit) if limit.blank? || limit <= 0
 
-      return if !SiteSetting.discourse_ai_enabled
-      return if !SiteSetting.ai_translation_enabled
+      return if !DiscourseAi::Translation.backfill_enabled?
 
       locales = SiteSetting.content_localization_supported_locales.split("|")
-      return if locales.blank?
-
       locales.each do |locale|
+        base_locale = locale.split("_").first
         topics =
           Topic
             .joins(
-              "LEFT JOIN topic_localizations tl ON tl.topic_id = topics.id AND tl.locale = #{ActiveRecord::Base.connection.quote(locale)}",
+              "LEFT JOIN topic_localizations tl ON tl.topic_id = topics.id AND tl.locale LIKE '#{base_locale}%'",
+            )
+            .where(
+              "topics.created_at > ?",
+              SiteSetting.ai_translation_backfill_max_age_days.days.ago,
             )
             .where(deleted_at: nil)
             .where("topics.user_id > 0")
             .where.not(locale: nil)
-            .where.not(locale: locale)
+            .where("topics.locale NOT LIKE '#{base_locale}%'")
             .where("tl.id IS NULL")
 
         if SiteSetting.ai_translation_backfill_limit_to_public_content
@@ -40,14 +42,6 @@ module Jobs
             topics.where(
               "topics.archetype != ? OR topics.id IN (SELECT topic_id FROM topic_allowed_groups)",
               Archetype.private_message,
-            )
-        end
-
-        if SiteSetting.ai_translation_backfill_max_age_days > 0
-          topics =
-            topics.where(
-              "topics.created_at > ?",
-              SiteSetting.ai_translation_backfill_max_age_days.days.ago,
             )
         end
 

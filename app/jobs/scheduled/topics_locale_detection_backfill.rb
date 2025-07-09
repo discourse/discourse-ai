@@ -7,12 +7,15 @@ module Jobs
     cluster_concurrency 1
 
     def execute(args)
-      return if !SiteSetting.discourse_ai_enabled
-      return if !SiteSetting.ai_translation_enabled
-      limit = SiteSetting.ai_translation_backfill_hourly_rate / (60 / 5) # this job runs in 5-minute intervals
-      return if limit == 0
+      return if !DiscourseAi::Translation.backfill_enabled?
 
-      topics = Topic.where(locale: nil, deleted_at: nil).where("topics.user_id > 0")
+      limit = SiteSetting.ai_translation_backfill_hourly_rate / (60 / 5) # this job runs in 5-minute intervals
+
+      topics =
+        Topic
+          .where(locale: nil, deleted_at: nil)
+          .where("topics.user_id > 0")
+          .where("topics.created_at > ?", SiteSetting.ai_translation_backfill_max_age_days.days.ago)
 
       if SiteSetting.ai_translation_backfill_limit_to_public_content
         topics =
@@ -25,14 +28,6 @@ module Jobs
           topics.where(
             "archetype != ? OR EXISTS (SELECT 1 FROM topic_allowed_groups WHERE topic_id = topics.id)",
             Archetype.private_message,
-          )
-      end
-
-      if SiteSetting.ai_translation_backfill_max_age_days > 0
-        topics =
-          topics.where(
-            "topics.created_at > ?",
-            SiteSetting.ai_translation_backfill_max_age_days.days.ago,
           )
       end
 

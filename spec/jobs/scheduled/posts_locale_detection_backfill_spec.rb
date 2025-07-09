@@ -11,6 +11,7 @@ describe Jobs::PostsLocaleDetectionBackfill do
     end
     SiteSetting.ai_translation_enabled = true
     SiteSetting.ai_translation_backfill_hourly_rate = 100
+    SiteSetting.content_localization_supported_locales = "en"
   end
 
   it "does nothing when translator is disabled" do
@@ -137,8 +138,8 @@ describe Jobs::PostsLocaleDetectionBackfill do
       job.execute({})
     end
 
-    it "processes all posts when setting is disabled" do
-      SiteSetting.ai_translation_backfill_max_age_days = 0
+    it "processes all posts when setting is large" do
+      SiteSetting.ai_translation_backfill_max_age_days = 100
 
       # other posts
       DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).at_least_once

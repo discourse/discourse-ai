@@ -33,7 +33,9 @@ describe Jobs::DetectTranslateTopic do
 
   it "detects locale" do
     SiteSetting.discourse_ai_enabled = true
-    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).once
+    allow(DiscourseAi::Translation::TopicLocaleDetector).to receive(:detect_locale).with(
+      topic,
+    ).and_return("zh_CN")
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).twice
 
     job.execute({ topic_id: topic.id })
@@ -54,9 +56,9 @@ describe Jobs::DetectTranslateTopic do
     job.execute({ topic_id: topic.id })
   end
 
-  it "does not translate when no target languages are configured" do
+  it "does not get locale or translate when no target languages are configured" do
     SiteSetting.content_localization_supported_locales = ""
-    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).with(topic).returns("en")
+    DiscourseAi::Translation::TopicLocaleDetector.expects(:detect_locale).never
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
     job.execute({ topic_id: topic.id })
@@ -74,6 +76,15 @@ describe Jobs::DetectTranslateTopic do
     topic.update(locale: "en")
     Fabricate(:topic_localization, topic:, locale: "ja")
     DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
+
+    job.execute({ topic_id: topic.id })
+  end
+
+  it "does not translate to language of similar variant" do
+    topic.update(locale: "en_GB")
+    Fabricate(:topic_localization, topic:, locale: "ja_JP")
+
+    DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 
     job.execute({ topic_id: topic.id })
   end

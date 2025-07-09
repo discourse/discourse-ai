@@ -15,7 +15,7 @@ describe Jobs::LocalizeCategories do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.content_localization_supported_locales = "pt|zh_CN"
+    SiteSetting.content_localization_supported_locales = "pt_BR|zh_CN"
 
     Jobs.run_immediately!
   end
@@ -65,7 +65,7 @@ describe Jobs::LocalizeCategories do
 
     DiscourseAi::Translation::CategoryLocalizer
       .expects(:localize)
-      .with(is_a(Category), "pt")
+      .with(is_a(Category), "pt_BR")
       .times(number_of_categories)
     DiscourseAi::Translation::CategoryLocalizer
       .expects(:localize)
@@ -92,7 +92,10 @@ describe Jobs::LocalizeCategories do
   it "skips categories that already have localizations" do
     localize_all_categories("pt", "zh_CN")
 
-    DiscourseAi::Translation::CategoryLocalizer.expects(:localize).with(is_a(Category), "pt").never
+    DiscourseAi::Translation::CategoryLocalizer
+      .expects(:localize)
+      .with(is_a(Category), "pt_BR")
+      .never
     DiscourseAi::Translation::CategoryLocalizer
       .expects(:localize)
       .with(is_a(Category), "zh_CN")
@@ -107,7 +110,8 @@ describe Jobs::LocalizeCategories do
     category1 = Fabricate(:category, name: "First", description: "First description", locale: "en")
     DiscourseAi::Translation::CategoryLocalizer
       .expects(:localize)
-      .with(category1, "pt")
+      .with(category1, "pt_BR")
+      .once
       .raises(StandardError.new("API error"))
     DiscourseAi::Translation::CategoryLocalizer.expects(:localize).with(category1, "zh_CN").once
 

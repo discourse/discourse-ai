@@ -7,6 +7,7 @@ describe DiscourseAi::Translation::EntryPoint do
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
+    SiteSetting.content_localization_supported_locales = "en"
   end
 
   describe "upon post process cooked" do
@@ -55,6 +56,13 @@ describe DiscourseAi::Translation::EntryPoint do
   describe "upon first post (topic) edited" do
     fab!(:post) { Fabricate(:post, post_number: 1) }
     fab!(:non_first_post) { Fabricate(:post, post_number: 2) }
+
+    before do
+      SiteSetting.discourse_ai_enabled = true
+      Fabricate(:fake_model).tap do |fake_llm|
+        SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
+      end
+    end
 
     it "enqueues detect topic locale and translate topic job" do
       SiteSetting.ai_translation_enabled = true

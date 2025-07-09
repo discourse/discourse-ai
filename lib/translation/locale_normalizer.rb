@@ -15,6 +15,13 @@ module DiscourseAi
         locale
       end
 
+      def self.is_same?(locale1, locale2)
+        return true if locale1 == locale2
+        locale1 = locale1.gsub("-", "_").downcase
+        locale2 = locale2.gsub("-", "_").downcase
+        locale1.split("_").first == locale2.split("_").first
+      end
+
       private
 
       def self.i18n_pairs
