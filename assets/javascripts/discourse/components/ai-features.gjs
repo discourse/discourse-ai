@@ -10,6 +10,7 @@ import DSelect from "discourse/components/d-select";
 import FilterInput from "discourse/components/filter-input";
 import { i18n } from "discourse-i18n";
 import AiFeaturesList from "./ai-features-list";
+import AiDefaultLlmSelector from "./ai-default-llm-selector";
 
 const ALL = "all";
 const CONFIGURED = "configured";
@@ -201,6 +202,8 @@ export default class AiFeatures extends Component {
           @icons={{hash left="magnifying-glass"}}
         />
       </div>
+
+      <AiDefaultLlmSelector />
 
       {{#if this.filteredFeatures.length}}
         <AiFeaturesList @modules={{this.filteredFeatures}} />
