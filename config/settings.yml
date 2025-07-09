@@ -108,7 +108,7 @@ discourse_ai:
     allow_any: false
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    hidden: true
+    area: "ai-features/ai_helper"
   ai_helper_custom_prompts_allowed_groups: # Deprecated. TODO(roman): Remove 2025-09-01
     type: group_list
     list_type: compact
@@ -322,7 +322,7 @@ discourse_ai:
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
     validator: "DiscourseAi::Configuration::LlmValidator"
-    hidden: true
+    area: "ai-features/summarization"
   ai_summarization_persona:
     default: "-11"
     type: enum

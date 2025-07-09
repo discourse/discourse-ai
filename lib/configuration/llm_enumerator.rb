@@ -108,6 +108,7 @@ module DiscourseAi
         end
 
         values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
+        values.unshift({ value: "", name: I18n.t("discourse_ai.llm.not_configured") })
         values
       end
     end
