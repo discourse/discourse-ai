@@ -13,6 +13,8 @@ describe Jobs::LocalizeTopics do
     end
     SiteSetting.ai_translation_enabled = true
     SiteSetting.content_localization_supported_locales = locales.join("|")
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
+    SiteSetting.ai_translation_backfill_max_age_days = 100
   end
 
   it "does nothing when translator is disabled" do
