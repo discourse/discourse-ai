@@ -154,6 +154,8 @@ nl:
           reset: "Resetten"
         search:
           name: "Zoeken"
+        embeddings:
+          name: "Insluitingen"
         ai_helper:
           name: "Helper"
           proofread: Tekst proeflezen

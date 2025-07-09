@@ -14,10 +14,10 @@ de:
         spam_silence: "Als Spam melden, Beitrag ausblenden und Benutzer stummschalten"
     scriptables:
       llm_tool_triage:
-        title: Triage von Beiträgen mit dem KI-Tool
-        description: "Triage von Beiträgen mit benutzerdefinierter Logik in einem KI-Tool"
+        title: Sichtung von Beiträgen mit dem KI-Tool
+        description: "Sichtung von Beiträgen mit benutzerdefinierter Logik in einem KI-Tool"
       llm_persona_triage:
-        title: Triage von Posts mit KI-Persona
+        title: Sichtung von Beiträgen mit KI-Persona
         description: "Reagiere auf Beiträge mit einer bestimmten KI-Persona"
       llm_triage:
         title: Beiträge mithilfe von KI sortieren
@@ -31,6 +31,7 @@ de:
         description: "Regelmäßiger Bericht auf der Grundlage eines großen Sprachmodells"
   site_settings:
     discourse_ai_enabled: "Aktiviere das Discourse-KI-Plug-in."
+    ai_artifact_security: "Das KI-Artefaktsystem generiert IFRAMEs mit ausführbarem Code. Der strikte Modus erfordert einen zusätzlichen Klick zum Ausführen des Codes. Der laxe Modus führt Code sofort aus. Im Hybridmodus kann der Benutzer data-ai-artifact-autorun angeben, um den Code sofort anzuzeigen. Der deaktivierte Modus deaktiviert das Artefaktsystem."
     ai_toxicity_enabled: "Aktiviere das Toxizitätsmodul."
     ai_toxicity_inference_service_api_endpoint: "URL, unter der die API für das Toxizitätsmodul läuft"
     ai_toxicity_inference_service_api_key: "API-Schlüssel für die Toxizitäts-API"
@@ -111,6 +112,11 @@ de:
     ai_discord_search_persona: "Die Persona, die für die Discord-Suche verwendet wird."
     ai_discord_allowed_guilds: "Discord-Gilden (Server), auf denen der Bot suchen darf"
     ai_bot_enable_dedicated_ux: "Erlaube eine Vollbild-Bot-Oberfläche anstelle einer PM"
+    ai_translation_enabled: "Aktiviert die KI-Übersetzungsfunktion"
+    ai_translation_model: "Das Modell, das für die Übersetzung verwendet werden soll. Dieses Modell muss die Übersetzung unterstützen. Personas können diese Einstellung überschreiben."
+    ai_translation_backfill_limit_to_public_content: "Wenn diese Option aktiviert ist, werden nur Inhalte in öffentlichen Kategorien übersetzt. Wenn sie deaktiviert ist, werden auch Inhalte in Gruppen-PMs und privaten Kategorien zur Übersetzung gesendet."
+    ai_translation_max_post_length: "Die maximale Länge eines zu übersetzenden Beitrags. Längere Beiträge werden nicht übersetzt."
+    ai_translation_backfill_max_age_days: "Das maximale Alter eines zu übersetzenden Beitrags und Themas. Ältere Beiträge und Themen werden nicht übersetzt."
   reviewables:
     reasons:
       flagged_by_toxicity: Das KI-Plug-in meldete dies nach der Klassifizierung als toxisch.
@@ -210,9 +216,15 @@ de:
       description: "Beiträge, die per KI unter Verwendung des Modells „SamLowe/roberta-base-go_emotions“ mit der Emotion „Überraschung“ klassifiziert wurden."
   discourse_ai:
     ai_artifact:
+      errors:
+        max_keys_exceeded:
+          one: "Du kannst nur %{count} Schlüssel im Artefakt haben."
+          other: "Du kannst nur %{count} Schlüssel im Artefakt haben."
+      link: "In neuem Tab anzeigen"
       view_source: "Quelle anzeigen"
       view_changes: "Änderungen anzeigen"
       change_description: "Beschreibung ändern"
+      copied: "Wurde in Zwischenablage kopiert"
     unknown_model: "Unbekanntes KI-Modell"
     tools:
       custom_name: "%{name} (benutzerdefiniert)"
@@ -265,6 +277,7 @@ de:
       unexpected: "Ein unerwarteter Fehler ist aufgetreten"
       bot_user_update_failed: "Aktualisierung des Spam-Scan-Bot-Benutzers fehlgeschlagen"
       configuration_missing: "Die Konfiguration der KI-Spamerkennung fehlt. Füge die Konfiguration in „Administration > Plug-ins > Discourse KI > Spam“ hinzu, bevor du sie aktivierst."
+      logging_subject: "Spam-Erkennung"
     ai_bot:
       reply_error: "Entschuldigung, es sieht so aus, als ob unser System beim Versuch, zu antworten, auf ein unerwartetes Problem gestoßen ist.\n\n[details='Fehlerdetails']\n%{details}\n[/details]"
       default_pm_prefix: "[KI-Bot-PN ohne Titel]"
@@ -352,6 +365,24 @@ de:
         image_captioner:
           name: "Bildbeschriftungen"
           description: "Standard-Persona für die Bildbeschriftungsfunktion des Helfers"
+        locale_detector:
+          name: "Sprachdetektor"
+          description: "Unterstützt die Übersetzungsfunktion durch Erkennen der Sprache eines bestimmten Textes (Beiträge, Titel usw.)."
+        post_raw_translator:
+          name: "Beitragsübersetzer"
+          description: "Unterstützt die Übersetzungsfunktion durch die Übersetzung von Beiträgen, die Discourse Markdown enthalten"
+        topic_title_translator:
+          name: "Thementitel-Übersetzer"
+          description: "Unterstützt die Übersetzungsfunktion durch die Übersetzung von Thementiteln"
+        short_text_translator:
+          name: "Kurztext-Übersetzer"
+          description: "Betreibt die Übersetzungsfunktion als generischer Textübersetzer, der für kurze Texte wie Kategorienamen oder Schlagwörter verwendet wird."
+        spam_detector:
+          name: "Spam-Detektor"
+          description: "Standard-Persona, die unsere Spam-Erkennungsfunktion betreibt"
+        content_creator:
+          name: "Inhaltsersteller"
+          description: "Standard-Persona für die HyDE-Suche"
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"
@@ -534,6 +565,7 @@ de:
         set_llm_first: "Stelle zuerst %{setting} ein"
         model_unreachable: "Wir konnten keine Antwort von diesem Modell abrufen. Überprüfe zuerst deine Einstellungen."
         invalid_seeded_model: "Du kannst dieses Modell nicht mit dieser Funktion verwenden"
+        invalid_persona_response_format: "Die ausgewählte Persona muss ein Antwortformat mit einem booleschen Feld namens „spam“ haben."
         must_select_model: "Du musst zuerst ein LLM auswählen"
       endpoints:
         not_configured: "%{display_name} (nicht konfiguriert)"
@@ -571,6 +603,10 @@ de:
       no_default_llm: Die Persona muss eine default_llm definiert haben.
       user_not_allowed: Der Benutzer darf nicht am Thema teilnehmen.
       prompt_message_length: Die Nachricht %{idx} hat die 1000-Zeichen-Grenze überschritten.
+      persona_already_exists: Eine Persona mit dem Namen %{name} existiert bereits.
+      custom_tool_exists:
+        one: "Ein benutzerdefiniertes Tool mit dem Namen %{names} existiert bereits."
+        other: "Benutzerdefinierte Tools mit den Namen %{names} existieren bereits."
   dashboard:
     problem:
       ai_llm_status: "Bei dem LLM-Modell: %{model_name} treten Probleme auf. Bitte überprüfe <a href='%{url}'>die Konfigurationsseite des Modells</a>."

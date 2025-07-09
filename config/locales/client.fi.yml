@@ -154,6 +154,8 @@ fi:
           reset: "Palauta"
         search:
           name: "Hae"
+        embeddings:
+          name: "Upotukset"
         ai_helper:
           name: "Apuri"
           proofread: Oikolue teksti

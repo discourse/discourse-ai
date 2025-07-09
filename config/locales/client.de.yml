@@ -29,6 +29,22 @@ de:
               label: "Sortieren nach"
             tag:
               label: "Schlagwort"
+      logs:
+        staff_actions:
+          actions:
+            create_ai_llm_model: "LLM-Modell erstellen"
+            update_ai_llm_model: "LLM-Modell aktualisieren"
+            delete_ai_llm_model: "LLM-Modell löschen"
+            create_ai_persona: "KI-Persona erstellen"
+            update_ai_persona: "KI-Persona aktualisieren"
+            delete_ai_persona: "KI-Persona löschen"
+            create_ai_tool: "KI-Tool erstellen"
+            update_ai_tool: "KI-Tool aktualisieren"
+            delete_ai_tool: "KI-Tool löschen"
+            create_ai_embedding: "KI-Einbettung erstellen"
+            update_ai_embedding: "KI-Einbettung aktualisieren"
+            delete_ai_embedding: "KI-Einbettung löschen"
+            update_ai_spam_settings: "KI-Spam-Einstellungen aktualisieren"
   js:
     discourse_automation:
       scriptables:
@@ -98,21 +114,21 @@ de:
           fields:
             model:
               label: "Modell"
-              description: "Das für die Triage verwendete Standard-Sprachmodell"
+              description: "Das für die Sichtung verwendete Standard-Sprachmodell"
             tool:
-              label: "Werkzeug"
-              description: "Werkzeug für die Triage (das Werkzeug darf keine Parameter definiert haben)"
+              label: "Tool"
+              description: "Tool für die Sichtung (das Tool darf keine Parameter definiert haben)"
         llm_persona_triage:
           fields:
             persona:
               label: "Persona"
-              description: "KI-Persona, die für die Triage verwendet werden soll (Standard-LLM und -Benutzer müssen eingestellt sein)"
+              description: "KI-Persona, die für die Sichtung verwendet werden soll (Standard-LLM und -Benutzer müssen eingestellt sein)"
             whisper:
               label: "Als Flüstern antworten"
               description: "Ob die Antwort der Persona ein Flüstern sein soll"
             silent_mode:
               label: "Stiller Modus"
-              description: "Im stillen Modus empfängt die Persona den Inhalt, schreibt aber nichts in das Forum - nützlich bei der Triage mit Tools"
+              description: "Im stillen Modus empfängt die Persona den Inhalt, schreibt aber nichts in das Forum - nützlich bei der Sichtung mit Tools"
         llm_triage:
           fields:
             system_prompt:
@@ -177,6 +193,7 @@ de:
         llm:
           one: "LLM:"
           other: "LLM:"
+        no_llm: "Kein LLM ausgewählt"
         no_persona: "Nicht festgelegt"
         no_groups: "Keiner"
         edit: "Bearbeiten"
@@ -184,35 +201,73 @@ de:
           one: "(%{count} weitere)"
           other: "(%{count} weitere)"
         collapse_list: "(weniger anzeigen)"
+        bot:
+          bot: "Chatbot"
+          name: "Bot"
+          description: "Ein Chatbot, der Fragen beantworten und Benutzern in persönlichen Nachrichten, im Forum und im Chat helfen kann"
+        nav:
+          configured: "Konfiguriert"
+          unconfigured: "Nicht konfiguriert"
         filters:
           all: "Gesamt"
+          text: "Suche nach Funktionen, Personas, LLMs oder Gruppen..."
+          no_results: "Es wurden keine Funktionen gefunden, die deinen Filtern entsprechen."
           reset: "Zurücksetzen"
         summarization:
           name: "Zusammenfassungen"
           description: "Stellt eine Schaltfläche für Zusammenfassungen zur Verfügung, mit der Besucher Themen zusammenfassen können"
+          topic_summaries: "Themenzusammenfassungen"
+          gists: "Kurze Zusammenfassungen der in Themenliste"
         search:
           name: "Suche"
           description: "Verbessert das Sucherlebnis durch KI-generierte Antworten auf Suchanfragen"
+          discoveries: "Entdeckungen"
+        embeddings:
+          name: "Einbettungen"
+          description: "Ermöglicht Funktionen wie „Verwandte Themen“ und „KI-Suche“ durch die Erstellung semantischer Textdarstellungen"
+          hyde: "HyDE"
         discord:
+          name: "Discord-Integration"
           description: "Fügt die Möglichkeit hinzu, Discord-Kanäle zu durchsuchen"
+          search: "Discord-Suche"
         inference:
+          name: "Abgeleitete Konzepte"
           description: "Ordnet Themen und Beiträge in Interessensgebiete / Labels."
+          match_concepts: "Passende Konzepte"
         ai_helper:
           name: "Helfer"
+          description: "Unterstützt Benutzer bei der Interaktion in der Community, z. B. beim Erstellen von Themen, Verfassen von Beiträgen und Lesen von Inhalten"
           proofread: Text korrekturlesen
+          title_suggestions: "Titel vorschlagen"
           explain: "Erklären"
+          illustrate_post: "Beitrag illustrieren"
           smart_dates: "Intelligente Termine"
+          translate: "Übersetzen"
           markdown_tables: "Markdown-Tabelle generieren"
           custom_prompt: "Benutzerdefinierte Eingabeaufforderung"
+          image_caption: "Bildbeschriftungen"
+          translator: "Übersetzer"
+        translation:
+          name: "Übersetzen"
+          description: "Übersetzt Inhalte in unterstützte Sprachen"
+          locale_detector: "Sprachdetektor"
+          post_raw_translator: "Übersetzer für die Roheingabe des Beitrags"
+          topic_title_translator: "Thementitel-Übersetzer"
+          short_text_translator: "Kurztext-Übersetzer"
         spam:
           name: "Spam"
           description: "Identifiziert potenziellen Spam mithilfe des ausgewählten LLMs und meldet ihn den Moderatoren der Website in der Warteschlange zur Überprüfung."
+          inspect_posts: "Beiträge prüfen"
       modals:
         select_option: "Wähle eine Option aus..."
+      layout:
+        table: "Tabelle"
+        card: "Karte"
       spam:
         short_title: "Spam"
         title: "Spam-Behandlung konfigurieren"
         select_llm: "LLM auswählen"
+        select_persona: "Persona auswählen"
         custom_instructions: "Benutzerdefinierte Anweisungen"
         custom_instructions_help: "Benutzerdefinierte Anweisungen speziell für deine Website, die der KI beim Identifizieren von Spam helfen, z. B. „Gehe beim Scannen von Posts, die nicht in englischer Sprache sind, aggressiver vor.“"
         last_seven_days: "Letzte 7 Tage"
@@ -293,6 +348,9 @@ de:
         name: "Name"
         edit: "Bearbeiten"
         export: "Exportieren"
+        import: "Importieren"
+        import_error_conflict: "Beim Importieren von %{name} wurde ein Konflikt erkannt. Möchtest du die vorhandene Persona aktualisieren?"
+        overwrite: "Überschreiben"
         description: "Beschreibung"
         no_llm_selected: "Kein Sprachmodell ausgewählt"
         use_parent_llm: "Verwende das Personas Sprachmodell"
@@ -370,7 +428,10 @@ de:
           title: "KI-Bot-Optionen"
           save_first: "Weitere KI-Bot-Optionen werden verfügbar, sobald du die Persona gespeichert hast."
         filters:
+          text: "Finde eine Persona"
           reset: "Zurücksetzen"
+          no_results: "Es wurden keine Personas gefunden, die deinen Filtern entsprechen."
+          all_features: "Jede Funktion"
         features_list:
           one: "Funktion:"
           other: "Funktionen:"
@@ -401,11 +462,14 @@ de:
         back: "Zurück"
         short_title: "Tools"
         export: "Exportieren"
+        import: "Importieren"
+        import_error_conflict: "Tool existiert bereits, möchtest du es aktualisieren?"
+        overwrite: "Überschreiben"
         no_tools: "Du hast noch keine Tools erstellt"
         name: "Name"
-        name_help: "Der Name wird in der Discourse-Benutzeroberfläche angezeigt und ist die Kurzkennung, die Du verwendest, um das Werkzeug in verschiedenen Einstellungen zu finden. Er sollte eindeutig sein (er ist erforderlich)."
+        name_help: "Der Name wird in der Discourse-Benutzeroberfläche angezeigt und ist die Kurzkennung, die du verwendest, um das Tool in verschiedenen Einstellungen zu finden. Er sollte eindeutig sein (er ist erforderlich)."
         new: "Neues Tool"
-        tool_name: "Werkzeugname"
+        tool_name: "Name des Tools"
         tool_name_help: "Der Werkzeugname wird dem großen Sprachmodell präsentiert. Es ist nicht eindeutig, aber es ist von Person zu Person unterschiedlich. (Persona wird beim Speichern validiert)"
         description: "Beschreibung"
         description_help: "Eine klare Beschreibung des Zwecks des Tools für das Sprachmodell"
@@ -486,14 +550,18 @@ de:
           ai_summarization: "Zusammenfassen"
           ai_embeddings_semantic_search: "KI-Suche"
           ai_spam: "Spam"
-          automation: "Automatisierung (%{name})"
+          automation: "Automatisierung (%{persona})"
         in_use_warning:
           one: "Dieses Modell wird derzeit von %{settings} verwendet. Wenn es falsch konfiguriert ist, wird die Funktion nicht wie erwartet funktionieren."
           other: "Dieses Modell wird derzeit verwendet von: %{settings}. Wenn es falsch konfiguriert ist, werden die Funktionen nicht wie erwartet funktionieren. "
         model_description:
           none: "Allgemeine Einstellungen, die für die meisten Sprachmodelle funktionieren"
           anthropic-claude-opus-4-0: "Das intelligenteste Modell von Anthropic"
+          anthropic-claude-sonnet-4-0: "Optimales Gleichgewicht zwischen Geschwindigkeit und Kosten"
+          anthropic-claude-3-7-sonnet-latest: "Optimales Gleichgewicht zwischen Geschwindigkeit und Kosten (vorherige Generation)"
           anthropic-claude-3-5-haiku-latest: "Schnell und kosteneffizient"
+          google-gemini-2-5-pro: "Großes multimodales Modell, das eine Vielzahl von Aufgaben bewältigen kann"
+          google-gemini-2-0-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation (vorherige Generation)"
           google-gemini-2-5-flash: "Leicht, schnell und kosteneffizient mit multimodaler Argumentation"
           google-gemini-2-0-flash-lite: "Kosteneffizientes Modell mit niedriger Latenz"
           open_ai-o3: "Das leistungsfähigste Argumentationsmodell von Open AI"
@@ -505,6 +573,9 @@ de:
           samba_nova-Meta-Llama-3-3-70B-Instruct": "Leistungsstarkes Mehrzweckmodell"
           mistral-mistral-large-latest: "Das leistungsstärkste Modell von Mistral"
           mistral-pixtral-large-latest: "Das leistungsstärkste Modell von Mistral mit Sichtfunktion"
+          open_router-x-ai-grok-3-beta: "Das neueste Modell von xAI"
+          open_router-deepseek-deepseek-r1-0528-free: "DeepSeeks neuestes Argumentationsmodell"
+          open_router-meta-llama-3-3-70b-instruct: "Leistungsstarkes mehrsprachiges Modell"
         preseeded_model_description: "Vorkonfiguriertes Open-Source-Modell unter Verwendung von %{model}"
         configured:
           title: "Konfigurierte LLMs"
@@ -565,6 +636,7 @@ de:
           reasoning_tokens: "Anzahl der für die Argumentation verwendeten Token"
           disable_temperature: "Temperatur deaktivieren (einige Denkmodelle unterstützen keine Temperatur)"
           disable_top_p: "Top P deaktivieren (einige Denkmodelle unterstützen Top P nicht)"
+          enable_responses_api: "Aktiviere die Antwort-API (bei bestimmten OpenAI-Modellen erforderlich)"
       related_topics:
         title: "Verwandte Themen"
         pill: "Verwandt"
@@ -583,6 +655,7 @@ de:
           trigger: "KI fragen"
           loading: "KI generiert"
           cancel: "Abbrechen"
+          regen: "Erneut versuchen"
           confirm: "Bestätigen"
           discard: "Verwerfen"
           changes: "Empfohlene Änderungen"
@@ -759,6 +832,7 @@ de:
           today: "Heute"
           last_7_days: "Letzte 7 Tage"
           last_30_days: "Letzte 30 Tage"
+          upload_files: "Dateien hochladen"
       sentiments:
         dashboard:
           title: "Stimmung"
