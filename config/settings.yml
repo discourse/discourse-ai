@@ -11,6 +11,12 @@ discourse_ai:
       - "lax"
       - "hybrid"
       - "strict"
+  ai_default_llm_model:
+    default: ""
+    type: enum
+    allow_any: false
+    enum: "DiscourseAi::Configuration::LlmEnumerator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
 
   ai_sentiment_enabled:
     default: false
