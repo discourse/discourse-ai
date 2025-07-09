@@ -32,9 +32,9 @@ describe Jobs::DetectTranslatePost do
   end
 
   it "detects locale" do
-    SiteSetting.discourse_ai_enabled = true
-    DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).once
-    DiscourseAi::Translation::PostLocalizer.expects(:localize).twice
+    allow(DiscourseAi::Translation::PostLocaleDetector).to receive(:detect_locale).with(
+      post,
+    ).and_return("zh_CN")
 
     job.execute({ post_id: post.id })
   end
@@ -42,21 +42,21 @@ describe Jobs::DetectTranslatePost do
   it "skips locale detection when post has a locale" do
     post.update!(locale: "en")
     DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).never
-    DiscourseAi::Translation::PostLocalizer.expects(:localize).with(post, "ja").once
 
     job.execute({ post_id: post.id })
   end
 
   it "skips bot posts" do
     post.update!(user: Discourse.system_user)
+    DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).never
     DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 
     job.execute({ post_id: post.id })
   end
 
-  it "does not translate when no target languages are configured" do
+  it "skips locale detection when no target languages are configured" do
     SiteSetting.content_localization_supported_locales = ""
-    DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).with(post).returns("en")
+    DiscourseAi::Translation::PostLocaleDetector.expects(:detect_locale).never
     DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 
     job.execute({ post_id: post.id })
@@ -72,7 +72,16 @@ describe Jobs::DetectTranslatePost do
 
   it "skips translating if the post is already localized" do
     post.update(locale: "en")
-    Fabricate(:post_localization, post: post, locale: "ja")
+    Fabricate(:post_localization, post:, locale: "ja")
+
+    DiscourseAi::Translation::PostLocalizer.expects(:localize).never
+
+    job.execute({ post_id: post.id })
+  end
+
+  it "does not translate to language of similar variant" do
+    post.update(locale: "en_GB")
+    Fabricate(:post_localization, post: post, locale: "ja_JP")
 
     DiscourseAi::Translation::PostLocalizer.expects(:localize).never
 

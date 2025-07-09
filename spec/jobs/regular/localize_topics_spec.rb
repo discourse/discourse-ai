@@ -13,6 +13,8 @@ describe Jobs::LocalizeTopics do
     end
     SiteSetting.ai_translation_enabled = true
     SiteSetting.content_localization_supported_locales = locales.join("|")
+    SiteSetting.ai_translation_backfill_hourly_rate = 100
+    SiteSetting.ai_translation_backfill_max_age_days = 100
   end
 
   it "does nothing when translator is disabled" do
@@ -116,13 +118,22 @@ describe Jobs::LocalizeTopics do
       job.execute({ limit: 10 })
     end
 
-    it "scenario 4: skips topic with locale 'en' if 'ja' localization already exists" do
+    it "scenario 4: skips topic with locale 'en' if all localizations exist" do
       topic = Fabricate(:topic, locale: "en")
       Fabricate(:topic_localization, topic: topic, locale: "ja")
+      Fabricate(:topic_localization, topic: topic, locale: "de")
 
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "en").never
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "ja").never
-      DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(topic, "de").once
+      DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
+
+      job.execute({ limit: 10 })
+    end
+
+    it "scenario 5: skips topic that already have localizations in similar language variant" do
+      topic = Fabricate(:topic, locale: "en")
+      Fabricate(:topic_localization, topic: topic, locale: "ja_JP")
+      Fabricate(:topic_localization, topic: topic, locale: "de_DE")
+
+      DiscourseAi::Translation::TopicLocalizer.expects(:localize).never
 
       job.execute({ limit: 10 })
     end
@@ -205,8 +216,8 @@ describe Jobs::LocalizeTopics do
       job.execute({ limit: 10 })
     end
 
-    it "processes all topics when setting is disabled" do
-      SiteSetting.ai_translation_backfill_max_age_days = 0
+    it "processes all topics when setting is more than the post age" do
+      SiteSetting.ai_translation_backfill_max_age_days = 100
 
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(new_topic, "en").once
       DiscourseAi::Translation::TopicLocalizer.expects(:localize).with(new_topic, "ja").once

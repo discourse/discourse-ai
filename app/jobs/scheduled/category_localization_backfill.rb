@@ -6,11 +6,8 @@ module Jobs
     cluster_concurrency 1
 
     def execute(args)
-      return if !SiteSetting.discourse_ai_enabled
-      return if !SiteSetting.ai_translation_enabled
-      return if SiteSetting.content_localization_supported_locales.blank?
+      return if !DiscourseAi::Translation.backfill_enabled?
       limit = SiteSetting.ai_translation_backfill_hourly_rate
-      return if limit == 0
 
       Jobs.enqueue(:localize_categories, limit:)
     end

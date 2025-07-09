@@ -11,6 +11,7 @@ describe Jobs::CategoriesLocaleDetectionBackfill do
     end
     SiteSetting.ai_translation_enabled = true
     SiteSetting.ai_translation_backfill_hourly_rate = 100
+    SiteSetting.content_localization_supported_locales = "en"
   end
 
   it "does nothing when AI is disabled" do

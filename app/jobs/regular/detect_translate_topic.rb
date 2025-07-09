@@ -6,8 +6,7 @@ module Jobs
     sidekiq_options retry: false
 
     def execute(args)
-      return if !SiteSetting.discourse_ai_enabled
-      return if !SiteSetting.ai_translation_enabled
+      return if !DiscourseAi::Translation.enabled?
       return if args[:topic_id].blank?
 
       topic = Topic.find_by(id: args[:topic_id])
@@ -34,12 +33,14 @@ module Jobs
         end
       end
 
+      return if detected_locale.blank?
       locales = SiteSetting.content_localization_supported_locales.split("|")
       return if locales.blank?
 
       locales.each do |locale|
-        next if locale == detected_locale
-        next if topic.topic_localizations.exists?(locale:)
+        next if DiscourseAi::Translation::LocaleNormalizer.is_same?(locale, detected_locale)
+        regionless_locale = locale.split("_").first
+        next if topic.topic_localizations.where("locale LIKE ?", "#{regionless_locale}%").exists?
 
         begin
           DiscourseAi::Translation::TopicLocalizer.localize(topic, locale)

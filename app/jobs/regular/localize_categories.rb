@@ -6,21 +6,17 @@ module Jobs
     sidekiq_options retry: false
 
     def execute(args)
+      return if !DiscourseAi::Translation.enabled?
+
       limit = args[:limit]
       raise Discourse::InvalidParameters.new(:limit) if limit.nil?
       return if limit <= 0
-
-      return if !SiteSetting.discourse_ai_enabled
-      return if !SiteSetting.ai_translation_enabled
       locales = SiteSetting.content_localization_supported_locales.split("|")
-      return if locales.blank?
 
       categories = Category.where("locale IS NOT NULL")
-
       if SiteSetting.ai_translation_backfill_limit_to_public_content
         categories = categories.where(read_restricted: false)
       end
-
       categories = categories.order(:id).limit(limit)
       return if categories.empty?
 
@@ -33,6 +29,7 @@ module Jobs
         missing_locales = locales - existing_locales - [category.locale]
         missing_locales.each do |locale|
           break if remaining_limit <= 0
+          next if DiscourseAi::Translation::LocaleNormalizer.is_same?(locale, category.locale)
 
           begin
             DiscourseAi::Translation::CategoryLocalizer.localize(category, locale)
