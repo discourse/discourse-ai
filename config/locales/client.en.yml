@@ -106,6 +106,9 @@ en:
             top_p:
               label: "Top P"
               description: "Top P to use for the LLM, increase to increase randomness (leave empty to use model default)"
+            persona_id:
+              label: "Persona"
+              description: "AI Persona to use for report generation"
 
         llm_tool_triage:
           fields:

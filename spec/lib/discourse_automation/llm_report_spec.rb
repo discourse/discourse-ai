@@ -25,6 +25,11 @@ describe DiscourseAutomation do
     add_automation_field("sender", user.username, type: "user")
     add_automation_field("receivers", [user.username], type: "email_group_user")
     add_automation_field("model", "custom:#{llm_model.id}")
+    add_automation_field(
+      "persona_id",
+      DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
+    )
+
     add_automation_field("title", "Weekly report")
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["An Amazing Report!!!"]) do
@@ -39,6 +44,10 @@ describe DiscourseAutomation do
     add_automation_field("sender", user.username, type: "user")
     add_automation_field("topic_id", "#{post.topic_id}")
     add_automation_field("model", "custom:#{llm_model.id}")
+    add_automation_field(
+      "persona_id",
+      DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
+    )
 
     DiscourseAi::Completions::Llm.with_prepared_responses(["An Amazing Report!!!"]) do
       automation.trigger!

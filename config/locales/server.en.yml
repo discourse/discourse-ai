@@ -397,6 +397,9 @@ en:
         content_creator:
           name: "Content creator"
           description: "Default persona powering HyDE search"
+        report_runner:
+          name: "Report runner"
+          description: "Default persona used in the report automation script"
 
       topic_not_found: "Summary unavailable, topic not found!"
       summarizing: "Summarizing topic"
