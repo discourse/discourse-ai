@@ -22,8 +22,6 @@ module ::DiscourseAi
         case response.status
         when 200
           JSON.parse(response.body, symbolize_names: true).dig(:embedding, :values)
-        when 429
-          # TODO add a AdminDashboard Problem?
         else
           Rails.logger.warn(
             "Google Gemini Embeddings failed with status: #{response.status} body: #{response.body}",

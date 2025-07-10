@@ -83,17 +83,34 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
 
         expect(topics_schema.find_by_target(topic).updated_at).to eq_time(original_vector_gen)
       end
+
+      context "when one of the concurrently generated embeddings fails" do
+        it "still processes the succesful ones" do
+          text = vdef.prepare_target_text(topic)
+
+          text2 = vdef.prepare_target_text(topic_2)
+
+          stub_vector_mapping(text, expected_embedding_1)
+          stub_vector_mapping(text2, expected_embedding_2, result_status: 429)
+
+          vector.gen_bulk_reprensentations(Topic.where(id: [topic.id, topic_2.id]))
+
+          expect(topics_schema.find_by_embedding(expected_embedding_1).topic_id).to eq(topic.id)
+          expect(topics_schema.find_by_target(topic_2)).to be_nil
+        end
+      end
     end
   end
 
   context "with open_ai as the provider" do
     fab!(:vdef) { Fabricate(:open_ai_embedding_def) }
 
-    def stub_vector_mapping(text, expected_embedding)
+    def stub_vector_mapping(text, expected_embedding, result_status: 200)
       EmbeddingsGenerationStubs.openai_service(
         vdef.lookup_custom_param("model_name"),
         text,
         expected_embedding,
+        result_status: result_status,
       )
     end
 
@@ -123,8 +140,12 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   context "with hugging_face as the provider" do
     fab!(:vdef) { Fabricate(:embedding_definition) }
 
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.hugging_face_service(text, expected_embedding)
+    def stub_vector_mapping(text, expected_embedding, result_status: 200)
+      EmbeddingsGenerationStubs.hugging_face_service(
+        text,
+        expected_embedding,
+        result_status: result_status,
+      )
     end
 
     it_behaves_like "generates and store embeddings using a vector definition"
@@ -133,8 +154,13 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   context "with google as the provider" do
     fab!(:vdef) { Fabricate(:gemini_embedding_def) }
 
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.gemini_service(vdef.api_key, text, expected_embedding)
+    def stub_vector_mapping(text, expected_embedding, result_status: 200)
+      EmbeddingsGenerationStubs.gemini_service(
+        vdef.api_key,
+        text,
+        expected_embedding,
+        result_status: result_status,
+      )
     end
 
     it_behaves_like "generates and store embeddings using a vector definition"
@@ -143,8 +169,12 @@ RSpec.describe DiscourseAi::Embeddings::Vector do
   context "with cloudflare as the provider" do
     fab!(:vdef) { Fabricate(:cloudflare_embedding_def) }
 
-    def stub_vector_mapping(text, expected_embedding)
-      EmbeddingsGenerationStubs.cloudflare_service(text, expected_embedding)
+    def stub_vector_mapping(text, expected_embedding, result_status: 200)
+      EmbeddingsGenerationStubs.cloudflare_service(
+        text,
+        expected_embedding,
+        result_status: result_status,
+      )
     end
 
     it_behaves_like "generates and store embeddings using a vector definition"
