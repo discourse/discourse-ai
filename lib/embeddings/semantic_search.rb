@@ -210,11 +210,10 @@ module DiscourseAi
 
       # Priorities are:
       #   1. Persona's default LLM
-      #   2. `ai_embeddings_semantic_search_hyde_model` setting.
+      #   2. SiteSetting.ai_default_llm_id (or newest LLM if not set)
       def find_ai_hyde_model(persona_klass)
         model_id =
-          persona_klass.default_llm_id ||
-            SiteSetting.ai_embeddings_semantic_search_hyde_model&.split(":")&.last
+          persona_klass.default_llm_id || SiteSetting.ai_default_llm_model&.split(":")&.last # Remove legacy custom provider.
 
         return if model_id.blank?
 
