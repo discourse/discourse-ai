@@ -26,8 +26,6 @@ module ::DiscourseAi
         case response.status
         when 200
           JSON.parse(response.body, symbolize_names: true).dig(:result, :data).first
-        when 429
-          # TODO add a AdminDashboard Problem?
         else
           Rails.logger.warn(
             "Cloudflare Workers AI Embeddings failed with status: #{response.status} body: #{response.body}",

@@ -42,13 +42,14 @@ module DiscourseAi
                 .then_on(pool) do |w_prepared_text|
                   w_prepared_text.merge(embedding: embedding_gen.perform!(w_prepared_text[:text]))
                 end
+                .rescue { nil } # We log the error during #perform. Skip failed embeddings.
             end
             .compact
 
         Concurrent::Promises
           .zip(*promised_embeddings)
           .value!
-          .each { |e| schema.store(e[:target], e[:embedding], e[:digest]) }
+          .each { |e| schema.store(e[:target], e[:embedding], e[:digest]) if e.present? }
       ensure
         pool.shutdown
         pool.wait_for_termination
