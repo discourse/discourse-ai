@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe "AI Bot - Homepage", type: :system do
+  let(:cdp) { PageObjects::CDP.new }
   let(:topic_page) { PageObjects::Pages::Topic.new }
   let(:composer) { PageObjects::Components::Composer.new }
   let(:ai_pm_homepage) { PageObjects::Components::AiPmHomepage.new }
@@ -162,6 +163,28 @@ RSpec.describe "AI Bot - Homepage", type: :system do
           find(".ai-new-question-button").click
           expect(ai_pm_homepage).to have_homepage
           expect(page).to have_no_css(".ai-bot-upload")
+        end
+
+        it "shows an error when trying to submit while uploads are in progress" do
+          ai_pm_homepage.visit
+          expect(ai_pm_homepage).to have_homepage
+
+          file_path_1 = file_from_fixtures("logo.png", "images").path
+          file_path_2 = file_from_fixtures("logo.jpg", "images").path
+
+          ai_pm_homepage.input.fill_in(with: "Some message to send to AI with uploads")
+
+          cdp.with_slow_upload do
+            attach_file([file_path_1, file_path_2]) do
+              find(".ai-bot-upload-btn", visible: true).click
+            end
+            expect(page).to have_css(".ai-bot-upload--in-progress", count: 2)
+
+            ai_pm_homepage.submit
+            expect(page).to have_content(
+              I18n.t("js.discourse_ai.ai_bot.conversations.uploads_in_progress"),
+            )
+          end
         end
 
         it "allows removing an upload before submission" do
