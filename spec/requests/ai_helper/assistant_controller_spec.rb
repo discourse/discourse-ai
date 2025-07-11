@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { assign_fake_provider_to(:ai_helper_model) }
+  fab!(:fake_model)
   fab!(:newuser)
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+
+  before do
+    SiteSetting.ai_default_llm_model = "custom:#{fake_model.id}"
+  end
 
   describe "#stream_suggestion" do
     before do
@@ -305,8 +309,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
     end
     let(:bad_caption) { "A picture of a cat \nsitting on a |table|" }
 
-    before { assign_fake_provider_to(:ai_helper_image_caption_model) }
-
     def request_caption(params, caption = "A picture of a cat sitting on a table")
       DiscourseAi::Completions::Llm.with_prepared_responses([caption]) do
         post "/discourse-ai/ai-helper/caption_image", params: params
@@ -411,7 +413,6 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
           setup_s3
           stub_s3_store
-          assign_fake_provider_to(:ai_helper_image_caption_model)
           SiteSetting.secure_uploads = true
           SiteSetting.composer_ai_helper_allowed_groups = Group::AUTO_GROUPS[:trust_level_1]
 
