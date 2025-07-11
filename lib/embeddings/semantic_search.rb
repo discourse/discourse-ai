@@ -215,9 +215,19 @@ module DiscourseAi
         model_id =
           persona_klass.default_llm_id || SiteSetting.ai_default_llm_model&.split(":")&.last # Remove legacy custom provider.
 
-        return if model_id.blank?
+        if model_id.present?
+          LlmModel.find_by(id: model_id)
+        else
+          last_model_id = LlmModel.last&.id
 
-        LlmModel.find_by(id: model_id)
+          # SiteSetting.ai_default_llm_model shouldn't be empty, but if it is, we set it to the last model.
+          if last_model_id.present? && SiteSetting.ai_default_llm_model.empty?
+            SiteSetting.set_and_log("ai_default_llm_model", "custom:#{last_model_id}", Discourse.system_user) # Remove legacy custom provider.
+          end
+
+          LlmModel.last
+        end
+
       end
 
       private
