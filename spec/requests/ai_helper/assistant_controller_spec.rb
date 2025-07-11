@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  fab!(:fake_model)
   fab!(:newuser)
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
   before do
-    SiteSetting.ai_default_llm_model = "custom:#{fake_model.id}"
+    assign_fake_provider_to(:ai_default_llm_model)
   end
 
   describe "#stream_suggestion" do
