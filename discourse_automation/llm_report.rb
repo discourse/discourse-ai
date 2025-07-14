@@ -21,6 +21,18 @@ if defined?(DiscourseAutomation)
     field :sample_size, component: :text, required: true, default_value: 100
     field :tokens_per_post, component: :text, required: true, default_value: 150
 
+    field :persona_id,
+          component: :choices,
+          required: true,
+          default_value:
+            DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
+          extra: {
+            content:
+              DiscourseAi::Automation.available_persona_choices(
+                require_user: false,
+                require_default_llm: false,
+              ),
+          }
     field :model,
           component: :choices,
           required: true,
@@ -60,6 +72,7 @@ if defined?(DiscourseAutomation)
         offset = fields.dig("offset", "value").to_i
         priority_group = fields.dig("priority_group", "value")
         tokens_per_post = fields.dig("tokens_per_post", "value")
+        persona_id = fields.dig("persona_id", "value")
 
         exclude_category_ids = fields.dig("exclude_categories", "value")
         exclude_tags = fields.dig("exclude_tags", "value")
@@ -78,12 +91,19 @@ if defined?(DiscourseAutomation)
           temperature = temperature.to_f
         end
 
+        # Backwards-compat for scripts created before this field was added.
+        if persona_id == "" || persona_id.nil?
+          persona_id =
+            DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner]
+        end
+
         suppress_notifications = !!fields.dig("suppress_notifications", "value")
         DiscourseAi::Automation::ReportRunner.run!(
           sender_username: sender,
           receivers: receivers,
           topic_id: topic_id,
           title: title,
+          persona_id: persona_id,
           model: model,
           category_ids: category_ids,
           tags: tags,
