@@ -53,6 +53,7 @@ module DiscourseAi
           Follow these instructions on what NOT to do:
           7. Do not translate code snippets or programming language names, but ensure that any comments within the code are translated. Code can be represented in ``` or in single ` backticks or in <code> HTML tags.
           8. Do not add any content besides the translation.
+          9. Do not add unnecessary newlines.
 
           Here are three examples of correct translations:
 
