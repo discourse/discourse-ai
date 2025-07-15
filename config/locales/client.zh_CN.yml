@@ -94,6 +94,8 @@ zh_CN:
             top_p:
               label: "Top P"
               description: "用于 LLM 的 Top P 值，增加该值会提高生成内容的随机性（留空则使用模型默认值）"
+            persona_id:
+              label: "角色模型"
         llm_tool_triage:
           fields:
             model:

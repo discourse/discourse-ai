@@ -110,6 +110,8 @@ de:
             top_p:
               label: "Top P"
               description: "Top P für die LLM, erhöhen, um die Zufälligkeit zu erhöhen (leer lassen, um das Standardmodell zu verwenden)"
+            persona_id:
+              label: "Persona"
         llm_tool_triage:
           fields:
             model:
