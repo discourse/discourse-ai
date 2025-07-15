@@ -154,12 +154,10 @@ module DiscourseAi
         result = +""
         bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: @persona, model: @model)
         json_summary_schema_key = @persona.response_format&.first.to_h
-        output = nil
 
         buffer_blk =
           Proc.new do |partial, _, type|
             if type == :structured_output
-              output = partial.dup
               read_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
 
               print read_chunk if Rails.env.development? && @debug_mode
