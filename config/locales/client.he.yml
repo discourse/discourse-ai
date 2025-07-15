@@ -109,6 +109,8 @@ he:
             top_p:
               label: "ה־P המובילים"
               description: "ה־P המוביל לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (להשאיר ריק כדי להשתמש בברירת המחדל של הדגם)"
+            persona_id:
+              label: "דמות"
         llm_tool_triage:
           fields:
             model:
@@ -773,6 +775,7 @@ he:
           last_7_days: "7 הימים האחרונים"
           last_30_days: "30 הימים האחרונים"
           upload_files: "העלאת קבצים"
+          uploads_in_progress: "לא ניתן להגיש תוך כדי שמתבצעות העלאות"
       sentiments:
         dashboard:
           title: "רגש"
