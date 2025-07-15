@@ -66,7 +66,7 @@ module DiscourseAi
             messages: [{ type: :user, content: text, id: user.username }],
           )
 
-        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
+        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_default_llm_model).generate(
           prompt,
           user: user,
           feature_name: "illustrate_post",

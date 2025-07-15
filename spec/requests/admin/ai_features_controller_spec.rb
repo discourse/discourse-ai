@@ -10,6 +10,7 @@ RSpec.describe DiscourseAi::Admin::AiFeaturesController do
 
   before do
     sign_in(admin)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_bot_enabled = true
     SiteSetting.discourse_ai_enabled = true
   end
