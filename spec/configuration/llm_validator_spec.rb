@@ -4,7 +4,7 @@ RSpec.describe DiscourseAi::Configuration::LlmValidator do
   describe "#valid_value?" do
     context "when the parent module is enabled and we try to reset the selected model" do
       before do
-        assign_fake_provider_to(:ai_summarization_model)
+        assign_fake_provider_to(:ai_default_llm_model)
         SiteSetting.ai_summarization_enabled = true
       end
 

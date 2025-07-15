@@ -8,7 +8,7 @@ RSpec.describe Jobs::SummariesBackfill do
   let(:intervals) { 12 } # budget is split into intervals. Job runs every five minutes.
 
   before do
-    assign_fake_provider_to(:ai_summarization_model)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_summarization_enabled = true
     SiteSetting.ai_summary_backfill_maximum_topics_per_hour = limit
     SiteSetting.ai_summary_gists_enabled = true

@@ -5,7 +5,7 @@ describe DiscourseAi::AiHelper::EntryPoint do
   fab!(:french_user) { Fabricate(:user, locale: "fr") }
 
   it "will correctly localize available prompts" do
-    assign_fake_provider_to(:ai_helper_model)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.default_locale = "en"
     SiteSetting.allow_user_locale = true
     SiteSetting.ai_helper_enabled = true
@@ -38,8 +38,7 @@ describe DiscourseAi::AiHelper::EntryPoint do
   end
 
   it "will include auto_image_caption field in the user_option if image caption is enabled" do
-    assign_fake_provider_to(:ai_helper_model)
-    assign_fake_provider_to(:ai_helper_image_caption_model)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_helper_enabled = true
     SiteSetting.ai_helper_enabled_features = "image_caption"
     SiteSetting.ai_auto_image_caption_allowed_groups = "10" # tl0

@@ -498,7 +498,6 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
     it "logs staff action when deleting an LLM model" do
       # Capture the model details before deletion for comparison
-      model_id = llm_model.id
       model_display_name = llm_model.display_name
 
       # Delete the model
@@ -516,7 +515,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
     end
 
     it "validates the model is not in use" do
-      fake_llm = assign_fake_provider_to(:ai_helper_model)
+      fake_llm = assign_fake_provider_to(:ai_default_llm_model)
 
       delete "/admin/plugins/discourse-ai/ai-llms/#{fake_llm.id}.json"
 

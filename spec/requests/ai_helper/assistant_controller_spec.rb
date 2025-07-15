@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
 
   before do
     assign_fake_provider_to(:ai_default_llm_model)
+    SiteSetting.ai_helper_enabled = true
   end
 
   describe "#stream_suggestion" do

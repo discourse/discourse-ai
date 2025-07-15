@@ -105,7 +105,8 @@ RSpec.describe DiscourseAi::Personas::Tools::Search do
       after { DiscourseAi::Embeddings::SemanticSearch.clear_cache_for(query) }
 
       it "supports semantic search when enabled" do
-        assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
+        assign_fake_provider_to(:ai_default_llm_model)
+
         vector_def = Fabricate(:embedding_definition)
         SiteSetting.ai_embeddings_selected_model = vector_def.id
         SiteSetting.ai_embeddings_semantic_search_enabled = true
