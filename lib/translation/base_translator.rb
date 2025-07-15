@@ -47,12 +47,9 @@ module DiscourseAi
             post: @post,
           )
 
-        structured_output = nil
-        bot.reply(context) do |partial, _, type|
-          structured_output = partial if type == :structured_output
-        end
-
-        structured_output&.read_buffered_property(:translation)
+        result = +""
+        bot.reply(context) { |partial| result << partial }
+        result
       end
 
       def persona_setting

@@ -42,11 +42,12 @@ module DiscourseAi
             post: @post,
           )
 
-        structured_output = nil
-        bot.reply(context) do |partial, _, type|
-          structured_output = partial if type == :structured_output
+        result = +""
+        bot.reply(context) do |partial|
+          next if partial.strip.blank?
+          result << partial
         end
-        structured_output&.read_buffered_property(:locale) || []
+        result
       end
     end
   end
