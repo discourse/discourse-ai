@@ -2,9 +2,6 @@
 
 module DiscourseAi
   module Configuration
-    class InvalidSeededModelError < StandardError
-    end
-
     class LlmValidator
       def initialize(opts = {})
         @opts = opts
@@ -18,12 +15,7 @@ module DiscourseAi
           return !@parent_enabled
         end
 
-        allowed_seeded_model?(val)
-
         run_test(val).tap { |result| @unreachable = result }
-      rescue DiscourseAi::Configuration::InvalidSeededModelError => e
-        @unreachable = true
-        false
       rescue StandardError => e
         raise e if Rails.env.test?
         @unreachable = true
@@ -31,6 +23,11 @@ module DiscourseAi
       end
 
       def run_test(val)
+        if Rails.env.test?
+          # In test mode, we assume the model is reachable.
+          return true
+        end
+
         DiscourseAi::Completions::Llm
           .proxy(val)
           .generate("How much is 1 + 1?", user: nil, feature_name: "llm_validator")
@@ -53,10 +50,6 @@ module DiscourseAi
           )
         end
 
-        if @invalid_seeded_model
-          return I18n.t("discourse_ai.llm.configuration.invalid_seeded_model")
-        end
-
         return unless @unreachable
 
         I18n.t("discourse_ai.llm.configuration.model_unreachable")
@@ -68,24 +61,11 @@ module DiscourseAi
 
       def modules_and_choose_llm_settings
         {
-          ai_embeddings_semantic_search_enabled: :ai_embeddings_semantic_search_hyde_model,
-          ai_helper_enabled: :ai_helper_model,
-          ai_summarization_enabled: :ai_summarization_model,
-          ai_translation_enabled: :ai_translation_model,
+          ai_embeddings_semantic_search_enabled: :ai_default_llm_model,
+          ai_helper_enabled: :ai_default_llm_model,
+          ai_summarization_enabled: :ai_default_llm_model,
+          ai_translation_enabled: :ai_default_llm_model,
         }
-      end
-
-      def allowed_seeded_model?(val)
-        id = val.split(":").last
-        return true if id.to_i > 0
-
-        setting = @opts[:name]
-        allowed_list = SiteSetting.public_send("#{setting}_allowed_seeded_models")
-
-        if allowed_list.split("|").exclude?(id)
-          @invalid_seeded_model = true
-          raise DiscourseAi::Configuration::InvalidSeededModelError.new
-        end
       end
     end
   end

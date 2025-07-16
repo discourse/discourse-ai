@@ -12,7 +12,7 @@ class CopyAiHelperModelToPersonaDefault < ActiveRecord::Migration[7.2]
       execute(<<~SQL)
         UPDATE ai_personas
         SET default_llm_id = #{model_id}
-        WHERE id IN (-18, -19, -20, -21, -22, -23, -24, -25, -26) AND default_llm_id IS NULL
+        WHERE id IN (-18, -19, -20, -21, -22, -23, -24, -25) AND default_llm_id IS NULL
       SQL
     end
   end

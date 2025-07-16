@@ -5,6 +5,7 @@ require "enum_site_setting"
 module DiscourseAi
   module Configuration
     class LlmEnumerator < ::EnumSiteSetting
+      # TODO: global_usage is no longer accurate, it should be removed/updated
       def self.global_usage
         rval = Hash.new { |h, k| h[k] = [] }
 
@@ -107,7 +108,6 @@ module DiscourseAi
             end
         end
 
-        values.each { |value_h| value_h[:value] = "custom:#{value_h[:value]}" }
         values
       end
     end

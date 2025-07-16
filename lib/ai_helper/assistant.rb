@@ -314,19 +314,11 @@ module DiscourseAi
       #   1. Persona's default LLM
       #   2. SiteSetting.ai_default_llm_id (or newest LLM if not set)
       def self.find_ai_helper_model(helper_mode, persona_klass)
-        model_id =
-          persona_klass.default_llm_id || SiteSetting.ai_default_llm_model&.split(":")&.last # Remove legacy custom provider.
+        model_id = persona_klass.default_llm_id || SiteSetting.ai_default_llm_model
 
         if model_id.present?
           LlmModel.find_by(id: model_id)
         else
-          last_model_id = LlmModel.last&.id
-
-          # SiteSetting.ai_default_llm_model shouldn't be empty, but if it is, we set it to the last model.
-          if last_model_id.present? && SiteSetting.ai_default_llm_model.empty?
-            SiteSetting.set_and_log("ai_default_llm_model", "custom:#{last_model_id}", Discourse.system_user) # Remove legacy custom provider.
-          end
-
           LlmModel.last
         end
       end

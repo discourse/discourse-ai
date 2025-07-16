@@ -16,7 +16,7 @@ discourse_ai:
     type: enum
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    validator: "DiscourseAi::Configuration::SimpleLlmValidator"
+    validator: "DiscourseAi::Configuration::LlmValidator"
 
   ai_sentiment_enabled:
     default: false

@@ -6,7 +6,7 @@ class SeedAiDefaultLlmModel < ActiveRecord::Migration[7.2]
     last_model_id = DB.query_single("SELECT id FROM llm_models ORDER BY id DESC LIMIT 1").first
 
     if last_model_id.present?
-      execute "UPDATE site_settings SET value = 'custom:#{last_model_id}' WHERE name = 'ai_default_llm_model' AND (value IS NULL OR value = '');"
+      execute "UPDATE site_settings SET value = '#{last_model_id}' WHERE name = 'ai_default_llm_model' AND (value IS NULL OR value = '');"
     end
   end
 
