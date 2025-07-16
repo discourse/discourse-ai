@@ -233,7 +233,9 @@ de:
         inference:
           name: "Abgeleitete Konzepte"
           description: "Ordnet Themen und Beiträge in Interessensgebiete / Labels."
+          generate_concepts: "Konzepterkennung"
           match_concepts: "Passende Konzepte"
+          deduplicate_concepts: "Deduplizierung von Konzepten"
         ai_helper:
           name: "Helfer"
           description: "Unterstützt Benutzer bei der Interaktion in der Community, z. B. beim Erstellen von Themen, Verfassen von Beiträgen und Lesen von Inhalten"
@@ -773,6 +775,7 @@ de:
         shortcut_title: "Starte eine PN mit einem KI-Bot"
         share: "KI-Unterhaltung kopieren"
         conversation_shared: "Unterhaltung kopiert"
+        embed_copied: "Einbettung in die Zwischenablage kopiert"
         debug_ai: "Rohdaten der KI-Anfrage und -Antwort anzeigen"
         sidebar_empty: "Der Verlauf der Bot-Konversation wird hier angezeigt."
         debug_ai_modal:

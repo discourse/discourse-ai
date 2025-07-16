@@ -66,12 +66,9 @@ class ExpandableList extends Component {
 
 export default class AiFeaturesList extends Component {
   get sortedModules() {
-    if (!this.args.modules || !this.args.modules.length) {
-      return [];
-    }
-
-    return this.args.modules.toSorted((a, b) =>
-      a.module_name.localeCompare(b.module_name)
+    const modules = this.args.modules?.toArray() || this.args.modules;
+    return [...(modules || [])].toSorted((a, b) =>
+      (a.module_name || "").localeCompare(b.module_name || "")
     );
   }
 

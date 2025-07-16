@@ -260,10 +260,11 @@ export default class AiBotConversations extends Component {
 
   @action
   async prepareAndSubmitToBot() {
-    // Pass uploads to the service before submitting
-    this.aiBotConversationsHiddenSubmit.uploads = this.uploads;
     try {
-      await this.aiBotConversationsHiddenSubmit.submitToBot();
+      await this.aiBotConversationsHiddenSubmit.submitToBot({
+        uploads: this.uploads,
+        inProgressUploadsCount: this.inProgressUploads.length,
+      });
       this.uploads = new TrackedArray();
     } catch (error) {
       popupAjaxError(error);

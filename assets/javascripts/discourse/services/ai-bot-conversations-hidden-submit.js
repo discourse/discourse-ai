@@ -18,7 +18,6 @@ export default class AiBotConversationsHiddenSubmit extends Service {
 
   personaId;
   targetUsername;
-  uploads = [];
 
   inputValue = "";
 
@@ -32,7 +31,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
   }
 
   @action
-  async submitToBot() {
+  async submitToBot(uploadData) {
     if (
       this.inputValue.length <
       this.siteSettings.min_personal_message_post_length
@@ -48,7 +47,7 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     }
 
     // Don't submit if there are still uploads in progress
-    if (document.querySelector(".ai-bot-upload--in-progress")) {
+    if (uploadData.inProgressUploadsCount > 0) {
       return this.dialog.alert({
         message: i18n("discourse_ai.ai_bot.conversations.uploads_in_progress"),
       });
@@ -61,10 +60,10 @@ export default class AiBotConversationsHiddenSubmit extends Service {
     let rawContent = this.inputValue;
 
     // Append upload markdown if we have uploads
-    if (this.uploads && this.uploads.length > 0) {
+    if (uploadData.uploads && uploadData.uploads.length > 0) {
       rawContent += "\n\n";
 
-      this.uploads.forEach((upload) => {
+      uploadData.uploads.forEach((upload) => {
         const uploadMarkdown = getUploadMarkdown(upload);
         rawContent += uploadMarkdown + "\n";
       });
@@ -83,7 +82,6 @@ export default class AiBotConversationsHiddenSubmit extends Service {
       });
 
       // Reset uploads after successful submission
-      this.uploads = [];
       this.inputValue = "";
 
       this.appEvents.trigger("discourse-ai:bot-pm-created", {

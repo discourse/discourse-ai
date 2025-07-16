@@ -40,16 +40,7 @@ RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
       end
     end
 
-    context "when the response status is 429" do
-      let(:response_status) { 429 }
-      let(:response_body) { "" }
-
-      it "doesn't raises a Net::HTTPBadResponse error" do
-        expect { subject.perform!(content) }.not_to raise_error
-      end
-    end
-
-    context "when the response status is not 200 or 429" do
+    context "when the response status is not 200" do
       let(:response_status) { 500 }
       let(:response_body) { "Internal Server Error" }
 

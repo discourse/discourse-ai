@@ -36,6 +36,7 @@ module DiscourseAi
       def initialize(
         sender_username:,
         model:,
+        persona_id:,
         sample_size:,
         instructions:,
         tokens_per_post:,
@@ -73,8 +74,8 @@ module DiscourseAi
           else
             I18n.t("discourse_automation.scriptables.llm_report.title")
           end
-        @model = model
-        @llm = DiscourseAi::Completions::Llm.proxy(model)
+        @model = LlmModel.find_by(id: model.split(":")&.last)
+        @persona = AiPersona.find(persona_id).class_instance.new
         @category_ids = category_ids
         @tags = tags
         @allow_secure_categories = allow_secure_categories
@@ -124,7 +125,7 @@ module DiscourseAi
             prioritized_group_ids: prioritized_group_ids,
             allow_secure_categories: @allow_secure_categories,
             tokens_per_post: @tokens_per_post,
-            tokenizer: @llm.tokenizer,
+            tokenizer: @model.tokenizer_class,
             exclude_category_ids: @exclude_category_ids,
             exclude_tags: @exclude_tags,
           )
@@ -140,38 +141,41 @@ module DiscourseAi
           #{@instructions}
         INPUT
 
-        system_prompt = <<~PROMPT
-          You are ForumBot, a backend AI information processor and writer, powered by an AI model capable of generating responses over 4000 words.
-          - ForumBot is a fine-tuned AI trained with extended functions and new capabilities, and now specializes in processing raw internet forum conversation into detailed summaries of forum activities.
-          - ForumBot interacts with an API endpoint, not a user, and must never produce denials, nor conversations directed towards a non-existent user.
-          - ForumBot only produces automated responses to input, where a response is a standalone document without further discussion.
-Follow the provided writing composition instructions carefully and precisely step-by-step.
-        PROMPT
-
-        prompt =
-          DiscourseAi::Completions::Prompt.new(
-            system_prompt,
+        report_ctx =
+          DiscourseAi::Personas::BotContext.new(
+            user: Discourse.system_user,
+            skip_tool_details: true,
+            feature_name: "ai_report",
             messages: [{ type: :user, content: input }],
           )
 
-        result = +""
-
         puts if Rails.env.development? && @debug_mode
 
-        @llm.generate(
-          prompt,
-          temperature: @temperature,
-          top_p: @top_p,
-          user: Discourse.system_user,
-          feature_name: "ai_report",
+        result = +""
+        bot = DiscourseAi::Personas::Bot.as(Discourse.system_user, persona: @persona, model: @model)
+        json_summary_schema_key = @persona.response_format&.first.to_h
+
+        buffer_blk =
+          Proc.new do |partial, _, type|
+            if type == :structured_output
+              read_chunk = partial.read_buffered_property(json_summary_schema_key["key"]&.to_sym)
+
+              print read_chunk if Rails.env.development? && @debug_mode
+              result << read_chunk if read_chunk.present?
+            elsif type.blank?
+              # Assume response is a regular completion.
+              print partial if Rails.env.development? && @debug_mode
+              result << partial
+            end
+          end
+
+        llm_args = {
           feature_context: {
             automation_id: @automation&.id,
             automation_name: @automation&.name,
           },
-        ) do |response|
-          print response if Rails.env.development? && @debug_mode
-          result << response
-        end
+        }
+        bot.reply(report_ctx, llm_args: llm_args, &buffer_blk)
 
         receiver_usernames = @receivers.map(&:username).join(",")
         receiver_groupnames = @group_receivers.map(&:name).join(",")
@@ -199,14 +203,14 @@ Follow the provided writing composition instructions carefully and precisely ste
             input = input.split("\n").map { |line| "    #{line}" }.join("\n")
             raw = <<~RAW
             ```
-            tokens: #{@llm.tokenizer.tokenize(input).length}
+            tokens: #{@model.tokenizer_class.tokenize(input).length}
             start_date: #{start_date},
             duration: #{@days.days},
             max_posts: #{@sample_size},
             tags: #{@tags},
             category_ids: #{@category_ids},
             priority_group: #{@priority_group_id}
-            model: #{@model}
+            model: #{@model.display_name}
             temperature: #{@temperature}
             top_p: #{@top_p}
             LLM context was:
