@@ -35,9 +35,11 @@ module DiscourseAi
       end
 
       def modules_using(llm_model)
-        choose_llm_settings = modules_and_choose_llm_settings.values
+        in_use_llms = AiPersona.where.not(default_llm_id: nil).pluck(:default_llm_id)
+        default_llm = SiteSetting.ai_default_llm_model.presence&.to_i
 
-        choose_llm_settings.select { |s| SiteSetting.public_send(s) == "custom:#{llm_model.id}" }
+        combined_llms = (in_use_llms + [default_llm]).compact.uniq
+        combined_llms
       end
 
       def error_message

@@ -567,7 +567,7 @@ en:
           max_usages_required: "Must be set if max tokens is not set"
         usage:
           ai_bot: "AI bot"
-          ai_helper: "Helper"
+          ai_helper: "Helper (%{persona})"
           ai_helper_image_caption: "Image caption"
           ai_persona: "Persona (%{persona})"
           ai_summarization: "Summarize"

@@ -41,7 +41,7 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
 
   describe "#global_usage" do
     it "returns a hash of Llm models in use globally" do
-      SiteSetting.ai_helper_model = "custom:#{fake_model.id}"
+      assign_fake_provider_to(:ai_default_llm_model)
       SiteSetting.ai_helper_enabled = true
       expect(described_class.global_usage).to eq(fake_model.id => [{ type: :ai_helper }])
     end

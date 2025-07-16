@@ -272,7 +272,6 @@ discourse_ai:
     type: enum
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    validator: "DiscourseAi::Configuration::LlmValidator"
     area: "ai-features/embeddings"
   ai_embeddings_semantic_search_hyde_model_allowed_seeded_models:
     default: ""
@@ -328,7 +327,6 @@ discourse_ai:
     allow_any: false
     type: enum
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    validator: "DiscourseAi::Configuration::LlmValidator"
     hidden: true
   ai_summarization_persona:
     default: "-11"
@@ -495,7 +493,6 @@ discourse_ai:
     type: enum
     allow_any: false
     enum: "DiscourseAi::Configuration::LlmEnumerator"
-    validator: "DiscourseAi::Configuration::LlmValidator"
     area: "ai-features/translation"
   ai_translation_locale_detector_persona:
     default: "-27"

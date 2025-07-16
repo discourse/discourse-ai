@@ -5,7 +5,6 @@ require "enum_site_setting"
 module DiscourseAi
   module Configuration
     class LlmEnumerator < ::EnumSiteSetting
-      # TODO: global_usage is no longer accurate, it should be removed/updated
       def self.global_usage
         rval = Hash.new { |h, k| h[k] = [] }
 
@@ -23,24 +22,53 @@ module DiscourseAi
           .each { |llm_id, name, id| rval[llm_id] << { type: :ai_persona, name: name, id: id } }
 
         if SiteSetting.ai_helper_enabled
-          model_id = SiteSetting.ai_helper_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper } if model_id != 0
+          {
+            "#{I18n.t("js.discourse_ai.features.ai_helper.proofread")}" =>
+              SiteSetting.ai_helper_proofreader_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.title_suggestions")}" =>
+              SiteSetting.ai_helper_title_suggestions_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.explain")}" =>
+              SiteSetting.ai_helper_explain_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.illustrate_post")}" =>
+              SiteSetting.ai_helper_post_illustrator_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.smart_dates")}" =>
+              SiteSetting.ai_helper_smart_dates_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.translator")}" =>
+              SiteSetting.ai_helper_translator_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.markdown_tables")}" =>
+              SiteSetting.ai_helper_markdown_tables_persona,
+            "#{I18n.t("js.discourse_ai.features.ai_helper.custom_prompt")}" =>
+              SiteSetting.ai_helper_custom_prompt_persona,
+          }.each do |helper_type, persona_id|
+            next if persona_id.blank?
+
+            persona = AiPersona.find_by(id: persona_id)
+            next if persona.blank? || persona.default_llm_id.blank?
+
+            model_id = persona.default_llm_id || SiteSetting.ai_default_llm_model.to_i
+            rval[model_id] << { type: :ai_helper, name: helper_type }
+          end
         end
 
-        if SiteSetting.ai_helper_image_caption_model
-          model_id = SiteSetting.ai_helper_image_caption_model.split(":").last.to_i
-          rval[model_id] << { type: :ai_helper_image_caption } if model_id != 0
+        if SiteSetting.ai_helper_enabled_features.split("|").include?("image_caption")
+          image_caption_persona = AiPersona.find_by(id: SiteSetting.ai_helper_image_caption_persona)
+          model_id = image_caption_persona.default_llm_id || SiteSetting.ai_default_llm_model.to_i
+
+          rval[model_id] << { type: :ai_helper_image_caption }
         end
 
         if SiteSetting.ai_summarization_enabled
           summarization_persona = AiPersona.find_by(id: SiteSetting.ai_summarization_persona)
-          model_id = summarization_persona.default_llm_id || LlmModel.last&.id
+          model_id = summarization_persona.default_llm_id || SiteSetting.ai_default_llm_model.to_i
 
           rval[model_id] << { type: :ai_summarization }
         end
 
         if SiteSetting.ai_embeddings_semantic_search_enabled
-          model_id = SiteSetting.ai_embeddings_semantic_search_hyde_model.split(":").last.to_i
+          search_persona =
+            AiPersona.find_by(id: SiteSetting.ai_embeddings_semantic_search_hyde_persona)
+          model_id = search_persona.default_llm_id || SiteSetting.ai_default_llm_model.to_i
+
           rval[model_id] << { type: :ai_embeddings_semantic_search }
         end
 
