@@ -7,11 +7,7 @@ describe DiscourseAi::Translation::LanguageDetector do
     )
   end
 
-  before do
-    Fabricate(:fake_model).tap do |fake_llm|
-      SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
-    end
-  end
+  before { assign_fake_provider_to(:ai_default_llm_model) }
 
   describe ".detect" do
     let(:locale_detector) { described_class.new("meow") }

@@ -26,7 +26,7 @@ RSpec.describe ProblemCheck::AiLlmStatus do
 
   before do
     stub_request(:post, post_url).to_return(status: 200, body: success_response, headers: {})
-    SiteSetting.ai_summarization_model = "custom:#{llm_model.id}"
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_summarization_enabled = true
   end
 

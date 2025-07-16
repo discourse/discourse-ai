@@ -38,7 +38,6 @@ RSpec.describe DiscourseAi::Configuration::Feature do
 
       it "returns the configured llm model" do
         SiteSetting.ai_summarization_persona = ai_persona.id
-        allow_configuring_setting { SiteSetting.ai_summarization_model = "custom:#{llm_model.id}" }
         expect(ai_feature.llm_models).to eq([llm_model])
       end
     end
@@ -55,8 +54,6 @@ RSpec.describe DiscourseAi::Configuration::Feature do
 
       it "returns the persona's default llm when no specific helper model is set" do
         SiteSetting.ai_helper_proofreader_persona = ai_persona.id
-        SiteSetting.ai_helper_model = ""
-
         expect(ai_feature.llm_models).to eq([llm_model])
       end
     end
@@ -75,11 +72,7 @@ RSpec.describe DiscourseAi::Configuration::Feature do
 
       it "uses translation model when configured" do
         SiteSetting.ai_translation_locale_detector_persona = ai_persona.id
-        ai_persona.update!(default_llm_id: nil)
-        allow_configuring_setting do
-          SiteSetting.ai_translation_model = "custom:#{translation_model.id}"
-        end
-
+        ai_persona.update!(default_llm_id: translation_model.id)
         expect(ai_feature.llm_models).to eq([translation_model])
       end
     end

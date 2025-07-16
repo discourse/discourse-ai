@@ -51,7 +51,7 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
         component: "text",
         name: "model",
         metadata: {
-          value: "custom:#{fake_model.id}",
+          value: fake_model.id,
         },
         target: "script",
       )

@@ -30,7 +30,7 @@ module DiscourseAi
             messages: [{ type: :user, content: chat, id: "User" }],
           )
 
-        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_helper_model).generate(
+        DiscourseAi::Completions::Llm.proxy(SiteSetting.ai_default_llm_model).generate(
           prompt,
           user: Discourse.system_user,
           stop_sequences: ["</input>"],

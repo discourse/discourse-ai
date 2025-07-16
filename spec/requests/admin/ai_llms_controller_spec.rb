@@ -52,17 +52,17 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
 
       # setting the setting calls the model
       DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
-        SiteSetting.ai_helper_model = "custom:#{llm_model.id}"
+        assign_fake_provider_to(:ai_default_llm_model)
         SiteSetting.ai_helper_enabled = true
       end
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
-        SiteSetting.ai_summarization_model = "custom:#{llm_model2.id}"
+        assign_fake_provider_to(:ai_default_llm_model)
         SiteSetting.ai_summarization_enabled = true
       end
 
       DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) do
-        SiteSetting.ai_embeddings_semantic_search_hyde_model = "custom:#{llm_model2.id}"
+        assign_fake_provider_to(:ai_default_llm_model)
         SiteSetting.ai_embeddings_semantic_search_enabled = true
       end
 

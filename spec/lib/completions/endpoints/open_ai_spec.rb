@@ -177,7 +177,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   describe "max tokens for reasoning models" do
     it "uses max_completion_tokens for reasoning models" do
       model.update!(name: "o3-mini", max_output_tokens: 999)
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
       prompt =
         DiscourseAi::Completions::Prompt.new(
           "You are a bot",
@@ -216,7 +216,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "repeat calls" do
     it "can properly reset context" do
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
 
       tools = [
         {
@@ -297,7 +297,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   describe "max tokens remapping" do
     it "remaps max_tokens to max_completion_tokens for reasoning models" do
       model.update!(name: "o3-mini")
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
 
       body_parsed = nil
       stub_request(:post, "https://api.openai.com/v1/chat/completions").with(
@@ -313,7 +313,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "forced tool use" do
     it "can properly force tool use" do
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
 
       tools = [
         {
@@ -441,7 +441,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
 
   describe "disabled tool use" do
     it "can properly disable tool use with :none" do
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
 
       tools = [
         {
@@ -532,7 +532,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
   describe "image support" do
     it "can handle images" do
       model = Fabricate(:llm_model, vision_enabled: true)
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
       prompt =
         DiscourseAi::Completions::Prompt.new(
           "You are image bot",
