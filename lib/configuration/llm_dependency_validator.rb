@@ -10,8 +10,7 @@ module DiscourseAi
       def valid_value?(val)
         return true if val == "f"
 
-        @llm_dependency_setting_name =
-          DiscourseAi::Configuration::LlmValidator.new.choose_llm_setting_for(@opts[:name])
+        @llm_dependency_setting_name = :ai_default_llm_model
 
         SiteSetting.public_send(@llm_dependency_setting_name).present?
       end

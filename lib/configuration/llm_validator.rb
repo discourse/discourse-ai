@@ -9,10 +9,18 @@ module DiscourseAi
 
       def valid_value?(val)
         if val == ""
-          @parent_module_name = modules_and_choose_llm_settings.invert[@opts[:name]]
+          if @opts[:name] == :ai_default_llm_model
+            @parent_module_names = []
 
-          @parent_enabled = SiteSetting.public_send(@parent_module_name)
-          return !@parent_enabled
+            enabled_settings.each do |setting_name|
+              if SiteSetting.public_send(setting_name) == true
+                @parent_module_names << setting_name
+                @parent_enabled = true
+              end
+            end
+
+            return !@parent_enabled
+          end
         end
 
         run_test(val).tap { |result| @unreachable = result }
@@ -43,11 +51,11 @@ module DiscourseAi
       end
 
       def error_message
-        if @parent_enabled
+        if @parent_enabled && @parent_module_names.present?
           return(
             I18n.t(
-              "discourse_ai.llm.configuration.disable_module_first",
-              setting: @parent_module_name,
+              "discourse_ai.llm.configuration.disable_modules_first",
+              settings: @parent_module_names.join(", "),
             )
           )
         end
@@ -57,17 +65,13 @@ module DiscourseAi
         I18n.t("discourse_ai.llm.configuration.model_unreachable")
       end
 
-      def choose_llm_setting_for(module_enabler_setting)
-        modules_and_choose_llm_settings[module_enabler_setting]
-      end
-
-      def modules_and_choose_llm_settings
-        {
-          ai_embeddings_semantic_search_enabled: :ai_default_llm_model,
-          ai_helper_enabled: :ai_default_llm_model,
-          ai_summarization_enabled: :ai_default_llm_model,
-          ai_translation_enabled: :ai_default_llm_model,
-        }
+      def enabled_settings
+        %i[
+          ai_embeddings_semantic_search_enabled
+          ai_helper_enabled
+          ai_summarization_enabled
+          ai_translation_enabled
+        ]
       end
     end
   end
