@@ -1,5 +1,8 @@
 # **Discourse AI** Plugin
 
+> [!IMPORTANT]
+> This plugin has now been bundled into Discourse core. See: https://meta.discourse.org/t/bundling-more-popular-plugins-with-discourse-core/373574
+
 **Plugin Summary**
 
 For more information, please see: https://meta.discourse.org/t/discourse-ai/259214?u=falco
