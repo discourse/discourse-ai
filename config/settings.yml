@@ -527,6 +527,8 @@ discourse_ai:
     area: "ai-features/translation"
   ai_translation_backfill_max_age_days:
     default: 5
+    min: 0
+    max: 20000
     client: false
     area: "ai-features/translation"
   ai_translation_verbose_logs:
