@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Configuration::Feature do
   fab!(:llm_model)
   fab!(:ai_persona) { Fabricate(:ai_persona, default_llm_id: llm_model.id) }
 
+  before { assign_fake_provider_to(:ai_default_llm_model) }
+
   def allow_configuring_setting(&block)
     DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) { block.call }
   end

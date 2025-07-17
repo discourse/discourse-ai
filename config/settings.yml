@@ -488,7 +488,7 @@ discourse_ai:
     client: true
     validator: "DiscourseAi::Configuration::LlmDependencyValidator"
     area: "ai-features/translation"
-  ai_translation_model:
+  ai_translation_model: # Deprecated. TODO(keegan): Remove 2025-09-01
     default: ""
     type: enum
     allow_any: false

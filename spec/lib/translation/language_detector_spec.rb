@@ -34,7 +34,7 @@ describe DiscourseAi::Translation::LanguageDetector do
 
       allow(DiscourseAi::Completions::Prompt).to receive(:new).and_return(mock_prompt)
       allow(DiscourseAi::Completions::Llm).to receive(:proxy).with(
-        SiteSetting.ai_translation_model,
+        SiteSetting.ai_default_llm_model,
       ).and_return(mock_llm)
       allow(mock_llm).to receive(:generate).with(
         mock_prompt,

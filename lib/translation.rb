@@ -4,7 +4,7 @@ module DiscourseAi
   module Translation
     def self.enabled?
       SiteSetting.discourse_ai_enabled && SiteSetting.ai_translation_enabled &&
-        SiteSetting.ai_translation_model.present? &&
+        SiteSetting.ai_default_llm_model.present? &&
         SiteSetting.content_localization_supported_locales.present?
     end
 
