@@ -20,7 +20,7 @@ module DiscourseAi
 
       def cached_query?(query)
         digest = OpenSSL::Digest::SHA1.hexdigest(query)
-        hyde_model_id = find_ai_hyde_model_id
+        hyde_model_id = self.class.find_ai_hyde_model_id
         embedding_key =
           build_embedding_key(digest, hyde_model_id, SiteSetting.ai_embeddings_selected_model)
 
@@ -33,7 +33,7 @@ module DiscourseAi
 
       def hyde_embedding(search_term)
         digest = OpenSSL::Digest::SHA1.hexdigest(search_term)
-        hyde_model_id = find_ai_hyde_model_id
+        hyde_model_id = self.class.find_ai_hyde_model_id
         hyde_key = build_hyde_key(digest, hyde_model_id)
 
         embedding_key =
@@ -105,7 +105,7 @@ module DiscourseAi
         max_semantic_results_per_page = 100
         search = Search.new(query, { guardian: guardian })
         search_term = search.term
-        hyde_model_id = find_ai_hyde_model_id
+        hyde_model_id = self.class.find_ai_hyde_model_id
 
         return [] if search_term.nil? || search_term.length < SiteSetting.min_search_term_length
 
@@ -212,7 +212,7 @@ module DiscourseAi
         end
       end
 
-      def find_ai_hyde_model_id
+      def self.find_ai_hyde_model_id
         persona_llm_id =
           AiPersona.find_by(
             id: SiteSetting.ai_embeddings_semantic_search_hyde_persona,
