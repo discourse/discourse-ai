@@ -127,7 +127,7 @@ export default class AiSpam extends Component {
   }
 
   get llmId() {
-    return this.selectedLLM.toString().split(":")[1];
+    return this.selectedLLM;
   }
 
   @action
