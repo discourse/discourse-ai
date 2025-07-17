@@ -5,6 +5,7 @@ require "rails_helper"
 describe DiscourseAi::Configuration::LlmValidator do
   describe "#valid_value?" do
     let(:validator) { described_class.new(name: :ai_default_llm_model) }
+    fab!(:llm_model)
 
     before do
       assign_fake_provider_to(:ai_default_llm_model)
@@ -34,7 +35,10 @@ describe DiscourseAi::Configuration::LlmValidator do
     it "returns true for non-empty values regardless of module state" do
       SiteSetting.ai_helper_enabled = true
       SiteSetting.ai_summarization_enabled = true
-      expect(validator.valid_value?("some_model")).to eq(true)
+
+      DiscourseAi::Completions::Llm.with_prepared_responses([true]) do
+        expect(validator.valid_value?(llm_model)).to eq(true)
+      end
     end
   end
 end
