@@ -87,12 +87,8 @@ module DiscourseAi
             )
             .each do |model_text, name, id|
               next if model_text.blank?
-              model_id = model_text.split("custom:").last.to_i
-              if model_id.present?
-                if model_text =~ /custom:(\d+)/
-                  rval[model_id] << { type: :automation, name: name, id: id }
-                end
-              end
+              model_id = model_text.to_i
+              rval[model_id] << { type: :automation, name: name, id: id } if model_id.present?
             end
         end
 

@@ -473,16 +473,16 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
           error_type: "validation",
         }
 
-        WebMock.stub_request(:post, test_attrs[:url]).to_return(
-          status: 422,
-          body: error_message.to_json,
-        )
+        error =
+          DiscourseAi::Completions::Endpoints::Base::CompletionFailed.new(error_message.to_json)
 
-        get "/admin/plugins/discourse-ai/ai-llms/test.json", params: { ai_llm: test_attrs }
+        DiscourseAi::Completions::Llm.with_prepared_responses([error]) do
+          get "/admin/plugins/discourse-ai/ai-llms/test.json", params: { ai_llm: test_attrs }
 
-        expect(response).to be_successful
-        expect(response.parsed_body["success"]).to eq(false)
-        expect(response.parsed_body["error"]).to eq(error_message.to_json)
+          expect(response).to be_successful
+          expect(response.parsed_body["success"]).to eq(false)
+          expect(response.parsed_body["error"]).to eq(error_message.to_json)
+        end
       end
     end
   end
