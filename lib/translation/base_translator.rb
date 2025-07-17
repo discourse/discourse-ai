@@ -46,10 +46,22 @@ module DiscourseAi
             topic: @topic,
             post: @post,
           )
+        max_tokens = get_max_tokens(text)
+        llm_args = { max_tokens: }
 
         result = +""
-        bot.reply(context) { |partial| result << partial }
+        bot.reply(context, llm_args:) { |partial| result << partial }
         result
+      end
+
+      def get_max_tokens(text)
+        if text.length < 100
+          500
+        elsif text.length < 500
+          1000
+        else
+          text.length * 2
+        end
       end
 
       def persona_setting
