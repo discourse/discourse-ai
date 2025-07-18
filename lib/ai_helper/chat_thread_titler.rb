@@ -12,10 +12,14 @@ module DiscourseAi
         return nil if content.blank?
 
         suggested_title = call_llm(content)
+        return nil if suggested_title.blank?
+        
         cleanup(suggested_title)
       end
 
       def call_llm(thread_content)
+        return nil if SiteSetting.ai_default_llm_model.blank?
+        
         chat = "<input>\n#{thread_content}\n</input>"
 
         prompt =
