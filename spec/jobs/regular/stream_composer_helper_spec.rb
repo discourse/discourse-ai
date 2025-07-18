@@ -3,7 +3,7 @@
 RSpec.describe Jobs::StreamComposerHelper do
   subject(:job) { described_class.new }
 
-  before { assign_fake_provider_to(:ai_helper_model) }
+  before { assign_fake_provider_to(:ai_default_llm_model) }
 
   describe "#execute" do
     let!(:input) { "I liek to eet pie fur brakefast becuz it is delishus." }

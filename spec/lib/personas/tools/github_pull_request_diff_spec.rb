@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe DiscourseAi::Personas::Tools::GithubPullRequestDiff do
   let(:bot_user) { Fabricate(:user) }
   fab!(:llm_model)
-  let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
+  let(:llm) { DiscourseAi::Completions::Llm.proxy(llm_model) }
   let(:tool) { described_class.new({ repo: repo, pull_id: pull_id }, bot_user: bot_user, llm: llm) }
 
   context "with #sort_and_shorten_diff" do

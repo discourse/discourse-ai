@@ -160,7 +160,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -186,7 +186,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -220,7 +220,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -246,7 +246,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -274,7 +274,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -297,7 +297,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
   it "properly encodes tool calls" do
     prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool])
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     response_json = { "functionCall" => { name: "echo", args: { text: "<S>ydney" } } }
@@ -332,7 +332,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -410,7 +410,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     payload = rows.map { |r| "data: #{r.to_json}\n\n" }.join
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     prompt = DiscourseAi::Completions::Prompt.new("Hello", tools: [echo_tool])
@@ -450,7 +450,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     TEXT
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     output = []
@@ -478,7 +478,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     split = data.split("|")
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     output = []
@@ -497,7 +497,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -525,7 +525,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
     req_body = nil
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:generateContent?key=123"
 
     stub_request(:post, url).with(
@@ -600,7 +600,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
       req_body = nil
 
-      llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      llm = DiscourseAi::Completions::Llm.proxy(model)
       url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
       stub_request(:post, url).with(
@@ -657,7 +657,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
 
   TEXT
 
-    llm = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+    llm = DiscourseAi::Completions::Llm.proxy(model)
     url = "#{model.url}:streamGenerateContent?alt=sse&key=123"
 
     output = []

@@ -6,7 +6,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
 
   before do
-    assign_fake_provider_to(:ai_helper_model)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_helper_enabled = true
 
     # This needs to be done because the streaming suggestions for composer

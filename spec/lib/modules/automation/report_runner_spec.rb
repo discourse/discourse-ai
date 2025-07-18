@@ -43,7 +43,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: ["fake@discourse.com"],
               title: "test report %DATE%",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,
@@ -82,7 +82,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,
@@ -129,7 +129,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,
@@ -174,7 +174,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,
@@ -208,7 +208,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [group_for_reports.name],
               title: "group report",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,
@@ -238,7 +238,7 @@ module DiscourseAi
               sender_username: user.username,
               receivers: [receiver.username],
               title: "test report",
-              model: "custom:#{llm_model.id}",
+              model: llm_model.id,
               persona_id:
                 DiscourseAi::Personas::Persona.system_personas[DiscourseAi::Personas::ReportRunner],
               category_ids: nil,

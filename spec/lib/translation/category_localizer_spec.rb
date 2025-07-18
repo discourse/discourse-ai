@@ -3,11 +3,7 @@
 describe DiscourseAi::Translation::CategoryLocalizer do
   subject(:localizer) { described_class }
 
-  before do
-    Fabricate(:fake_model).tap do |fake_llm|
-      SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
-    end
-  end
+  before { assign_fake_provider_to(:ai_default_llm_model) }
 
   def post_raw_translator_stub(opts)
     mock = instance_double(DiscourseAi::Translation::PostRawTranslator)

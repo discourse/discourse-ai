@@ -7,7 +7,7 @@ describe DiscourseAi::TopicSummarization do
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
   before do
-    assign_fake_provider_to(:ai_summarization_model)
+    assign_fake_provider_to(:ai_default_llm_model)
     SiteSetting.ai_summarization_enabled = true
   end
 

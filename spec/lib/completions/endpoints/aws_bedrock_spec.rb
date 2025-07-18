@@ -47,7 +47,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       model.provider_params["disable_native_tools"] = true
       model.save!
 
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
 
       incomplete_tool_call = <<~XML.strip
         <thinking>I should be ignored</thinking>
@@ -122,7 +122,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     end
 
     it "supports streaming function calls" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
 
       request = nil
 
@@ -293,7 +293,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   describe "Claude 3 support" do
     it "supports regular completions" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
 
       request = nil
 
@@ -340,7 +340,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
       model.provider_params["reasoning_tokens"] = 10_000
       model.save!
 
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
 
       request = nil
 
@@ -387,7 +387,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     end
 
     it "supports claude 3 streaming" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
 
       request = nil
 
@@ -448,7 +448,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
         },
       )
 
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
       request = nil
 
       content = {
@@ -487,7 +487,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   describe "disabled tool use" do
     it "handles tool_choice: :none by adding a prefill message instead of using tool_choice param" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
       request = nil
 
       # Create a prompt with tool_choice: :none
@@ -549,7 +549,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
 
   describe "forced tool use" do
     it "can properly force tool use" do
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
       request = nil
 
       tools = [
@@ -640,7 +640,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
           { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
         ].map { |message| encode_message(message) }
 
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
       request = nil
       bedrock_mock.with_chunk_array_support do
         stub_request(
@@ -718,7 +718,7 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
           { type: "message_delta", delta: { usage: { output_tokens: 25 } } },
         ].map { |message| encode_message(message) }
 
-      proxy = DiscourseAi::Completions::Llm.proxy("custom:#{model.id}")
+      proxy = DiscourseAi::Completions::Llm.proxy(model)
       request = nil
       bedrock_mock.with_chunk_array_support do
         stub_request(
