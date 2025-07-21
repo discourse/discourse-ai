@@ -21,6 +21,7 @@ module DiscourseAi
         temperature: nil,
         whisper: nil,
         reply_persona_id: nil,
+        max_output_tokens: nil,
         action: nil
       )
         if category_id.blank? && tags.blank? && canned_reply.blank? && hide_topic.blank? &&
@@ -59,8 +60,8 @@ module DiscourseAi
         result =
           llm.generate(
             prompt,
+            max_tokens: max_output_tokens,
             temperature: temperature,
-            max_tokens: 700, # ~500 words
             user: Discourse.system_user,
             stop_sequences: stop_sequences,
             feature_name: "llm_triage",
