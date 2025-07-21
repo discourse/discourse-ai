@@ -29,7 +29,7 @@ module Jobs
         missing_locales = locales - existing_locales - [category.locale]
         missing_locales.each do |locale|
           break if remaining_limit <= 0
-          next if DiscourseAi::Translation::LocaleNormalizer.is_same?(locale, category.locale)
+          next if LocaleNormalizer.is_same?(locale, category.locale)
 
           begin
             DiscourseAi::Translation::CategoryLocalizer.localize(category, locale)
