@@ -6,6 +6,7 @@ RSpec.describe Jobs::SharedConversationAdjustUploadSecurity do
   fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
 
   fab!(:bot_user) do
+    enable_current_plugin
     toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"
