@@ -95,6 +95,7 @@ describe DiscourseAi::Automation::LlmTriage do
     reply_user.update!(admin: true)
     add_automation_field("include_personal_messages", true, type: :boolean)
     add_automation_field("temperature", "0.2")
+    add_automation_field("max_output_tokens", "700")
     post = Fabricate(:post, topic: personal_message)
 
     prompt_options = nil
@@ -107,6 +108,7 @@ describe DiscourseAi::Automation::LlmTriage do
     end
 
     expect(prompt_options[:temperature]).to eq(0.2)
+    expect(prompt_options[:max_tokens]).to eq(700)
 
     last_post = post.topic.reload.posts.order(:post_number).last
     expect(last_post.raw).to eq(canned_reply_text)

@@ -24,6 +24,7 @@ if defined?(DiscourseAutomation)
     field :max_post_tokens, component: :text
     field :stop_sequences, component: :text_list, required: false
     field :temperature, component: :text
+    field :max_output_tokens, component: :text
 
     # Actions
     field :category, component: :category
@@ -85,6 +86,9 @@ if defined?(DiscourseAutomation)
         temperature = temperature.to_f
       end
 
+      max_output_tokens = fields.dig("max_output_tokens", "value").to_i
+      max_output_tokens = nil if max_output_tokens <= 0
+
       max_post_tokens = nil if max_post_tokens <= 0
 
       stop_sequences = fields.dig("stop_sequences", "value")
@@ -122,6 +126,7 @@ if defined?(DiscourseAutomation)
           stop_sequences: stop_sequences,
           automation: self.automation,
           temperature: temperature,
+          max_output_tokens: max_output_tokens,
           action: context["action"],
         )
       rescue => e
