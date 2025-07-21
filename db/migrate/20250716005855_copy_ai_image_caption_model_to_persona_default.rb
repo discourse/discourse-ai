@@ -11,7 +11,7 @@ class CopyAiImageCaptionModelToPersonaDefault < ActiveRecord::Migration[7.2]
       # Extract the model ID from the setting value (e.g., "custom:1" -> "1")
       model_id = ai_helper_image_caption_model.split(":").last
 
-      persona_settings = %w[ai_helper_post_illustrator_persona ai_helper_image_caption_persona,]
+      persona_settings = %w[ai_helper_post_illustrator_persona ai_helper_image_caption_persona]
       default_persona_ids = [-21, -26]
 
       persona_ids_query =
