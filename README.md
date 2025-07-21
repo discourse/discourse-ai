@@ -6,10 +6,10 @@ For more information, please see: https://meta.discourse.org/t/discourse-ai/2592
 
 ### Evals
 
-The directory `evals` contains AI evals for the Discourse AI plugin. 
+The directory `evals` contains AI evals for the Discourse AI plugin.
 You may create a local config by copying `config/eval-llms.yml` to `config/eval-llms.local.yml` and modifying the values.
 
-To run them use: 
+To run them use:
 
 cd evals
 ./run --help
