@@ -26,6 +26,8 @@ RSpec.describe DiscourseAi::Completions::StructuredOutput do
     )
   end
 
+  before { enable_current_plugin }
+
   describe "Parsing structured output on the fly" do
     it "acts as a buffer for an streamed JSON" do
       chunks = [

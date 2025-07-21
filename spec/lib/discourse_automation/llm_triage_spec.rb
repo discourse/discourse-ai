@@ -24,6 +24,8 @@ describe DiscourseAi::Automation::LlmTriage do
   end
 
   before do
+    enable_current_plugin
+
     SiteSetting.tagging_enabled = true
     add_automation_field("system_prompt", "hello %%POST%%")
     add_automation_field("search_for_text", "bad")

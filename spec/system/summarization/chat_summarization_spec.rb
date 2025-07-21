@@ -9,6 +9,8 @@ RSpec.describe "Summarize a channel since your last visit", type: :system do
   let(:summarization_result) { "This is a summary" }
 
   before do
+    enable_current_plugin
+
     group.add(current_user)
 
     assign_fake_provider_to(:ai_summarization_model)

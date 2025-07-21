@@ -9,6 +9,8 @@ RSpec.describe UserOption do
   end
 
   before do
+    enable_current_plugin
+
     assign_fake_provider_to(:ai_helper_model)
     assign_fake_provider_to(:ai_helper_image_caption_model)
     SiteSetting.ai_helper_enabled = true

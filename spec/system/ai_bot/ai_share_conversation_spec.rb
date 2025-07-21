@@ -5,6 +5,7 @@ RSpec.describe "Share conversation via link", type: :system do
   fab!(:gpt_4) { Fabricate(:llm_model, name: "gpt-4") }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [gpt_4])
     SiteSetting.ai_bot_public_sharing_allowed_groups = "1" # admin

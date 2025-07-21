@@ -3,6 +3,8 @@
 require_relative "../../../../../support/sentiment_inference_stubs"
 
 describe Jobs::PostSentimentAnalysis do
+  before { enable_current_plugin }
+
   describe "#execute" do
     let(:post) { Fabricate(:post) }
 

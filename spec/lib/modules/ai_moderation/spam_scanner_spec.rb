@@ -19,7 +19,7 @@ RSpec.describe DiscourseAi::AiModeration::SpamScanner do
   end
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_spam_detection_enabled = true
   end
 

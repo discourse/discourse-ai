@@ -5,7 +5,10 @@ RSpec.describe DiscourseAi::Personas::Tools::CreateArtifact do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   fab!(:post)
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#process" do
     it "correctly adds details block on final invoke" do

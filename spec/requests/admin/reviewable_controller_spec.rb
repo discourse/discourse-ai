@@ -29,6 +29,9 @@ RSpec.describe ReviewablesController do
   fab!(:ai_spam_log_missed) do
     AiSpamLog.create!(is_spam: false, post_id: post1.id, llm_model_id: llm_model.id)
   end
+
+  before { enable_current_plugin }
+
   # we amend the behavior with a custom filter so we need to confirm it works
   it "properly applies custom filter" do
     sign_in(admin)

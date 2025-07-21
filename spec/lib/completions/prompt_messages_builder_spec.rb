@@ -14,6 +14,8 @@ describe DiscourseAi::Completions::PromptMessagesBuilder do
     Fabricate(:upload, user: user, original_filename: "image.png", extension: "png")
   end
 
+  before { enable_current_plugin }
+
   it "correctly merges user messages with uploads" do
     builder.push(type: :user, content: "Hello", id: "Alice", upload_ids: [1])
     builder.push(type: :user, content: "World", id: "Bob", upload_ids: [2])

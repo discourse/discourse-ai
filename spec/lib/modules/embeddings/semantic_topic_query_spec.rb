@@ -3,6 +3,8 @@
 describe DiscourseAi::Embeddings::EntryPoint do
   fab!(:user)
 
+  before { enable_current_plugin }
+
   describe "SemanticTopicQuery extension" do
     describe "#list_semantic_related_topics" do
       subject(:topic_query) { DiscourseAi::Embeddings::SemanticTopicQuery.new(user) }

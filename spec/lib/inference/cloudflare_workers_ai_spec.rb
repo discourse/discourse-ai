@@ -23,6 +23,8 @@ RSpec.describe DiscourseAi::Inference::CloudflareWorkersAi do
   let(:payload) { { text: [content] }.to_json }
 
   before do
+    enable_current_plugin
+
     stub_request(:post, endpoint).with(body: payload, headers: headers).to_return(
       status: response_status,
       body: response_body,

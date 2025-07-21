@@ -7,6 +7,7 @@ RSpec.describe "AI chat channel summarization", type: :system, js: true do
   fab!(:gpt_3_5_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [gpt_4, gpt_3_5_turbo])
     SiteSetting.ai_bot_allowed_groups = group.id.to_s

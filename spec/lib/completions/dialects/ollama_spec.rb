@@ -7,6 +7,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Ollama do
   let(:context) { DialectContext.new(described_class, model) }
   let(:dialect_class) { DiscourseAi::Completions::Dialects::Dialect.dialect_for(model) }
 
+  before { enable_current_plugin }
+
   describe "#translate" do
     context "when native tool support is enabled" do
       it "translates a prompt written in our generic format to the Ollama format" do

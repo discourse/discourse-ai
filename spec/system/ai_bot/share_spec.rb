@@ -31,6 +31,7 @@ RSpec.describe "Share conversation", type: :system do
   let(:cdp) { PageObjects::CDP.new }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [gpt_4])
     sign_in(admin)

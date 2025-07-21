@@ -16,6 +16,7 @@ describe DiscourseAi::Embeddings::SemanticRelated do
   fab!(:vector_def) { Fabricate(:embedding_definition) }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_embeddings_semantic_related_topics_enabled = true
     SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true

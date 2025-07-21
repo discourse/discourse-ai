@@ -24,6 +24,8 @@ RSpec.describe Jobs::EmbeddingsBackfill do
   fab!(:embedding_array) { Array.new(1024) { 1 } }
 
   before do
+    enable_current_plugin
+
     SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.ai_embeddings_backfill_batch_size = 1

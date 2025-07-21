@@ -10,6 +10,7 @@ RSpec.describe DiscourseAi::InferredConcepts::Finder do
   fab!(:llm_model) { Fabricate(:fake_model) }
 
   before do
+    enable_current_plugin
     SiteSetting.inferred_concepts_generate_persona = -1
     SiteSetting.inferred_concepts_deduplicate_persona = -1
     SiteSetting.inferred_concepts_enabled = true

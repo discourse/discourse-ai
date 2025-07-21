@@ -4,6 +4,7 @@ RSpec.describe DiscourseAi::Admin::AiLlmsController do
   fab!(:admin)
 
   before do
+    enable_current_plugin
     sign_in(admin)
     SiteSetting.ai_bot_enabled = true
   end

@@ -21,6 +21,8 @@ RSpec.describe "Summarize a topic ", type: :system do
   fab!(:ai_summary) { Fabricate(:ai_summary, target: topic, summarized_text: "This is a summary") }
 
   before do
+    enable_current_plugin
+
     group.add(current_user)
 
     assign_fake_provider_to(:ai_summarization_model)

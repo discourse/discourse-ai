@@ -3,6 +3,8 @@
 RSpec.describe AiChatChannelSerializer do
   fab!(:admin)
 
+  before { enable_current_plugin }
+
   describe "#title" do
     context "when the channel is a DM" do
       fab!(:dm_channel) { Fabricate(:direct_message_channel) }

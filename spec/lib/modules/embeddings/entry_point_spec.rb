@@ -5,7 +5,10 @@ describe DiscourseAi::Embeddings::EntryPoint do
 
   fab!(:embedding_definition)
 
-  before { SiteSetting.ai_embeddings_selected_model = embedding_definition.id }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_embeddings_selected_model = embedding_definition.id
+  end
 
   describe "registering event callbacks" do
     context "when creating a topic" do

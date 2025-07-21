@@ -3,6 +3,8 @@
 describe DiscourseAi::Completions::PromptMessagesBuilder do
   let(:tag_stripper) { DiscourseAi::Completions::XmlTagStripper.new(%w[thinking results]) }
 
+  before { enable_current_plugin }
+
   it "should strip tags correctly in simple cases" do
     result = tag_stripper << "x<thinking>hello</thinki"
     expect(result).to eq("x")

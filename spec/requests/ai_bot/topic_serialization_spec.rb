@@ -5,6 +5,7 @@ RSpec.describe "AI Bot Post Serializer" do
   fab!(:bot_user) { Fabricate(:user) }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     sign_in(current_user)
   end

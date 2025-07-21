@@ -3,9 +3,9 @@
 RSpec.describe DiscourseAi::Completions::Dialects::Claude do
   fab!(:llm_model) { Fabricate(:anthropic_model, name: "claude-3-opus") }
 
-  let :opus_dialect_klass do
-    DiscourseAi::Completions::Dialects::Dialect.dialect_for(llm_model)
-  end
+  let(:opus_dialect_klass) { DiscourseAi::Completions::Dialects::Dialect.dialect_for(llm_model) }
+
+  before { enable_current_plugin }
 
   describe "#translate" do
     it "can insert OKs to make stuff interleve properly" do

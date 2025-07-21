@@ -5,6 +5,8 @@ RSpec.describe Jobs::GenerateEmbeddings do
 
   fab!(:vector_def) { Fabricate(:embedding_definition) }
 
+  before { enable_current_plugin }
+
   describe "#execute" do
     before do
       SiteSetting.ai_embeddings_selected_model = vector_def.id

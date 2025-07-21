@@ -10,6 +10,7 @@ RSpec.describe DiscourseAi::Sentiment::SentimentController do
     fab!(:classification_result) { Fabricate(:classification_result, target: post) }
 
     before do
+      enable_current_plugin
       SiteSetting.ai_sentiment_enabled = true
       sign_in(admin)
     end

@@ -8,9 +8,11 @@ RSpec.describe DiscourseAi::Embeddings::Schema do
   fab!(:post) { Fabricate(:post, post_number: 1) }
   let(:digest) { OpenSSL::Digest.hexdigest("SHA1", "test") }
 
-  before { SiteSetting.ai_embeddings_selected_model = vector_def.id }
-
-  before { posts_schema.store(post, embeddings, digest) }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_embeddings_selected_model = vector_def.id
+    posts_schema.store(post, embeddings, digest)
+  end
 
   describe "#find_by_target" do
     it "gets you the post_id of the record that matches the post" do

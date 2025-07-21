@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::Personas::Tools::ListTags do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     SiteSetting.tagging_enabled = true
   end

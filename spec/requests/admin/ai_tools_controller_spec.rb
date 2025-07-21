@@ -24,6 +24,7 @@ RSpec.describe DiscourseAi::Admin::AiToolsController do
   end
 
   before do
+    enable_current_plugin
     sign_in(admin)
     SiteSetting.ai_embeddings_enabled = true
   end

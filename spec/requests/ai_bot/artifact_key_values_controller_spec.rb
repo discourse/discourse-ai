@@ -12,7 +12,7 @@ RSpec.describe DiscourseAi::AiBot::ArtifactKeyValuesController do
   fab!(:private_artifact) { Fabricate(:ai_artifact, post: private_message_post) }
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
   end
 

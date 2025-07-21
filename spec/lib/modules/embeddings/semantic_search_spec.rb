@@ -10,6 +10,7 @@ RSpec.describe DiscourseAi::Embeddings::SemanticSearch do
   fab!(:vector_def) { Fabricate(:embedding_definition) }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_embeddings_selected_model = vector_def.id
     assign_fake_provider_to(:ai_embeddings_semantic_search_hyde_model)
   end

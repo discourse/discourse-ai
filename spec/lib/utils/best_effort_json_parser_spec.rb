@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Utils::BestEffortJsonParser do
+  before { enable_current_plugin }
+
   describe ".extract_key" do
     context "with string type schema" do
       let(:schema_type) { "string" }

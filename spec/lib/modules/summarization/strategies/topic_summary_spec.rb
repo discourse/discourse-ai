@@ -7,6 +7,8 @@ RSpec.describe DiscourseAi::Summarization::Strategies::TopicSummary do
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
+  before { enable_current_plugin }
+
   describe "#targets_data" do
     shared_examples "includes only public-visible topics" do
       it "only includes visible posts" do

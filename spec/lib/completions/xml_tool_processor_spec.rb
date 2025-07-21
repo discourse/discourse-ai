@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::Completions::XmlToolProcessor do
   let(:processor) { DiscourseAi::Completions::XmlToolProcessor.new }
 
+  before { enable_current_plugin }
+
   it "can process simple text" do
     result = []
     result << (processor << "hello")

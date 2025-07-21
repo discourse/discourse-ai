@@ -2,7 +2,9 @@
 
 RSpec.describe Jobs::CreateAiReply do
   fab!(:gpt_35_bot) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
+
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [gpt_35_bot])
   end

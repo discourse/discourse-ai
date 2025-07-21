@@ -3,6 +3,8 @@
 require_relative "../../support/sentiment_inference_stubs"
 
 RSpec.describe Jobs::SentimentBackfill do
+  before { enable_current_plugin }
+
   describe "#execute" do
     fab!(:post)
 

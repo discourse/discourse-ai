@@ -27,6 +27,8 @@ RSpec.describe AiTool do
     )
   end
 
+  before { enable_current_plugin }
+
   it "it can run a basic tool" do
     tool = create_tool
 

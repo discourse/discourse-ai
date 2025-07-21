@@ -9,7 +9,7 @@ describe DiscourseAi::AiBot::SiteSettingsExtension do
     DiscourseAi::AiBot::EntryPoint.find_user_from_model(model).present?
   end
 
-  before { SiteSetting.discourse_ai_enabled = true }
+  before { enable_current_plugin }
 
   it "correctly creates/deletes bot accounts as needed" do
     SiteSetting.ai_bot_enabled = true

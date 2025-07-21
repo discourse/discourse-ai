@@ -9,6 +9,8 @@ RSpec.describe DiscourseAi::Discord::Bot::Search do
   let(:search) { described_class.new(interaction_body) }
 
   before do
+    enable_current_plugin
+
     stub_request(:post, "https://discord.com/api/webhooks//interaction_token").with(
       body:
         "{\"content\":\"Here are the top search results for your query:\\n\\n1. [Title](\\u003chttp://test.localhost/link\\u003e)\\n\\n\"}",

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Configuration::LlmValidator do
+  before { enable_current_plugin }
+
   describe "#valid_value?" do
     context "when the parent module is enabled and we try to reset the selected model" do
       before do

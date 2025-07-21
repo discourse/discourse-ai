@@ -5,7 +5,10 @@ RSpec.describe Jobs::GenerateInferredConcepts do
   fab!(:post)
   fab!(:concept) { Fabricate(:inferred_concept, name: "programming") }
 
-  before { SiteSetting.inferred_concepts_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.inferred_concepts_enabled = true
+  end
 
   describe "#execute" do
     it "does nothing with blank item_ids" do

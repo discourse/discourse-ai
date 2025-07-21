@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::Configuration::SpamDetectionValidator do
   let(:validator) { described_class.new }
 
+  before { enable_current_plugin }
+
   it "always returns true if setting the value to false" do
     expect(validator.valid_value?("f")).to eq(true)
   end

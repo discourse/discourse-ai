@@ -23,7 +23,7 @@ RSpec.describe DiscourseAi::AiBot::ArtifactsController do
   end
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_artifact_security = "strict"
   end
 

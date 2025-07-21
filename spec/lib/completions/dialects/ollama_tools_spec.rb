@@ -3,6 +3,8 @@
 require_relative "dialect_context"
 
 RSpec.describe DiscourseAi::Completions::Dialects::OllamaTools do
+  before { enable_current_plugin }
+
   describe "#translated_tools" do
     it "translates a tool from our generic format to the Ollama format" do
       tool = {

@@ -5,6 +5,7 @@ describe DiscourseAi::Embeddings::EmbeddingsController do
     fab!(:vector_def) { Fabricate(:open_ai_embedding_def) }
 
     before do
+      enable_current_plugin
       SiteSetting.min_search_term_length = 3
       SiteSetting.ai_embeddings_selected_model = vector_def.id
       DiscourseAi::Embeddings::SemanticSearch.clear_cache_for("test")

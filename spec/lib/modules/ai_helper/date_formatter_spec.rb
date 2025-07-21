@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::AiHelper::DateFormatter do
   # Reference time is Tuesday Jan 16th, 2024 at 2:30 PM Sydney time
   let(:sydney_reference) { DateTime.parse("2024-01-16 14:30:00 +11:00") }
 
+  before { enable_current_plugin }
+
   describe ".process_date_placeholders" do
     describe "with Sydney timezone" do
       before do

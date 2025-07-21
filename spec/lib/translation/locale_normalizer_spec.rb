@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Translation::LocaleNormalizer do
+  before { enable_current_plugin }
+
   describe ".normalize_to_i18n" do
     it "matches input locales to i18n locales" do
       expect(described_class.normalize_to_i18n("en-GB")).to eq("en_GB")

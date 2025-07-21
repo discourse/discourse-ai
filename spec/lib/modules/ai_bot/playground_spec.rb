@@ -58,7 +58,10 @@ RSpec.describe DiscourseAi::AiBot::Playground do
     )
   end
 
-  before { SiteSetting.ai_embeddings_enabled = false }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_embeddings_enabled = false
+  end
 
   after do
     # we must reset cache on persona cause data can be rolled back

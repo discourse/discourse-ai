@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Completions::Prompt do
   let(:username) { "username1" }
   let(:image100x100) { plugin_file_from_fixtures("100x100.jpg") }
 
+  before { enable_current_plugin }
+
   describe ".new" do
     it "raises for invalid attributes" do
       expect { described_class.new("a bot", messages: {}) }.to raise_error(ArgumentError)

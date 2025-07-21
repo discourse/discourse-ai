@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 RSpec.describe DiscourseAi::Personas::Tools::DiscourseMetaSearch do
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   fab!(:llm_model) { Fabricate(:llm_model, max_prompt_tokens: 8192) }
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }

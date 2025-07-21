@@ -7,6 +7,7 @@ describe "AI Tool Management", type: :system do
   let(:page_header) { PageObjects::Components::DPageHeader.new }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_embeddings_enabled = true
     sign_in(admin)
   end

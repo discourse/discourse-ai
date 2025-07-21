@@ -6,7 +6,7 @@ RSpec.describe SharedAiConversation, type: :model do
   fab!(:claude_2) { Fabricate(:llm_model, name: "claude-2") }
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [claude_2])
   end

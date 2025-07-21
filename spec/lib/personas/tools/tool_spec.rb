@@ -9,6 +9,8 @@ RSpec.describe DiscourseAi::Personas::Tools::Tool do
     "\xC3\x28\xA0\xA1\xE2\x28\xA1\xE2\x82\x28\xF0\x28\x8C\xBC"
   end
 
+  before { enable_current_plugin }
+
   describe "#read_response_body" do
     class FakeResponse
       def initialize(chunk)

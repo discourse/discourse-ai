@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Configuration::LlmEnumerator do
     Fabricate(:automation, script: "llm_report", name: "some automation", enabled: true)
   end
 
+  before { enable_current_plugin }
+
   describe "#values_for_serialization" do
     it "returns an array for that can be used for serialization" do
       fake_model.destroy!

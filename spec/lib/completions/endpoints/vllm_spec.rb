@@ -88,6 +88,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Vllm do
   let(:request_body) { model.default_options.merge(messages: prompt).to_json }
   let(:stream_request_body) { model.default_options.merge(messages: prompt, stream: true).to_json }
 
+  before { enable_current_plugin }
+
   describe "tool support" do
     it "is able to invoke XML tools correctly" do
       xml = <<~XML

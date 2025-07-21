@@ -37,7 +37,7 @@ RSpec.describe ProblemCheck::AiLlmStatus do
     end
 
     context "with discourse-ai plugin enabled for the site" do
-      before { SiteSetting.discourse_ai_enabled = true }
+      before { enable_current_plugin }
 
       it "returns a problem with an LLM model" do
         stub_request(:post, post_url).to_return(status: 403, body: error_response, headers: {})

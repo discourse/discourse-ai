@@ -5,6 +5,8 @@ RSpec.describe DiscourseAi::Summarization::ChatSummaryController do
   fab!(:group)
 
   before do
+    enable_current_plugin
+
     group.add(current_user)
 
     assign_fake_provider_to(:ai_summarization_model)

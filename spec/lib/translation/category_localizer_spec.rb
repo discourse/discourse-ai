@@ -4,6 +4,8 @@ describe DiscourseAi::Translation::CategoryLocalizer do
   subject(:localizer) { described_class }
 
   before do
+    enable_current_plugin
+
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end

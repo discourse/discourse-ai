@@ -3,6 +3,8 @@
 RSpec.describe Jobs::ManageEmbeddingDefSearchIndex do
   fab!(:embedding_definition)
 
+  before { enable_current_plugin }
+
   describe "#execute" do
     context "when there is no embedding def" do
       it "does nothing" do

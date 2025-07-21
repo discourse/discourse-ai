@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Embeddings::Strategies::Truncation do
   fab!(:open_ai_embedding_def)
   let(:prefix) { "I come first:" }
 
+  before { enable_current_plugin }
+
   describe "#prepare_target_text" do
     before { SiteSetting.max_post_length = 100_000 }
 

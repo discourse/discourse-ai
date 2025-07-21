@@ -39,6 +39,8 @@ describe DiscourseAi::Automation::LlmPersonaTriage do
   end
 
   before do
+    enable_current_plugin
+
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "#{Group::AUTO_GROUPS[:trust_level_0]}"
 

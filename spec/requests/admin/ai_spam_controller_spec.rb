@@ -7,6 +7,8 @@ RSpec.describe DiscourseAi::Admin::AiSpamController do
   fab!(:user)
   fab!(:llm_model)
 
+  before { enable_current_plugin }
+
   describe "#update" do
     context "when logged in as admin" do
       before { sign_in(admin) }

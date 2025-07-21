@@ -3,6 +3,8 @@
 RSpec.describe Jobs::StreamDiscoverReply do
   subject(:job) { described_class.new }
 
+  before { enable_current_plugin }
+
   describe "#execute" do
     fab!(:user)
     fab!(:llm_model)

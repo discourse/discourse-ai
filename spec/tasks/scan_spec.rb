@@ -6,6 +6,8 @@ RSpec.describe "ai:spam rake tasks" do
   let!(:topic2) { Fabricate(:topic, created_at: 1.hour.ago) }
   let!(:post2) { Fabricate(:post, topic: topic2, created_at: 1.hour.ago) }
 
+  before { enable_current_plugin }
+
   describe "ai:spam:scan_posts" do
     it "enqueues posts within date range" do
       freeze_time do

@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Personas::Tools::GithubSearchCode do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:tool) { described_class.new({ repo: repo, query: query }, bot_user: bot_user, llm: llm) }
 
+  before { enable_current_plugin }
+
   context "with valid search results" do
     let(:repo) { "discourse/discourse" }
     let(:query) { "def hello" }

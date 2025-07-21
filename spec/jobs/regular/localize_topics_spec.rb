@@ -7,7 +7,7 @@ describe Jobs::LocalizeTopics do
   let(:locales) { %w[en ja de] }
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end

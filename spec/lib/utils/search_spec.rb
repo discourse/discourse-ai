@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Utils::Search do
-  before { SearchIndexer.enable }
+  before do
+    enable_current_plugin
+    SearchIndexer.enable
+  end
+
   after { SearchIndexer.disable }
 
   fab!(:admin)

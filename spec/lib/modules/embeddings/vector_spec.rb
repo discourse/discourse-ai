@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Embeddings::Vector do
+  before { enable_current_plugin }
+
   shared_examples "generates and store embeddings using a vector definition" do
     subject(:vector) { described_class.new(vdef) }
 

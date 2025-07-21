@@ -174,6 +174,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
   end
 
+  before { enable_current_plugin }
+
   describe "max tokens for reasoning models" do
     it "uses max_completion_tokens for reasoning models" do
       model.update!(name: "o3-mini", max_output_tokens: 999)

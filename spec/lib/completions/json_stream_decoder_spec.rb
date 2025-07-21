@@ -3,6 +3,8 @@
 describe DiscourseAi::Completions::JsonStreamDecoder do
   let(:decoder) { DiscourseAi::Completions::JsonStreamDecoder.new }
 
+  before { enable_current_plugin }
+
   it "should be able to parse simple messages" do
     result = decoder << "data: #{{ hello: "world" }.to_json}"
     expect(result).to eq([{ hello: "world" }])

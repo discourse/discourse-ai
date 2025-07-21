@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Utils::DiffUtils::HunkDiff do
+  before { enable_current_plugin }
+
   describe ".apply_hunk" do
     subject(:apply_hunk) { described_class.apply(original_text, diff) }
 

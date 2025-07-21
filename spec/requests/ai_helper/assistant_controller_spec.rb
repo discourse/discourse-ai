@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { assign_fake_provider_to(:ai_helper_model) }
   fab!(:newuser)
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+
+  before do
+    enable_current_plugin
+    assign_fake_provider_to(:ai_helper_model)
+  end
 
   describe "#stream_suggestion" do
     before do

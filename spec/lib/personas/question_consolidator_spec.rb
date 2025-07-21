@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Personas::QuestionConsolidator do
 
   fab!(:user)
 
+  before { enable_current_plugin }
+
   describe ".consolidate_question" do
     it "properly picks all the right messages and consolidates" do
       messages = [

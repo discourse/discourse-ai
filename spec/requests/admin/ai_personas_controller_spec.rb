@@ -7,6 +7,7 @@ RSpec.describe DiscourseAi::Admin::AiPersonasController do
   fab!(:llm_model)
 
   before do
+    enable_current_plugin
     sign_in(admin)
     SiteSetting.ai_embeddings_selected_model = embedding_definition.id
     SiteSetting.ai_embeddings_enabled = true

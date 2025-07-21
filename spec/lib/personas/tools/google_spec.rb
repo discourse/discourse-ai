@@ -8,6 +8,7 @@ RSpec.describe DiscourseAi::Personas::Tools::Google do
   let(:search) { described_class.new({ query: "some search term" }, bot_user: bot_user, llm: llm) }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_google_custom_search_api_key = "abc"
     SiteSetting.ai_google_custom_search_cx = "cx"

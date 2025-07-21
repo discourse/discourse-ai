@@ -8,6 +8,7 @@ RSpec.describe DiscourseAi::Personas::Bot do
   fab!(:fake) { Fabricate(:llm_model, name: "fake", provider: "fake") }
 
   before do
+    enable_current_plugin
     toggle_enabled_bots(bots: [gpt_4])
     SiteSetting.ai_bot_enabled = true
   end

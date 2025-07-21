@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::PersonaExporter do
+  before { enable_current_plugin }
+
   describe "#export" do
     subject(:export_json) { JSON.parse(exporter.export) }
 

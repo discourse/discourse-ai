@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::RemoveOrphanedEmbeddings do
+  before { enable_current_plugin }
+
   describe "#execute" do
     fab!(:embedding_definition)
     fab!(:embedding_definition_2) { Fabricate(:embedding_definition) }

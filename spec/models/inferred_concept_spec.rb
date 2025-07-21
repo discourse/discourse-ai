@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe InferredConcept do
+  before { enable_current_plugin }
+
   describe "validations" do
     it "requires a name" do
       concept = InferredConcept.new

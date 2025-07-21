@@ -15,7 +15,10 @@ RSpec.describe DiscourseAi::Personas::Tools::UpdateArtifact do
     )
   end
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#process" do
     it "correctly updates artifact using section markers" do

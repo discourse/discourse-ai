@@ -16,7 +16,10 @@ RSpec.describe DiscourseAi::Personas::Tools::ReadArtifact do
     )
   end
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#invoke" do
     it "successfully reads a local artifact" do

@@ -3,6 +3,8 @@
 describe ReviewableAiPost do
   fab!(:target) { Fabricate(:post) }
 
+  before { enable_current_plugin }
+
   describe "#build_actions" do
     let(:guardian) { Guardian.new }
 

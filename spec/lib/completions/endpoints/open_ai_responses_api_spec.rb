@@ -30,6 +30,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenAi do
     prompt
   end
 
+  before { enable_current_plugin }
+
   it "can perform simple streaming completion" do
     response_payload = <<~TEXT
       event: response.created

@@ -5,7 +5,10 @@ RSpec.describe DiscourseAi::Personas::Tools::ListCategories do
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#process" do
     it "list available categories" do

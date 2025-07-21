@@ -12,6 +12,8 @@ describe DiscourseAi::Utils::DnsSrv do
     ]
   end
 
+  before { enable_current_plugin }
+
   context "when there are several servers with the same priority" do
     before do
       Resolv::DNS.any_instance.stubs(:getresources).returns(weighted_dns_results)

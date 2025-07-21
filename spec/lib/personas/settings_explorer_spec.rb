@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Personas::SettingsExplorer do
-  let :settings_explorer do
-    subject
-  end
+  let(:settings_explorer) { subject }
+
+  before { enable_current_plugin }
 
   it "renders schema" do
     prompt = settings_explorer.system_prompt

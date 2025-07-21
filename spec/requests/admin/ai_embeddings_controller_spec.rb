@@ -3,8 +3,6 @@
 RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
   fab!(:admin)
 
-  before { sign_in(admin) }
-
   let(:valid_attrs) do
     {
       display_name: "Embedding config test",
@@ -19,6 +17,11 @@ RSpec.describe DiscourseAi::Admin::AiEmbeddingsController do
       search_prompt: "prefix for search",
       matryoshka_dimensions: true,
     }
+  end
+
+  before do
+    enable_current_plugin
+    sign_in(admin)
   end
 
   describe "POST #create" do

@@ -11,6 +11,8 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
   fab!(:llm_model) { Fabricate(:fake_model) }
 
   before do
+    enable_current_plugin
+
     SiteSetting.inferred_concepts_match_persona = -1
     SiteSetting.inferred_concepts_enabled = true
 
@@ -140,7 +142,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
@@ -190,7 +194,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       persona_class_double = double("PersonaClass") # rubocop:disable RSpec/VerifiedDoubles
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
@@ -228,7 +234,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       bot_double = instance_spy(DiscourseAi::Personas::Bot)
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
@@ -261,7 +269,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       bot_double = instance_double("DiscourseAi::Personas::Bot")
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
@@ -283,7 +293,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       bot_double = instance_double("DiscourseAi::Personas::Bot")
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)
@@ -305,7 +317,9 @@ RSpec.describe DiscourseAi::InferredConcepts::Applier do
       bot_double = instance_double("DiscourseAi::Personas::Bot")
 
       allow(AiPersona).to receive(:all_personas).and_return([persona_class_double])
-      allow(persona_class_double).to receive(:id).and_return(SiteSetting.inferred_concepts_match_persona.to_i)
+      allow(persona_class_double).to receive(:id).and_return(
+        SiteSetting.inferred_concepts_match_persona.to_i,
+      )
       allow(persona_class_double).to receive(:new).and_return(persona_instance_double)
       allow(persona_class_double).to receive(:default_llm_id).and_return(llm_model.id)
       allow(persona_instance_double).to receive(:class).and_return(persona_class_double)

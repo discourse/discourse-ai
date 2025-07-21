@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::Utils::DiffUtils::SimpleDiff do
   subject { described_class }
 
+  before { enable_current_plugin }
+
   describe ".apply" do
     it "raises error for nil inputs" do
       expect { subject.apply(nil, "search", "replace") }.to raise_error(ArgumentError)

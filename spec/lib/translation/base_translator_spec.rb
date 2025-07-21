@@ -8,6 +8,8 @@ describe DiscourseAi::Translation::BaseTranslator do
   end
 
   before do
+    enable_current_plugin
+
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end

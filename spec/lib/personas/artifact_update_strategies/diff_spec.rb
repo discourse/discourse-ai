@@ -20,6 +20,8 @@ RSpec.describe DiscourseAi::Personas::ArtifactUpdateStrategies::Diff do
     )
   end
 
+  before { enable_current_plugin }
+
   describe "#apply" do
     it "processes simple search/replace blocks" do
       original_css = ".button { color: blue; }"

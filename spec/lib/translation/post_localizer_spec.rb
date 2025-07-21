@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Translation::PostLocalizer do
+  before { enable_current_plugin }
+
   describe ".localize" do
     fab!(:post) { Fabricate(:post, raw: "Hello world", version: 1) }
     let(:translator) { mock }

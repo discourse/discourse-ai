@@ -43,6 +43,8 @@ module DiscourseAi
 
         fab!(:post_with_likes3) { Fabricate(:post, topic: topic_with_likes, like_count: 3) }
 
+        before { enable_current_plugin }
+
         if defined?(::DiscourseSolved)
           it "will correctly denote solved topics" do
             Fabricate(:solved_topic, topic: topic_with_likes, answer_post: post_with_likes2)

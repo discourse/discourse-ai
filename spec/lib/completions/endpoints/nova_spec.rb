@@ -27,6 +27,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     Aws::EventStream::Encoder.new.encode(aws_message)
   end
 
+  before { enable_current_plugin }
+
   it "should be able to make a simple request" do
     proxy = DiscourseAi::Completions::Llm.proxy("custom:#{nova_model.id}")
 

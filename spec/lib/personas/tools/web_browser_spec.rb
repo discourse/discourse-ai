@@ -5,7 +5,10 @@ RSpec.describe DiscourseAi::Personas::Tools::WebBrowser do
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#invoke" do
     it "can retrieve the content of a webpage and returns the processed text" do

@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::ChatGpt do
   fab!(:llm_model) { Fabricate(:llm_model, max_prompt_tokens: 8192) }
   let(:context) { DialectContext.new(described_class, llm_model) }
 
+  before { enable_current_plugin }
+
   describe "#translate" do
     it "translates a prompt written in our generic format to the ChatGPT format" do
       open_ai_version = [

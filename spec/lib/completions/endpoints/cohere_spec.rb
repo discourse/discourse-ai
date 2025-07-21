@@ -58,6 +58,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Cohere do
     prompt
   end
 
+  before { enable_current_plugin }
+
   it "is able to trigger a tool" do
     body = (<<~TEXT).strip
       {"is_finished":false,"event_type":"stream-start","generation_id":"1648206e-1fe4-4bb6-90cf-360dd55f575b"}
