@@ -19,6 +19,7 @@ RSpec.describe DiscourseAi::AiBot::SharedAiConversationsController do
   fab!(:user_pm) { Fabricate(:private_message_topic, recipient: user) }
 
   fab!(:bot_user) do
+    enable_current_plugin
     toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     SiteSetting.ai_bot_allowed_groups = "10"

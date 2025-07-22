@@ -58,7 +58,6 @@ describe DiscourseAi::Translation::EntryPoint do
     fab!(:non_first_post) { Fabricate(:post, post_number: 2) }
 
     before do
-      enable_current_plugin
       Fabricate(:fake_model).tap do |fake_llm|
         SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
       end
