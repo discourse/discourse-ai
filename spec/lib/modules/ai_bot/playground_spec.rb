@@ -14,6 +14,7 @@ RSpec.describe DiscourseAi::AiBot::Playground do
   fab!(:opus_model) { Fabricate(:anthropic_model) }
 
   fab!(:bot_user) do
+    enable_current_plugin
     toggle_enabled_bots(bots: [claude_2])
     SiteSetting.ai_bot_enabled = true
     claude_2.reload.user
