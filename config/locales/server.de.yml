@@ -384,6 +384,9 @@ de:
         content_creator:
           name: "Inhaltsersteller"
           description: "Standard-Persona für die HyDE-Suche"
+        report_runner:
+          name: "Berichtsausführer"
+          description: "Standard-Persona, die im Automatisierungsskript für Berichte verwendet wird."
       topic_not_found: "Zusammenfassung nicht verfügbar, Thema nicht gefunden!"
       summarizing: "Thema zusammenfassen"
       searching: "Suche nach: „%{query}“"

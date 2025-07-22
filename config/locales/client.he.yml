@@ -109,6 +109,9 @@ he:
             top_p:
               label: "ה־P המובילים"
               description: "ה־P המוביל לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (להשאיר ריק כדי להשתמש בברירת המחדל של הדגם)"
+            persona_id:
+              label: "דמות"
+              description: "דמות בינה מלאכותית לשימוש להפקת דוחות"
         llm_tool_triage:
           fields:
             model:
@@ -167,6 +170,8 @@ he:
             temperature:
               label: "טמפרטורה"
               description: "טמפרטורה לשימוש למודל השפה הגדול (LLM), הגדלה תגדיל את האקראיות (להשאיר ריק כדי להשתמש בברירת המחדל של הדגם)"
+            max_output_tokens:
+              label: "כמות אסימוני פלט מרבית"
     discourse_ai:
       title: "בינה מלאכותית"
       features:
@@ -773,6 +778,7 @@ he:
           last_7_days: "7 הימים האחרונים"
           last_30_days: "30 הימים האחרונים"
           upload_files: "העלאת קבצים"
+          uploads_in_progress: "לא ניתן להגיש תוך כדי שמתבצעות העלאות"
       sentiments:
         dashboard:
           title: "רגש"

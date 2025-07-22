@@ -88,6 +88,8 @@ pl_PL:
             temperature:
               label: "Temperatura"
               description: "Temperatura używana dla LLM. Zwiększ, aby zwiększyć losowość (pozostaw puste, aby użyć domyślnego modelu)."
+            persona_id:
+              label: "Osobowość"
         llm_tool_triage:
           fields:
             model:

@@ -302,6 +302,9 @@ he:
           name: "בקשה מותאמת אישית"
         smart_dates:
           name: "תאריכים חכמים"
+        report_runner:
+          name: "אצן דוחות"
+          description: "דמות ברירת המחדל שסקריפט אוטומציית הדוחות משתמש בה"
       topic_not_found: "תקציר לא זמין, לא נמצא נושא!"
       summarizing: "הנושא מסוכם"
       searching: "חיפוש אחר: ‚%{query}’"

@@ -110,6 +110,8 @@ lt:
             top_p:
               label: "Viršutinė P"
               description: "Viršutinė P, naudojama LLM, padidinkite, kad padidėtų atsitiktinumas (palikite tuščią, jei norite naudoti numatytuosius modelio parametrus)"
+            persona_id:
+              label: "Persona"
         llm_tool_triage:
           fields:
             model:
