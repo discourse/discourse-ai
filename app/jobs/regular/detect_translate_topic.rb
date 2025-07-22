@@ -38,7 +38,7 @@ module Jobs
       return if locales.blank?
 
       locales.each do |locale|
-        next if DiscourseAi::Translation::LocaleNormalizer.is_same?(locale, detected_locale)
+        next if LocaleNormalizer.is_same?(locale, detected_locale)
         regionless_locale = locale.split("_").first
         next if topic.topic_localizations.where("locale LIKE ?", "#{regionless_locale}%").exists?
 
