@@ -21,6 +21,8 @@ describe DiscourseAutomation do
     )
   end
 
+  before { enable_current_plugin }
+
   it "can trigger via automation" do
     add_automation_field("sender", user.username, type: "user")
     add_automation_field("receivers", [user.username], type: "email_group_user")

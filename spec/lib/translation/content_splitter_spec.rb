@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Translation::ContentSplitter do
+  before { enable_current_plugin }
+
   it "returns empty array for empty input" do
     expect(described_class.split(content: "")).to eq([""])
   end

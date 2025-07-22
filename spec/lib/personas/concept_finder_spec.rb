@@ -3,6 +3,8 @@
 RSpec.describe DiscourseAi::Personas::ConceptFinder do
   let(:persona) { described_class.new }
 
+  before { enable_current_plugin }
+
   describe ".default_enabled" do
     it "is disabled by default" do
       expect(described_class.default_enabled).to eq(false)

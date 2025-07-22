@@ -18,6 +18,8 @@ RSpec.describe DiscourseAi::Personas::Tools::GithubFileContent do
     )
   end
 
+  before { enable_current_plugin }
+
   describe "#invoke" do
     before do
       stub_request(

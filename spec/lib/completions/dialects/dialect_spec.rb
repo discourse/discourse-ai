@@ -27,6 +27,8 @@ end
 RSpec.describe DiscourseAi::Completions::Dialects::Dialect do
   fab!(:llm_model)
 
+  before { enable_current_plugin }
+
   describe "#translate" do
     let(:five_token_msg) { "This represents five tokens." }
     let(:tools) do

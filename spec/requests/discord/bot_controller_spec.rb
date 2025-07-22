@@ -10,6 +10,7 @@ RSpec.describe "DiscourseAi::Discord::BotController", type: :request do
   let(:headers) { { "X-Signature-Ed25519" => signature, "X-Signature-Timestamp" => timestamp } }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_discord_app_public_key = public_key
     allow_any_instance_of(DiscourseAi::Discord::BotController).to receive(
       :verify_request!,

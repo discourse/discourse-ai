@@ -4,6 +4,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::SambaNova do
   fab!(:llm_model) { Fabricate(:samba_nova_model) }
   let(:llm) { llm_model.to_llm }
 
+  before { enable_current_plugin }
+
   it "can stream completions" do
     body = <<~PARTS
     data: {"id": "4c5e4a44-e847-467d-b9cd-d2f6530678cd", "object": "chat.completion.chunk", "created": 1721336361, "model": "llama3-8b", "system_fingerprint": "fastcoe", "choices": [{"index": 0, "delta": {"content": "I am a bot"}, "logprobs": null, "finish_reason": null}]}

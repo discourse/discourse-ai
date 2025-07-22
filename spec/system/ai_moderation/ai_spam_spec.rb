@@ -5,7 +5,7 @@ RSpec.describe "AI Spam Configuration", type: :system, js: true do
   let(:llm_model) { Fabricate(:llm_model) }
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     sign_in(admin)
   end
 

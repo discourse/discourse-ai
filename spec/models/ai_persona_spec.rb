@@ -14,6 +14,8 @@ RSpec.describe AiPersona do
   fab!(:llm_model)
   fab!(:seeded_llm_model) { Fabricate(:llm_model, id: -1) }
 
+  before { enable_current_plugin }
+
   it "validates context settings" do
     expect(basic_persona.valid?).to eq(true)
 

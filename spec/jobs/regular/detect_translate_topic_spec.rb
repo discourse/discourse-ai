@@ -7,7 +7,7 @@ describe Jobs::DetectTranslateTopic do
   let(:locales) { %w[en ja] }
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
@@ -32,7 +32,6 @@ describe Jobs::DetectTranslateTopic do
   end
 
   it "detects locale" do
-    SiteSetting.discourse_ai_enabled = true
     allow(DiscourseAi::Translation::TopicLocaleDetector).to receive(:detect_locale).with(
       topic,
     ).and_return("zh_CN")

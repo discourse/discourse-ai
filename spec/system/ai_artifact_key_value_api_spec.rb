@@ -44,7 +44,7 @@ RSpec.describe "AI Artifact Key-Value API", type: :system, js: true do
   end
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     sign_in(user)
   end

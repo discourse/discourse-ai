@@ -5,6 +5,8 @@ require_relative "../../../support/sentiment_inference_stubs"
 RSpec.describe DiscourseAi::Sentiment::EntryPoint do
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
 
+  before { enable_current_plugin }
+
   describe "registering event callbacks" do
     context "when editing a post" do
       fab!(:post) { Fabricate(:post, user: user) }

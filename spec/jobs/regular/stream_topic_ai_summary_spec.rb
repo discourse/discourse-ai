@@ -3,6 +3,8 @@
 RSpec.describe Jobs::StreamTopicAiSummary do
   subject(:job) { described_class.new }
 
+  before { enable_current_plugin }
+
   describe "#execute" do
     fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
     fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }

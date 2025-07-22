@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Personas::SqlHelper do
-  let :sql_helper do
-    subject
-  end
+  let(:sql_helper) { subject }
+
+  before { enable_current_plugin }
 
   it "renders schema" do
     prompt = sql_helper.system_prompt

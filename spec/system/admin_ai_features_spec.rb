@@ -11,6 +11,7 @@ RSpec.describe "Admin AI features configuration", type: :system, js: true do
   let(:ai_features_page) { PageObjects::Pages::AdminAiFeatures.new }
 
   before do
+    enable_current_plugin
     summarization_persona.allowed_group_ids = [group_1.id, group_2.id]
     summarization_persona.save!
     assign_fake_provider_to(:ai_summarization_model)

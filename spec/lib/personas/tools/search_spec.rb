@@ -37,7 +37,10 @@ RSpec.describe DiscourseAi::Personas::Tools::Search do
     c
   end
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   describe "#invoke" do
     it "can retrieve options from persona correctly" do

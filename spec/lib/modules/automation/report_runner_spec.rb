@@ -34,6 +34,8 @@ module DiscourseAi
 
       fab!(:llm_model)
 
+      before { enable_current_plugin }
+
       describe "#run!" do
         it "is able to generate email reports" do
           freeze_time

@@ -4,6 +4,8 @@ describe DiscourseAi::AiHelper::EntryPoint do
   fab!(:english_user) { Fabricate(:user) }
   fab!(:french_user) { Fabricate(:user, locale: "fr") }
 
+  before { enable_current_plugin }
+
   it "will correctly localize available prompts" do
     assign_fake_provider_to(:ai_helper_model)
     SiteSetting.default_locale = "en"

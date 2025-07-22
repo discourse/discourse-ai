@@ -52,7 +52,7 @@ RSpec.describe DiscourseAi::Automation::LlmToolTriage do
   end
 
   before do
-    SiteSetting.discourse_ai_enabled = true
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
   end
 

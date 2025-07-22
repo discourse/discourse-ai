@@ -130,7 +130,10 @@ RSpec.describe DiscourseAi::Sentiment::EmotionFilterOrder do
     )
   end
 
-  before { described_class.register!(plugin) }
+  before do
+    enable_current_plugin
+    described_class.register!(plugin)
+  end
 
   it "registers emotion filters" do
     emotions = %w[

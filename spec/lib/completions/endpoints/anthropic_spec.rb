@@ -47,6 +47,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Anthropic do
     prompt_with_tools
   end
 
+  before { enable_current_plugin }
+
   it "does not eat spaces with tool calls" do
     body = <<~STRING
     event: message_start

@@ -8,6 +8,8 @@ describe DiscourseAi::Automation::LlmTriage do
     DiscourseAi::Automation::LlmTriage.handle(**args)
   end
 
+  before { enable_current_plugin }
+
   it "does nothing if it does not pass triage" do
     DiscourseAi::Completions::Llm.with_prepared_responses(["good"]) do
       triage(

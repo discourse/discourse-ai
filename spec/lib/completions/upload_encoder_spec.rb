@@ -5,6 +5,8 @@ RSpec.describe DiscourseAi::Completions::UploadEncoder do
   let(:jpg) { plugin_file_from_fixtures("1x1.jpg") }
   let(:webp) { plugin_file_from_fixtures("1x1.webp") }
 
+  before { enable_current_plugin }
+
   it "automatically converts gifs to pngs" do
     upload = UploadCreator.new(gif, "1x1.gif").create_for(Discourse.system_user.id)
     encoded = described_class.encode(upload_ids: [upload.id], max_pixels: 1_048_576)

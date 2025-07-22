@@ -9,6 +9,8 @@ describe DiscourseAi::Inference::StabilityGenerator do
     { image: "BASE64", seed: 1 }.to_json
   end
 
+  before { enable_current_plugin }
+
   it "is able to generate sd3 images" do
     SiteSetting.ai_stability_engine = "sd3"
     SiteSetting.ai_stability_api_url = "http://www.a.b.c"

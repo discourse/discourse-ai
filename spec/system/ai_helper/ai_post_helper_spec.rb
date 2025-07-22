@@ -27,6 +27,7 @@ RSpec.describe "AI Post helper", type: :system, js: true do
   let(:fast_editor) { PageObjects::Components::FastEditor.new }
 
   before do
+    enable_current_plugin
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
     SiteSetting.ai_helper_enabled = true

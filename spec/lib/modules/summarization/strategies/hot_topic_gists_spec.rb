@@ -7,6 +7,8 @@ RSpec.describe DiscourseAi::Summarization::Strategies::HotTopicGists do
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1) }
   fab!(:post_2) { Fabricate(:post, topic: topic, post_number: 2) }
 
+  before { enable_current_plugin }
+
   describe "#targets_data" do
     it "respects the `hot_topics_recent_days` setting" do
       post_2.update(created_at: (SiteSetting.hot_topics_recent_days + 1).days.ago)

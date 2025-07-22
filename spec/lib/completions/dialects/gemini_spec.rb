@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Gemini do
   fab!(:model) { Fabricate(:gemini_model) }
   let(:context) { DialectContext.new(described_class, model) }
 
+  before { enable_current_plugin }
+
   describe "#translate" do
     it "translates a prompt written in our generic format to the Gemini format" do
       gemini_version = {

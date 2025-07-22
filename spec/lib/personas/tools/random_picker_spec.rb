@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::Personas::Tools::RandomPicker do
+  before { enable_current_plugin }
+
   describe "#invoke" do
     subject { described_class.new({ options: options }, bot_user: nil, llm: nil).invoke }
 

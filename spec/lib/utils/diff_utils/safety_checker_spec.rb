@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Utils::DiffUtils::SafetyChecker do
+  before { enable_current_plugin }
+
   describe "#safe?" do
     subject { described_class.new(text).safe? }
 

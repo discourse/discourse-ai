@@ -11,6 +11,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Mistral do
     UploadCreator.new(image100x100, "image.jpg").create_for(Discourse.system_user.id)
   end
 
+  before { enable_current_plugin }
+
   it "does not include user names" do
     prompt =
       DiscourseAi::Completions::Prompt.new(

@@ -7,6 +7,8 @@ describe DiscourseAi::Utils::Research::LlmFormatter do
   let(:tokenizer) { DiscourseAi::Tokenizer::OpenAiTokenizer }
   let(:filter) { DiscourseAi::Utils::Research::Filter.new("@#{user.username}") }
 
+  before { enable_current_plugin }
+
   describe "#truncate_if_needed" do
     it "returns original content when under token limit" do
       formatter =

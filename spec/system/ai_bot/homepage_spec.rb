@@ -32,6 +32,7 @@ RSpec.describe "AI Bot - Homepage", type: :system do
     )
   end
   fab!(:bot_user) do
+    enable_current_plugin
     toggle_enabled_bots(bots: [claude_2, claude_2_dup])
     SiteSetting.ai_bot_enabled = true
     claude_2.reload.user
@@ -95,6 +96,8 @@ RSpec.describe "AI Bot - Homepage", type: :system do
   end
 
   before do
+    enable_current_plugin
+
     pm.custom_fields[DiscourseAi::AiBot::TOPIC_AI_BOT_PM_FIELD] = "t"
     pm.save!
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiBot::EntryPoint do
+  before { enable_current_plugin }
+
   describe "#inject_into" do
     describe "subscribes to the post_created event" do
       fab!(:admin)

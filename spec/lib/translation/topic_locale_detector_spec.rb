@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Translation::TopicLocaleDetector do
+  before { enable_current_plugin }
+
   describe ".detect_locale" do
     fab!(:topic) { Fabricate(:topic, title: "this is a cat topic", locale: nil) }
     fab!(:post) { Fabricate(:post, topic:) }

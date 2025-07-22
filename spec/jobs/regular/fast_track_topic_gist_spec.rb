@@ -7,6 +7,7 @@ RSpec.describe Jobs::FastTrackTopicGist do
     fab!(:post_2) { Fabricate(:post, topic: topic_1, post_number: 2) }
 
     before do
+      enable_current_plugin
       assign_fake_provider_to(:ai_summarization_model)
       SiteSetting.ai_summarization_enabled = true
       SiteSetting.ai_summary_gists_enabled = true

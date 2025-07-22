@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::InferredConcepts::Manager do
   fab!(:concept1) { Fabricate(:inferred_concept, name: "programming") }
   fab!(:concept2) { Fabricate(:inferred_concept, name: "testing") }
 
+  before { enable_current_plugin }
+
   describe "#list_concepts" do
     it "returns all concepts sorted by name" do
       concepts = manager.list_concepts

@@ -10,6 +10,8 @@ RSpec.describe "AI Composer helper", type: :system, js: true do
   fab!(:post) { Fabricate(:post, topic: topic, raw: "Apple pie is a delicious dessert to eat") }
 
   before do
+    enable_current_plugin
+
     prompt = DiscourseAi::Embeddings::HydeGenerators::OpenAi.new.prompt(query)
     OpenAiCompletionsInferenceStubs.stub_response(
       prompt,

@@ -5,6 +5,7 @@ RSpec.describe Jobs::GenerateConceptsFromPopularItems do
   fab!(:post) { Fabricate(:post, like_count: 8, post_number: 2) }
 
   before do
+    enable_current_plugin
     SiteSetting.inferred_concepts_enabled = true
     SiteSetting.inferred_concepts_daily_topics_limit = 20
     SiteSetting.inferred_concepts_daily_posts_limit = 30

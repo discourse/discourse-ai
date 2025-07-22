@@ -6,6 +6,7 @@ RSpec.describe DiscourseAi::Personas::Tools::CreateImage do
   fab!(:gpt_35_turbo) { Fabricate(:llm_model, name: "gpt-3.5-turbo") }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [gpt_35_turbo])
     SiteSetting.ai_openai_api_key = "abc"

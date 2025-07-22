@@ -95,6 +95,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::HuggingFace do
     )
   end
 
+  before { enable_current_plugin }
+
   describe "#perform_completion!" do
     context "when using regular mode" do
       context "with simple prompts" do

@@ -20,6 +20,8 @@ RSpec.describe DiscourseAi::AiHelper::SemanticCategorizer do
   let(:expected_embedding) { [0.0038493] * vector.vdef.dimensions }
 
   before do
+    enable_current_plugin
+
     SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true
 

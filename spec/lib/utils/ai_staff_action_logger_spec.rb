@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Utils::AiStaffActionLogger do
 
   subject { described_class.new(admin) }
 
+  before { enable_current_plugin }
+
   describe "#log_creation" do
     it "logs creation of an entity with field configuration" do
       staff_action_logger = instance_double(StaffActionLogger)
@@ -340,42 +342,41 @@ RSpec.describe DiscourseAi::Utils::AiStaffActionLogger do
 
   describe "Special cases from controllers" do
     context "with EmbeddingDefinition" do
-      fab!(:embedding_definition) {
+      fab!(:embedding_definition) do
         Fabricate(
           :embedding_definition,
-          display_name: "Test Embedding", 
-          dimensions: 768, 
-          provider: "open_ai"
+          display_name: "Test Embedding",
+          dimensions: 768,
+          provider: "open_ai",
         )
-      }
-      
+      end
+
       it "includes dimensions in logged data" do
         # Setup
         staff_logger = instance_double(StaffActionLogger)
         allow(StaffActionLogger).to receive(:new).with(admin).and_return(staff_logger)
         allow(staff_logger).to receive(:log_custom)
-        
+
         # Create entity details
-        entity_details = { embedding_id: embedding_definition.id, subject: embedding_definition.display_name }
-        
-        # Field config without dimensions
-        field_config = {
-          display_name: {},
-          provider: {},
-          url: {}
+        entity_details = {
+          embedding_id: embedding_definition.id,
+          subject: embedding_definition.display_name,
         }
-        
+
+        # Field config without dimensions
+        field_config = { display_name: {}, provider: {}, url: {} }
+
         logger = DiscourseAi::Utils::AiStaffActionLogger.new(admin)
         logger.log_creation("embedding", embedding_definition, field_config, entity_details)
-        
+
         # Verify with have_received
         expect(staff_logger).to have_received(:log_custom).with(
           "create_ai_embedding",
-          hash_including("dimensions" => 768)
+          hash_including("dimensions" => 768),
         )
       end
     end
-    
+
     context "with LlmModel quotas" do
       before do
         # Create a quota for the model

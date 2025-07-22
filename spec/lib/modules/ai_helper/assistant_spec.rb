@@ -5,6 +5,7 @@ RSpec.describe DiscourseAi::AiHelper::Assistant do
   fab!(:empty_locale_user) { Fabricate(:user, locale: "") }
 
   before do
+    enable_current_plugin
     assign_fake_provider_to(:ai_helper_model)
     Group.refresh_automatic_groups!
   end

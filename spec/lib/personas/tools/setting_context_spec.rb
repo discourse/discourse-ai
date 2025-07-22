@@ -14,7 +14,10 @@ RSpec.describe DiscourseAi::Personas::Tools::SettingContext, if: has_rg? do
   let(:bot_user) { DiscourseAi::AiBot::EntryPoint.find_user_from_model(llm_model.name) }
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   def setting_context(setting_name)
     described_class.new({ setting_name: setting_name }, bot_user: bot_user, llm: llm)

@@ -3,7 +3,10 @@
 describe DiscourseAi::Completions::CancelManager do
   fab!(:model) { Fabricate(:anthropic_model, name: "test-model") }
 
-  before { WebMock.allow_net_connect! }
+  before do
+    enable_current_plugin
+    WebMock.allow_net_connect!
+  end
 
   it "can stop monitoring for cancellation cleanly" do
     cancel_manager = DiscourseAi::Completions::CancelManager.new

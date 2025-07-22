@@ -135,6 +135,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Ollama do
     EndpointsCompliance.new(self, endpoint, DiscourseAi::Completions::Dialects::Ollama, user)
   end
 
+  before { enable_current_plugin }
+
   describe "#perform_completion!" do
     context "when using regular mode" do
       it "completes a trivial prompt and logs the response" do

@@ -4,7 +4,10 @@ RSpec.describe LlmQuota do
   fab!(:user)
   fab!(:llm_model)
 
-  before { group.add(user) }
+  before do
+    enable_current_plugin
+    group.add(user)
+  end
 
   describe ".check_quotas!" do
     it "returns true when user is nil" do

@@ -8,6 +8,8 @@ RSpec.describe DiscourseAi::Personas::Tools::GithubPullRequestDiff do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:tool) { described_class.new({ repo: repo, pull_id: pull_id }, bot_user: bot_user, llm: llm) }
 
+  before { enable_current_plugin }
+
   context "with #sort_and_shorten_diff" do
     it "sorts and shortens the diff without dropping data" do
       diff = <<~DIFF

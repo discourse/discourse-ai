@@ -6,6 +6,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::OpenRouter do
 
   subject(:endpoint) { described_class.new(open_router_model) }
 
+  before { enable_current_plugin }
+
   it "supports provider quantization and order selection" do
     open_router_model.provider_params["provider_quantizations"] = "int8,int16"
     open_router_model.provider_params["provider_order"] = "Google, Amazon Bedrock"

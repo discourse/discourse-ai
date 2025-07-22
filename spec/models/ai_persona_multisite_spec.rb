@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe AiPersona, type: :multisite do
+  before { enable_current_plugin }
+
   it "is able to amend settings on system personas on multisite" do
     persona = AiPersona.find_by(name: "Designer")
     expect(persona.allow_personal_messages).to eq(true)

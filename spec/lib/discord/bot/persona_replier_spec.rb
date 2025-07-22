@@ -12,6 +12,7 @@ RSpec.describe DiscourseAi::Discord::Bot::PersonaReplier do
   fab!(:persona) { Fabricate(:ai_persona, default_llm_id: llm_model.id) }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_discord_search_persona = persona.id.to_s
     allow_any_instance_of(DiscourseAi::Personas::Bot).to receive(:reply).and_return(
       "This is a reply from bot!",

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Jobs::GenerateRagEmbeddings do
+  before { enable_current_plugin }
+
   describe "#execute" do
     fab!(:vector_def) { Fabricate(:embedding_definition) }
 

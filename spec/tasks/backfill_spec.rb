@@ -4,6 +4,7 @@ require_relative "../support/sentiment_inference_stubs"
 
 RSpec.describe "ai:sentiment:backfill" do
   before do
+    enable_current_plugin
     Rake::Task.clear
     Discourse::Application.load_tasks
   end

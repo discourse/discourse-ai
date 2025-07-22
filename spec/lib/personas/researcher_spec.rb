@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Personas::Researcher do
-  let :researcher do
-    subject
-  end
+  let(:researcher) { subject }
+
+  before { enable_current_plugin }
 
   it "renders schema" do
     expect(researcher.tools).to eq(

@@ -8,6 +8,8 @@ require Rails.root.join(
 RSpec.describe CleanUnusedEmbeddingSearchIndexes do
   let(:connection) { ActiveRecord::Base.connection }
 
+  before { enable_current_plugin }
+
   describe "#up" do
     before do
       # Copied from 20241008054440_create_binary_indexes_for_embeddings

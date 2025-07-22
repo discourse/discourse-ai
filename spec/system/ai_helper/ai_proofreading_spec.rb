@@ -6,6 +6,7 @@ RSpec.describe "AI Composer Proofreading Features", type: :system, js: true do
   fab!(:admin) { Fabricate(:admin, refresh_auto_groups: true) }
 
   before do
+    enable_current_plugin
     assign_fake_provider_to(:ai_helper_model)
     SiteSetting.ai_helper_enabled = true
 

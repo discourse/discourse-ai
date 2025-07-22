@@ -20,6 +20,8 @@ RSpec.describe Jobs::DigestRagUpload do
   end
 
   before do
+    enable_current_plugin
+
     SiteSetting.ai_embeddings_selected_model = cloudflare_embedding_def.id
     SiteSetting.ai_embeddings_enabled = true
     SiteSetting.authorized_extensions = "txt"

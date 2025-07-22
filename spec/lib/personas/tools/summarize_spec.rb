@@ -6,7 +6,10 @@ RSpec.describe DiscourseAi::Personas::Tools::Summarize do
   let(:llm) { DiscourseAi::Completions::Llm.proxy("custom:#{llm_model.id}") }
   let(:progress_blk) { Proc.new {} }
 
-  before { SiteSetting.ai_bot_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_bot_enabled = true
+  end
 
   let(:summary) { "summary stuff" }
 

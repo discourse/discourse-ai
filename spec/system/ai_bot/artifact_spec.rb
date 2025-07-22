@@ -8,7 +8,7 @@ RSpec.describe "AI Artifact with Data Attributes", type: :system do
   fab!(:topic) { Fabricate(:topic, category: category, user: author) }
   fab!(:post) { Fabricate(:post, topic: topic, user: author) }
 
-  before { SiteSetting.discourse_ai_enabled = true }
+  before { enable_current_plugin }
 
   it "correctly passes data attributes and user info to a public AI artifact embedded in a post" do
     artifact_js = <<~JS

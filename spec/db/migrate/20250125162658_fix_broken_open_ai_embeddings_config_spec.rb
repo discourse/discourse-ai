@@ -21,6 +21,8 @@ RSpec.describe FixBrokenOpenAiEmbeddingsConfig do
     ).first
   end
 
+  before { enable_current_plugin }
+
   describe "#up" do
     context "when embeddings are already configured" do
       fab!(:embedding_definition)

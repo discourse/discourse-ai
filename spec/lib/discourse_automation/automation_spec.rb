@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe DiscourseAi::Automation do
+  before { enable_current_plugin }
+
   describe "manually configured model" do
     let!(:llm_model) { Fabricate(:llm_model) }
     it "returns a list of available models for automation" do

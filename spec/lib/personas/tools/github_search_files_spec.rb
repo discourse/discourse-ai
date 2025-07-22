@@ -18,6 +18,8 @@ RSpec.describe DiscourseAi::Personas::Tools::GithubSearchFiles do
     )
   end
 
+  before { enable_current_plugin }
+
   describe "#invoke" do
     let(:default_branch) { "main" }
 

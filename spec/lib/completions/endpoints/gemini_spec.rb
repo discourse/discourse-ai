@@ -153,6 +153,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::Gemini do
     }
   end
 
+  before { enable_current_plugin }
+
   it "correctly configures thinking when enabled" do
     model.update!(provider_params: { enable_thinking: "true", thinking_tokens: "10000" })
 

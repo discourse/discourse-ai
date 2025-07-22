@@ -4,6 +4,8 @@ RSpec.describe AiArtifactKeyValue, type: :model do
   fab!(:user)
   fab!(:ai_artifact)
 
+  before { enable_current_plugin }
+
   describe "#validate_max_keys_per_user_per_artifact" do
     before { SiteSetting.ai_artifact_max_keys_per_user_per_artifact = 2 }
 

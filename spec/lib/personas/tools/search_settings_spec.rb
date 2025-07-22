@@ -19,6 +19,7 @@ RSpec.describe DiscourseAi::Personas::Tools::SearchSettings do
   end
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     toggle_enabled_bots(bots: [llm_model])
   end

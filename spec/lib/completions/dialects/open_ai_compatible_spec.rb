@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::Dialects::OpenAiCompatible do
+  before { enable_current_plugin }
+
   context "when system prompts are disabled" do
     fab!(:model) do
       Fabricate(:vllm_model, vision_enabled: true, provider_params: { disable_system_prompt: true })

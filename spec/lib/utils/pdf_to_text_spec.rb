@@ -5,7 +5,11 @@ RSpec.describe DiscourseAi::Utils::PdfToText do
   fab!(:user)
   let(:pdf) { plugin_file_from_fixtures("2-page.pdf", "rag") }
   let(:upload) { UploadCreator.new(pdf, "2-page.pdf").create_for(Discourse.system_user.id) }
-  before { SiteSetting.authorized_extensions = "pdf|png|jpg|jpeg" }
+
+  before do
+    enable_current_plugin
+    SiteSetting.authorized_extensions = "pdf|png|jpg|jpeg"
+  end
 
   describe "#extract_text" do
     xit "extracts text from PDF pages" do

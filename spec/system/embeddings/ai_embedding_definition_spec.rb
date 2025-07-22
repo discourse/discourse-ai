@@ -5,7 +5,10 @@ RSpec.describe "Managing Embeddings configurations", type: :system, js: true do
   let(:page_header) { PageObjects::Components::DPageHeader.new }
   let(:form) { PageObjects::Components::FormKit.new("form") }
 
-  before { sign_in(admin) }
+  before do
+    enable_current_plugin
+    sign_in(admin)
+  end
 
   it "correctly sets defaults" do
     preset = "text-embedding-3-small"

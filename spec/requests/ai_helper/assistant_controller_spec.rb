@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::AiHelper::AssistantController do
-  before { assign_fake_provider_to(:ai_helper_model) }
   fab!(:newuser)
   fab!(:user) { Fabricate(:user, refresh_auto_groups: true) }
+
+  before do
+    enable_current_plugin
+    assign_fake_provider_to(:ai_helper_model)
+  end
 
   describe "#stream_suggestion" do
     before do
@@ -409,6 +413,7 @@ RSpec.describe DiscourseAi::AiHelper::AssistantController do
           # UploadReference records works
           @original_provider = SiteSetting.provider
           SiteSetting.provider = SiteSettings::DbProvider.new(SiteSetting)
+          enable_current_plugin
           setup_s3
           stub_s3_store
           assign_fake_provider_to(:ai_helper_image_caption_model)

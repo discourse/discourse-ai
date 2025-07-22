@@ -22,6 +22,7 @@ RSpec.describe "AI image caption", type: :system, js: true do
   end
 
   before do
+    enable_current_plugin
     Group.find_by(id: Group::AUTO_GROUPS[:admins]).add(user)
     assign_fake_provider_to(:ai_helper_model)
     assign_fake_provider_to(:ai_helper_image_caption_model)

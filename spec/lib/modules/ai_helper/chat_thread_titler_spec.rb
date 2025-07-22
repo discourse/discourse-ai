@@ -3,11 +3,14 @@
 RSpec.describe DiscourseAi::AiHelper::ChatThreadTitler do
   subject(:titler) { described_class.new(thread) }
 
-  before { assign_fake_provider_to(:ai_helper_model) }
-
   fab!(:thread) { Fabricate(:chat_thread) }
   fab!(:chat_message) { Fabricate(:chat_message, thread: thread) }
   fab!(:user)
+
+  before do
+    enable_current_plugin
+    assign_fake_provider_to(:ai_helper_model)
+  end
 
   describe "#suggested_title" do
     it "bails early if thread has no content" do

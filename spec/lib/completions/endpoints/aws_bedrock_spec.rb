@@ -26,6 +26,8 @@ RSpec.describe DiscourseAi::Completions::Endpoints::AwsBedrock do
     Aws::EventStream::Encoder.new.encode(aws_message)
   end
 
+  before { enable_current_plugin }
+
   it "should provide accurate max token count" do
     prompt = DiscourseAi::Completions::Prompt.new("hello")
     dialect = DiscourseAi::Completions::Dialects::Claude.new(prompt, model)

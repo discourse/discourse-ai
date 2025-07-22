@@ -6,6 +6,8 @@ RSpec.describe AiFeaturesPersonaSerializer do
   fab!(:group)
   fab!(:group_2) { Fabricate(:group) }
 
+  before { enable_current_plugin }
+
   describe "serialized attributes" do
     before do
       ai_persona.allowed_group_ids = [group.id, group_2.id]

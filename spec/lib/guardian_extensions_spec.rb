@@ -6,6 +6,7 @@ describe DiscourseAi::GuardianExtensions do
   fab!(:topic)
 
   before do
+    enable_current_plugin
     group.add(user)
     assign_fake_provider_to(:ai_summarization_model)
     SiteSetting.ai_summarization_enabled = true

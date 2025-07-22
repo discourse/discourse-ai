@@ -8,6 +8,8 @@ describe ::TopicsController do
   fab!(:user) { Fabricate(:admin) }
 
   before do
+    enable_current_plugin
+
     SiteSetting.ai_embeddings_semantic_related_topics_enabled = true
     SiteSetting.ai_embeddings_semantic_related_topics = 2
 

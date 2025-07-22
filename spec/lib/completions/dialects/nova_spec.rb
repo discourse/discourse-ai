@@ -5,6 +5,8 @@ RSpec.describe DiscourseAi::Completions::Dialects::Nova do
 
   let(:nova_dialect_klass) { DiscourseAi::Completions::Dialects::Dialect.dialect_for(llm_model) }
 
+  before { enable_current_plugin }
+
   it "finds the right dialect" do
     expect(nova_dialect_klass).to eq(DiscourseAi::Completions::Dialects::Nova)
   end

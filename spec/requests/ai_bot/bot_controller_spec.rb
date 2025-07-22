@@ -7,13 +7,13 @@ RSpec.describe DiscourseAi::AiBot::BotController do
   fab!(:pm_post2) { Fabricate(:post, topic: pm_topic) }
   fab!(:pm_post3) { Fabricate(:post, topic: pm_topic) }
 
-  before { sign_in(user) }
+  before do
+    enable_current_plugin
+    sign_in(user)
+  end
 
   describe "#show_debug_info" do
-    before do
-      SiteSetting.ai_bot_enabled = true
-      SiteSetting.discourse_ai_enabled = true
-    end
+    before { SiteSetting.ai_bot_enabled = true }
 
     it "returns a 403 when the user cannot debug the AI bot conversation" do
       get "/discourse-ai/ai-bot/post/#{pm_post.id}/show-debug-info"

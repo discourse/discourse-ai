@@ -8,7 +8,7 @@ RSpec.describe DiscourseAi::Admin::AiUsageController do
   fab!(:llm_model)
   let(:usage_report_path) { "/admin/plugins/discourse-ai/ai-usage-report.json" }
 
-  before { SiteSetting.discourse_ai_enabled = true }
+  before { enable_current_plugin }
 
   context "when logged in as admin" do
     before { sign_in(admin) }

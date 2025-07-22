@@ -10,6 +10,8 @@ RSpec.describe DiscourseAi::Configuration::Feature do
     DiscourseAi::Completions::Llm.with_prepared_responses(["OK"]) { block.call }
   end
 
+  before { enable_current_plugin }
+
   describe "#llm_model" do
     context "when persona is not found" do
       it "returns nil when persona_id is invalid" do

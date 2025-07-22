@@ -5,6 +5,8 @@ describe DiscourseAi::Inference::OpenAiEmbeddings do
   let(:dimensions) { 1000 }
   let(:model) { "text-embedding-ada-002" }
 
+  before { enable_current_plugin }
+
   it "supports azure embeddings" do
     azure_url =
       "https://my-company.openai.azure.com/openai/deployments/embeddings-deployment/embeddings?api-version=2023-05-15"

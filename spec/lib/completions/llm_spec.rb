@@ -13,6 +13,8 @@ RSpec.describe DiscourseAi::Completions::Llm do
   fab!(:user)
   fab!(:model) { Fabricate(:llm_model) }
 
+  before { enable_current_plugin }
+
   describe ".proxy" do
     it "raises an exception when we can't proxy the model" do
       fake_model = "unknown:unknown_v2"

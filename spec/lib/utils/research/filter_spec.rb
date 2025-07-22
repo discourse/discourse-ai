@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 describe DiscourseAi::Utils::Research::Filter do
+  before { enable_current_plugin }
+
   describe "integration tests" do
     before_all do
       SiteSetting.min_topic_title_length = 3

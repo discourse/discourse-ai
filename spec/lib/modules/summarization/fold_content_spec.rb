@@ -8,7 +8,10 @@ RSpec.describe DiscourseAi::Summarization::FoldContent do
   fab!(:topic) { Fabricate(:topic, highest_post_number: 2) }
   fab!(:post_1) { Fabricate(:post, topic: topic, post_number: 1, raw: "This is a text") }
 
-  before { SiteSetting.ai_summarization_enabled = true }
+  before do
+    enable_current_plugin
+    SiteSetting.ai_summarization_enabled = true
+  end
 
   describe "#summarize" do
     before do

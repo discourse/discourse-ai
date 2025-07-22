@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::Completions::ToolDefinition do
+  before { enable_current_plugin }
+
   # Test case 1: Basic tool definition creation
   describe "#initialize" do
     it "creates a tool with name, description and parameters" do

@@ -8,11 +8,14 @@ require Rails.root.join(
 RSpec.describe MigrateSentimentClassificationResultFormat do
   let(:connection) { ActiveRecord::Base.connection }
 
-  before { connection.execute(<<~SQL) }
+  before do
+    enable_current_plugin
+    connection.execute(<<~SQL)
       INSERT INTO classification_results (model_used, classification, created_at, updated_at) VALUES
         ('sentiment', '{"neutral": 65, "negative": 20, "positive": 14}', NOW(), NOW()),
         ('emotion', '{"sadness": 10, "surprise": 15, "fear": 5, "anger": 20, "joy": 30, "disgust": 8, "neutral": 10}', NOW(), NOW());
     SQL
+  end
 
   after { connection.execute("DELETE FROM classification_results") }
 
@@ -21,7 +24,7 @@ RSpec.describe MigrateSentimentClassificationResultFormat do
 
     it "migrates sentiment classifications correctly" do
       sentiment_result = connection.execute(<<~SQL).first
-        SELECT * FROM classification_results 
+        SELECT * FROM classification_results
         WHERE model_used = 'cardiffnlp/twitter-roberta-base-sentiment-latest';
       SQL
 
@@ -32,7 +35,7 @@ RSpec.describe MigrateSentimentClassificationResultFormat do
 
     it "migrates emotion classifications correctly" do
       emotion_result = connection.execute(<<~SQL).first
-        SELECT * FROM classification_results 
+        SELECT * FROM classification_results
         WHERE model_used = 'j-hartmann/emotion-english-distilroberta-base';
       SQL
 

@@ -2,13 +2,13 @@
 
 describe Jobs::PostLocalizationBackfill do
   before do
+    enable_current_plugin
     SiteSetting.ai_translation_backfill_hourly_rate = 100
     SiteSetting.content_localization_supported_locales = "en"
     Fabricate(:fake_model).tap do |fake_llm|
       SiteSetting.public_send("ai_translation_model=", "custom:#{fake_llm.id}")
     end
     SiteSetting.ai_translation_enabled = true
-    SiteSetting.discourse_ai_enabled = true
   end
 
   it "does not enqueue post translation when translator disabled" do
@@ -36,7 +36,6 @@ describe Jobs::PostLocalizationBackfill do
   end
 
   it "does not enqueue post translation if backfill limit is set to 0" do
-    SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = true
     SiteSetting.ai_translation_backfill_hourly_rate = 0
 
@@ -46,7 +45,6 @@ describe Jobs::PostLocalizationBackfill do
   end
 
   it "enqueues post translation with correct limit" do
-    SiteSetting.discourse_ai_enabled = true
     SiteSetting.ai_translation_enabled = true
     SiteSetting.ai_translation_backfill_hourly_rate = 100
 

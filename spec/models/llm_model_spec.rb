@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe LlmModel do
+  before { enable_current_plugin }
+
   describe "api_key" do
     fab!(:llm_model) { Fabricate(:seeded_model) }
 

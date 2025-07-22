@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe DiscourseAi::PersonaImporter do
+  before { enable_current_plugin }
+
   describe "#import!" do
     context "when importing a persona with a custom tool" do
       fab!(:ai_tool) { Fabricate(:ai_tool, name: "Giphy Searcher", tool_name: "giphy_search") }

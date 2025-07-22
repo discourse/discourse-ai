@@ -6,9 +6,9 @@ RSpec.describe DiscourseAi::Admin::AiLlmQuotasController do
   fab!(:llm_model)
 
   before do
+    enable_current_plugin
     sign_in(admin)
     SiteSetting.ai_bot_enabled = true
-    SiteSetting.discourse_ai_enabled = true
   end
 
   describe "#index" do

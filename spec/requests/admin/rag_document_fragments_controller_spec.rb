@@ -7,6 +7,7 @@ RSpec.describe DiscourseAi::Admin::RagDocumentFragmentsController do
   fab!(:vector_def) { Fabricate(:embedding_definition) }
 
   before do
+    enable_current_plugin
     sign_in(admin)
     SiteSetting.ai_embeddings_selected_model = vector_def.id
     SiteSetting.ai_embeddings_enabled = true

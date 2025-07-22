@@ -7,6 +7,8 @@ RSpec.describe ReviewableAiChatMessage, type: :model do
   fab!(:chat_message) { Fabricate(:chat_message, chat_channel: chat_channel, user: user) }
   fab!(:reviewable) { described_class.needs_review!(target: chat_message, created_by: moderator) }
 
+  before { enable_current_plugin }
+
   it "agree_and_keep agrees with the flag and doesn't delete the message" do
     reviewable.perform(moderator, :agree_and_keep_message)
 

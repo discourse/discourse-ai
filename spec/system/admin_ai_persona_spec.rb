@@ -6,6 +6,7 @@ RSpec.describe "Admin AI persona configuration", type: :system, js: true do
   let(:form) { PageObjects::Components::FormKit.new("form") }
 
   before do
+    enable_current_plugin
     SiteSetting.ai_bot_enabled = true
     sign_in(admin)
   end

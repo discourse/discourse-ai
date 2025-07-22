@@ -23,19 +23,12 @@ class TestPersona < DiscourseAi::Personas::Persona
 end
 
 RSpec.describe DiscourseAi::Personas::Persona do
-  let :persona do
-    TestPersona.new
-  end
+  let(:persona) { TestPersona.new }
 
-  let :topic_with_users do
+  let(:topic_with_users) do
     topic = Topic.new
     topic.allowed_users = [User.new(username: "joe"), User.new(username: "jane")]
     topic
-  end
-
-  after do
-    # we are rolling back transactions so we can create poison cache
-    AiPersona.persona_cache.flush!
   end
 
   let(:resource_url) { "https://path-to-resource" }
@@ -56,6 +49,13 @@ RSpec.describe DiscourseAi::Personas::Persona do
   fab!(:admin)
   fab!(:user)
   fab!(:upload)
+
+  before { enable_current_plugin }
+
+  after do
+    # we are rolling back transactions so we can create poison cache
+    AiPersona.persona_cache.flush!
+  end
 
   it "renders the system prompt" do
     freeze_time

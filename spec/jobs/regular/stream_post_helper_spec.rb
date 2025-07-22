@@ -3,7 +3,10 @@
 RSpec.describe Jobs::StreamPostHelper do
   subject(:job) { described_class.new }
 
-  before { assign_fake_provider_to(:ai_helper_model) }
+  before do
+    enable_current_plugin
+    assign_fake_provider_to(:ai_helper_model)
+  end
 
   describe "#execute" do
     fab!(:topic)

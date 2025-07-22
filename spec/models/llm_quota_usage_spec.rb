@@ -16,6 +16,8 @@ RSpec.describe LlmQuotaUsage do
     )
   end
 
+  before { enable_current_plugin }
+
   describe ".find_or_create_for" do
     it "creates a new usage record if none exists" do
       freeze_time
