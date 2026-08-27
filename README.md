@@ -1,3 +1,3 @@
-# Discourse AI is no shipped with Discourse core
+# Discourse AI is now shipped with Discourse core
 
-see: https://github.com/discourse/discourse/tree/main/plugins/discourse-ai
+https://github.com/discourse/discourse/tree/main/plugins/discourse-ai
